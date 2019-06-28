@@ -46,7 +46,7 @@ const game: Game = [["x", 0], ["o", 2], ["x", 3], ["o", 7], ["x", 6]];
 ok(isXWinner(game), "x should win the game");
 ok(!isOWinner(game), "o should loose the game");
 
-const nextMove = (game: Game) => {
+const nextPos = (game: Game): Pos => {
   const played = game.map(([_, p]) => p);
   const moves = board.filter(p => !played.includes(p));
   const min = 0;
@@ -59,3 +59,11 @@ const nextPlayer = (p: Player): Player => (p === "x" ? "o" : "x");
 
 const randInt = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
+
+const play = (game: Game): Game => {
+  const [lastMove] = game;
+  const player = lastMove ? nextPlayer(lastMove[0]) : "x";
+  const pos = nextPos(game);
+  const move: Move = [player, pos];
+  return [move, ...game];
+};
