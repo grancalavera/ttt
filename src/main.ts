@@ -1,15 +1,15 @@
 import assert from "assert";
 
 // prettier-ignore
+type Pos = 0 | 1 | 2
+         | 3 | 4 | 5
+         | 6 | 7 | 8;
+
+// prettier-ignore
 type Board = [ Pos, Pos, Pos
              , Pos, Pos, Pos
              , Pos, Pos, Pos
              ];
-
-// prettier-ignore
-type Pos = 0 | 1 | 2
-         | 3 | 4 | 5
-         | 6 | 7 | 8;
 
 type Player = "x" | "o";
 type Move = [Player, Pos];
