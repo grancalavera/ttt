@@ -24,10 +24,10 @@ export const play = (game: Game): void => {
 
   switch (result.kind) {
     case "winner":
-      console.log(gameOver(`the ${result.winner}'s won the game`));
+      gameOver(`the ${result.winner}'s won the game`);
       break;
     case "tie":
-      console.log(gameOver("tie"));
+      gameOver("tie");
       break;
     case "open":
       setTimeout(() => play(turn(game)), 50);
