@@ -1,13 +1,19 @@
 {
   "name": "ttt",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/main.js",
+  "bin": {
+    "ttt": "dist/bin/main.js"
+  },
   "license": "MIT",
   "dependencies": {
     "yarn": "^1.16.0"
   },
   "scripts": {
-    "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/main.ts"
+    "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/bin/main.ts",
+    "build": "tsc",
+    "test": "ts-node src/test.ts",
+    "test-watch": "nodemon --watch 'src/test-*.ts' --exec 'ts-node' src/test.ts"
   },
   "devDependencies": {
     "@types/node": "^12.0.10",
