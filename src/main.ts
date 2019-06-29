@@ -1,4 +1,10 @@
-import assert, { AssertionError } from "assert";
+import assert from "assert";
+
+// prettier-ignore
+type Board = [ Pos, Pos, Pos
+             , Pos, Pos, Pos
+             , Pos, Pos, Pos
+             ];
 
 // prettier-ignore
 type Pos = 0 | 1 | 2
@@ -6,13 +12,22 @@ type Pos = 0 | 1 | 2
          | 6 | 7 | 8;
 
 type Player = "x" | "o";
-type Win = [Pos, Pos, Pos];
-
 type Move = [Player, Pos];
 type Game = Move[];
-type GameResult = "xWon" | "oWon" | "tie" | "open";
+type Win = [Pos, Pos, Pos];
 
-type Board = [Pos, Pos, Pos, Pos, Pos, Pos, Pos, Pos, Pos];
+type GameResult = Tie | Open | Winner;
+type Tie = { kind: "tie" };
+type Winner = { kind: "winner"; winner: Player; move: Win };
+type Open = { kind: "open" };
+
+const tieGame: GameResult = { kind: "tie" };
+const openGame: GameResult = { kind: "open" };
+const winnerGame = (winner: Player, move: Win): GameResult => ({
+  kind: "winner",
+  winner,
+  move
+});
 
 const winningMoves: Win[] = [
   [0, 1, 2],
@@ -25,32 +40,34 @@ const winningMoves: Win[] = [
   [2, 4, 6]
 ];
 
-const board: Board = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+// prettier-ignore
+const board: Board = [ 0, 1, 2
+                     , 3, 4, 5
+                     , 6, 7, 8
+                     ];
 
-const isWinner = (winMoves: Win[], player: Player) => (game: Game): Boolean => {
-  const moves = game
-    .filter(([q]) => player === q)
-    .map(([_, pos]) => pos)
-    .sort((a, b) => a - b);
+const findWin = (player: Player, game: Game): Win | undefined => {
+  const playerMoves = game
+    .filter(([candidate]) => player === candidate)
+    .map(([_, pos]) => pos);
 
-  return winMoves.reduce(
-    (won, wins) => moves.filter(m => wins.includes(m)).length === 3 || won,
-    false
+  return winningMoves.find(
+    win => playerMoves.filter(move => win.includes(move)).length === 3
   );
 };
 
-const isXWinner = isWinner(winningMoves, "x");
-const isOWinner = isWinner(winningMoves, "o");
+const resolveGame = (game: Game): GameResult => {
+  const xWinningMove = findWin("x", game);
+  const oWinningMove = findWin("o", game);
 
-const getGameResult = (board: Board, game: Game): GameResult => {
-  if (isOWinner(game)) {
-    return "oWon";
-  } else if (isXWinner(game)) {
-    return "xWon";
+  if (xWinningMove) {
+    return winnerGame("x", xWinningMove);
+  } else if (oWinningMove) {
+    return winnerGame("o", oWinningMove);
   } else if (game.length === board.length) {
-    return "tie";
+    return tieGame;
   } else {
-    return "open";
+    return openGame;
   }
 };
 
@@ -83,18 +100,29 @@ const turn = (game: Game): Game => {
 };
 
 const play = (board: Board, game: Game): void => {
-  const result = getGameResult(board, game);
-  console.log(renderBoard(board)(game));
+  console.log(renderGame(board)(game));
 
-  if (result === "oWon" || result === "xWon" || result === "tie") {
-    console.log(result);
-  } else {
-    setTimeout(() => {
-      const newGame = turn(game);
-      play(board, newGame);
-    }, 500);
+  const result = resolveGame(game);
+  const gameOver = (message: string) => console.log(`Game over: ${message}`);
+
+  switch (result.kind) {
+    case "winner":
+      console.log(gameOver(`${result.winner} wins the game`));
+      break;
+    case "tie":
+      console.log(gameOver("tie"));
+      break;
+    case "open":
+      setTimeout(() => play(board, turn(game)), 50);
+      break;
+    default:
+      assertNever(result);
   }
 };
+
+function assertNever(x: never) {
+  throw new Error(`unexpected object ${x}`);
+}
 
 type Cell = Player | " ";
 type BoardView = [Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell];
@@ -109,40 +137,108 @@ const gameToBoardView = (board: Board, game: Game): BoardView =>
     }
   }) as BoardView;
 
-const renderBoard = (board: Board) => (game: Game): string => {
+const renderGame = (board: Board) => (game: Game): string => {
   const b = gameToBoardView(board, game);
   return `
- ${b[0]} │ ${b[1]} │ ${b[2]}  .
-───┼───┼─── .
- ${b[3]} │ ${b[4]} │ ${b[5]}  .
-───┼───┼─── .
- ${b[6]} │ ${b[7]} │ ${b[8]}  .
+┌─────────────────┐
+│                 │
+│    ${b[0]} │ ${b[1]} │ ${b[2]}    │
+│   ───┼───┼───   │
+│    ${b[3]} │ ${b[4]} │ ${b[5]}    │
+│   ───┼───┼───   │
+│    ${b[6]} │ ${b[7]} │ ${b[8]}    │
+│                 │
+└─────────────────┘
 `;
 };
 
-const game: Game = [["x", 0], ["o", 2], ["x", 3], ["o", 7], ["x", 6]];
+const gameFromString = (s: String): Game => {
+  return <Game>s
+    .trim()
+    .replace(/\n|\./g, "")
+    .split("")
+    .map((p, i) => [p, i])
+    .filter(([p, _]) => p !== " ");
+};
+
+const gameForX: Game = gameFromString(`
+x o.
+x  .
+xo .
+`);
+
+const gameForO: Game = gameFromString(`
+o x.
+o  .
+ox .
+`);
+
+const gameIsOpen: Game = [];
+
+const gameIsTie: Game = gameFromString(`
+xox.
+oxo.
+oxo.
+`);
+
 const emptyBoard: BoardView = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
 const gameBoard: BoardView = ["x", " ", "o", "x", " ", " ", "x", "o", " "];
 
 const empty = `
-   │   │    .
-───┼───┼─── .
-   │   │    .
-───┼───┼─── .
-   │   │    .
+┌─────────────────┐
+│                 │
+│      │   │      │
+│   ───┼───┼───   │
+│      │   │      │
+│   ───┼───┼───   │
+│      │   │      │
+│                 │
+└─────────────────┘
 `;
 
 const gameView = `
- x │   │ o  .
-───┼───┼─── .
- x │   │    .
-───┼───┼─── .
- x │ o │    .
+┌─────────────────┐
+│                 │
+│    x │   │ o    │
+│   ───┼───┼───   │
+│    x │   │      │
+│   ───┼───┼───   │
+│    x │ o │      │
+│                 │
+└─────────────────┘
 `;
 
 try {
-  assert.ok(isXWinner(game), "x should win the game");
-  assert.ok(!isOWinner(game), "o should loose the game");
+  // game
+  assert.deepEqual(
+    gameFromString(`
+x o.
+x  .
+xo .
+`),
+    [["x", 0], ["o", 2], ["x", 3], ["x", 6], ["o", 7]],
+    "should create a game from a string"
+  );
+
+  assert.deepEqual(findWin("x", gameIsOpen), undefined, "an open game has no winner");
+  assert.deepEqual(findWin("x", gameIsTie), undefined, "a tie game has no winner");
+  assert.deepEqual(findWin("x", gameForX), [0, 3, 6], "x should win the game");
+  assert.deepEqual(findWin("o", gameForO), [0, 3, 6], "o should win the game");
+
+  assert.deepEqual(resolveGame(gameIsOpen), openGame, "the game should be still open");
+  assert.deepEqual(resolveGame(gameIsTie), tieGame, "the game should be a tie");
+  assert.deepEqual(
+    resolveGame(gameForX),
+    winnerGame("x", [0, 3, 6]),
+    "x should win the game"
+  );
+  assert.deepEqual(
+    resolveGame(gameForO),
+    winnerGame("o", [0, 3, 6]),
+    "o should win the game"
+  );
+
+  // rendering
 
   assert.deepEqual(
     gameToBoardView(board, []),
@@ -151,19 +247,21 @@ try {
   );
 
   assert.deepEqual(
-    gameToBoardView(board, game),
+    gameToBoardView(board, gameForX),
     gameBoard,
     "should transform an game to a board"
   );
 
-  assert.equal(renderBoard(board)([]), empty, "should draw an empty board");
-  assert.equal(renderBoard(board)(game), gameView, "should draw a board with a game");
+  assert.equal(renderGame(board)([]), empty, "should draw an empty board");
+  assert.equal(renderGame(board)(gameForX), gameView, "should draw a board with a game");
 } catch (e) {
   console.log(e.message);
+  console.log();
   console.log("actual:");
   console.log(e.actual);
   console.log("expected:");
   console.log(e.expected);
+  process.exit(1);
 }
 
 play(board, []);
