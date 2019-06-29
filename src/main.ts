@@ -71,15 +71,6 @@ const resolveGame = (game: Game): GameResult => {
   }
 };
 
-const chooseRandomPos = (game: Game): Pos => {
-  const played = game.map(([_, p]) => p);
-  const moves = board.filter(p => !played.includes(p));
-  const min = 0;
-  const max = moves.length - 1;
-  const move = randInt(min, max);
-  return moves[move];
-};
-
 const nextPlayer = (game: Game): Player => {
   const [lastMove] = game;
   if (lastMove) {
@@ -92,6 +83,17 @@ const nextPlayer = (game: Game): Player => {
 const randInt = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
+// simulation
+
+const chooseRandomPos = (game: Game): Pos => {
+  const played = game.map(([_, p]) => p);
+  const moves = board.filter(p => !played.includes(p));
+  const min = 0;
+  const max = moves.length - 1;
+  const move = randInt(min, max);
+  return moves[move];
+};
+
 const turn = (game: Game): Game => {
   const player = nextPlayer(game);
   const pos = chooseRandomPos(game);
@@ -99,7 +101,7 @@ const turn = (game: Game): Game => {
   return [move, ...game];
 };
 
-const play = (board: Board, game: Game): void => {
+const play = (game: Game): void => {
   console.log(renderGame(board)(game));
 
   const result = resolveGame(game);
@@ -107,13 +109,13 @@ const play = (board: Board, game: Game): void => {
 
   switch (result.kind) {
     case "winner":
-      console.log(gameOver(`${result.winner} wins the game`));
+      console.log(gameOver(`the ${result.winner}'s won the game`));
       break;
     case "tie":
       console.log(gameOver("tie"));
       break;
     case "open":
-      setTimeout(() => play(board, turn(game)), 50);
+      setTimeout(() => play(turn(game)), 50);
       break;
     default:
       assertNever(result);
@@ -124,10 +126,7 @@ function assertNever(x: never) {
   throw new Error(`unexpected object ${x}`);
 }
 
-type Cell = Player | " ";
-type BoardView = [Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell];
-
-const gameToBoardView = (board: Board, game: Game): BoardView =>
+const gameToBoardView = (board: Board, game: Game): string[] =>
   board.map(i => {
     const maybeMove = game.find(([_, x]) => x === i);
     if (maybeMove) {
@@ -135,7 +134,7 @@ const gameToBoardView = (board: Board, game: Game): BoardView =>
     } else {
       return " ";
     }
-  }) as BoardView;
+  });
 
 const renderGame = (board: Board) => (game: Game): string => {
   const b = gameToBoardView(board, game);
@@ -181,8 +180,8 @@ oxo.
 oxo.
 `);
 
-const emptyBoard: BoardView = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
-const gameBoard: BoardView = ["x", " ", "o", "x", " ", " ", "x", "o", " "];
+const emptyBoard = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
+const gameBoard = ["x", " ", "o", "x", " ", " ", "x", "o", " "];
 
 const empty = `
 ┌─────────────────┐
@@ -264,4 +263,4 @@ xo .
   process.exit(1);
 }
 
-play(board, []);
+play([]);
