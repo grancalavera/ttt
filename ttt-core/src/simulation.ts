@@ -1,6 +1,6 @@
-import { Game, Pos, board, randInt, nextPlayer, resolveGame, Board, Move } from "./game";
+import { Match, Pos, board, randInt, nextPlayer, resolveGame, Board, Move } from "./game";
 
-const chooseRandomPos = (game: Game): Pos => {
+const chooseRandomPos = (game: Match): Pos => {
   const played = game.map(([_, p]) => p);
   const moves = board.filter(p => !played.includes(p));
   const min = 0;
@@ -9,14 +9,14 @@ const chooseRandomPos = (game: Game): Pos => {
   return moves[move];
 };
 
-const turn = (game: Game): Game => {
+const turn = (game: Match): Match => {
   const player = nextPlayer(game);
   const pos = chooseRandomPos(game);
   const move: Move = [player, pos];
   return [move, ...game];
 };
 
-export const play = (game: Game): void => {
+export const play = (game: Match): void => {
   console.log(renderGame(board)(game));
 
   const result = resolveGame(game);
@@ -37,7 +37,7 @@ export const play = (game: Game): void => {
   }
 };
 
-const gameToBoardView = (board: Board, game: Game): string[] =>
+const gameToBoardView = (board: Board, game: Match): string[] =>
   board.map(i => {
     const maybeMove = game.find(([_, x]) => x === i);
     if (maybeMove) {
@@ -47,7 +47,7 @@ const gameToBoardView = (board: Board, game: Game): string[] =>
     }
   });
 
-export const renderGame = (board: Board) => (game: Game): string => {
+export const renderGame = (board: Board) => (game: Match): string => {
   const b = gameToBoardView(board, game);
   return `
 ┌─────────────────┐

@@ -11,7 +11,7 @@ export type Board = [ Pos, Pos, Pos
 
 export type Player = "x" | "o";
 export type Move = [Player, Pos];
-export type Game = Move[];
+export type Match = Move[];
 export type Win = [Pos, Pos, Pos];
 
 type GameResult = Tie | Open | Winner;
@@ -44,7 +44,7 @@ export const board: Board = [ 0, 1, 2
                             , 6, 7, 8
                             ];
 
-export const findWin = (player: Player, game: Game): Win | undefined => {
+export const findWin = (player: Player, game: Match): Win | undefined => {
   const playerMoves = game
     .filter(([candidate]) => player === candidate)
     .map(([_, pos]) => pos);
@@ -54,7 +54,7 @@ export const findWin = (player: Player, game: Game): Win | undefined => {
   );
 };
 
-export const resolveGame = (game: Game): GameResult => {
+export const resolveGame = (game: Match): GameResult => {
   const xWinningMove = findWin("x", game);
   const oWinningMove = findWin("o", game);
 
@@ -69,7 +69,7 @@ export const resolveGame = (game: Game): GameResult => {
   }
 };
 
-export const nextPlayer = (game: Game): Player => {
+export const nextPlayer = (game: Match): Player => {
   const [lastMove] = game;
   if (lastMove) {
     return lastMove[0] === "x" ? "o" : "x";

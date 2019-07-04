@@ -1,12 +1,12 @@
 import assert from "assert";
-import { board, Board, Game } from "./game";
+import { board, Board, Match } from "./game";
 import { renderGame } from "./simulation";
 import { gameFromString } from "./test-common";
 
 const emptyBoard = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
 const gameBoard = ["x", " ", "o", "x", " ", " ", "x", "o", " "];
 
-const gameForX: Game = gameFromString(`
+const gameForX: Match = gameFromString(`
 x o.
 x  .
 xo .
@@ -36,7 +36,7 @@ const gameView = `
 └─────────────────┘
 `;
 
-const gameToBoardView = (board: Board, game: Game): string[] =>
+const gameToBoardView = (board: Board, game: Match): string[] =>
   board.map(i => {
     const maybeMove = game.find(([_, x]) => x === i);
     if (maybeMove) {
