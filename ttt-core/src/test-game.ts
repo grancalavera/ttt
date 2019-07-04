@@ -1,28 +1,42 @@
 import assert from "assert";
-import { findWin, resolveGame, winnerGame, openGame, tieGame, Game } from "./game";
+import {
+  findWin,
+  resolveGame,
+  winnerGame,
+  openGame,
+  tieGame,
+  nextPlayer,
+  Game
+} from "./game";
 import { gameFromString } from "./test-common";
 
-const gameForX: Game = gameFromString(`
+const lastIsX: Game = [["x", 0]];
+const lastIsO: Game = [["o", 0]];
+
+const gameForX = gameFromString(`
 x o.
 x  .
 xo .
 `);
 
-const gameForO: Game = gameFromString(`
+const gameForO = gameFromString(`
 o x.
 o  .
 ox .
 `);
 
-const gameIsOpen: Game = [];
+const gameIsOpen = gameFromString("");
 
-const gameIsTie: Game = gameFromString(`
+const gameIsTie = gameFromString(`
 xox.
 oxo.
 oxo.
 `);
 
 export const test = () => {
+  assert.equal(nextPlayer(lastIsX), "o", "next player should be o");
+  assert.equal(nextPlayer(lastIsO), "x", "next player should be x");
+
   assert.deepEqual(findWin("x", gameIsOpen), undefined, "an open game has no winner");
   assert.deepEqual(findWin("x", gameIsTie), undefined, "a tie game has no winner");
   assert.deepEqual(findWin("x", gameForX), [0, 3, 6], "x should win the game");

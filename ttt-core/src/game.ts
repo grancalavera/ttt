@@ -1,13 +1,13 @@
 // prettier-ignore
 export type Pos = 0 | 1 | 2
-         | 3 | 4 | 5
-         | 6 | 7 | 8;
+                | 3 | 4 | 5
+                | 6 | 7 | 8;
 
 // prettier-ignore
 export type Board = [ Pos, Pos, Pos
-             , Pos, Pos, Pos
-             , Pos, Pos, Pos
-             ];
+                    , Pos, Pos, Pos
+                    , Pos, Pos, Pos
+                    ];
 
 export type Player = "x" | "o";
 export type Move = [Player, Pos];
@@ -40,9 +40,9 @@ const winningMoves: Win[] = [
 
 // prettier-ignore
 export const board: Board = [ 0, 1, 2
-                     , 3, 4, 5
-                     , 6, 7, 8
-                     ];
+                            , 3, 4, 5
+                            , 6, 7, 8
+                            ];
 
 export const findWin = (player: Player, game: Game): Win | undefined => {
   const playerMoves = game
