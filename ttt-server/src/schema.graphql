@@ -1,0 +1,18 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  me: User
+}
+
+type Mutation {
+  login(alias: String!, email: String!): String
+}
+
+type User {
+  id: ID!
+  email: String!
+  alias: String!
+}
