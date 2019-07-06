@@ -1,5 +1,5 @@
 import { QueryResolvers, Resolvers, MutationResolvers } from "./generated/models";
-import { Context } from "./types";
+import { Context } from "./environment";
 
 const Query: QueryResolvers<Context> = {
   me: (_, __, { dataSources }) => dataSources.userAPI.findOrCreateUser()

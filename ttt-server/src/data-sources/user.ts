@@ -1,5 +1,5 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
-import { Context } from "../types";
+import { Context } from "../environment";
 import { UserModel } from "../store";
 import { User, MutationLoginArgs } from "../generated/models";
 

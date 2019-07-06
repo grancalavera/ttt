@@ -1,5 +1,5 @@
 import { ApolloServer } from "apollo-server";
-import { dataSources } from "./data-sources";
+import { dataSources } from "./environment";
 import { resolvers } from "./resolvers";
 import { store } from "./store";
 import { importSchema } from "graphql-import";
