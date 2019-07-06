@@ -7,3 +7,10 @@ generates:
   ttt-server/src/generated/models.ts:
     - typescript
     - typescript-resolvers
+config:
+  # see: https://github.com/dotansimha/graphql-code-generator/issues/1133
+  # see: https://github.com/dotansimha/graphql-code-generator/issues/1133#issuecomment-474766729
+  # see: https://graphql-code-generator.com/docs/generated-config/typescript-resolvers#usage-example-1
+  useIndexSignature: true
+  # see: https://graphql-code-generator.com/docs/generated-config/typescript-resolvers#noschemastitching-boolean-default-value-false
+  noSchemaStitching: true
