@@ -11,3 +11,5 @@ export interface Context {
   user?: User;
   dataSources: DataSources;
 }
+
+export type DataSourceContext = Omit<Context, "dataSources">;

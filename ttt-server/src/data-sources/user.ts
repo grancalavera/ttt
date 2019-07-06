@@ -1,12 +1,12 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
-import { Context } from "../environment";
+import { DataSourceContext } from "../environment";
 import { UserModel } from "../store";
 import { User, MutationLoginArgs } from "../generated/models";
 
-export class UserAPI extends DataSource<Context> {
-  private context?: Context;
+export class UserAPI extends DataSource<DataSourceContext> {
+  private context?: DataSourceContext;
 
-  initialize(config: DataSourceConfig<Context>) {
+  initialize(config: DataSourceConfig<DataSourceContext>) {
     this.context = config.context;
   }
 
