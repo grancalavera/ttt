@@ -1,11 +1,7 @@
-export interface User {
-  id: number;
-  alias: string;
-  email: string;
-}
+import { User } from "./generated/models";
+import { DataSources } from "./data-sources";
 
-export type UnknownUser = Omit<User, "id">;
-
-export interface GQLContext {
+export interface Context {
   user?: User;
+  dataSources: DataSources;
 }

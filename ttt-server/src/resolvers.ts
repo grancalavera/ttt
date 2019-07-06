@@ -1,20 +1,17 @@
-import { DataSources } from "./data-sources";
-import { UnknownUser } from "./types";
+import { QueryResolvers, Resolvers, MutationResolvers } from "./generated/models";
+import { Context } from "./types";
 
-const Query = {
-  me: (_: any, __: any, { dataSources }: { dataSources: DataSources }) =>
-    dataSources.userAPI.findOrCreateUser()
+const Query: QueryResolvers<Context> = {
+  me: (_, __, { dataSources }) => dataSources.userAPI.findOrCreateUser()
 };
 
-const Mutation = {
-  login: async (
-    _: any,
-    newUser: UnknownUser,
-    { dataSources }: { dataSources: DataSources }
-  ) => {
+const Mutation: MutationResolvers<Context> = {
+  login: async (_, newUser, { dataSources }) => {
     const user = await dataSources.userAPI.findOrCreateUser(newUser);
-    return user ? new Buffer(user.email + user.alias).toString("base64") : undefined;
+    return user ? new Buffer(user.email + user.alias).toString("base64") : null;
   }
 };
 
-export const resolvers = { Query, Mutation };
+const resolvers: Resolvers<Context> = { Query, Mutation };
+
+export { resolvers };

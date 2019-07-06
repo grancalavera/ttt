@@ -1,15 +1,16 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
-import { GQLContext, User, UnknownUser } from "../types";
+import { Context } from "../types";
 import { UserModel } from "../store";
+import { User, MutationLoginArgs } from "../generated/models";
 
-export class UserAPI extends DataSource<GQLContext> {
-  private context?: GQLContext;
+export class UserAPI extends DataSource<Context> {
+  private context?: Context;
 
-  initialize(config: DataSourceConfig<GQLContext>) {
+  initialize(config: DataSourceConfig<Context>) {
     this.context = config.context;
   }
 
-  async findOrCreateUser(newUser?: UnknownUser) {
+  async findOrCreateUser(newUser?: MutationLoginArgs) {
     if (this.context && this.context.user) {
       return inStore_findOrCreateUser(this.context.user);
     } else if (newUser) {
@@ -20,8 +21,8 @@ export class UserAPI extends DataSource<GQLContext> {
   }
 }
 
-const inStore_findOrCreateUser = async (user: UnknownUser): Promise<User> => {
+const inStore_findOrCreateUser = async (user: MutationLoginArgs): Promise<User> => {
   const { alias, email } = user;
   const [userModel] = await UserModel.findOrCreate({ where: { alias, email } });
-  return { id: userModel.id, alias: userModel.alias, email: userModel.email };
+  return { id: userModel.id.toString(), alias: userModel.alias, email: userModel.email };
 };

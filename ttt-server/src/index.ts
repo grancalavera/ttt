@@ -4,9 +4,14 @@ import { resolvers } from "./resolvers";
 import { store } from "./store";
 import { importSchema } from "graphql-import";
 import { join } from "path";
+
 const typeDefs = importSchema(join(__dirname, "schema.graphql"));
 
-const server = new ApolloServer({ typeDefs, dataSources, resolvers });
+const server = new ApolloServer({
+  typeDefs,
+  dataSources,
+  resolvers
+});
 
 store
   .sync()
