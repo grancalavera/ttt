@@ -1,5 +1,5 @@
 import { ApolloServer } from "apollo-server";
-import { dataSources } from "./environment";
+import { dataSources, context } from "./environment";
 import { resolvers } from "./resolvers";
 import { store } from "./store";
 import { importSchema } from "graphql-import";
@@ -10,7 +10,8 @@ const typeDefs = importSchema(join(__dirname, "schema.graphql"));
 const server = new ApolloServer({
   typeDefs,
   dataSources,
-  resolvers
+  resolvers,
+  context
 });
 
 store
