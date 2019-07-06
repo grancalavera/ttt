@@ -1,32 +1,29 @@
 import { ApolloServer, gql } from "apollo-server";
-
-type User = {
-  id: String;
-  name: string;
-};
-
-const users: User[] = [];
+import { dataSources } from "./data-sources";
+import { resolvers } from "./resolvers";
+import { store } from "./store";
 
 const typeDefs = gql`
-  type User {
-    id: ID!
-    name: String!
-    email: String!
+  type Query {
+    me: User
   }
 
-  type Query {
-    users: [User]
+  type Mutation {
+    login(alias: String!, email: String!): String
+  }
+
+  type User {
+    id: ID!
+    email: String!
+    alias: String!
   }
 `;
 
-const resolvers = {
-  Query: {
-    users: () => users
-  }
-};
+const server = new ApolloServer({ typeDefs, dataSources, resolvers });
 
-const server = new ApolloServer({ typeDefs, resolvers });
-
-server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
-});
+store
+  .sync()
+  .then(() => server.listen())
+  .then(({ url }) => {
+    console.log(`🚀  Server ready at ${url}`);
+  });
