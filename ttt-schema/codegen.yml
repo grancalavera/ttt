@@ -1,0 +1,7 @@
+schema:
+  - src/schema.graphql
+generates:
+  src/generated/server.ts:
+    - typescript
+  src/generated/client.ts:
+    - typescript
