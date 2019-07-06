@@ -1,0 +1,9 @@
+schema: "ttt-server/src/**/*.graphql"
+documents: "ttt-client/src/**/*.graphql"
+generates:
+  ttt-client/src/generated/models.ts:
+    - typescript
+    - typescript-operations
+  ttt-server/src/generated/models.ts:
+    - typescript
+    - typescript-resolvers

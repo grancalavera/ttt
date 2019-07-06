@@ -4,4 +4,4 @@ export const dataSources = () => ({
   userAPI: new UserAPI()
 });
 
-export type TTTDataSources = ReturnType<typeof dataSources>;
+export type DataSources = ReturnType<typeof dataSources>;

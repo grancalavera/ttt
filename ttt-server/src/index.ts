@@ -2,7 +2,9 @@ import { ApolloServer } from "apollo-server";
 import { dataSources } from "./data-sources";
 import { resolvers } from "./resolvers";
 import { store } from "./store";
-import { typeDefs } from "@grancalavera/ttt-schema";
+import { importSchema } from "graphql-import";
+import { join } from "path";
+const typeDefs = importSchema(join(__dirname, "schema.graphql"));
 
 const server = new ApolloServer({ typeDefs, dataSources, resolvers });
 
