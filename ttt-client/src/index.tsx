@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { ApolloClient } from "apollo-client";
 import { HttpLink } from "apollo-link-http";
@@ -9,6 +8,7 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { loader } from "graphql.macro";
 import { resolvers } from "./resolvers";
 import { IsUserLoggedInQuery } from "./generated/models";
+import { Login } from "./containers/login";
 
 const typeDefs = loader("./schema.graphql");
 const IS_LOGGED_IN = loader("./query-is-user-logged-in.graphql");
@@ -39,7 +39,7 @@ ReactDOM.render(
         if (data && data.isLoggedIn) {
           return <div>is logged in</div>;
         } else {
-          return <div>is logged out</div>;
+          return <Login />;
         }
       }}
     </Query>
