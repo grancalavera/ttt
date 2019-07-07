@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
 import { ApolloClient } from "apollo-client";
@@ -9,6 +9,7 @@ import { loader } from "graphql.macro";
 import { resolvers } from "./resolvers";
 import { IsUserLoggedInQuery } from "./generated/models";
 import { Login } from "./containers/login";
+import { LogoutButton } from "./components/logout-button";
 
 const typeDefs = loader("./schema.graphql");
 const IS_LOGGED_IN = loader("./query-is-user-logged-in.graphql");
@@ -36,8 +37,17 @@ ReactDOM.render(
   <ApolloProvider client={client}>
     <Query<IsUserLoggedInQuery> query={IS_LOGGED_IN}>
       {({ data }) => {
+        const onLogout = () => {
+          client.writeData({ data: { isLoggedIn: false } });
+          localStorage.clear();
+        };
         if (data && data.isLoggedIn) {
-          return <div>is logged in</div>;
+          return (
+            <Fragment>
+              <p>is logged in</p>
+              <LogoutButton onLogout={onLogout} />
+            </Fragment>
+          );
         } else {
           return <Login />;
         }
