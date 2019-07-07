@@ -1,5 +1,6 @@
-schema: "ttt-server/src/**/*.graphql"
-documents: "ttt-client/src/**/*.graphql"
+overwrite: true
+schema: "ttt-*/src/**/schema.graphql"
+documents: "ttt-*/src/**/{query,mutation,subscription}*.graphql"
 generates:
   ttt-client/src/generated/models.ts:
     - typescript
