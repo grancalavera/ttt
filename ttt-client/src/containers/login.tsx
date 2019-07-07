@@ -10,29 +10,27 @@ export const Login = () => {
   return (
     <ApolloConsumer>
       {client => (
-        <React.Fragment>
-          <Mutation<LoginUserMutation, LoginUserMutationVariables>
-            mutation={LOGIN_USER}
-            onCompleted={({ login }) => {
-              if (login) {
-                localStorage.setItem("token", login);
-                client.writeData({ data: { isLoggedIn: true } });
-              }
-            }}
-          >
-            {(login, { loading, error }) => {
-              if (loading) return <div>Loading...</div>;
-              if (error) return <div>Error!</div>;
-              return (
-                <LoginForm
-                  onLogin={variables => {
-                    login({ variables });
-                  }}
-                />
-              );
-            }}
-          </Mutation>
-        </React.Fragment>
+        <Mutation<LoginUserMutation, LoginUserMutationVariables>
+          mutation={LOGIN_USER}
+          onCompleted={({ login }) => {
+            if (login) {
+              localStorage.setItem("token", login);
+              client.writeData({ data: { isLoggedIn: true } });
+            }
+          }}
+        >
+          {(login, { loading, error }) => {
+            if (loading) return <div>Loading...</div>;
+            if (error) return <div>Error!</div>;
+            return (
+              <LoginForm
+                onLogin={variables => {
+                  login({ variables });
+                }}
+              />
+            );
+          }}
+        </Mutation>
       )}
     </ApolloConsumer>
   );
