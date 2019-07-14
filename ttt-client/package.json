@@ -12,10 +12,14 @@
     "apollo-link-http": "^1.5.15",
     "graphql": "^14.4.2",
     "graphql.macro": "^1.4.2",
+    "polished": "^3.4.1",
     "react": "^16.8.6",
     "react-apollo": "^2.5.8",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
+    "ress": "^1.2.2",
+    "styled-components": "^4.3.2",
+    "styled-system": "^5.0.12",
     "typescript": "3.5.2"
   },
   "scripts": {
@@ -40,6 +44,8 @@
     ]
   },
   "devDependencies": {
-    "@types/graphql": "^14.2.2"
+    "@types/graphql": "^14.2.2",
+    "@types/styled-components": "^4.1.18",
+    "@types/styled-system": "^5.0.0"
   }
 }

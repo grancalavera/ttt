@@ -10,6 +10,8 @@ import { resolvers } from "./resolvers";
 import { IsUserLoggedInQuery } from "./generated/models";
 import { Login } from "./containers/login";
 import { LogoutButton } from "./components/logout-button";
+import { Button } from "./components/button";
+import { GlobalStyle } from "./global";
 
 const typeDefs = loader("./schema.graphql");
 const IS_LOGGED_IN = loader("./query-is-user-logged-in.graphql");
@@ -35,6 +37,7 @@ cache.writeData({ data: { isLoggedIn: !!localStorage.getItem("token") } });
 
 ReactDOM.render(
   <ApolloProvider client={client}>
+    <GlobalStyle />
     <Query<IsUserLoggedInQuery> query={IS_LOGGED_IN}>
       {({ data }) => {
         const onLogout = () => {
@@ -45,7 +48,9 @@ ReactDOM.render(
           return (
             <Fragment>
               <p>is logged in</p>
-              <LogoutButton onLogout={onLogout} />
+              <Button onClick={onLogout} primary={true}>
+                Logout
+              </Button>
             </Fragment>
           );
         } else {

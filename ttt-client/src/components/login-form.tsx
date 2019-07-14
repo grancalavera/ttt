@@ -1,4 +1,10 @@
 import React, { useState } from "react";
+import "styled-components/macro";
+
+import * as isEmail from "isemail";
+import { Button, Input } from "./button";
+import styled from "styled-components/macro";
+import { color, ColorProps } from "styled-system";
 
 interface LoginFormProps {
   onLogin: (args: { alias: string; email: string }) => void;
@@ -16,20 +22,30 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
     setAlias(e.target.value);
   };
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    onLogin({ email, alias });
-  };
+  const disabled = !isEmail.validate(email) || !alias;
 
   return (
-    <form onSubmit={onSubmit}>
-      <p>
-        <label>alias</label> <input type="text" onChange={onAliasChange}></input>
-      </p>
-      <p>
-        <label>email</label> <input type="text" onChange={onEmailChange}></input>
-      </p>
-      <button type="submit">Log In</button>
+    <form>
+      <Box color="green" bg="pink">
+        <p>
+          <label>alias</label> <Input type="text" onChange={onAliasChange}></Input>
+        </p>
+        <p>
+          <label>email</label> <Input type="text" onChange={onEmailChange}></Input>
+        </p>
+
+        <Button
+          primary={true}
+          onClick={() => onLogin({ email, alias })}
+          disabled={disabled}
+        >
+          Log In
+        </Button>
+      </Box>
     </form>
   );
 };
+
+const Box = styled.div<ColorProps>`
+  ${color}
+`;
