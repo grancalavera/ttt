@@ -1,8 +1,15 @@
 {
-  "schemaPath": "../ttt-client/src/schema.graphql",
-  "extensions": {
-    "endpoints": {
-      "/": "http://localhost:4000"
+  "projects": {
+    "ttt": {
+      "schemaPath": "../ttt-client/src/schema.graphql",
+      "extensions": {
+        "endpoints": {
+          "default": {
+            "url": "http://localhost:4000/",
+            "headers": { "Authorization": "c29tZUB1c2VyLmNvbV9fQEBAX19zb21lIHVzZXI=" }
+          }
+        }
+      }
     }
   }
 }
