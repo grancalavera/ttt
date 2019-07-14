@@ -1,0 +1,8 @@
+{
+  "schemaPath": "../ttt-client/src/schema.graphql",
+  "extensions": {
+    "endpoints": {
+      "/": "http://localhost:4000"
+    }
+  }
+}

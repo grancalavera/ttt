@@ -2,7 +2,9 @@ import { QueryResolvers, Resolvers, MutationResolvers } from "./generated/models
 import { ResolverContext } from "./environment";
 
 const Query: QueryResolvers<ResolverContext> = {
-  me: (_, __, { dataSources }) => dataSources.userAPI.findOrCreateUser()
+  me: (_, __, { dataSources }) => {
+    return dataSources.userAPI.findOrCreateUser();
+  }
 };
 
 const Mutation: MutationResolvers<ResolverContext> = {
