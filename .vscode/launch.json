@@ -3,7 +3,9 @@
   // Hover to view descriptions of existing attributes.
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
-  "configurations": [{
+  "configurations": [
+
+    {
       "type": "chrome",
       "request": "launch",
       "name": "client",
@@ -19,6 +21,16 @@
       "preLaunchTask": "build-server",
       "outFiles": [
         "${workspaceFolder}/ttt-server/dist/**/*.js"
+      ]
+    } {
+      "type": "node",
+      "request": "launch",
+      "name": "api",
+      "program": "${workspaceFolder}/ttt-api/src/index.ts",
+      "cwd": "${workspaceFolder}/ttt-api",
+      "preLaunchTask": "build-api",
+      "outFiles": [
+        "${workspaceFolder}/ttt-api/dist/**/*.js"
       ]
     }
   ]

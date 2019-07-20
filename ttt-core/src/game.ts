@@ -1,18 +1,28 @@
 // prettier-ignore
-export type Pos = 0 | 1 | 2
-                | 3 | 4 | 5
-                | 6 | 7 | 8;
+export type Position = 0 | 1 | 2
+                     | 3 | 4 | 5
+                     | 6 | 7 | 8;
 
 // prettier-ignore
-export type Board = [ Pos, Pos, Pos
-                    , Pos, Pos, Pos
-                    , Pos, Pos, Pos
+export type Board = [ Position, Position, Position
+                    , Position, Position, Position
+                    , Position, Position, Position
                     ];
 
 export type Player = "x" | "o";
-export type Move = [Player, Pos];
-export type Match = Move[];
-export type Win = [Pos, Pos, Pos];
+export type Move = [Player, Position];
+export type Moves = Move[];
+export type Win = [Position, Position, Position];
+
+export const isPlayer = (x: string): x is Player => ["x", "o"].includes(x);
+export const isPos = (x: number): x is Position =>
+  [0, 1, 2, 3, 4, 5, 6, 7, 8].includes(x);
+
+export type Game = {
+  result: GameResult;
+  moves: Moves;
+  nextPlayer: Player;
+};
 
 export type GameResult = Tie | Open | Winner;
 export type Tie = { kind: "tie" };
@@ -44,7 +54,16 @@ export const board: Board = [ 0, 1, 2
                             , 6, 7, 8
                             ];
 
-export const findWin = (player: Player, game: Match): Win | undefined => {
+export const isPosTaken = (pos: Position, moves: Moves): boolean =>
+  moves.some(([_, p]) => pos === p);
+
+export const createGame = (): Game => ({
+  result: resolveGame([]),
+  moves: [],
+  nextPlayer: nextPlayer([])
+});
+
+export const findWin = (player: Player, game: Moves): Win | undefined => {
   const playerMoves = game
     .filter(([candidate]) => player === candidate)
     .map(([_, pos]) => pos);
@@ -54,23 +73,23 @@ export const findWin = (player: Player, game: Match): Win | undefined => {
   );
 };
 
-export const resolveGame = (game: Match): GameResult => {
-  const xWinningMove = findWin("x", game);
-  const oWinningMove = findWin("o", game);
+export const resolveGame = (moves: Moves): GameResult => {
+  const xWinningMove = findWin("x", moves);
+  const oWinningMove = findWin("o", moves);
 
   if (xWinningMove) {
     return winnerGame("x", xWinningMove);
   } else if (oWinningMove) {
     return winnerGame("o", oWinningMove);
-  } else if (game.length === board.length) {
+  } else if (moves.length === board.length) {
     return tieGame;
   } else {
     return openGame;
   }
 };
 
-export const nextPlayer = (game: Match): Player => {
-  const [lastMove] = game;
+export const nextPlayer = (moves: Moves): Player => {
+  const [lastMove] = moves;
   if (lastMove) {
     return lastMove[0] === "x" ? "o" : "x";
   } else {

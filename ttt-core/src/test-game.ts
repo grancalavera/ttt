@@ -6,12 +6,12 @@ import {
   openGame,
   tieGame,
   nextPlayer,
-  Match
+  Moves
 } from "./game";
 import { gameFromString } from "./test-common";
 
-const lastIsX: Match = [["x", 0]];
-const lastIsO: Match = [["o", 0]];
+const lastIsX: Moves = [["x", 0]];
+const lastIsO: Moves = [["o", 0]];
 
 const gameForX = gameFromString(`
 x o.

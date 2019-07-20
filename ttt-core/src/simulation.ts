@@ -1,6 +1,15 @@
-import { Match, Pos, board, randInt, nextPlayer, resolveGame, Board, Move } from "./game";
+import {
+  Moves,
+  Position,
+  board,
+  randInt,
+  nextPlayer,
+  resolveGame,
+  Board,
+  Move
+} from "./game";
 
-const chooseRandomPos = (game: Match): Pos => {
+const chooseRandomPos = (game: Moves): Position => {
   const played = game.map(([_, p]) => p);
   const moves = board.filter(p => !played.includes(p));
   const min = 0;
@@ -9,14 +18,14 @@ const chooseRandomPos = (game: Match): Pos => {
   return moves[move];
 };
 
-const turn = (game: Match): Match => {
+const turn = (game: Moves): Moves => {
   const player = nextPlayer(game);
   const pos = chooseRandomPos(game);
   const move: Move = [player, pos];
   return [move, ...game];
 };
 
-export const play = (game: Match): void => {
+export const play = (game: Moves): void => {
   console.log(renderGame(board)(game));
 
   const result = resolveGame(game);
@@ -37,7 +46,7 @@ export const play = (game: Match): void => {
   }
 };
 
-const gameToBoardView = (board: Board, game: Match): string[] =>
+const gameToBoardView = (board: Board, game: Moves): string[] =>
   board.map(i => {
     const maybeMove = game.find(([_, x]) => x === i);
     if (maybeMove) {
@@ -47,7 +56,7 @@ const gameToBoardView = (board: Board, game: Match): string[] =>
     }
   });
 
-export const renderGame = (board: Board) => (game: Match): string => {
+export const renderGame = (board: Board) => (game: Moves): string => {
   const b = gameToBoardView(board, game);
   return `
 ┌─────────────────┐

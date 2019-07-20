@@ -10,6 +10,7 @@ export class GameModel extends Model {
   public readonly nextPlayer!: string;
   public readonly status!: string;
   public readonly winner!: string;
+
   public readonly moves!: MoveModel[];
 
   public readonly createdAt!: Date;
@@ -21,6 +22,8 @@ export class MoveModel extends Model {
   public readonly player!: string;
   public readonly position!: number;
 
+  public readonly gameId!: string;
+
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -28,11 +31,11 @@ export class MoveModel extends Model {
 GameModel.init(
   {
     id: { type: INTEGER, autoIncrement: true, primaryKey: true },
-    nextPlayer: { type: STRING, allowNull: false },
+    nextPlayer: { type: STRING },
     status: { type: STRING, allowNull: false },
     winner: { type: STRING }
   },
-  { sequelize: store, tableName: "games", underscored: true }
+  { sequelize: store, tableName: "games" }
 );
 
 MoveModel.init(
@@ -44,6 +47,5 @@ MoveModel.init(
   { sequelize: store, tableName: "moves" }
 );
 
-GameModel.hasMany(MoveModel, { as: "moves" });
-MoveModel.belongsTo(GameModel);
-// { as: 'Tasks', through: 'worker_tasks', foreignKey: 'userId' }
+GameModel.hasMany(MoveModel, { as: "moves", foreignKey: "gameId", sourceKey: "id" });
+MoveModel.belongsTo(GameModel, { foreignKey: "gameId", targetKey: "id" });

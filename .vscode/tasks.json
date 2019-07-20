@@ -9,5 +9,12 @@
     "problemMatcher": [
       "$tsc"
     ]
+  }, {
+    "label": "build-api",
+    "type": "shell",
+    "command": "cd ./ttt-api && yarn build",
+    "problemMatcher": [
+      "$tsc"
+    ]
   }]
 }
