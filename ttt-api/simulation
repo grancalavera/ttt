@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+API=http://localhost:5000/ttt
+
+LAST_MOVE="$(curl -s -H 'Content-Type:application/json' -X POST "${API}")"
+GAME_ID=$(echo "${LAST_MOVE}" | jq '.gameId')
+echo ${LAST_MOVE}
+
+function move {
+  local POSITION=${1}
+  NEXT_PLAYER=$(echo "${LAST_MOVE}" | jq '.nextPlayer')
+  LAST_MOVE=$(curl -s -H 'Content-Type:application/json' -X POST "${API}/${GAME_ID}/moves" --data "{\"player\": ${NEXT_PLAYER}, \"position\": ${POSITION}}")
+  echo "${LAST_MOVE}"
+}
+
+for p in $(shuf -e 0 1 2 3 4 5 6 7 8); do
+  move "${p}"
+done
