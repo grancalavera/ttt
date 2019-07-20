@@ -34,7 +34,27 @@ app.post("/ttt/", (req, res) => {
 });
 
 app.get("/ttt/:gameId", (req, res) => {
-  res.json({ id: req.params.gameId });
+  const gameId = req.params.gameId;
+  GameModel.findOne({
+    where: { id: gameId },
+    include: [{ model: MoveModel, as: "moves" }]
+  })
+    .then(game => {
+      if (game) {
+        res.send({ gameId: game.id, moves: game.moves });
+      } else {
+        res.status(404);
+        res.send({ message: `game ${gameId} does not exist` });
+      }
+    })
+    .catch(e => {
+      console.log(e);
+      console.log(e.stack);
+      res.status(500);
+      res.json({
+        message: e.message
+      });
+    });
 });
 
 app.get("/ttt/:gameId/moves", (req, res) => {
