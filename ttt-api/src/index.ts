@@ -3,6 +3,7 @@ import console = require("console");
 
 import { store, GameModel, MoveModel } from "./store";
 import { Match } from "@grancalavera/ttt-core";
+import * as ttt from "@grancalavera/ttt-core";
 
 const app = express();
 const port = 5000;
@@ -25,12 +26,16 @@ app.get("/ttt/", (req, res) => {
 });
 
 app.post("/ttt/", (req, res) => {
-  GameModel.create().then(game => {
+  const nextPlayer = ttt.nextPlayer([]);
+  const status = ttt.resolveGame([]).kind;
+  GameModel.create({ nextPlayer, status }).then(({ id }) =>
     res.json({
-      gameId: game.id,
+      gameId: id,
+      nextPlayer,
+      status,
       moves: []
-    });
-  });
+    })
+  );
 });
 
 app.get("/ttt/:gameId", (req, res) => {

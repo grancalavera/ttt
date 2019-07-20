@@ -7,22 +7,30 @@ export const store = new Sequelize({
 
 export class GameModel extends Model {
   public readonly id!: number;
+  public readonly nextPlayer!: string;
+  public readonly status!: string;
+  public readonly winner!: string;
+  public readonly moves!: MoveModel[];
+
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-  public readonly moves!: MoveModel[];
 }
 
 export class MoveModel extends Model {
   public readonly id!: number;
   public readonly player!: string;
   public readonly position!: number;
+
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
 
 GameModel.init(
   {
-    id: { type: INTEGER, autoIncrement: true, primaryKey: true }
+    id: { type: INTEGER, autoIncrement: true, primaryKey: true },
+    nextPlayer: { type: STRING, allowNull: false },
+    status: { type: STRING, allowNull: false },
+    winner: { type: STRING }
   },
   { sequelize: store, tableName: "games", underscored: true }
 );
