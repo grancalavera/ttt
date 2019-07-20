@@ -14,10 +14,10 @@ export type Move = [Player, Pos];
 export type Match = Move[];
 export type Win = [Pos, Pos, Pos];
 
-type GameResult = Tie | Open | Winner;
-type Tie = { kind: "tie" };
-type Winner = { kind: "winner"; winner: Player; move: Win };
-type Open = { kind: "open" };
+export type GameResult = Tie | Open | Winner;
+export type Tie = { kind: "tie" };
+export type Winner = { kind: "winner"; winner: Player; move: Win };
+export type Open = { kind: "open" };
 
 export const tieGame: GameResult = { kind: "tie" };
 export const openGame: GameResult = { kind: "open" };

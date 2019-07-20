@@ -1,12 +1,12 @@
 import { Sequelize, Model, INTEGER, STRING } from "sequelize";
 
 // http://docs.sequelizejs.com/manual/getting-started#note--setting-up-sqlite
-const sequelize = new Sequelize({
+export const store = new Sequelize({
   dialect: "sqlite",
   storage: "./store.sqlite"
 });
 
-class UserModel extends Model {
+export class UserModel extends Model {
   public id!: number;
   public alias!: string;
   public email!: string;
@@ -21,7 +21,5 @@ UserModel.init(
     alias: { type: STRING, allowNull: false },
     email: { type: STRING, allowNull: false }
   },
-  { sequelize, tableName: "users" }
+  { sequelize: store, tableName: "users" }
 );
-
-export { UserModel, sequelize as store };
