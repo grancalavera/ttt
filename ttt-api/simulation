@@ -7,7 +7,7 @@ echo ${LAST_MOVE}
 
 function move {
   local POSITION=${1}
-  NEXT_PLAYER=$(echo "${LAST_MOVE}" | jq '.nextPlayer')
+  local NEXT_PLAYER=$(echo "${LAST_MOVE}" | jq '.nextPlayer')
   LAST_MOVE=$(curl -s -H 'Content-Type:application/json' -X POST "${API}/${GAME_ID}/moves" --data "{\"player\": ${NEXT_PLAYER}, \"position\": ${POSITION}}")
   echo "${LAST_MOVE}"
 }
