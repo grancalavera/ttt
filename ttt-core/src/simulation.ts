@@ -9,26 +9,30 @@ import {
   Move
 } from "./game";
 
-const chooseRandomPos = (game: Moves): Position => {
-  const played = game.map(([_, p]) => p);
-  const moves = board.filter(p => !played.includes(p));
-  const min = 0;
-  const max = moves.length - 1;
-  const move = randInt(min, max);
-  return moves[move];
-};
-
-const turn = (game: Moves): Moves => {
-  const player = nextPlayer(game);
-  const pos = chooseRandomPos(game);
+const turn = (positions: Position[], moves: Moves): [Position[], Moves] => {
+  const [pos, ...restPos] = positions;
+  const player = nextPlayer(moves);
   const move: Move = [player, pos];
-  return [move, ...game];
+  return [restPos, [move, ...moves]];
 };
 
-export const play = (game: Moves): void => {
-  console.log(renderGame(board)(game));
+const shuffledPositions = () => {
+  const shuffle = (positions: number[]): Position[] => {
+    if (positions.length === 0) {
+      return [];
+    } else {
+      const i = randInt(0, positions.length - 1);
+      const x = positions[i] as Position;
+      const rest = [...positions.slice(0, i), ...positions.slice(i + 1)];
+      return [x, ...shuffle(rest)];
+    }
+  };
+  return shuffle([...Array(9)].map((_, i) => i));
+};
 
-  const result = resolveGame(game);
+export const play = (positions: Position[] = shuffledPositions(), moves: Moves = []) => {
+  console.log(renderGame(board)(moves));
+  const result = resolveGame(moves);
   const gameOver = (message: string) => console.log(`Game over: ${message}`);
 
   switch (result.kind) {
@@ -39,7 +43,8 @@ export const play = (game: Moves): void => {
       gameOver("tie");
       break;
     case "open":
-      setTimeout(() => play(turn(game)), 50);
+      const [ps, ms] = turn(positions, moves);
+      setTimeout(() => play(ps, ms), 50);
       break;
     default:
       assertNever(result);
