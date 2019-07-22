@@ -1,6 +1,7 @@
 schema {
   query: Query
   mutation: Mutation
+  subscription: Subscription
 }
 
 type Query {
@@ -9,9 +10,76 @@ type Query {
 
 type Mutation {
   login(email: String!): String
+  createGame(oPlayerId: ID!, xPlayerId: ID!): Game!
+  playMove(gameId: ID!, avatar: Avatar!, position: Position!): Game!
+}
+
+type Subscription {
+  moves(gameId: ID!): Move!
+  game(gameId: ID!): Game!
 }
 
 type User {
   id: ID!
   email: String!
+}
+
+interface GameDescriptor {
+  id: ID!
+  xPlayer: Player!
+  oPlayer: Player!
+  moves: [Move!]
+}
+
+union Game = GameOpen | GameOver | GameTie
+
+type GameOpen implements GameDescriptor {
+  id: ID!
+  xPlayer: Player!
+  oPlayer: Player!
+  moves: [Move!]
+  nextPlayer: Player!
+}
+
+type GameOver implements GameDescriptor {
+  id: ID!
+  xPlayer: Player!
+  oPlayer: Player!
+  moves: [Move!]
+  winner: Player
+}
+
+type GameTie implements GameDescriptor {
+  id: ID!
+  xPlayer: Player!
+  oPlayer: Player!
+  moves: [Move!]
+}
+
+type Player {
+  user: User!
+  avatar: Avatar!
+  games: [Game!]
+}
+
+type Move {
+  position: Position!
+  avatar: Avatar!
+}
+
+enum Avatar {
+  X
+  O
+}
+
+enum Position {
+  P0
+  P1
+  P2
+  P3
+  P4
+  P5
+  P6
+  P7
+  P8
 }
