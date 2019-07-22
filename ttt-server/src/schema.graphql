@@ -8,11 +8,10 @@ type Query {
 }
 
 type Mutation {
-  login(alias: String!, email: String!): String
+  login(email: String!): String
 }
 
 type User {
   id: ID!
   email: String!
-  alias: String!
 }

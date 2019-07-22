@@ -8,11 +8,9 @@ const Query: QueryResolvers<ResolverContext> = {
 };
 
 const Mutation: MutationResolvers<ResolverContext> = {
-  login: async (_, newUser, { dataSources, SPLITTER }) => {
+  login: async (_, newUser, { dataSources }) => {
     const user = await dataSources.userAPI.findOrCreateUser(newUser);
-    return user
-      ? new Buffer(user.email + SPLITTER + user.alias).toString("base64")
-      : null;
+    return user ? new Buffer(user.email).toString("base64") : null;
   }
 };
 

@@ -43,11 +43,10 @@ export class UserAPI extends DataSource<Context> {
 }
 
 const inStore_findOrCreateUser = async (user: MutationLoginArgs): Promise<User> => {
-  const { alias, email } = user;
-  const [userModel] = await UserModel.findOrCreate({ where: { alias, email } });
+  const { email } = user;
+  const [userModel] = await UserModel.findOrCreate({ where: { email } });
   return {
     id: userModel.id.toString(),
-    alias: userModel.alias,
     email: userModel.email
   };
 };

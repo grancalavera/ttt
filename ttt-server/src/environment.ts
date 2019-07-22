@@ -4,11 +4,7 @@ import { UserModel } from "./store";
 import { Request } from "express";
 import * as isEmail from "isemail";
 
-const SPLITTER = "__@@@__";
-
-interface DefaultContext {
-  SPLITTER: typeof SPLITTER;
-}
+interface DefaultContext {}
 
 interface LoggedOutContext extends DefaultContext {
   kind: "LoggedOut";
@@ -27,7 +23,7 @@ export const dataSources = () => ({
   userAPI: new UserAPI()
 });
 
-const defaultContext: LoggedOutContext = { SPLITTER, kind: "LoggedOut" };
+const defaultContext: LoggedOutContext = { kind: "LoggedOut" };
 
 const logIn = (user: User): LoggedInContext => ({
   ...defaultContext,
@@ -43,16 +39,12 @@ export const context = async ({ req }: { req: Request }): Promise<Context> => {
 
   //
   // again, if the email is valid, don't even try, return the default context
-  // I know the structure of the string is `${email}${SPLITTER}${alias}`
-  // but is a nasty thing to do. one day I might change change this so
-  // that it isn't nasty and is typesafe 😜
   const decoded = new Buffer(auth, "base64").toString("ascii");
-  const [email, alias] = decoded.split(SPLITTER);
-  if (!isEmail.validate(email)) return defaultContext;
+  if (!isEmail.validate(decoded)) return defaultContext;
 
   //
   // now go to the store and try to find the user
-  const maybeUser = await UserModel.findOne({ where: { email, alias } });
+  const maybeUser = await UserModel.findOne({ where: { email: decoded } });
 
   if (!maybeUser) {
     //
@@ -62,6 +54,6 @@ export const context = async ({ req }: { req: Request }): Promise<Context> => {
     //
     // otherwise add the user to the default context and login
     const { id, alias, email } = maybeUser;
-    return logIn({ id: id.toString(), alias, email });
+    return logIn({ id: id.toString(), email });
   }
 };
