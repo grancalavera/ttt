@@ -8,7 +8,6 @@ export const store = new Sequelize({
 
 export class UserModel extends Model {
   public id!: number;
-  public alias!: string;
   public email!: string;
 
   public readonly createdAt!: Date;
@@ -18,7 +17,6 @@ export class UserModel extends Model {
 UserModel.init(
   {
     id: { type: INTEGER, autoIncrement: true, primaryKey: true },
-    alias: { type: STRING, allowNull: false },
     email: { type: STRING, allowNull: false }
   },
   { sequelize: store, tableName: "users" }

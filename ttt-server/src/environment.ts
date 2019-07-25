@@ -53,7 +53,7 @@ export const context = async ({ req }: { req: Request }): Promise<Context> => {
   } else {
     //
     // otherwise add the user to the default context and login
-    const { id, alias, email } = maybeUser;
+    const { id, email } = maybeUser;
     return logIn({ id: id.toString(), email });
   }
 };
