@@ -37,7 +37,7 @@ type GameOpen implements GameDescriptor {
   id: ID!
   xPlayer: Player!
   oPlayer: Player!
-  moves: [Move!]
+  moves: [Move!]!
   nextPlayer: Player!
 }
 
