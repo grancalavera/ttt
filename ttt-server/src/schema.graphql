@@ -10,13 +10,13 @@ type Query {
 
 type Mutation {
   login(email: String!): String
-  createGame(oPlayerId: ID!, xPlayerId: ID!): Game!
   playMove(gameId: ID!, avatar: Avatar!, position: Position!): Game!
 }
 
 type Subscription {
   moves(gameId: ID!): Move!
   game(gameId: ID!): Game!
+  joinGame(userId: ID!): Game!
 }
 
 type User {
