@@ -24,16 +24,13 @@ type User {
   email: String!
 }
 
-interface GameDescriptor {
+union Game = GameLobby | GameOpen | GameOver | GameTie
+
+type GameLobby {
   id: ID!
-  xPlayer: Player!
-  oPlayer: Player!
-  moves: [Move!]
 }
 
-union Game = GameOpen | GameOver | GameTie
-
-type GameOpen implements GameDescriptor {
+type GameOpen {
   id: ID!
   xPlayer: Player!
   oPlayer: Player!
@@ -41,7 +38,7 @@ type GameOpen implements GameDescriptor {
   nextPlayer: Player!
 }
 
-type GameOver implements GameDescriptor {
+type GameOver {
   id: ID!
   xPlayer: Player!
   oPlayer: Player!
@@ -49,7 +46,7 @@ type GameOver implements GameDescriptor {
   winner: Player
 }
 
-type GameTie implements GameDescriptor {
+type GameTie {
   id: ID!
   xPlayer: Player!
   oPlayer: Player!
