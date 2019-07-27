@@ -1,7 +1,6 @@
 import { Sequelize, Model, INTEGER, STRING, ENUM } from "sequelize";
-import { Game, Move, Avatar } from "./generated/models";
-import { forEachField } from "graphql-tools";
-import { number } from "prop-types";
+import { Game } from "./generated/models";
+import { assertNever } from "./common";
 
 // might be worth exploring how to generate the constants
 // for an union type's __typename
@@ -9,10 +8,6 @@ type GameStatus = Exclude<Game["__typename"], undefined>;
 
 // form the generated `Game` type (above) we have all the
 // required information to generate this code
-
-function assertNever(value: never): never {
-  throw new Error(`unexpected value ${value}`);
-}
 
 const __typename_GameLobby: GameStatus = "GameLobby";
 const __typename_GamePlaying: GameStatus = "GamePlaying";

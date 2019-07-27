@@ -11,12 +11,13 @@ type Query {
 type Mutation {
   login(email: String!): String
   playMove(gameId: ID!, avatar: Avatar!, position: Position!): Game!
+  joinGame: JoinGame
 }
 
 type Subscription {
   moves(gameId: ID!): Move!
   game(gameId: ID!): Game!
-  joinGame(userId: ID!): Game!
+  # joinGame(userId: ID!): Game!
 }
 
 type User {
@@ -26,8 +27,14 @@ type User {
 
 union Game = GameLobby | GamePlaying | GameOverWin | GameOverTie
 
+type JoinGame {
+  gameId: ID
+  game: Game
+}
+
 type GameLobby {
   id: ID!
+  waiting: Player!
 }
 
 type GamePlaying {
