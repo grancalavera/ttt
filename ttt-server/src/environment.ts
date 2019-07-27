@@ -2,7 +2,7 @@ import { User } from "./generated/models";
 import { UserAPI } from "./data-sources/user";
 import { UserModel } from "./store";
 import { Request } from "express";
-import * as isEmail from "isemail";
+import isEmail from "isemail";
 import { AuthenticationError } from "apollo-server";
 import { assertNever } from "./common";
 
@@ -22,18 +22,12 @@ interface LoggedIn {
   user: User;
 }
 
-const logIn = (user: User): LoggedIn => ({
-  kind: LOGGED_IN,
-  user
-});
-
-const logOut: LoggedOut = { kind: LOGGED_OUT };
-
 export const dataSources = () => ({
   userAPI: new UserAPI()
 });
 
 type SecureCallback = <T>(callback: (user: User) => T) => T;
+
 const makeSecureResolver = <T>(userStatus: UserStatus) => (
   callback: (user: User) => T
 ): T => {
@@ -47,31 +41,27 @@ const makeSecureResolver = <T>(userStatus: UserStatus) => (
   }
 };
 
-const resolveUserStatus = async (req: Request): Promise<UserStatus> => {
-  //
-  // if auth is empty, don't even try, return the default context
-  const auth = req.headers.authorization || "";
-  if (!auth) return logOut;
+const logout = { kind: LOGGED_OUT } as const;
 
-  //
-  // again, if the email is valid, don't even try, return the default context
-  const decoded = new Buffer(auth, "base64").toString("ascii");
-  if (!isEmail.validate(decoded)) return logOut;
-
-  //
-  // now go to the store and try to find the user
-  const maybeUser = await UserModel.findOne({ where: { email: decoded } });
-
-  if (!maybeUser) {
-    //
-    // again, if is not found, just return the default context
-    return logOut;
-  } else {
-    //
-    // otherwise add the user to the default context and login
-    const { id, email } = maybeUser;
-    return logIn({ id: id.toString(), email });
+const login = ({ id, email }: UserModel): LoggedIn => ({
+  kind: LOGGED_IN,
+  user: {
+    id: id.toString(),
+    email
   }
+});
+
+const resolveUserStatus = async (req: Request): Promise<UserStatus> => {
+  // if auth is empty => logout
+  const auth = req.headers.authorization || "";
+  if (!auth) return logout;
+
+  // if email is invalid => logout
+  const decoded = new Buffer(auth, "base64").toString("ascii");
+  if (!isEmail.validate(decoded)) return logout;
+
+  const maybeUser = await UserModel.findOne({ where: { email: decoded } });
+  return maybeUser ? login(maybeUser) : logout;
 };
 
 export const context = async ({ req }: { req: Request }) => {
