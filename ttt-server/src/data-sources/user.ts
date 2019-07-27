@@ -5,7 +5,7 @@ import { Context, LOGGED_IN, LOGGED_OUT } from "../environment";
 import { User } from "../generated/models";
 import { UserModel } from "../store";
 
-export class UserAPI extends DataSource<Context> {
+export class UserDataSource extends DataSource<Context> {
   private context!: Context;
 
   initialize(config: DataSourceConfig<Context>) {

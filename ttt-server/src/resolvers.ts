@@ -7,8 +7,21 @@ import {
   Resolvers,
   User
 } from "./generated/models";
+import { GameModel } from "./store";
 
 const joinNewGame = async (user: User): Promise<Game> => {
+  // 1. find if there's already a game that we can join
+  // yes -> return joinExistingGame()
+  return Promise.resolve<Game>({
+    id: "test-lobby",
+    state: {
+      __typename: "GameLobby",
+      waiting: { user, avatar: chooseAvatar() }
+    }
+  });
+};
+
+const joinExistingGame = async (user: User, GameModel: GameModel) => {
   return Promise.resolve<Game>({
     id: "test-lobby",
     state: {
@@ -25,8 +38,8 @@ const Query: QueryResolvers = {
 };
 
 const Mutation: MutationResolvers = {
-  login: async (_, { email }, { dataSources }) => {
-    const user = await dataSources.userAPI.findOrCreateUser(email);
+  login: async (_, { email }, { dataSources: { userDataSource } }) => {
+    const user = await userDataSource.findOrCreateUser(email);
     return user ? new Buffer(user.email).toString("base64") : null;
   },
   joinGame: async (_, __, { resolveWithSecurity }) =>

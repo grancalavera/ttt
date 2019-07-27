@@ -9,28 +9,23 @@ type GameModelState = Exclude<GameState["__typename"], undefined>;
 // form the generated `Game` type (above) we have all the
 // required information to generate this code
 
-const __typename_GameLobby: GameModelState = "GameLobby";
-const __typename_GamePlaying: GameModelState = "GamePlaying";
-const __typename_GameOverWin: GameModelState = "GameOverWin";
-const __typename_GameOverTie: GameModelState = "GameOverTie";
+export const GameModelLobby: GameModelState = "GameLobby";
+export const GameModelPlaying: GameModelState = "GamePlaying";
+export const GameModelOverWin: GameModelState = "GameOverWin";
+export const GameModelOverTie: GameModelState = "GameOverTie";
 
-const gameStatus = [
-  __typename_GameLobby,
-  __typename_GamePlaying,
-  __typename_GameOverWin,
-  __typename_GameOverTie
-];
+const gameStatus = [GameModelLobby, GameModelPlaying, GameModelOverWin, GameModelOverTie];
 
 // ensure we didn't forget any state
 gameStatus.forEach(status => {
   switch (status) {
-    case __typename_GameLobby:
+    case GameModelLobby:
       break;
-    case __typename_GamePlaying:
+    case GameModelPlaying:
       break;
-    case __typename_GameOverWin:
+    case GameModelOverWin:
       break;
-    case __typename_GameOverTie:
+    case GameModelOverTie:
       break;
     default:
       assertNever(status);

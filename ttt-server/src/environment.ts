@@ -3,7 +3,7 @@ import { Request } from "express";
 import isEmail from "isemail";
 
 import { assertNever } from "./common";
-import { UserAPI } from "./data-sources/user";
+import { UserDataSource } from "./data-sources/user";
 import { User } from "./generated/models";
 import { UserModel } from "./store";
 
@@ -24,7 +24,7 @@ interface LoggedIn {
 }
 
 export const dataSources = () => ({
-  userAPI: new UserAPI()
+  userDataSource: new UserDataSource()
 });
 
 type SecureCallback = <T>(callback: (user: User) => T) => T;
@@ -68,7 +68,8 @@ const resolveUserStatus = async (req: Request): Promise<UserStatus> => {
 export const context = async ({ req }: { req: Request }) => {
   const userStatus = await resolveUserStatus(req);
   const resolveWithSecurity: SecureCallback = makeSecureResolver(userStatus);
-  return { userStatus, resolveWithSecurity };
+  const gameAPIBaseURL = "http://localhost:9000";
+  return { userStatus, resolveWithSecurity, gameAPIBaseURL };
 };
 
 export type Context = PromiseType<ReturnType<typeof context>> & {
