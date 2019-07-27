@@ -26,8 +26,8 @@ const Query: QueryResolvers = {
 };
 
 const Mutation: MutationResolvers = {
-  login: async (_, newUser, { dataSources }) => {
-    const user = await dataSources.userAPI.findOrCreateUser(newUser);
+  login: async (_, { email }, { dataSources }) => {
+    const user = await dataSources.userAPI.findOrCreateUser(email);
     return user ? new Buffer(user.email).toString("base64") : null;
   },
   joinGame: async (_, __, { resolveWithSecurity }) =>

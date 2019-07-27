@@ -1,10 +1,11 @@
-import { User } from "./generated/models";
-import { UserAPI } from "./data-sources/user";
-import { UserModel } from "./store";
+import { AuthenticationError } from "apollo-server";
 import { Request } from "express";
 import isEmail from "isemail";
-import { AuthenticationError } from "apollo-server";
+
 import { assertNever } from "./common";
+import { UserAPI } from "./data-sources/user";
+import { User } from "./generated/models";
+import { UserModel } from "./store";
 
 export const LOGGED_OUT = "LOGGED_OUT";
 export const LOGGED_IN = "LOGGED_IN";
