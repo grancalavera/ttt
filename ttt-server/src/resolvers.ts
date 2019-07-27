@@ -2,22 +2,18 @@ import {
   QueryResolvers,
   Resolvers,
   MutationResolvers,
-  GameLobby,
-  JoinGame,
-  User
+  User,
+  Game
 } from "./generated/models";
 import { chooseAvatar } from "./common";
 
-const joinNewGame = async (user: User): Promise<JoinGame> => {
-  const id = "test-lobby";
-  const game: GameLobby = {
-    id,
-    __typename: "GameLobby",
-    waiting: { user, avatar: chooseAvatar() }
-  };
-  return Promise.resolve<JoinGame>({
-    gameId: id,
-    game
+const joinNewGame = async (user: User): Promise<Game> => {
+  return Promise.resolve<Game>({
+    id: "test-lobby",
+    state: {
+      __typename: "GameLobby",
+      waiting: { user, avatar: chooseAvatar() }
+    }
   });
 };
 
