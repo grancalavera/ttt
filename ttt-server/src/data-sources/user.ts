@@ -2,6 +2,7 @@ import { DataSource, DataSourceConfig } from "apollo-datasource";
 
 import { assertNever } from "../common";
 import { Context, LOGGED_IN, LOGGED_OUT } from "../environment";
+import { User } from "../generated/models";
 import { UserModel } from "../store";
 
 export class UserAPI extends DataSource<Context> {
@@ -11,7 +12,7 @@ export class UserAPI extends DataSource<Context> {
     this.context = config.context;
   }
 
-  async findOrCreateUser(email: string) {
+  async findOrCreateUser(email: string): Promise<User> {
     const { userStatus } = this.context;
     switch (userStatus.kind) {
       case LOGGED_IN:
