@@ -24,21 +24,21 @@ type User {
   email: String!
 }
 
-union Game = GameLobby | GameOpen | GameOver | GameTie
+union Game = GameLobby | GamePlaying | GameOverWin | GameOverTie
 
 type GameLobby {
   id: ID!
 }
 
-type GameOpen {
+type GamePlaying {
   id: ID!
   xPlayer: Player!
   oPlayer: Player!
   moves: [Move!]!
-  nextPlayer: Player!
+  currentPlayer: Player!
 }
 
-type GameOver {
+type GameOverWin {
   id: ID!
   xPlayer: Player!
   oPlayer: Player!
@@ -46,7 +46,7 @@ type GameOver {
   winner: Player
 }
 
-type GameTie {
+type GameOverTie {
   id: ID!
   xPlayer: Player!
   oPlayer: Player!
