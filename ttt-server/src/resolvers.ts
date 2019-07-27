@@ -1,19 +1,18 @@
 import { QueryResolvers, Resolvers, MutationResolvers } from "./generated/models";
-import { ResolverContext } from "./environment";
 
-const Query: QueryResolvers<ResolverContext> = {
+const Query: QueryResolvers = {
   me: (_, __, { dataSources }) => {
     return dataSources.userAPI.findOrCreateUser();
   }
 };
 
-const Mutation: MutationResolvers<ResolverContext> = {
+const Mutation: MutationResolvers = {
   login: async (_, newUser, { dataSources }) => {
     const user = await dataSources.userAPI.findOrCreateUser(newUser);
     return user ? new Buffer(user.email).toString("base64") : null;
   }
 };
 
-const resolvers: Resolvers<ResolverContext> = { Query, Mutation };
+const resolvers: Resolvers = { Query, Mutation };
 
 export { resolvers };
