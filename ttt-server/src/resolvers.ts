@@ -4,10 +4,27 @@ import {
   MutationResolvers,
   GameLobby,
   JoinGame,
-  Avatar
+  Avatar,
+  Game,
+  User
 } from "./generated/models";
 import { AuthenticationError } from "apollo-server";
-import { assertNever } from "./common";
+import { assertNever, chooseAvatar } from "./common";
+
+const joinNewGame = async (user: User): Promise<JoinGame> => {
+  const id = "test-lobby";
+  const game: GameLobby = {
+    id,
+    __typename: "GameLobby",
+    waiting: { user, avatar: chooseAvatar() }
+  };
+  return Promise.resolve<JoinGame>({
+    gameId: id,
+    game
+  });
+};
+
+const joinGame = joinNewGame;
 
 const Query: QueryResolvers = {
   me: (_, __, { dataSources }) => {
@@ -25,16 +42,7 @@ const Mutation: MutationResolvers = {
       case "LoggedOut":
         throw new AuthenticationError("Unauthorized");
       case "LoggedIn":
-        const id = "test-lobby";
-        const game: GameLobby = {
-          id,
-          __typename: "GameLobby",
-          waiting: { user: { email: "mrpopo@email.com", id: "0" }, avatar: Avatar.X }
-        };
-        return Promise.resolve<JoinGame>({
-          gameId: id,
-          game
-        });
+        return joinGame(context.user);
       default:
         return assertNever(context);
     }
