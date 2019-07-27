@@ -1,11 +1,12 @@
+import { chooseAvatar } from "./common";
+import { LOGGED_IN } from "./environment";
 import {
+  Game,
+  MutationResolvers,
   QueryResolvers,
   Resolvers,
-  MutationResolvers,
-  User,
-  Game
+  User
 } from "./generated/models";
-import { chooseAvatar } from "./common";
 
 const joinNewGame = async (user: User): Promise<Game> => {
   return Promise.resolve<Game>({
@@ -20,9 +21,7 @@ const joinNewGame = async (user: User): Promise<Game> => {
 const joinGame = joinNewGame;
 
 const Query: QueryResolvers = {
-  me: (_, __, { dataSources }) => {
-    return dataSources.userAPI.findOrCreateUser();
-  }
+  me: (_, __, { userStatus }) => (userStatus.kind === LOGGED_IN ? userStatus.user : null)
 };
 
 const Mutation: MutationResolvers = {
