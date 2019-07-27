@@ -1,5 +1,5 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
-import { Context } from "../environment";
+import { Context, LOGGED_IN, LOGGED_OUT } from "../environment";
 import { UserModel } from "../store";
 import { User, MutationLoginArgs } from "../generated/models";
 
@@ -17,12 +17,12 @@ export class UserAPI extends DataSource<Context> {
     // are added to the context as well. When the context parameter
     // hasn't been provider, we get a context, but *not* the context
     // in the type signature.
-    if (this.context.kind) {
-      switch (this.context.kind) {
-        case "LoggedIn":
+    if (this.context.userStatus) {
+      switch (this.context.userStatus.kind) {
+        case LOGGED_IN:
           // we end up here when the request has an `authorization` header
-          return inStore_findOrCreateUser(this.context.user);
-        case "LoggedOut":
+          return inStore_findOrCreateUser(this.context.userStatus.user);
+        case LOGGED_OUT:
           // we end up here either when:
           // 1. there is no authorization header and someone
           //    is querying `me` (for instance), or
@@ -30,7 +30,7 @@ export class UserAPI extends DataSource<Context> {
           //    is mutating `login` (for instance)
           return maybeLoginArgs ? inStore_findOrCreateUser(maybeLoginArgs) : null;
         default:
-          return assertNever(this.context);
+          return assertNever(this.context.userStatus);
       }
     } else {
       // this is just and odd case, might happen as above, when the
