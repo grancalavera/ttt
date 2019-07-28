@@ -28,6 +28,11 @@ export class MoveModel extends Model {
   public readonly updatedAt!: Date;
 }
 
+export const toUnsafeMove = ({ player, position }: MoveModel): [string, number] => [
+  player,
+  position
+];
+
 GameModel.init(
   {
     id: { type: INTEGER, autoIncrement: true, primaryKey: true },
