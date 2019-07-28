@@ -1,15 +1,17 @@
 import {
-  Moves,
   Position,
   board,
   randInt,
   nextPlayer,
   resolveGame,
   Board,
-  Move
+  Move,
+  GAME_OVER_WIN,
+  GAME_OVER_TIE,
+  GAME_PLAYING
 } from "./game";
 
-const turn = (positions: Position[], moves: Moves): [Position[], Moves] => {
+const turn = (positions: Position[], moves: Move[]): [Position[], Move[]] => {
   const [pos, ...restPos] = positions;
   const player = nextPlayer(moves);
   const move: Move = [player, pos];
@@ -30,19 +32,19 @@ const shuffledPositions = () => {
   return shuffle([...Array(9)].map((_, i) => i));
 };
 
-export const play = (positions: Position[] = shuffledPositions(), moves: Moves = []) => {
+export const play = (positions: Position[] = shuffledPositions(), moves: Move[] = []) => {
   console.log(renderGame(board)(moves));
   const result = resolveGame(moves);
   const gameOver = (message: string) => console.log(`Game over: ${message}`);
 
   switch (result.kind) {
-    case "winner":
+    case GAME_OVER_WIN:
       gameOver(`the ${result.winner}'s won the game`);
       break;
-    case "tie":
+    case GAME_OVER_TIE:
       gameOver("tie");
       break;
-    case "open":
+    case GAME_PLAYING:
       const [ps, ms] = turn(positions, moves);
       setTimeout(() => play(ps, ms), 50);
       break;
@@ -51,9 +53,9 @@ export const play = (positions: Position[] = shuffledPositions(), moves: Moves =
   }
 };
 
-const gameToBoardView = (board: Board, game: Moves): string[] =>
+const gameToBoardView = (board: Board, moves: Move[]): string[] =>
   board.map(i => {
-    const maybeMove = game.find(([_, x]) => x === i);
+    const maybeMove = moves.find(([_, x]) => x === i);
     if (maybeMove) {
       return maybeMove[0];
     } else {
@@ -61,8 +63,8 @@ const gameToBoardView = (board: Board, game: Moves): string[] =>
     }
   });
 
-export const renderGame = (board: Board) => (game: Moves): string => {
-  const b = gameToBoardView(board, game);
+export const renderGame = (board: Board) => (moves: Move[]): string => {
+  const b = gameToBoardView(board, moves);
   return `
 ┌─────────────────┐
 │                 │

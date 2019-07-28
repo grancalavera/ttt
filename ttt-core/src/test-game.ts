@@ -2,16 +2,18 @@ import assert from "assert";
 import {
   findWin,
   resolveGame,
-  winnerGame,
-  openGame,
-  tieGame,
   nextPlayer,
-  Moves
+  Move,
+  isPos,
+  isPlayer,
+  GAME_PLAYING,
+  GAME_OVER_TIE,
+  GAME_OVER_WIN
 } from "./game";
 import { gameFromString } from "./test-common";
 
-const lastIsX: Moves = [["x", 0]];
-const lastIsO: Moves = [["o", 0]];
+const lastIsX: Move[] = [["x", 0]];
+const lastIsO: Move[] = [["o", 0]];
 
 const gameForX = gameFromString(`
 x o.
@@ -34,6 +36,9 @@ oxo.
 `);
 
 export const test = () => {
+  assert([0, 1, 2, 3, 4, 5, 6, 7, 8].every(isPos), "all known positions are positions");
+  assert(["o", "x"].every(isPlayer), "all known players are players");
+
   assert.equal(nextPlayer(lastIsX), "o", "next player should be o");
   assert.equal(nextPlayer(lastIsO), "x", "next player should be x");
 
@@ -42,16 +47,32 @@ export const test = () => {
   assert.deepEqual(findWin("x", gameForX), [0, 3, 6], "x should win the game");
   assert.deepEqual(findWin("o", gameForO), [0, 3, 6], "o should win the game");
 
-  assert.deepEqual(resolveGame(gameIsOpen), openGame, "the game should be still open");
-  assert.deepEqual(resolveGame(gameIsTie), tieGame, "the game should be a tie");
   assert.deepEqual(
-    resolveGame(gameForX),
-    winnerGame("x", [0, 3, 6]),
-    "x should win the game"
+    resolveGame(gameIsOpen).kind,
+    GAME_PLAYING,
+    "the game should be still open"
   );
   assert.deepEqual(
-    resolveGame(gameForO),
-    winnerGame("o", [0, 3, 6]),
-    "o should win the game"
+    resolveGame(gameIsTie).kind,
+    GAME_OVER_TIE,
+    "the game should be a tie"
   );
+
+  const winMove = [0, 3, 6];
+
+  const xWins = resolveGame(gameForX);
+  if (xWins.kind === GAME_OVER_WIN) {
+    assert.equal(xWins.winner, "x", "x should win the game");
+    assert.deepEqual(xWins.winningMove, winMove, `${winMove} should be the winning move`);
+  } else {
+    assert(false, "should be a GameOverWin");
+  }
+
+  const oWins = resolveGame(gameForO);
+  if (oWins.kind === GAME_OVER_WIN) {
+    assert.equal(oWins.winner, "o", "o should win the game");
+    assert.deepEqual(oWins.winningMove, winMove, `${winMove} should be the winning move`);
+  } else {
+    assert(false, "should be a GameOverWin");
+  }
 };

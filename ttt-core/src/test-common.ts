@@ -1,8 +1,8 @@
 import assert from "assert";
-import { Moves } from "./game";
+import { Move } from "./game";
 
-export const gameFromString = (s: String): Moves => {
-  return <Moves>s
+export const gameFromString = (s: String): Move[] => {
+  return <Move[]>s
     .trim()
     .replace(/\n|\./g, "")
     .split("")
