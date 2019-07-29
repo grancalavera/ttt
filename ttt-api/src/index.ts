@@ -34,6 +34,11 @@ export interface GameResponse {
   game: Game;
 }
 
+export interface MovesResponse {
+  id: string;
+  moves: Move[];
+}
+
 const commitMove = (gameId: number, game: GamePlaying, move: Move) => {
   const [player, position] = move;
   return store.transaction(transaction =>
@@ -166,7 +171,11 @@ app.get("/ttt/:gameId/moves", (req, res) => {
     }
   })
     .then(moves => {
-      res.json({ gameId, moves: moves.map(toUnsafeMove).map(coerceToMove) });
+      const movesResponse: MovesResponse = {
+        id: gameId,
+        moves: moves.map(toUnsafeMove).map(coerceToMove)
+      };
+      res.json(movesResponse);
     })
     .catch(catchAndFail(500, res));
 });
