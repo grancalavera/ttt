@@ -63,7 +63,7 @@ const winningMoves: Win[] = [
   [2, 4, 6]
 ];
 
-const coerce = <T, U extends T>(
+export const coerce = <T, U extends T>(
   isCoercible: (value: T) => value is U,
   discard: (discarded: T) => string = discarded => `type coercion for ${discarded} failed`
 ) => (candidate: T): U => {
