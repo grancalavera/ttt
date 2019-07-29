@@ -2,7 +2,8 @@
 
 API=http://localhost:5000/ttt
 
-LAST_MOVE="$(curl -s -H 'Content-Type:application/json' -X POST "${API}")"
+DATA="{\"id\": \"$(uuidgen)\"}"
+LAST_MOVE="$(curl -H 'Content-Type:application/json' -X POST "${API}" --data "${DATA}")"
 GAME_ID=$(echo "${LAST_MOVE}" | jq -r '.id')
 echo ${LAST_MOVE}
 
