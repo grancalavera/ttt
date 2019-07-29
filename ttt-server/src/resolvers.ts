@@ -9,7 +9,7 @@ import {
 } from "./generated/models";
 import { GameModel } from "./store";
 
-const joinNewGame = async (user: User): Promise<Game> => {
+const joinGame = async (user: User): Promise<Game> => {
   // 1. find if there's already a game that we can join
   // yes -> return joinExistingGame()
   return Promise.resolve<Game>({
@@ -20,18 +20,6 @@ const joinNewGame = async (user: User): Promise<Game> => {
     }
   });
 };
-
-const joinExistingGame = async (user: User, GameModel: GameModel) => {
-  return Promise.resolve<Game>({
-    id: "test-lobby",
-    state: {
-      __typename: "GameLobby",
-      waiting: { user, avatar: chooseAvatar() }
-    }
-  });
-};
-
-const joinGame = joinNewGame;
 
 const Query: QueryResolvers = {
   me: (_, __, { userStatus }) => (userStatus.kind === LOGGED_IN ? userStatus.user : null)
