@@ -35,7 +35,7 @@ export const toUnsafeMove = ({ player, position }: MoveModel): [string, number] 
 
 GameModel.init(
   {
-    id: { type: INTEGER, autoIncrement: true, primaryKey: true },
+    id: { type: STRING, primaryKey: true },
     nextPlayer: { type: STRING },
     status: { type: STRING, allowNull: false },
     winner: { type: STRING }

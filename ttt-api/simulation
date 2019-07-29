@@ -1,18 +1,33 @@
 #!/usr/bin/env bash
 
-API=http://localhost:5000/ttt
+function generate_id {
+  cat <<EOF
+{
+  "id":"${1}"
+}
+EOF
+}
 
-DATA="{\"id\": \"$(uuidgen)\"}"
-LAST_MOVE="$(curl -H 'Content-Type:application/json' -X POST "${API}" --data "${DATA}")"
-GAME_ID=$(echo "${LAST_MOVE}" | jq -r '.id')
-echo ${LAST_MOVE}
+function generate_move {
+  cat <<EOF
+{
+  "player": "${1}",
+  "position": "${2}"
+}
+EOF
+}
+
+ID=$(uuidgen)
+GAME=http://localhost:5000/ttt
+MOVES="${GAME}/${ID}/moves"
+LAST_MOVE=$(curl -s -H "Content-Type:application/json" --data "$(generate_id ${ID})" "${GAME}")
+echo "${LAST_MOVE}"
 
 function move {
   local POSITION=${1}
-  local NEXT_PLAYER=$(echo "${LAST_MOVE}" | jq -r '.game.currentPlayer')
-  local LOCATION="${API}/${GAME_ID}/moves"
-  local DATA="{\"player\": \"${NEXT_PLAYER}\", \"position\": ${POSITION}}"
-  LAST_MOVE=$(curl -s -H 'Content-Type:application/json' ${LOCATION} --data "${DATA}")
+  local PLAYER=$(echo "${LAST_MOVE}" | jq -r '.game.currentPlayer')
+  local MOVE=$(generate_move ${PLAYER} ${POSITION})
+  LAST_MOVE=$(curl -s -H "Content-Type:application/json" --data "${MOVE}" "${MOVES}")
   echo "${LAST_MOVE}"
 }
 

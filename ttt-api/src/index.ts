@@ -15,7 +15,8 @@ import {
   isPosTaken,
   Move,
   nextPlayer,
-  resolveGame
+  resolveGame,
+  coerce
 } from "@grancalavera/ttt-core";
 
 import { GameModel, MoveModel, store, toUnsafeMove } from "./store";
@@ -29,6 +30,11 @@ app.use(express.json());
 
 const port = 5000;
 
+const coerceToUUID = coerce(
+  (x: any): x is string => typeof x === "string",
+  discarded => `type coercion for UUID failed: ${discarded} is not a string`
+);
+
 export interface GameResponse {
   id: string;
   game: Game;
@@ -39,7 +45,7 @@ export interface MovesResponse {
   moves: Move[];
 }
 
-const commitMove = (gameId: number, game: GamePlaying, move: Move) => {
+const commitMove = (gameId: string, game: GamePlaying, move: Move) => {
   const [player, position] = move;
   return store.transaction(transaction =>
     MoveModel.create({ player, position, gameId }, { transaction })
@@ -125,7 +131,7 @@ const invalidMove = badRequest(
   "invalid move: either the Player or the Position are invalid"
 );
 
-const findGameById = (id: number, transaction?: Transaction): Promise<GameModel | null> =>
+const findGameById = (id: string, transaction?: Transaction): Promise<GameModel | null> =>
   GameModel.findOne({
     where: { id },
     include: [{ model: MoveModel, as: "moves" }],
@@ -140,39 +146,47 @@ app.get("/ttt/", (_req, res) => {
     .catch(catchAndFail(500, res));
 });
 
-app.post("/ttt/", (_req, res) => {
+app.post("/ttt/", (req, res) => {
+  let id: string;
+  try {
+    id = coerceToUUID(req.body.id);
+  } catch (e) {
+    catchAndFail(400, res)(e);
+    return;
+  }
+
   const { kind: status, moves, currentPlayer: nextPlayer } = createGame();
   GameModel.create(
-    { nextPlayer, status, moves },
+    { id, nextPlayer, status, moves },
     { include: [{ model: MoveModel, as: "moves" }] }
   ).then(g => {
     return res.json(gameResponseFromModel(g));
   });
 });
 
-app.get("/ttt/:gameId", (req, res) => {
-  const gameId = req.params.gameId;
-  findGameById(gameId)
+app.get("/ttt/:id", (req, res) => {
+  const id = req.params.id;
+  findGameById(id)
     .then(game => {
       if (game) {
         res.send(gameResponseFromModel(game));
       } else {
-        gameNotFound(res, { gameId });
+        gameNotFound(res, { gameId: id });
       }
     })
     .catch(catchAndFail(500, res));
 });
 
-app.get("/ttt/:gameId/moves", (req, res) => {
-  const gameId = req.params.gameId;
+app.get("/ttt/:id/moves", (req, res) => {
+  const id = req.params.id;
   MoveModel.findAll({
     where: {
-      gameId
+      gameId: id
     }
   })
     .then(moves => {
       const movesResponse: MovesResponse = {
-        id: gameId,
+        id: id,
         moves: moves.map(toUnsafeMove).map(coerceToMove)
       };
       res.json(movesResponse);
@@ -180,14 +194,14 @@ app.get("/ttt/:gameId/moves", (req, res) => {
     .catch(catchAndFail(500, res));
 });
 
-app.post("/ttt/:gameId/moves", async (req, res) => {
-  const gameId: number = parseInt(req.params.gameId, 10);
+app.post("/ttt/:id/moves", async (req, res) => {
+  const id = coerceToUUID(req.params.id);
   const maybePlayer: string = req.body.player;
   const maybePosition: number = parseInt(req.body.position, 10);
-  const gameModel = await findGameById(gameId);
+  const gameModel = await findGameById(id);
 
   if (!gameModel) {
-    gameNotFound(res, { gameId });
+    gameNotFound(res, { gameId: id });
     return;
   }
 
@@ -197,7 +211,7 @@ app.post("/ttt/:gameId/moves", async (req, res) => {
   switch (game.kind) {
     case GAME_OVER_TIE:
     case GAME_OVER_WIN:
-      gameOver(res, { gameId });
+      gameOver(res, { gameId: id });
       return;
     case GAME_PLAYING:
       let move: Move;
@@ -212,17 +226,17 @@ app.post("/ttt/:gameId/moves", async (req, res) => {
       const [player, position] = move;
 
       if (game.currentPlayer !== player) {
-        wrongTurn(res, { gameId, player });
+        wrongTurn(res, { gameId: id, player });
         return;
       }
 
       if (isPosTaken(position, game.moves)) {
-        wrongMove(res, { gameId, position });
+        wrongMove(res, { gameId: id, position });
         return;
       }
 
       try {
-        const newGameResponse = await commitMove(gameId, game, move);
+        const newGameResponse = await commitMove(id, game, move);
         res.json(newGameResponse);
         return;
       } catch (e) {
