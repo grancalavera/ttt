@@ -1,6 +1,7 @@
-import { Sequelize, Model, INTEGER, STRING, ENUM } from "sequelize";
+import { Sequelize, Model, INTEGER, STRING, ENUM, NUMBER } from "sequelize";
 import { GameState } from "./generated/models";
 import { assertNever } from "./common";
+import { number } from "prop-types";
 
 // might be worth exploring how to generate the constants
 // for an union type's __typename
@@ -47,16 +48,11 @@ export class UserModel extends Model {
 }
 
 export class GameModel extends Model {
-  public readonly id!: number;
+  public readonly id!: string;
   public readonly status!: GameModelState;
-
-  // a reference to the game in the API
-  public readonly apiGameId?: number;
-
-  // an optional player who might be waiting in the lobby for this game
-  public readonly userInLobby?: UserModel;
-  public readonly oPlayer?: UserModel;
-  public readonly xPlayer?: UserModel;
+  public readonly waitingInLobby?: number;
+  public readonly oPlayer?: number;
+  public readonly xPlayer?: number;
 }
 
 UserModel.init(
@@ -69,16 +65,14 @@ UserModel.init(
 
 GameModel.init(
   {
-    id: { type: INTEGER, autoIncrement: true, primaryKey: true },
+    id: { type: STRING, primaryKey: true },
     status: { type: ENUM(...gameStatus), allowNull: false },
-    apiGameId: { type: INTEGER, allowNull: false }
+    waitingInLobby: { type: NUMBER },
+    oPlayer: { type: NUMBER },
+    xPlayer: { type: NUMBER }
   },
   {
     sequelize: store,
     tableName: "Games"
   }
 );
-
-GameModel.hasOne(UserModel, { foreignKey: "userInLobby" });
-GameModel.hasOne(UserModel, { foreignKey: "oPlayer" });
-GameModel.hasOne(UserModel, { foreignKey: "xPlayer" });

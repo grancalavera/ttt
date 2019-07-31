@@ -6,6 +6,8 @@ import { assertNever } from "./common";
 import { UserDataSource } from "./data-sources/user";
 import { User } from "./generated/models";
 import { UserModel } from "./store";
+import { GameDescriptionDataSource } from "./data-sources/game-description-data-source";
+import { GameAPIDataSource } from "./data-sources/game-api-data-source";
 
 export const LOGGED_OUT = "LOGGED_OUT";
 export const LOGGED_IN = "LOGGED_IN";
@@ -24,7 +26,9 @@ interface LoggedIn {
 }
 
 export const dataSources = () => ({
-  userDataSource: new UserDataSource()
+  userDataSource: new UserDataSource(),
+  gameDescriptionDataSource: new GameDescriptionDataSource(),
+  gameAPIDataSource: new GameAPIDataSource("http://localhost:5000")
 });
 
 type SecureCallback = <T>(callback: (user: User) => T) => T;
@@ -71,7 +75,7 @@ export const context = async ({ req }: { req: Request }) => {
   const gameAPIBaseURL = "http://localhost:9000";
   return { userStatus, resolveWithSecurity, gameAPIBaseURL };
 };
-
+export type TTTDataSources = ReturnType<typeof dataSources>;
 export type Context = PromiseType<ReturnType<typeof context>> & {
-  dataSources: ReturnType<typeof dataSources>;
+  dataSources: TTTDataSources;
 };

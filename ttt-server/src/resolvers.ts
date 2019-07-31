@@ -1,22 +1,31 @@
 import { chooseAvatar } from "./common";
-import { LOGGED_IN } from "./environment";
+import { LOGGED_IN, TTTDataSources } from "./environment";
 import {
   Game,
   MutationResolvers,
   QueryResolvers,
   Resolvers,
-  User
+  User,
+  GameLobby,
+  Player
 } from "./generated/models";
 import { GameModel } from "./store";
+import uuid from "uuid/v4";
 
-const joinGame = async (user: User): Promise<Game> => {
+const joinGame = async (user: User, dataSources: TTTDataSources): Promise<Game> => {
   // 1. find if there's already a game that we can join
   // yes -> return joinExistingGame()
+  const id = uuid();
+  const avatar = chooseAvatar();
+
+  await dataSources.gameAPIDataSource.postGame(id);
+  await dataSources.gameDescriptionDataSource.create(id, user, avatar);
+
   return Promise.resolve<Game>({
-    id: "test-lobby",
+    id,
     state: {
       __typename: "GameLobby",
-      waiting: { user, avatar: chooseAvatar() }
+      waiting: { user, avatar }
     }
   });
 };
@@ -30,8 +39,8 @@ const Mutation: MutationResolvers = {
     const user = await userDataSource.findOrCreateUser(email);
     return user ? new Buffer(user.email).toString("base64") : null;
   },
-  joinGame: async (_, __, { resolveWithSecurity }) =>
-    resolveWithSecurity(user => joinGame(user))
+  joinGame: async (_, __, { resolveWithSecurity, dataSources }) =>
+    resolveWithSecurity(user => joinGame(user, dataSources))
 };
 
 const resolvers: Resolvers = { Query, Mutation };

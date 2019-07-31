@@ -19,8 +19,8 @@ export class GameAPIDataSource extends RESTDataSource {
     return this.get<MovesResponse[]>(`ttt/${id}/moves`);
   }
 
-  public postGame() {
-    return this.post<GameResponse>("ttt");
+  public postGame(id: string) {
+    return this.post<GameResponse>("ttt", { id });
   }
 
   public postMove(id: string, move: Move) {

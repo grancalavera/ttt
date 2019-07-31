@@ -8,8 +8,8 @@ import { UserModel } from "../store";
 export class UserDataSource extends DataSource<Context> {
   private context!: Context;
 
-  initialize(config: DataSourceConfig<Context>) {
-    this.context = config.context;
+  initialize({ context }: DataSourceConfig<Context>) {
+    this.context = context;
   }
 
   async findOrCreateUser(email: string): Promise<User> {
