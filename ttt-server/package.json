@@ -7,7 +7,8 @@
     "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "start:clean": "rm store.sqlite && yarn start",
     "postbuild": "cp src/schema.graphql dist/",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "jest"
   },
   "dependencies": {
     "apollo-cache-inmemory": "^1.6.2",
@@ -24,12 +25,15 @@
   "devDependencies": {
     "@types/bluebird": "^3.5.27",
     "@types/graphql": "^14.2.2",
+    "@types/jest": "^24.0.16",
     "@types/node": "^12.0.12",
     "@types/sequelize": "^4.28.3",
     "@types/sqlite3": "^3.1.5",
     "@types/uuid": "^3.4.5",
     "@types/validator": "^10.11.1",
+    "jest": "^24.8.0",
     "nodemon": "^1.19.1",
+    "ts-jest": "^24.0.2",
     "ts-node": "^8.3.0"
   }
 }

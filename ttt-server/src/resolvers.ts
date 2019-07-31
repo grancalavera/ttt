@@ -1,3 +1,5 @@
+import uuid from "uuid/v4";
+
 import { chooseAvatar } from "./common";
 import { LOGGED_IN, TTTDataSources } from "./environment";
 import {
@@ -5,12 +7,8 @@ import {
   MutationResolvers,
   QueryResolvers,
   Resolvers,
-  User,
-  GameLobby,
-  Player
+  User
 } from "./generated/models";
-import { GameModel } from "./store";
-import uuid from "uuid/v4";
 
 const joinGame = async (user: User, dataSources: TTTDataSources): Promise<Game> => {
   // 1. find if there's already a game that we can join

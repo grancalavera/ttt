@@ -33,12 +33,6 @@ gameStatus.forEach(status => {
   }
 });
 
-// http://docs.sequelizejs.com/manual/getting-started#note--setting-up-sqlite
-export const store = new Sequelize({
-  dialect: "sqlite",
-  storage: "./store.sqlite"
-});
-
 export class UserModel extends Model {
   public readonly id!: number;
   public readonly email!: string;
@@ -55,24 +49,34 @@ export class GameModel extends Model {
   public readonly xPlayer?: number;
 }
 
-UserModel.init(
-  {
-    id: { type: INTEGER, autoIncrement: true, primaryKey: true },
-    email: { type: STRING, allowNull: false }
-  },
-  { sequelize: store, tableName: "users" }
-);
+export const create = ({ storage }: { storage: string }) => {
+  // http://docs.sequelizejs.com/manual/getting-started#note--setting-up-sqlite
+  const store = new Sequelize({
+    dialect: "sqlite",
+    storage
+  });
 
-GameModel.init(
-  {
-    id: { type: STRING, primaryKey: true },
-    status: { type: ENUM(...gameStatus), allowNull: false },
-    waitingInLobby: { type: NUMBER },
-    oPlayer: { type: NUMBER },
-    xPlayer: { type: NUMBER }
-  },
-  {
-    sequelize: store,
-    tableName: "Games"
-  }
-);
+  UserModel.init(
+    {
+      id: { type: INTEGER, autoIncrement: true, primaryKey: true },
+      email: { type: STRING, allowNull: false }
+    },
+    { sequelize: store, tableName: "users" }
+  );
+
+  GameModel.init(
+    {
+      id: { type: STRING, primaryKey: true },
+      status: { type: ENUM(...gameStatus), allowNull: false },
+      waitingInLobby: { type: NUMBER },
+      oPlayer: { type: NUMBER },
+      xPlayer: { type: NUMBER }
+    },
+    {
+      sequelize: store,
+      tableName: "Games"
+    }
+  );
+
+  return store;
+};

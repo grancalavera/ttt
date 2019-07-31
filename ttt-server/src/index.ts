@@ -1,7 +1,7 @@
 import { ApolloServer } from "apollo-server";
 import { dataSources, context } from "./environment";
 import { resolvers } from "./resolvers";
-import { store } from "./store";
+import * as store from "./store";
 import { importSchema } from "graphql-import";
 import { join } from "path";
 
@@ -15,6 +15,7 @@ const server = new ApolloServer({
 });
 
 store
+  .create({ storage: "./store.sqlite" })
   .sync()
   .then(() => server.listen())
   .then(({ url }) => {
