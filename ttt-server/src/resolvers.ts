@@ -20,7 +20,7 @@ export const joinGame = async (
   const avatar = chooseAvatar();
 
   await dataSources.gameAPIDataSource.postGame(id);
-  await dataSources.gameDescriptionDataSource.create(id, user, avatar);
+  // await dataSources.gameDescriptionDataSource.create(id, user, avatar);
 
   return Promise.resolve<Game>({
     id,

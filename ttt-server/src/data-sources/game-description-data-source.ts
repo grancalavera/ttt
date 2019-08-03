@@ -1,11 +1,10 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
-import uuid from "uuid/v4";
 import { nextPlayer } from "@grancalavera/ttt-core";
 
 import { Context } from "../environment";
 import { User, Avatar } from "../generated/models";
 import { GameModel } from "../store";
-import { GAME_LOBBY } from "../model";
+import { GameStateKindMap } from "../model";
 
 export class GameDescriptionDataSource extends DataSource {
   private context!: Context;
@@ -19,11 +18,11 @@ export class GameDescriptionDataSource extends DataSource {
   }
 
   findFirstInLobby() {
-    return GameModel.findOne({ where: { status: GAME_LOBBY } });
+    return GameModel.findOne({ where: { status: GameStateKindMap.GameLobby } });
   }
 
   create(id: string, user: User, avatar: Avatar) {
-    const status = GAME_LOBBY;
+    const status = GameStateKindMap.GameLobby;
     const waitingInLobby = nextPlayer([]);
     const oPlayer = avatar === Avatar.O ? "o" : null;
     const xPlayer = avatar === Avatar.X ? "x" : null;

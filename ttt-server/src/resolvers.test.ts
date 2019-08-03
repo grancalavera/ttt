@@ -5,7 +5,7 @@ import { joinGame } from "./resolvers";
 import { GameAPIDataSource } from "./data-sources/game-api-data-source";
 
 import { GameDescriptionDataSource } from "./data-sources/game-description-data-source";
-import { GAME_LOBBY } from "./model";
+import { GameStateKindMap } from "./model";
 
 jest.mock("./data-sources/game-api-data-source");
 
@@ -16,7 +16,7 @@ const mockDataSources = () =>
   } as TTTDataSources);
 
 describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
-  const storage = "./join-game.sqlite";
+  const storage = `./join-game-${Date.now()}.sqlite`;
 
   let alice: User;
   let bob: User;
@@ -48,11 +48,11 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
     });
 
     it("the game's state should be 'GameLobby'", () => {
-      expect(game.state.__typename).toBe(GAME_LOBBY);
+      expect(game.state.__typename).toBe(GameStateKindMap.GameLobby);
     });
 
     it("Alice should be the player 'waiting' at the lobby", () => {
-      if (game.state.__typename === "GameLobby") {
+      if (game.state.__typename === GameStateKindMap.GameLobby) {
         expect(game.state.waiting.user).toBe(alice);
       } else {
         throw new Error("Unexpected game state");
@@ -68,7 +68,7 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
     });
 
     it("the game's state should be 'GameLobby'", () => {
-      expect(game.state.__typename).toBe(GAME_LOBBY);
+      expect(game.state.__typename).toBe(GameStateKindMap.GameLobby);
     });
 
     it("Alice should be the player 'waiting' at the lobby", () => {

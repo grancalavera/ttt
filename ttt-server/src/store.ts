@@ -1,11 +1,5 @@
 import { Sequelize, Model, INTEGER, STRING, ENUM, NUMBER } from "sequelize";
-import {
-  GameStateKind,
-  GAME_LOBBY,
-  GAME_OVER_TIE,
-  GAME_OVER_WIN,
-  GAME_PLAYING
-} from "./model";
+import { GameStateKind, AllStateKinds } from "./model";
 
 export class UserModel extends Model {
   public readonly id!: number;
@@ -28,6 +22,7 @@ export const create = ({ storage }: { storage: string }) => {
   const store = new Sequelize({
     dialect: "sqlite",
     storage
+    // retry: { max: 100, match: ["SQLITE_BUSY: database is locked"] }
   });
 
   UserModel.init(
@@ -42,7 +37,7 @@ export const create = ({ storage }: { storage: string }) => {
     {
       id: { type: STRING, primaryKey: true },
       status: {
-        type: ENUM(...[GAME_LOBBY, GAME_PLAYING, GAME_OVER_TIE, GAME_OVER_WIN]),
+        type: ENUM(...AllStateKinds),
         allowNull: false
       },
       waitingInLobby: { type: NUMBER },
