@@ -16,8 +16,6 @@ const mockDataSources = () =>
   } as TTTDataSources);
 
 describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
-  const storage = `./join-game-${Date.now()}.sqlite`;
-
   let alice: User;
   let bob: User;
   let jane: User;
@@ -25,19 +23,13 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
   const dataSources = mockDataSources();
 
   beforeAll(async () => {
+    const storage = `./join-game-${Date.now()}.sqlite`;
     await createStore({ storage }).sync();
-
-    [alice, bob, jane] = await Promise.all([
-      UserModel.findOrCreate({
-        where: { email: "alice@email.com" }
-      }),
-      UserModel.findOrCreate({
-        where: { email: "bob@email.com" }
-      }),
-      UserModel.findOrCreate({
-        where: { email: "jane@email.com" }
-      })
-    ]).then(users => users.map(([model]) => login(model).user));
+    [alice, bob, jane] = await UserModel.bulkCreate([
+      { email: "alice@email.com" },
+      { email: "bob@email.com" },
+      { email: "jane@email.com" }
+    ]).then(users => users.map(login).map(({ user }) => user));
   });
 
   describe("Alice joins the first game ever, then:", () => {
