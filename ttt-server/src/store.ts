@@ -4,7 +4,6 @@ import { GameStateKind, AllStateKinds } from "./model";
 export class UserModel extends Model {
   public readonly id!: number;
   public readonly email!: string;
-
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -18,11 +17,9 @@ export class GameModel extends Model {
 }
 
 export const create = ({ storage }: { storage: string }) => {
-  // http://docs.sequelizejs.com/manual/getting-started#note--setting-up-sqlite
   const store = new Sequelize({
     dialect: "sqlite",
     storage
-    // retry: { max: 100, match: ["SQLITE_BUSY: database is locked"] }
   });
 
   UserModel.init(
@@ -30,7 +27,7 @@ export const create = ({ storage }: { storage: string }) => {
       id: { type: INTEGER, autoIncrement: true, primaryKey: true },
       email: { type: STRING, allowNull: false }
     },
-    { sequelize: store, tableName: "users" }
+    { sequelize: store, tableName: "Users" }
   );
 
   GameModel.init(
@@ -40,9 +37,9 @@ export const create = ({ storage }: { storage: string }) => {
         type: ENUM(...AllStateKinds),
         allowNull: false
       },
-      waitingInLobby: { type: NUMBER },
-      oPlayer: { type: NUMBER },
-      xPlayer: { type: NUMBER }
+      waitingInLobby: { type: INTEGER },
+      oPlayer: { type: INTEGER },
+      xPlayer: { type: INTEGER }
     },
     {
       sequelize: store,

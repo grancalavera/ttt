@@ -3,7 +3,7 @@ import { nextPlayer } from "@grancalavera/ttt-core";
 
 import { Context } from "../environment";
 import { User, Avatar } from "../generated/models";
-import { GameModel } from "../store";
+import { GameModel, UserModel } from "../store";
 import { GameStateKindMap } from "../model";
 
 export class GameDescriptionDataSource extends DataSource {
@@ -21,11 +21,11 @@ export class GameDescriptionDataSource extends DataSource {
     return GameModel.findOne({ where: { status: GameStateKindMap.GameLobby } });
   }
 
-  create(id: string, user: User, avatar: Avatar) {
+  async create(id: string, user: User, avatar: Avatar) {
+    const [userModel] = await UserModel.findOrCreate({
+      where: { email: user.email }
+    });
     const status = GameStateKindMap.GameLobby;
-    const waitingInLobby = nextPlayer([]);
-    const oPlayer = avatar === Avatar.O ? "o" : null;
-    const xPlayer = avatar === Avatar.X ? "x" : null;
-    return GameModel.create({ id, status, waitingInLobby, oPlayer, xPlayer });
+    return GameModel.create({ id, status, waitingInLobby: userModel.id });
   }
 }
