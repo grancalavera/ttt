@@ -4,7 +4,8 @@ import { nextPlayer } from "@grancalavera/ttt-core";
 
 import { Context } from "../environment";
 import { User, Avatar } from "../generated/models";
-import { GameModel, GameModelLobby } from "../store";
+import { GameModel } from "../store";
+import { GAME_LOBBY } from "../model";
 
 export class GameDescriptionDataSource extends DataSource {
   private context!: Context;
@@ -18,11 +19,11 @@ export class GameDescriptionDataSource extends DataSource {
   }
 
   findFirstInLobby() {
-    return GameModel.findOne({ where: { status: GameModelLobby } });
+    return GameModel.findOne({ where: { status: GAME_LOBBY } });
   }
 
   create(id: string, user: User, avatar: Avatar) {
-    const status = GameModelLobby;
+    const status = GAME_LOBBY;
     const waitingInLobby = nextPlayer([]);
     const oPlayer = avatar === Avatar.O ? "o" : null;
     const xPlayer = avatar === Avatar.X ? "x" : null;

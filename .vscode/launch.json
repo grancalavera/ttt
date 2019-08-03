@@ -4,7 +4,6 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-
     {
       "type": "chrome",
       "request": "launch",
@@ -19,19 +18,24 @@
       "program": "${workspaceFolder}/ttt-server/src/index.ts",
       "cwd": "${workspaceFolder}/ttt-server",
       "preLaunchTask": "build-server",
-      "outFiles": [
-        "${workspaceFolder}/ttt-server/dist/**/*.js"
-      ]
-    } {
+      "outFiles": ["${workspaceFolder}/ttt-server/dist/**/*.js"]
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "api",
       "program": "${workspaceFolder}/ttt-api/src/index.ts",
       "cwd": "${workspaceFolder}/ttt-api",
       "preLaunchTask": "build-api",
-      "outFiles": [
-        "${workspaceFolder}/ttt-api/dist/**/*.js"
-      ]
+      "outFiles": ["${workspaceFolder}/ttt-api/dist/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "server: jest all",
+      "program": "${workspaceFolder}/ttt-server/node_modules/.bin/jest",
+      "cwd": "${workspaceFolder}/ttt-server",
+      "args": ["--runInBand", "--config", "jest.config.js"]
     }
   ]
 }

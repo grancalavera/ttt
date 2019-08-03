@@ -1,37 +1,11 @@
 import { Sequelize, Model, INTEGER, STRING, ENUM, NUMBER } from "sequelize";
-import { GameState } from "./generated/models";
-import { assertNever } from "./common";
-import { number } from "prop-types";
-
-// might be worth exploring how to generate the constants
-// for an union type's __typename
-type GameModelState = Exclude<GameState["__typename"], undefined>;
-
-// form the generated `Game` type (above) we have all the
-// required information to generate this code
-
-export const GameModelLobby: GameModelState = "GameLobby";
-export const GameModelPlaying: GameModelState = "GamePlaying";
-export const GameModelOverWin: GameModelState = "GameOverWin";
-export const GameModelOverTie: GameModelState = "GameOverTie";
-
-const gameStatus = [GameModelLobby, GameModelPlaying, GameModelOverWin, GameModelOverTie];
-
-// ensure we didn't forget any state
-gameStatus.forEach(status => {
-  switch (status) {
-    case GameModelLobby:
-      break;
-    case GameModelPlaying:
-      break;
-    case GameModelOverWin:
-      break;
-    case GameModelOverTie:
-      break;
-    default:
-      assertNever(status);
-  }
-});
+import {
+  GameStateKind,
+  GAME_LOBBY,
+  GAME_OVER_TIE,
+  GAME_OVER_WIN,
+  GAME_PLAYING
+} from "./model";
 
 export class UserModel extends Model {
   public readonly id!: number;
@@ -43,7 +17,7 @@ export class UserModel extends Model {
 
 export class GameModel extends Model {
   public readonly id!: string;
-  public readonly status!: GameModelState;
+  public readonly status!: GameStateKind;
   public readonly waitingInLobby?: number;
   public readonly oPlayer?: number;
   public readonly xPlayer?: number;
@@ -67,7 +41,10 @@ export const create = ({ storage }: { storage: string }) => {
   GameModel.init(
     {
       id: { type: STRING, primaryKey: true },
-      status: { type: ENUM(...gameStatus), allowNull: false },
+      status: {
+        type: ENUM(...[GAME_LOBBY, GAME_PLAYING, GAME_OVER_TIE, GAME_OVER_WIN]),
+        allowNull: false
+      },
       waitingInLobby: { type: NUMBER },
       oPlayer: { type: NUMBER },
       xPlayer: { type: NUMBER }

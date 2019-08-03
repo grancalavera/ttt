@@ -48,7 +48,7 @@ const makeSecureResolver = <T>(userStatus: UserStatus) => (
 
 const logout = { kind: LOGGED_OUT } as const;
 
-const login = ({ id, email }: UserModel): LoggedIn => ({
+export const login = ({ id, email }: UserModel): LoggedIn => ({
   kind: LOGGED_IN,
   user: {
     id: id.toString(),
