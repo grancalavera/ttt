@@ -1,13 +1,6 @@
 import { RESTDataSource } from "apollo-datasource-rest";
 import { GameResponse, MovesResponse } from "@grancalavera/ttt-api";
-import { Move, Player } from "../generated/models";
-import {
-  Move as CoreMove,
-  Player as CorePlayer,
-  Position as CorePosition,
-  coerceToPlayer,
-  coerceToPosition
-} from "@grancalavera/ttt-core";
+import { Move } from "../generated/models";
 
 export interface GameAPI {
   getGames: () => Promise<GameResponse[]>;
@@ -42,16 +35,3 @@ export class GameAPIDataSource extends RESTDataSource implements GameAPI {
     return this.post<GameResponse>(`ttt/${id}/moves`, move);
   }
 }
-
-const corePlayerFromMove = (move: Move): CorePlayer => coerceToPlayer(move.avatar);
-
-const corePositionFromMove = (move: Move): CorePosition =>
-  [move.position]
-    .map(p => p.replace("P", ""))
-    .map(p => parseInt(p))
-    .map(p => coerceToPosition(p))[0];
-
-export const coreMoveFromMove = (move: Move): CoreMove => [
-  corePlayerFromMove(move),
-  corePositionFromMove(move)
-];

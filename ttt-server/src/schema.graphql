@@ -6,6 +6,7 @@ schema {
 
 type Query {
   me: User
+  games: [Game]
 }
 
 type Mutation {
