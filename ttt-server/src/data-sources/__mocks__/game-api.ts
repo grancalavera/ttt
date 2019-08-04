@@ -3,9 +3,9 @@
 import { createGame, Game as CoreGame } from "@grancalavera/ttt-core";
 import { Move } from "../../generated/models";
 import { coreMoveFromMove } from "../../common";
-import { GameAPI } from "../game-api-data-source";
+import { IGameAPI } from "../game-api";
 
-class MockGameAPIDataSource implements GameAPI {
+class MockGameAPI implements IGameAPI {
   private games: { [id: string]: CoreGame } = {};
 
   private _gameById(id: string): CoreGame | undefined {
@@ -20,7 +20,7 @@ class MockGameAPIDataSource implements GameAPI {
     return game ? Promise.resolve({ id, game }) : this._sendGameNotFound(id);
   }
 
-  getGames() {
+  getAllGames() {
     const games = Object.keys(this.games).map(id => ({ id, game: this.games[id] }));
     return Promise.resolve(games);
   }
@@ -51,6 +51,4 @@ class MockGameAPIDataSource implements GameAPI {
   }
 }
 
-export const GameAPIDataSource: jest.Mock<GameAPI, []> = jest.fn(
-  () => new MockGameAPIDataSource()
-);
+export const GameAPI: jest.Mock<IGameAPI, []> = jest.fn(() => new MockGameAPI());

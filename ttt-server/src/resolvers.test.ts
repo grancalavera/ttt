@@ -1,18 +1,17 @@
 import { create as createStore, UserModel } from "./store";
 import { login, TTTDataSources } from "./environment";
 import { User, Game } from "./generated/models";
-import { joinGame } from "./resolvers";
-import { GameAPIDataSource } from "./data-sources/game-api-data-source";
+import { joinGame } from "./resolvers/join-game-mutation";
+import { GameAPI } from "./data-sources/game-api";
 
-import { GameDescriptionDataSource } from "./data-sources/game-description-data-source";
 import { GameStateKindMap } from "./model";
+import { getAllGames } from "./resolvers/games-query";
 
-jest.mock("./data-sources/game-api-data-source");
+jest.mock("./data-sources/game-api");
 
 const mockDataSources = () =>
   ({
-    gameAPIDataSource: new GameAPIDataSource("no-required"),
-    gameDescriptionDataSource: new GameDescriptionDataSource()
+    gameAPI: new GameAPI("no-required")
   } as TTTDataSources);
 
 describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
@@ -23,8 +22,8 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
   const dataSources = mockDataSources();
 
   beforeAll(async () => {
-    const storage = `./join-game-${Date.now()}.sqlite`;
-    await createStore({ storage }).sync();
+    const storage = `./join-game.sqlite`;
+    await createStore({ storage }).sync({ force: true });
     [alice, bob, jane] = await UserModel.bulkCreate([
       { email: "alice@email.com" },
       { email: "bob@email.com" },
@@ -69,6 +68,23 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
       } else {
         throw new Error("Unexpected game state");
       }
+    });
+
+    it("There should be two games", async () => {
+      const games = await getAllGames(dataSources);
+      expect(games.length).toBe(2);
+    });
+
+    it("Alice should be waiting at the lobby of all games", async () => {
+      const games = await getAllGames(dataSources);
+      const actual = games.every(game => {
+        if (game.state.__typename === GameStateKindMap.GameLobby) {
+          return game.state.waiting.user.email === alice.email;
+        } else {
+          throw new Error("Unexpected game state");
+        }
+      });
+      expect(actual).toBeTruthy();
     });
   });
 

@@ -3,13 +3,17 @@ import { DataSource, DataSourceConfig } from "apollo-datasource";
 import { assertNever } from "../common";
 import { Context, LOGGED_IN, LOGGED_OUT } from "../environment";
 import { User } from "../generated/models";
-import { UserModel } from "../store";
+import { UserModel, GameModel } from "../store";
 
 export class UserDataSource extends DataSource<Context> {
   private context!: Context;
 
   initialize({ context }: DataSourceConfig<Context>) {
     this.context = context;
+  }
+
+  async getAllGames(): Promise<GameModel[]> {
+    return GameModel.findAll();
   }
 
   async findOrCreateUser(email: string): Promise<User> {

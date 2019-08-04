@@ -8,32 +8,34 @@
     "start:clean": "rm store.sqlite && yarn start",
     "postbuild": "cp src/schema.graphql dist/",
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "sandbox": "nodemon --watch 'src/**/*.ts' --exec 'ts-node'"
   },
   "dependencies": {
-    "apollo-cache-inmemory": "^1.6.2",
-    "apollo-datasource": "^0.5.0",
-    "apollo-datasource-rest": "^0.6.1",
-    "apollo-server": "^2.6.7",
-    "graphql": "^14.4.2",
-    "graphql-import": "^0.7.1",
-    "isemail": "^3.2.0",
-    "sequelize": "^5.9.4",
-    "sqlite3": "^4.0.9",
-    "uuid": "^3.3.2"
+    "apollo-cache-inmemory": "1.6.2",
+    "apollo-datasource": "0.6.1",
+    "apollo-datasource-rest": "0.6.1",
+    "apollo-server": "2.8.1",
+    "graphql": "14.4.2",
+    "graphql-import": "0.7.1",
+    "isemail": "3.2.0",
+    "lodash": "4.17.15",
+    "sequelize": "5.12.2",
+    "sqlite3": "4.0.9",
+    "uuid": "3.3.2"
   },
   "devDependencies": {
-    "@types/bluebird": "^3.5.27",
-    "@types/graphql": "^14.2.2",
-    "@types/jest": "^24.0.16",
-    "@types/node": "^12.0.12",
-    "@types/sequelize": "^4.28.3",
-    "@types/sqlite3": "^3.1.5",
-    "@types/uuid": "^3.4.5",
-    "@types/validator": "^10.11.1",
-    "jest": "^24.8.0",
-    "nodemon": "^1.19.1",
-    "ts-jest": "^24.0.2",
-    "ts-node": "^8.3.0"
+    "@types/bluebird": "3.5.27",
+    "@types/graphql": "14.2.3",
+    "@types/jest": "24.0.16",
+    "@types/lodash": "4.14.136",
+    "@types/node": "12.6.9",
+    "@types/sqlite3": "3.1.5",
+    "@types/uuid": "3.4.5",
+    "@types/validator": "10.11.2",
+    "jest": "24.8.0",
+    "nodemon": "1.19.1",
+    "ts-jest": "24.0.2",
+    "ts-node": "8.3.0"
   }
 }

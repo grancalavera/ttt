@@ -1,4 +1,13 @@
-import { Sequelize, Model, INTEGER, STRING, ENUM, NUMBER } from "sequelize";
+import {
+  Sequelize,
+  Model,
+  INTEGER,
+  STRING,
+  ENUM,
+  BelongsToGetAssociationMixin,
+  Association,
+  BelongsToSetAssociationMixin
+} from "sequelize";
 import { GameStateKind, AllStateKinds } from "./model";
 
 export class UserModel extends Model {
@@ -8,16 +17,49 @@ export class UserModel extends Model {
   public readonly updatedAt!: Date;
 }
 
+export class PlayerModel extends Model {
+  public id!: number;
+  public avatar!: "O" | "X";
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+
+  public getUser!: BelongsToGetAssociationMixin<UserModel>;
+  public setUser!: BelongsToSetAssociationMixin<UserModel, UserModel["id"]>;
+  public user?: UserModel;
+
+  public static associations: {
+    user: Association<PlayerModel, UserModel>;
+  };
+}
+
 export class GameModel extends Model {
-  public readonly id!: string;
-  public readonly status!: GameStateKind;
-  public readonly waitingInLobby?: number;
-  public readonly oPlayer?: number;
-  public readonly xPlayer?: number;
+  public id!: string;
+  public state!: GameStateKind;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+
+  public getPlayerInLobby!: BelongsToGetAssociationMixin<PlayerModel>;
+  public setPlayerInLobby!: BelongsToSetAssociationMixin<PlayerModel, PlayerModel["id"]>;
+  public playerInLobby?: PlayerModel;
+
+  public getPlayerO!: BelongsToGetAssociationMixin<PlayerModel>;
+  public setPlayerO!: BelongsToSetAssociationMixin<PlayerModel, PlayerModel["id"]>;
+  public playerO?: PlayerModel;
+
+  public getPlayerX!: BelongsToGetAssociationMixin<PlayerModel>;
+  public setPlayerX!: BelongsToSetAssociationMixin<PlayerModel, PlayerModel["id"]>;
+  public playerX?: PlayerModel;
+
+  public static associations: {
+    playerInLobby: Association<GameModel, PlayerModel>;
+    playerO: Association<GameModel, PlayerModel>;
+    playerX: Association<GameModel, PlayerModel>;
+  };
 }
 
 export const create = ({ storage }: { storage: string }) => {
-  const store = new Sequelize({
+  const sequelize = new Sequelize({
     dialect: "sqlite",
     storage
   });
@@ -27,25 +69,32 @@ export const create = ({ storage }: { storage: string }) => {
       id: { type: INTEGER, autoIncrement: true, primaryKey: true },
       email: { type: STRING, allowNull: false }
     },
-    { sequelize: store, tableName: "Users" }
+    { sequelize, tableName: "ttt-users" }
+  );
+
+  PlayerModel.init(
+    {
+      id: { type: INTEGER, autoIncrement: true, primaryKey: true },
+      avatar: { type: ENUM("O", "X"), allowNull: false }
+    },
+    { sequelize, tableName: "ttt-players" }
   );
 
   GameModel.init(
     {
       id: { type: STRING, primaryKey: true },
-      status: {
-        type: ENUM(...AllStateKinds),
-        allowNull: false
-      },
-      waitingInLobby: { type: INTEGER },
-      oPlayer: { type: INTEGER },
-      xPlayer: { type: INTEGER }
+      state: { type: ENUM(...AllStateKinds), allowNull: false }
     },
-    {
-      sequelize: store,
-      tableName: "Games"
-    }
+    { sequelize, tableName: "ttt-games" }
   );
 
-  return store;
+  PlayerModel.belongsTo(UserModel, { as: "user", foreignKey: "user_id" });
+  GameModel.belongsTo(PlayerModel, {
+    as: "playerInLobby",
+    foreignKey: "playerInLobby_id"
+  });
+  GameModel.belongsTo(PlayerModel, { as: "playerO", foreignKey: "playerO_id" });
+  GameModel.belongsTo(PlayerModel, { as: "playerX", foreignKey: "playerX_id" });
+
+  return sequelize;
 };

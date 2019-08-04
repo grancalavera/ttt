@@ -2,20 +2,20 @@ import { RESTDataSource } from "apollo-datasource-rest";
 import { GameResponse, MovesResponse } from "@grancalavera/ttt-api";
 import { Move } from "../generated/models";
 
-export interface GameAPI {
-  getGames: () => Promise<GameResponse[]>;
+export interface IGameAPI {
+  getAllGames: () => Promise<GameResponse[]>;
   getGameById: (id: string) => Promise<GameResponse>;
   getMovesByGameId: (id: string) => Promise<MovesResponse>;
   postGame: (id: string) => Promise<GameResponse>;
   postMove: (id: string, move: Move) => Promise<GameResponse>;
 }
 
-export class GameAPIDataSource extends RESTDataSource implements GameAPI {
+export class GameAPI extends RESTDataSource implements IGameAPI {
   constructor(public readonly baseURL: string) {
     super();
   }
 
-  public getGames() {
+  public getAllGames() {
     return this.get<GameResponse[]>("ttt");
   }
 
