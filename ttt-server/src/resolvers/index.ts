@@ -1,7 +1,7 @@
 import { LOGGED_IN } from "../environment";
 import { MutationResolvers, QueryResolvers, Resolvers } from "../generated/models";
 import { joinGame } from "./join-game-mutation";
-import { getAllGames } from "./games-query";
+import { getAllGames } from "./get-all-games-query";
 
 const Query: QueryResolvers = {
   me: (_, __, { userStatus }) => (userStatus.kind === LOGGED_IN ? userStatus.user : null),

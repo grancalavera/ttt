@@ -1,24 +1,9 @@
 import { zip } from "lodash";
 
 import { TTTDataSources } from "../environment";
-import { Game, Player, Avatar, User } from "../generated/models";
+import { Game } from "../generated/models";
 import { GameStateKindMap } from "../model";
 import { assertNever } from "../common";
-import { PlayerModel, UserModel } from "../store";
-
-const userFromModel = (userModel: UserModel): User => {
-  return {
-    email: userModel.email,
-    id: userModel.id.toString()
-  };
-};
-
-const playerFromModel = (playerModel: PlayerModel): Player => {
-  return {
-    avatar: playerModel.avatar as Avatar,
-    user: userFromModel(playerModel.user!)
-  };
-};
 
 export const getAllGames = async (dataSources: TTTDataSources): Promise<Game[]> => {
   const apiGames = await dataSources.gameAPI.getAllGames();
@@ -28,7 +13,16 @@ export const getAllGames = async (dataSources: TTTDataSources): Promise<Game[]> 
     if (apiGame && storeGame) {
       switch (storeGame.state) {
         case GameStateKindMap.GameLobby:
-          return {} as Game;
+          return {
+            state: {
+              __typename: storeGame.state,
+              waiting: {
+                user: {
+                  email: "alice@email.com"
+                }
+              }
+            }
+          } as Game;
         case GameStateKindMap.GamePlaying:
           return {} as Game;
         case GameStateKindMap.GameOverTie:

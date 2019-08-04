@@ -1,17 +1,19 @@
-import { create as createStore, UserModel } from "./store";
-import { login, TTTDataSources } from "./environment";
-import { User, Game } from "./generated/models";
-import { joinGame } from "./resolvers/join-game-mutation";
-import { GameAPI } from "./data-sources/game-api";
+import { create as createStore, UserModel } from "../store";
+import { login, TTTDataSources } from "../environment";
+import { User, Game } from "../generated/models";
+import { joinGame } from "./join-game-mutation";
+import { GameAPI } from "../data-sources/game-api";
 
-import { GameStateKindMap } from "./model";
-import { getAllGames } from "./resolvers/games-query";
+import { GameStateKindMap } from "../model";
+import { GameStore } from "../data-sources/game-store";
+import { getAllGames } from "./get-all-games-query";
 
-jest.mock("./data-sources/game-api");
+jest.mock("../data-sources/game-api");
 
 const mockDataSources = () =>
   ({
-    gameAPI: new GameAPI("no-required")
+    gameAPI: new GameAPI("no-required"),
+    gameStore: new GameStore()
   } as TTTDataSources);
 
 describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
@@ -77,14 +79,14 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
 
     it("Alice should be waiting at the lobby of all games", async () => {
       const games = await getAllGames(dataSources);
-      const actual = games.every(game => {
+      const actual = games.map(game => {
         if (game.state.__typename === GameStateKindMap.GameLobby) {
-          return game.state.waiting.user.email === alice.email;
+          return game.state.waiting.user.email;
         } else {
           throw new Error("Unexpected game state");
         }
       });
-      expect(actual).toBeTruthy();
+      expect(actual).toStrictEqual([alice.email, alice.email]);
     });
   });
 

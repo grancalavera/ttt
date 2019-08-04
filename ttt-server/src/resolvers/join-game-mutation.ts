@@ -10,7 +10,11 @@ export const joinGame = async (
 ): Promise<Game> => {
   const id = uuid();
   const avatar = chooseAvatar();
+  const userId = parseInt(user.id);
+
   await dataSources.gameAPI.postGame(id);
+  await dataSources.gameStore.createGame(id, userId, avatar);
+
   return Promise.resolve<Game>({
     id,
     state: {

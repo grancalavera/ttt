@@ -3,7 +3,7 @@ import { Request } from "express";
 import isEmail from "isemail";
 
 import { assertNever } from "./common";
-import { UserDataSource } from "./data-sources/game-store";
+import { GameStore } from "./data-sources/game-store";
 import { User } from "./generated/models";
 import { UserModel } from "./store";
 import { GameAPI } from "./data-sources/game-api";
@@ -25,7 +25,7 @@ interface LoggedIn {
 }
 
 export const dataSources = () => ({
-  gameStore: new UserDataSource(),
+  gameStore: new GameStore(),
   gameAPI: new GameAPI("http://localhost:5000")
 });
 
