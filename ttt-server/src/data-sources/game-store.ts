@@ -42,7 +42,11 @@ export class GameStore extends DataSource<Context> {
   async createGame(id: string, userId: number, avatar: Avatar): Promise<Game> {
     const player = await this.createPlayer(userId, avatar);
     const game = await GameModel.create({ state: GameStateKindMap.GameLobby });
-    return {} as Game;
+    return {
+      state: {
+        __typename: game.state
+      }
+    } as Game;
   }
 
   async findOrCreateUser(email: string): Promise<User> {
