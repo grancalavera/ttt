@@ -1,9 +1,9 @@
 import {
   coerceToPlayer,
   coerceToPosition,
-  Move as CoreMove,
-  Player as CorePlayer,
-  Position as CorePosition
+  CoreMove,
+  CorePlayer,
+  CorePosition
 } from "@grancalavera/ttt-core";
 
 import { Avatar, Move } from "./generated/models";

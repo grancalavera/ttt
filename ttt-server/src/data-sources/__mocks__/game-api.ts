@@ -1,6 +1,6 @@
 // https://jestjs.io/docs/en/es6-class-mocks
 
-import { createGame, Game as CoreGame } from "@grancalavera/ttt-core";
+import { createGame, CoreGame } from "@grancalavera/ttt-core";
 import { Move } from "../../generated/models";
 import { coreMoveFromMove } from "../../common";
 import { IGameAPI } from "../game-api";

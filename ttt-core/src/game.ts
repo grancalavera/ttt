@@ -1,58 +1,58 @@
 // prettier-ignore
-export type Position = 0 | 1 | 2
-                     | 3 | 4 | 5
-                     | 6 | 7 | 8;
+export type CorePosition = 0 | 1 | 2
+                         | 3 | 4 | 5
+                         | 6 | 7 | 8;
 
 // prettier-ignore
-export type Board = [ Position, Position, Position
-                    , Position, Position, Position
-                    , Position, Position, Position
-                    ];
+export type CoreBoard = [ CorePosition, CorePosition, CorePosition
+                        , CorePosition, CorePosition, CorePosition
+                        , CorePosition, CorePosition, CorePosition
+                        ];
 
-export type Player = "x" | "o";
-export type Move = [Player, Position];
-export type Win = [Position, Position, Position];
+export type CorePlayer = "O" | "X";
+export type CoreMove = [CorePlayer, CorePosition];
+export type CoreWin = [CorePosition, CorePosition, CorePosition];
 
-export type Game = GamePlaying | GameOverTie | GameOverWin;
-export type GameState = Game["kind"];
+export type CoreGame = CoreGamePlaying | CoreGameOverTie | CoreGameOverWin;
+export type CoreGameState = CoreGame["kind"];
 
-export const GAME_PLAYING = "GamePlaying";
-export const GAME_OVER_TIE = "GameOverTie";
-export const GAME_OVER_WIN = "GameOverWin";
+export const CORE_GAME_PLAYING = "CoreGamePlaying";
+export const CORE_GAME_OVER_TIE = "CoreGameOverTie";
+export const CORE_GAME_OVER_WIN = "CoreGameOverWin";
 
-export interface GamePlaying {
-  kind: typeof GAME_PLAYING;
-  currentPlayer: Player;
-  moves: Move[];
+export interface CoreGamePlaying {
+  kind: typeof CORE_GAME_PLAYING;
+  currentPlayer: CorePlayer;
+  moves: CoreMove[];
 }
 
-export interface GameOverTie {
-  kind: typeof GAME_OVER_TIE;
-  moves: Move[];
+export interface CoreGameOverTie {
+  kind: typeof CORE_GAME_OVER_TIE;
+  moves: CoreMove[];
 }
-export interface GameOverWin {
-  kind: typeof GAME_OVER_WIN;
-  winner: Player;
-  moves: Move[];
-  winningMove: Win;
+export interface CoreGameOverWin {
+  kind: typeof CORE_GAME_OVER_WIN;
+  winner: CorePlayer;
+  moves: CoreMove[];
+  winningMove: CoreWin;
 }
 
-const gameOverWin = (result: Omit<GameOverWin, "kind">): GameOverWin => ({
-  kind: GAME_OVER_WIN,
+const gameOverWin = (result: Omit<CoreGameOverWin, "kind">): CoreGameOverWin => ({
+  kind: CORE_GAME_OVER_WIN,
   ...result
 });
 
-const gameOverTie = (result: Omit<GameOverTie, "kind">): GameOverTie => ({
-  kind: GAME_OVER_TIE,
+const gameOverTie = (result: Omit<CoreGameOverTie, "kind">): CoreGameOverTie => ({
+  kind: CORE_GAME_OVER_TIE,
   ...result
 });
 
-const nextTurn = (result: Omit<GamePlaying, "kind">): GamePlaying => ({
-  kind: GAME_PLAYING,
+const nextTurn = (result: Omit<CoreGamePlaying, "kind">): CoreGamePlaying => ({
+  kind: CORE_GAME_PLAYING,
   ...result
 });
 
-const winningMoves: Win[] = [
+const winningMoves: CoreWin[] = [
   [0, 1, 2],
   [3, 4, 5],
   [6, 7, 8],
@@ -74,15 +74,15 @@ export const coerce = <T, U extends T>(
   }
 };
 
-export const isPlayer = (x: string): x is Player => ["x", "o"].includes(x);
+export const isPlayer = (x: string): x is CorePlayer => ["X", "O"].includes(x);
 
-export const isPos = (x: number): x is Position =>
+export const isPos = (x: number): x is CorePosition =>
   [0, 1, 2, 3, 4, 5, 6, 7, 8].includes(x);
 
-export const isGameState = (x: string): x is GameState =>
-  [GAME_PLAYING, GAME_OVER_TIE, GAME_OVER_WIN].includes(x);
+export const isGameState = (x: string): x is CoreGameState =>
+  [CORE_GAME_PLAYING, CORE_GAME_OVER_TIE, CORE_GAME_OVER_WIN].includes(x);
 
-export const isMove = (x: [string, number]): x is Move => {
+export const isMove = (x: [string, number]): x is CoreMove => {
   const [maybePlayer, maybePosition] = x;
   return isPlayer(maybePlayer) && isPos(maybePosition);
 };
@@ -111,21 +111,21 @@ or ${position} is an invalid Position`
 );
 
 // prettier-ignore
-export const board: Board = [ 0, 1, 2
-                            , 3, 4, 5
-                            , 6, 7, 8
-                            ];
+export const board: CoreBoard = [ 0, 1, 2
+                                , 3, 4, 5
+                                , 6, 7, 8
+                                ];
 
-export const isPosTaken = (pos: Position, moves: Move[]): boolean =>
+export const isPosTaken = (pos: CorePosition, moves: CoreMove[]): boolean =>
   moves.some(([_, p]) => pos === p);
 
-export const createGame = (): GamePlaying => ({
-  kind: GAME_PLAYING,
+export const createGame = (): CoreGamePlaying => ({
+  kind: CORE_GAME_PLAYING,
   moves: [],
   currentPlayer: nextPlayer([])
 });
 
-export const findWin = (player: Player, game: Move[]): Win | undefined => {
+export const findWin = (player: CorePlayer, game: CoreMove[]): CoreWin | undefined => {
   const playerMoves = game
     .filter(([candidate]) => player === candidate)
     .map(([_, pos]) => pos);
@@ -135,17 +135,17 @@ export const findWin = (player: Player, game: Move[]): Win | undefined => {
   );
 };
 
-export const resolveGame = (moves: Move[]): Game => {
-  const xWinningMove = findWin("x", moves);
-  const oWinningMove = findWin("o", moves);
+export const resolveGame = (moves: CoreMove[]): CoreGame => {
+  const xWinningMove = findWin("X", moves);
+  const oWinningMove = findWin("O", moves);
 
   if (xWinningMove) {
     const winningMove = xWinningMove;
-    const winner = "x";
+    const winner = "X";
     return gameOverWin({ winner, winningMove, moves });
   } else if (oWinningMove) {
     const winningMove = oWinningMove;
-    const winner = "o";
+    const winner = "O";
     return gameOverWin({ winner, winningMove, moves });
   } else if (moves.length === board.length) {
     return gameOverTie({ moves });
@@ -154,12 +154,12 @@ export const resolveGame = (moves: Move[]): Game => {
   }
 };
 
-export const nextPlayer = (moves: Move[]): Player => {
+export const nextPlayer = (moves: CoreMove[]): CorePlayer => {
   const [lastMove] = moves;
   if (lastMove) {
-    return lastMove[0] === "x" ? "o" : "x";
+    return lastMove[0] === "X" ? "O" : "X";
   } else {
-    return ["x", "o"][randInt(0, 1)] as Player;
+    return coerceToPlayer(["X", "O"][randInt(0, 1)]);
   }
 };
 

@@ -2,21 +2,21 @@ import express, { Response } from "express";
 import { Transaction } from "sequelize/types";
 
 import {
+  coerce,
   coerceToGameState,
   coerceToMove,
   coerceToPlayer,
+  CORE_GAME_OVER_TIE,
+  CORE_GAME_OVER_WIN,
+  CORE_GAME_PLAYING,
+  CoreGame,
+  CoreGamePlaying,
+  CoreMove,
   createGame,
   findWin,
-  Game,
-  GAME_OVER_TIE,
-  GAME_OVER_WIN,
-  GAME_PLAYING,
-  GamePlaying,
   isPosTaken,
-  Move,
   nextPlayer,
-  resolveGame,
-  coerce
+  resolveGame
 } from "@grancalavera/ttt-core";
 
 import { GameModel, MoveModel, store, toUnsafeMove } from "./store";
@@ -37,15 +37,15 @@ const coerceToUUID = coerce(
 
 export interface GameResponse {
   id: string;
-  game: Game;
+  game: CoreGame;
 }
 
 export interface MovesResponse {
   id: string;
-  moves: Move[];
+  moves: CoreMove[];
 }
 
-const commitMove = (gameId: string, game: GamePlaying, move: Move) => {
+const commitMove = (gameId: string, game: CoreGamePlaying, move: CoreMove) => {
   const [player, position] = move;
   return store.transaction(transaction =>
     MoveModel.create({ player, position, gameId }, { transaction })
@@ -55,14 +55,14 @@ const commitMove = (gameId: string, game: GamePlaying, move: Move) => {
 
         let update: any = { status: result.kind };
         switch (result.kind) {
-          case GAME_OVER_WIN:
+          case CORE_GAME_OVER_WIN:
             update.nextPlayer = null;
             update.winner = result.winner;
             break;
-          case GAME_OVER_TIE:
+          case CORE_GAME_OVER_TIE:
             update.nextPlayer = null;
             break;
-          case GAME_PLAYING:
+          case CORE_GAME_PLAYING:
             update.nextPlayer = nextPlayer(moves);
             break;
           default:
@@ -96,12 +96,12 @@ const gameResponseFromModel = (gameModel: GameModel): GameResponse => {
   );
 
   switch (kind) {
-    case GAME_PLAYING:
+    case CORE_GAME_PLAYING:
       const currentPlayer = coerceToPlayer(gameModel.nextPlayer);
       return { id, game: { kind, currentPlayer, moves } };
-    case GAME_OVER_TIE:
+    case CORE_GAME_OVER_TIE:
       return { id, game: { kind, moves } };
-    case GAME_OVER_WIN:
+    case CORE_GAME_OVER_WIN:
       const winner = coerceToPlayer(gameModel.winner);
       // TODO: persist winning move
       const winningMove = findWin(winner, moves)!;
@@ -209,12 +209,12 @@ app.post("/ttt/:id/moves", async (req, res) => {
   const { game } = gameResponse;
 
   switch (game.kind) {
-    case GAME_OVER_TIE:
-    case GAME_OVER_WIN:
+    case CORE_GAME_OVER_TIE:
+    case CORE_GAME_OVER_WIN:
       gameOver(res, { gameId: id });
       return;
-    case GAME_PLAYING:
-      let move: Move;
+    case CORE_GAME_PLAYING:
+      let move: CoreMove;
 
       try {
         move = coerceToMove([maybePlayer, maybePosition]);
