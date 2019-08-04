@@ -7,9 +7,6 @@
     "ttt": "dist/bin/main.js"
   },
   "license": "MIT",
-  "dependencies": {
-    "yarn": "^1.16.0"
-  },
   "scripts": {
     "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/bin/main.ts",
     "build": "tsc",
@@ -17,9 +14,9 @@
     "test-watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/test.ts"
   },
   "devDependencies": {
-    "@types/node": "^12.0.10",
-    "nodemon": "^1.19.1",
-    "ts-node": "^8.3.0",
-    "typescript": "^3.5.2"
+    "@types/node": "12.6.9",
+    "nodemon": "1.19.1",
+    "ts-node": "8.3.0",
+    "typescript": "3.5.3"
   }
 }

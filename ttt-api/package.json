@@ -19,6 +19,7 @@
     "@types/sqlite3": "3.1.5",
     "@types/validator": "10.11.1",
     "nodemon": "1.19.1",
-    "ts-node": "8.3.0"
+    "ts-node": "8.3.0",
+    "typescript": "3.5.3"
   }
 }
