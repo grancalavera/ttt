@@ -1,24 +1,9 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
 
-import { assertNever } from "../common";
-import { Context, LOGGED_IN, LOGGED_OUT } from "../environment";
-import { Avatar, Game, User, GameState, Player } from "../generated/models";
+import { Context } from "../environment";
+import { Avatar, Game } from "../generated/models";
 import { GameStateKindMap } from "../model";
 import { GameModel, PlayerModel, UserModel } from "../store";
-
-const userFromModel = (userModel: UserModel): User => {
-  return {
-    email: userModel.email,
-    id: userModel.id.toString()
-  };
-};
-
-const playerFromModel = (playerModel: PlayerModel): Player => {
-  return {
-    avatar: playerModel.avatar as Avatar,
-    user: userFromModel(playerModel.user!)
-  };
-};
 
 export class GameStore extends DataSource<Context> {
   private context!: Context;
@@ -49,19 +34,8 @@ export class GameStore extends DataSource<Context> {
     } as Game;
   }
 
-  async findOrCreateUser(email: string): Promise<User> {
-    const { userStatus } = this.context;
-    switch (userStatus.kind) {
-      case LOGGED_IN:
-        return userStatus.user;
-      case LOGGED_OUT:
-        const [userModel] = await UserModel.findOrCreate({ where: { email } });
-        return {
-          id: userModel.id.toString(),
-          email: userModel.email
-        };
-      default:
-        return assertNever(userStatus);
-    }
+  async findOrCreateUser(email: string): Promise<UserModel> {
+    const [userModel] = await UserModel.findOrCreate({ where: { email } });
+    return userModel;
   }
 }

@@ -1,7 +1,8 @@
-import { LOGGED_IN } from "../environment";
-import { MutationResolvers, QueryResolvers, Resolvers } from "../generated/models";
+import { MutationResolvers, QueryResolvers, Resolvers, User } from "../generated/models";
 import { joinGame } from "./join-game-mutation";
 import { getAllGames } from "./get-all-games-query";
+import { assertNever } from "../common";
+import { LOGGED_IN, LOGGED_OUT } from "../model";
 
 const Query: QueryResolvers = {
   me: (_, __, { userStatus }) => (userStatus.kind === LOGGED_IN ? userStatus.user : null),
@@ -9,9 +10,24 @@ const Query: QueryResolvers = {
 };
 
 const Mutation: MutationResolvers = {
-  login: async (_, { email }, { dataSources: { gameStore: userDataSource } }) => {
-    const user = await userDataSource.findOrCreateUser(email);
-    return user ? new Buffer(user.email).toString("base64") : null;
+  login: async (_, { email }, context) => {
+    const {
+      dataSources: { gameStore: userDataSource },
+      userStatus
+    } = context;
+    let userEmail;
+    switch (userStatus.kind) {
+      case LOGGED_IN:
+        userEmail = userStatus.user.email;
+        break;
+      case LOGGED_OUT:
+        const user = await userDataSource.findOrCreateUser(email);
+        userEmail = user.email;
+        break;
+      default:
+        assertNever(userStatus);
+    }
+    return userEmail ? new Buffer(userEmail).toString("base64") : null;
   },
   joinGame: async (_, __, { resolveWithSecurity, dataSources }) =>
     resolveWithSecurity(user => joinGame(user, dataSources))

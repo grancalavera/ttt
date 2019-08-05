@@ -8,6 +8,7 @@
     "start:clean": "rm store.sqlite && yarn start",
     "postbuild": "cp src/schema.graphql dist/",
     "build": "tsc",
+    "typecheck": "tsc --watch --noEmit",
     "test": "jest",
     "sandbox": "nodemon --watch 'src/**/*.ts' --exec 'ts-node'"
   },

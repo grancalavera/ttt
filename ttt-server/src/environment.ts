@@ -7,22 +7,7 @@ import { GameStore } from "./data-sources/game-store";
 import { User } from "./generated/models";
 import { UserModel } from "./store";
 import { GameAPI } from "./data-sources/game-api";
-
-export const LOGGED_OUT = "LOGGED_OUT";
-export const LOGGED_IN = "LOGGED_IN";
-
-type PromiseType<T> = T extends Promise<infer U> ? U : T;
-
-type UserStatus = LoggedOut | LoggedIn;
-
-interface LoggedOut {
-  kind: typeof LOGGED_OUT;
-}
-
-interface LoggedIn {
-  kind: typeof LOGGED_IN;
-  user: User;
-}
+import { loginFromModel, UserStatus, LOGGED_IN, LOGGED_OUT, PromiseType } from "./model";
 
 export const dataSources = () => ({
   gameStore: new GameStore(),
@@ -46,14 +31,6 @@ const makeSecureResolver = <T>(userStatus: UserStatus) => (
 
 const logout = { kind: LOGGED_OUT } as const;
 
-export const login = ({ id, email }: UserModel): LoggedIn => ({
-  kind: LOGGED_IN,
-  user: {
-    id: id.toString(),
-    email
-  }
-});
-
 const resolveUserStatus = async (req: Request): Promise<UserStatus> => {
   // if auth is empty => logout
   const auth = req.headers.authorization || "";
@@ -64,7 +41,7 @@ const resolveUserStatus = async (req: Request): Promise<UserStatus> => {
   if (!isEmail.validate(decoded)) return logout;
 
   const maybeUser = await UserModel.findOne({ where: { email: decoded } });
-  return maybeUser ? login(maybeUser) : logout;
+  return maybeUser ? loginFromModel(maybeUser) : logout;
 };
 
 export const context = async ({ req }: { req: Request }) => {

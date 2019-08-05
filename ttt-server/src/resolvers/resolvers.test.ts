@@ -1,10 +1,10 @@
 import { create as createStore, UserModel } from "../store";
-import { login, TTTDataSources } from "../environment";
+import { TTTDataSources } from "../environment";
 import { User, Game } from "../generated/models";
 import { joinGame } from "./join-game-mutation";
 import { GameAPI } from "../data-sources/game-api";
 
-import { GameStateKindMap } from "../model";
+import { GameStateKindMap, loginFromModel } from "../model";
 import { GameStore } from "../data-sources/game-store";
 import { getAllGames } from "./get-all-games-query";
 
@@ -30,7 +30,7 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
       { email: "alice@email.com" },
       { email: "bob@email.com" },
       { email: "jane@email.com" }
-    ]).then(users => users.map(login).map(({ user }) => user));
+    ]).then(users => users.map(loginFromModel).map(({ user }) => user));
   });
 
   describe("Alice joins the first game ever, then:", () => {
@@ -40,7 +40,7 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
       game = await joinGame(alice, dataSources);
     });
 
-    fit("the game's state should be 'GameLobby'", () => {
+    it("the game's state should be 'GameLobby'", () => {
       expect(game.state.__typename).toBe(GameStateKindMap.GameLobby);
     });
 
