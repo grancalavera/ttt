@@ -1,7 +1,7 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
 
 import { Context } from "../environment";
-import { Avatar, Game } from "../generated/models";
+import { Avatar } from "../generated/models";
 import { GameStateKindMap } from "../model";
 import { GameModel, PlayerModel, UserModel } from "../store";
 
@@ -24,14 +24,15 @@ export class GameStore extends DataSource<Context> {
     return games;
   }
 
-  async createGame(id: string, userId: number, avatar: Avatar): Promise<Game> {
+  async createGame(id: string, userId: number, avatar: Avatar): Promise<GameModel> {
     const player = await this.createPlayer(userId, avatar);
-    const game = await GameModel.create({ state: GameStateKindMap.GameLobby });
-    return {
-      state: {
-        __typename: game.state
-      }
-    } as Game;
+    const game = await GameModel.create({ id });
+    if (avatar == Avatar.O) {
+      await game.setPlayerO(player);
+    } else {
+      await game.setPlayerX(player);
+    }
+    return game;
   }
 
   async findOrCreateUser(email: string): Promise<UserModel> {

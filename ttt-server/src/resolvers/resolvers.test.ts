@@ -40,7 +40,7 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
       game = await joinGame(alice, dataSources);
     });
 
-    it("the game's state should be 'GameLobby'", () => {
+    fit("the game's state should be 'GameLobby'", () => {
       expect(game.state.__typename).toBe(GameStateKindMap.GameLobby);
     });
 

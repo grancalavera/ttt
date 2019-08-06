@@ -102,30 +102,36 @@ sequelize
     await game.setPlayer1(player1);
     await game.setPlayer2(player2);
 
-    GameModel.findByPk(game.id, {
-      include: [
-        {
-          model: PlayerModel,
-          as: "player1",
-          include: [{ model: UserModel, as: "user" }]
-        },
-        { model: PlayerModel, as: "player2", include: [{ model: UserModel, as: "user" }] }
-      ]
-    }).then(g => {
-      console.log("Player 1");
-      console.log("--------");
-      console.log(g!.player1!.user!.name);
-      console.log(g!.player1!.avatar);
-      console.log("--------");
-      console.log("");
+    game
+      .reload({
+        include: [
+          {
+            model: PlayerModel,
+            as: "player1",
+            include: [{ model: UserModel, as: "user" }]
+          },
+          {
+            model: PlayerModel,
+            as: "player2",
+            include: [{ model: UserModel, as: "user" }]
+          }
+        ]
+      })
+      .then(() => {
+        console.log("Player 1");
+        console.log("--------");
+        console.log(game!.player1!.user!.name);
+        console.log(game!.player1!.avatar);
+        console.log("--------");
+        console.log("");
 
-      console.log("Player 2");
-      console.log("--------");
-      console.log(g!.player2!.user!.name);
-      console.log(g!.player2!.avatar);
-      console.log("--------");
-      console.log("");
-    });
+        console.log("Player 2");
+        console.log("--------");
+        console.log(game!.player2!.user!.name);
+        console.log(game!.player2!.avatar);
+        console.log("--------");
+        console.log("");
+      });
   })
   .catch(e => {
     console.log(e.message);

@@ -34,14 +34,9 @@ export class PlayerModel extends Model {
 
 export class GameModel extends Model {
   public id!: string;
-  public state!: GameStateKind;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-
-  public getPlayerInLobby!: BelongsToGetAssociationMixin<PlayerModel>;
-  public setPlayerInLobby!: BelongsToSetAssociationMixin<PlayerModel, PlayerModel["id"]>;
-  public playerInLobby?: PlayerModel;
 
   public getPlayerO!: BelongsToGetAssociationMixin<PlayerModel>;
   public setPlayerO!: BelongsToSetAssociationMixin<PlayerModel, PlayerModel["id"]>;
@@ -52,10 +47,23 @@ export class GameModel extends Model {
   public playerX?: PlayerModel;
 
   public static associations: {
-    playerInLobby: Association<GameModel, PlayerModel>;
     playerO: Association<GameModel, PlayerModel>;
     playerX: Association<GameModel, PlayerModel>;
   };
+
+  public async reloadPlayers(): Promise<GameModel> {
+    return await this.reload({
+      include: [this.includePlayer("playerO"), this.includePlayer("playerX")]
+    });
+  }
+
+  private includePlayer(as: "playerInLobby" | "playerO" | "playerX" | "winner") {
+    return {
+      model: PlayerModel,
+      as,
+      include: [{ model: UserModel, as: "user" }]
+    };
+  }
 }
 
 export const create = ({ storage }: { storage: string }) => {
@@ -82,17 +90,12 @@ export const create = ({ storage }: { storage: string }) => {
 
   GameModel.init(
     {
-      id: { type: STRING, primaryKey: true },
-      state: { type: ENUM(...AllStateKinds), allowNull: false }
+      id: { type: STRING, primaryKey: true }
     },
     { sequelize, tableName: "ttt-games" }
   );
 
   PlayerModel.belongsTo(UserModel, { as: "user", foreignKey: "user_id" });
-  GameModel.belongsTo(PlayerModel, {
-    as: "playerInLobby",
-    foreignKey: "playerInLobby_id"
-  });
   GameModel.belongsTo(PlayerModel, { as: "playerO", foreignKey: "playerO_id" });
   GameModel.belongsTo(PlayerModel, { as: "playerX", foreignKey: "playerX_id" });
 
