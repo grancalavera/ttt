@@ -77,9 +77,46 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
   });
 
   describe("Bob joins a game", () => {
-    it.todo("the game status should be 'GamePlaying'");
-    it.todo("Alice and Bob should be the players in the game");
-    it.todo("Alice OR Bob should be current player in the game");
+    let game: Game;
+
+    beforeAll(async () => {
+      game = await joinGame(bob, dataSources);
+    });
+
+    it("There should be three games", async () => {
+      const games = await getAllGames(dataSources);
+      expect(games.length).toBe(3);
+    });
+
+    it("the game status should be 'GamePlaying'", () => {
+      expect(game.state.__typename).toBe(GameStateKindMap.GamePlaying);
+    });
+
+    it("Alice and Bob should be the players in the game", () => {
+      if (game.state.__typename === GameStateKindMap.GamePlaying) {
+        const playerEmails = [
+          game.state.oPlayer.user.email,
+          game.state.xPlayer.user.email
+        ];
+        const includesAlice = playerEmails.includes(alice.email);
+        const includesBob = playerEmails.includes(bob.email);
+        expect(includesAlice).toBeTruthy();
+        expect(includesBob).toBeTruthy();
+      } else {
+        throw new Error(`unexpected game state "${game.state.__typename}"`);
+      }
+    });
+
+    it("Alice OR Bob should be current player in the game", () => {
+      if (game.state.__typename === GameStateKindMap.GamePlaying) {
+        const playerEmails = [alice.email, bob.email];
+        const currentPlayerEmail = game.state.currentPlayer.user.email;
+        const includesCurrentPlayer = playerEmails.includes(currentPlayerEmail);
+        expect(includesCurrentPlayer).toBeTruthy();
+      } else {
+        throw new Error(`unexpected game state "${game.state.__typename}"`);
+      }
+    });
   });
 
   describe("Jane joins to join a game", () => {
