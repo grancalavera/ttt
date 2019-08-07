@@ -1,6 +1,6 @@
 import { MutationResolvers, QueryResolvers, Resolvers, User } from "../generated/models";
-import { joinGame } from "./join-game-mutation";
-import { getAllGames } from "./get-all-games-query";
+import { joinGame } from "./join-game";
+import { getAllGames } from "./get-all-games";
 import { assertNever } from "../common";
 import { LOGGED_IN, LOGGED_OUT } from "../model";
 

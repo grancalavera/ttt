@@ -29,7 +29,7 @@ export const joinNewGame = async (
   return combineGames(coreGame, storeGame);
 };
 
-const combineGames = async (coreGame: CoreGame, storeGame: GameModel): Promise<Game> => {
+export const combineGames = (coreGame: CoreGame, storeGame: GameModel): Game => {
   const id = storeGame.id;
   const __typename = resolveTypename(coreGame, storeGame.playerO, storeGame.playerX);
 

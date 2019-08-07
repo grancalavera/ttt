@@ -1,12 +1,12 @@
 import { create as createStore, UserModel } from "../store";
 import { TTTDataSources } from "../environment";
 import { User, Game } from "../generated/models";
-import { joinGame } from "./join-game-mutation";
+import { joinGame } from "./join-game";
 import { GameAPI } from "../data-sources/game-api";
 
 import { GameStateKindMap, loginFromModel } from "../model";
 import { GameStore } from "../data-sources/game-store";
-import { getAllGames } from "./get-all-games-query";
+import { getAllGames } from "./get-all-games";
 
 jest.mock("../data-sources/game-api");
 
@@ -53,11 +53,9 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
     });
   });
 
-  xdescribe("Alice joins another game, then:", () => {
-    let game: Game;
-
+  describe("Alice joins another game, then:", () => {
     beforeAll(async () => {
-      game = await joinGame(alice, dataSources);
+      await joinGame(alice, dataSources);
     });
 
     it("There should be two games", async () => {
@@ -78,13 +76,13 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
     });
   });
 
-  xdescribe("Bob joins a game", () => {
+  describe("Bob joins a game", () => {
     it.todo("the game status should be 'GamePlaying'");
     it.todo("Alice and Bob should be the players in the game");
     it.todo("Alice OR Bob should be current player in the game");
   });
 
-  xdescribe("Jane joins to join a game", () => {
+  describe("Jane joins to join a game", () => {
     it.todo("the game status should be 'GamePlaying'");
     it.todo("Alice and Bob should be the players in the game");
     it.todo("Alice OR Bob should be current player in the game");

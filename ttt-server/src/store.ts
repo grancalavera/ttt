@@ -8,7 +8,6 @@ import {
   Association,
   BelongsToSetAssociationMixin
 } from "sequelize";
-import { GameStateKind, AllStateKinds } from "./model";
 
 export class UserModel extends Model {
   public readonly id!: number;
@@ -53,22 +52,29 @@ export class GameModel extends Model {
 
   public async reloadPlayers(): Promise<GameModel> {
     return await this.reload({
-      include: [this.includePlayer("playerO"), this.includePlayer("playerX")]
+      include: includePlayers
     });
   }
 
-  private includePlayer(as: "playerInLobby" | "playerO" | "playerX" | "winner") {
-    return {
-      model: PlayerModel,
-      as,
-      include: [{ model: UserModel, as: "user" }]
-    };
-  }
+  public static findAllGames = (): Promise<GameModel[]> => {
+    return GameModel.findAll({ include: includePlayers });
+  };
 }
+
+const includePlayer = (as: "playerO" | "playerX") => {
+  return {
+    model: PlayerModel,
+    as,
+    include: [{ model: UserModel, as: "user" }]
+  };
+};
+
+const includePlayers = [includePlayer("playerO"), includePlayer("playerX")];
 
 export const create = ({ storage }: { storage: string }) => {
   const sequelize = new Sequelize({
     dialect: "sqlite",
+    logging: false,
     storage
   });
 

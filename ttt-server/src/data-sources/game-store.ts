@@ -20,7 +20,7 @@ export class GameStore extends DataSource<Context> {
   }
 
   async getAllGames(): Promise<GameModel[]> {
-    const games = await GameModel.findAll();
+    const games = await GameModel.findAllGames();
     return games;
   }
 
