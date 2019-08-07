@@ -53,7 +53,7 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
     });
   });
 
-  describe("Alice joins another game, then:", () => {
+  xdescribe("Alice joins another game, then:", () => {
     let game: Game;
 
     beforeAll(async () => {
@@ -65,7 +65,7 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
       expect(games.length).toBe(2);
     });
 
-    xit("Alice should be waiting at the lobby of all games", async () => {
+    it("Alice should be waiting at the lobby of all games", async () => {
       const games = await getAllGames(dataSources);
       const actual = games.map(game => {
         if (game.state.__typename === GameStateKindMap.GameLobby) {
