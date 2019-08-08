@@ -20,8 +20,14 @@ export class GameStore extends DataSource<Context> {
   }
 
   async getAllGames(): Promise<GameModel[]> {
-    const games = await GameModel.findAllGames();
-    return games;
+    return GameModel.findAll({ include: includePlayers });
+  }
+
+  async firstGameInLobby(): Promise<GameModel | null> {
+    const game = await GameModel.findOne({
+      where: { state: GameStateKindMap.GameLobby }
+    });
+    return game;
   }
 
   async createGame(id: string, userId: number, avatar: Avatar): Promise<GameModel> {
@@ -39,4 +45,20 @@ export class GameStore extends DataSource<Context> {
     const [userModel] = await UserModel.findOrCreate({ where: { email } });
     return userModel;
   }
+
+  public async reloadPlayers(game: GameModel): Promise<GameModel> {
+    return await game.reload({
+      include: includePlayers
+    });
+  }
 }
+
+const includePlayer = (as: "playerO" | "playerX") => {
+  return {
+    model: PlayerModel,
+    as,
+    include: [{ model: UserModel, as: "user" }]
+  };
+};
+
+const includePlayers = [includePlayer("playerO"), includePlayer("playerX")];

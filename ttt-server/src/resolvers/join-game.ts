@@ -25,7 +25,7 @@ export const joinNewGame = async (
   const userId = parseInt(user.id);
   const { game: coreGame } = await dataSources.gameAPI.postGame(id);
   const storeGame = await dataSources.gameStore.createGame(id, userId, avatar);
-  await storeGame.reloadPlayers();
+  await dataSources.gameStore.reloadPlayers(storeGame);
   return combineGames(coreGame, storeGame);
 };
 
@@ -71,7 +71,7 @@ const resolveTypename = (
 ): GameStateKind => {
   if (!player1 && !player2) {
     throw new Error(`Illegal game: a game must have at least one player.
-Did you forget to call "storeGame.reloadPlayers()"?`);
+Did you forget to call "gameStore.reloadPlayers(storeGame)"?`);
   }
 
   if (!player1 || !player2) {

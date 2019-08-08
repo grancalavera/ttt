@@ -51,27 +51,7 @@ export class GameModel extends Model {
     playerO: Association<GameModel, PlayerModel>;
     playerX: Association<GameModel, PlayerModel>;
   };
-
-  public async reloadPlayers(): Promise<GameModel> {
-    return await this.reload({
-      include: includePlayers
-    });
-  }
-
-  public static findAllGames = (): Promise<GameModel[]> => {
-    return GameModel.findAll({ include: includePlayers });
-  };
 }
-
-const includePlayer = (as: "playerO" | "playerX") => {
-  return {
-    model: PlayerModel,
-    as,
-    include: [{ model: UserModel, as: "user" }]
-  };
-};
-
-const includePlayers = [includePlayer("playerO"), includePlayer("playerX")];
 
 export const create = ({ storage }: { storage: string }) => {
   const sequelize = new Sequelize({
