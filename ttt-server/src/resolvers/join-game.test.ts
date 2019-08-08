@@ -76,7 +76,7 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
     });
   });
 
-  describe("Bob joins a game", () => {
+  xdescribe("Bob joins a game", () => {
     let game: Game;
 
     beforeAll(async () => {

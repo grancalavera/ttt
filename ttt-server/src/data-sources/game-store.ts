@@ -26,7 +26,7 @@ export class GameStore extends DataSource<Context> {
 
   async createGame(id: string, userId: number, avatar: Avatar): Promise<GameModel> {
     const player = await this.createPlayer(userId, avatar);
-    const game = await GameModel.create({ id });
+    const game = await GameModel.create({ id, state: GameStateKindMap.GameLobby });
     if (avatar == Avatar.O) {
       await game.setPlayerO(player);
     } else {
