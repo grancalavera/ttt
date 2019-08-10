@@ -4,14 +4,17 @@ import {
   CORE_GAME_OVER_TIE,
   CORE_GAME_OVER_WIN,
   CORE_GAME_PLAYING,
-  CoreGame
+  CoreGame,
+  CoreMove,
+  CorePlayer,
+  CorePosition
 } from "@grancalavera/ttt-core";
 
 import { assertNever, chooseAvatar } from "../common";
 import { TTTDataSources } from "../environment";
-import { Avatar, Game, GameLobby, Player, User, GamePlaying } from "../generated/models";
-import { GameStateKind, GameStateKindMap, playerFromModel } from "../model";
-import { GameModel, PlayerModel } from "../store";
+import { Avatar, Game, Move, Player, Position, User } from "../generated/models";
+import { GameStateKindMap, playerFromModel } from "../model";
+import { GameModel } from "../store";
 
 export const joinGame = async (
   user: User,
@@ -62,9 +65,19 @@ export const combineGames = (coreGame: CoreGame, storeGame: GameModel): Game => 
       }
     };
   }
+
   switch (coreGame.kind) {
     case CORE_GAME_PLAYING:
-      return {} as Game;
+      return {
+        id,
+        state: {
+          __typename: GameStateKindMap.GamePlaying,
+          currentPlayer: corePlayerToPlayer(coreGame.currentPlayer, storeGame),
+          moves: coreGame.moves.map(coreMoveToMove),
+          oPlayer: playerFromModel(storeGame.playerO!),
+          xPlayer: playerFromModel(storeGame.playerX!)
+        }
+      };
     case CORE_GAME_OVER_TIE:
       return {} as Game;
     case CORE_GAME_OVER_WIN:
@@ -83,3 +96,24 @@ const resolveWaitingPlayer = (storeGame: GameModel): Player => {
     throw new Error("Illegal game: a game must have at least one player");
   }
 };
+
+const coreMoveToMove = ([player, position]: CoreMove): Move => ({
+  position: corePositionToPosition(position),
+  avatar: player === "O" ? Avatar.O : Avatar.X
+});
+
+const corePlayerToPlayer = (corePlayer: CorePlayer, storeGame: GameModel): Player =>
+  playerFromModel(corePlayer === "O" ? storeGame.playerO! : storeGame.playerX!);
+
+const corePositionToPosition = (position: CorePosition): Position =>
+  [
+    Position.P0,
+    Position.P1,
+    Position.P2,
+    Position.P3,
+    Position.P4,
+    Position.P5,
+    Position.P6,
+    Position.P7,
+    Position.P8
+  ][position];

@@ -33,8 +33,6 @@ describe("Creating games for Alice and Bob", () => {
     beforeAll(async () => {
       game1 = await gameStore.createGame(game1_Id, alice.id, Avatar.O);
       game2 = await gameStore.createGame(game2_Id, alice.id, Avatar.O);
-      await gameStore.reloadPlayers(game1);
-      await gameStore.reloadPlayers(game2);
     });
 
     it("Alice should be playerO in game-1", () => {

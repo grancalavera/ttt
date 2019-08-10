@@ -76,7 +76,7 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
     });
   });
 
-  xdescribe("Bob joins a game", () => {
+  describe("Bob joins a game", () => {
     let game: Game;
 
     beforeAll(async () => {
@@ -117,11 +117,5 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
         throw new Error(`unexpected game state "${game.state.__typename}"`);
       }
     });
-  });
-
-  describe("Jane joins to join a game", () => {
-    it.todo("the game status should be 'GamePlaying'");
-    it.todo("Alice and Bob should be the players in the game");
-    it.todo("Alice OR Bob should be current player in the game");
   });
 });
