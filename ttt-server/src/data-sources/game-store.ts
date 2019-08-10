@@ -25,15 +25,22 @@ export class GameStore extends DataSource<Context> {
     return GameModel.findAll({ include: includePlayers });
   }
 
-  async firstGameInLobby(userId: string): Promise<GameModel | null> {
+  async firstGameInLobby(userId: number): Promise<GameModel | null> {
     const game = await GameModel.findOne({
       where: {
-        state: GameStateKindMap.GameLobby,
-        playerO_id: { [Op.ne]: userId },
-        playerX_id: { [Op.ne]: userId }
+        state: GameStateKindMap.GameLobby
       },
       include: includePlayers
     });
+
+    if (game && game.playerO && game.playerO.user!.id === userId) {
+      return null;
+    }
+
+    if (game && game.playerX && game.playerX.user!.id === userId) {
+      return null;
+    }
+
     return game;
   }
 

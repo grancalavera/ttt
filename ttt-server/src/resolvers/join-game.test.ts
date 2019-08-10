@@ -24,7 +24,7 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
   const dataSources = mockDataSources();
 
   beforeAll(async () => {
-    const storage = `./join-game.sqlite`;
+    const storage = `./join-game.test.sqlite`;
     await createStore({ storage }).sync({ force: true });
     [alice, bob, jane] = await UserModel.bulkCreate([
       { email: "alice@email.com" },
