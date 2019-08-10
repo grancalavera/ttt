@@ -52,25 +52,25 @@ const joinExistingGame = async (
 
 export const combineGames = (coreGame: CoreGame, storeGame: GameModel): Game => {
   const id = storeGame.id;
-  const __typename = resolveTypename(coreGame, storeGame.playerO, storeGame.playerX);
 
-  switch (__typename) {
-    case GameStateKindMap.GameLobby:
-      return {
-        id,
-        state: {
-          __typename,
-          waiting: resolveWaitingPlayer(storeGame)
-        }
-      };
-    case GameStateKindMap.GamePlaying:
+  if (storeGame.isInLobby) {
+    return {
+      id,
+      state: {
+        __typename: GameStateKindMap.GameLobby,
+        waiting: resolveWaitingPlayer(storeGame)
+      }
+    };
+  }
+  switch (coreGame.kind) {
+    case CORE_GAME_PLAYING:
       return {} as Game;
-    case GameStateKindMap.GameOverTie:
+    case CORE_GAME_OVER_TIE:
       return {} as Game;
-    case GameStateKindMap.GameOverWin:
+    case CORE_GAME_OVER_WIN:
       return {} as Game;
     default:
-      return assertNever(__typename);
+      return assertNever(coreGame);
   }
 };
 
@@ -81,31 +81,5 @@ const resolveWaitingPlayer = (storeGame: GameModel): Player => {
     return playerFromModel(storeGame.playerX);
   } else {
     throw new Error("Illegal game: a game must have at least one player");
-  }
-};
-
-const resolveTypename = (
-  coreGame: CoreGame,
-  player1?: PlayerModel,
-  player2?: PlayerModel
-): GameStateKind => {
-  if (!player1 && !player2) {
-    throw new Error(`Illegal game: a game must have at least one player.
-Did you forget to call "gameStore.reloadPlayers(storeGame)"?`);
-  }
-
-  if (!player1 || !player2) {
-    return GameStateKindMap.GameLobby;
-  }
-
-  switch (coreGame.kind) {
-    case CORE_GAME_PLAYING:
-      return GameStateKindMap.GamePlaying;
-    case CORE_GAME_OVER_TIE:
-      return GameStateKindMap.GameOverTie;
-    case CORE_GAME_OVER_WIN:
-      return GameStateKindMap.GameOverWin;
-    default:
-      return assertNever(coreGame);
   }
 };
