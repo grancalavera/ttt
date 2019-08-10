@@ -13,10 +13,19 @@ import { Avatar, Game, GameLobby, Player, User } from "../generated/models";
 import { GameStateKind, GameStateKindMap, playerFromModel } from "../model";
 import { GameModel, PlayerModel } from "../store";
 
-export const joinGame = async (user: User, dataSources: TTTDataSources): Promise<Game> =>
-  joinNewGame(uuid(), user, chooseAvatar(), dataSources);
+export const joinGame = async (
+  user: User,
+  dataSources: TTTDataSources
+): Promise<Game> => {
+  const maybeGameInLobby = await dataSources.gameStore.firstGameInLobby(user.id);
+  if (maybeGameInLobby) {
+    return joinExistingGame(maybeGameInLobby, user, dataSources);
+  } else {
+    return joinNewGame(uuid(), user, chooseAvatar(), dataSources);
+  }
+};
 
-export const joinNewGame = async (
+const joinNewGame = async (
   id: string,
   user: User,
   avatar: Avatar,
@@ -27,6 +36,14 @@ export const joinNewGame = async (
   const storeGame = await dataSources.gameStore.createGame(id, userId, avatar);
   await dataSources.gameStore.reloadPlayers(storeGame);
   return combineGames(coreGame, storeGame);
+};
+
+const joinExistingGame = async (
+  game: GameModel,
+  user: User,
+  dataSources: TTTDataSources
+): Promise<Game> => {
+  return {} as Game;
 };
 
 export const combineGames = (coreGame: CoreGame, storeGame: GameModel): Game => {

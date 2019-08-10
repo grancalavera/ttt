@@ -5,6 +5,8 @@ import { Avatar } from "../generated/models";
 import { GameStateKindMap } from "../model";
 import { GameModel, PlayerModel, UserModel } from "../store";
 
+import { Op } from "sequelize";
+
 export class GameStore extends DataSource<Context> {
   private context!: Context;
 
@@ -23,9 +25,14 @@ export class GameStore extends DataSource<Context> {
     return GameModel.findAll({ include: includePlayers });
   }
 
-  async firstGameInLobby(): Promise<GameModel | null> {
+  async firstGameInLobby(userId: string): Promise<GameModel | null> {
     const game = await GameModel.findOne({
-      where: { state: GameStateKindMap.GameLobby }
+      where: {
+        state: GameStateKindMap.GameLobby,
+        playerO_id: { [Op.ne]: userId },
+        playerX_id: { [Op.ne]: userId }
+      },
+      include: includePlayers
     });
     return game;
   }

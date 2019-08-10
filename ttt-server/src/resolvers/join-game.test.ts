@@ -83,9 +83,9 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
       game = await joinGame(bob, dataSources);
     });
 
-    it("There should be three games", async () => {
+    it("There should be two games", async () => {
       const games = await getAllGames(dataSources);
-      expect(games.length).toBe(3);
+      expect(games.length).toBe(2);
     });
 
     it("the game status should be 'GamePlaying'", () => {
