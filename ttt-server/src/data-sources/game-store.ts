@@ -28,7 +28,7 @@ export class GameStore extends DataSource<Context> {
   async firstGameInLobby(userId: number): Promise<GameModel | null> {
     const game = await GameModel.findOne({
       where: {
-        state: GameStateKindMap.GameLobby
+        isInLobby: true
       },
       include: includePlayers
     });
@@ -46,7 +46,7 @@ export class GameStore extends DataSource<Context> {
 
   async createGame(id: string, userId: number, avatar: Avatar): Promise<GameModel> {
     const player = await this.createPlayer(userId, avatar);
-    const game = await GameModel.create({ id, state: GameStateKindMap.GameLobby });
+    const game = await GameModel.create({ id });
     if (avatar == Avatar.O) {
       await game.setPlayerO(player);
     } else {
@@ -64,7 +64,7 @@ export class GameStore extends DataSource<Context> {
       const player = await this.createPlayer(userId, Avatar.O);
       await game.setPlayerO(player);
     }
-    await game.update({ state: GameStateKindMap.GamePlaying });
+    await game.update({ isInLobby: false });
     await this.reloadPlayers(game);
     return game;
   }

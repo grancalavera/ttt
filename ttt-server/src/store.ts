@@ -6,7 +6,8 @@ import {
   ENUM,
   BelongsToGetAssociationMixin,
   Association,
-  BelongsToSetAssociationMixin
+  BelongsToSetAssociationMixin,
+  BOOLEAN
 } from "sequelize";
 import { GameStateKind, AllStateKinds } from "./model";
 
@@ -34,7 +35,7 @@ export class PlayerModel extends Model {
 
 export class GameModel extends Model {
   public id!: string;
-  public state!: GameStateKind;
+  public isInLobby!: boolean;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -79,7 +80,7 @@ export const create = ({ storage }: { storage: string }) => {
   GameModel.init(
     {
       id: { type: STRING, primaryKey: true },
-      state: { type: ENUM(...AllStateKinds), allowNull: false }
+      isInLobby: { type: BOOLEAN, defaultValue: true }
     },
     { sequelize, tableName: "ttt-games" }
   );
