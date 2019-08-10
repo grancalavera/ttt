@@ -9,7 +9,7 @@ import {
 
 import { assertNever, chooseAvatar } from "../common";
 import { TTTDataSources } from "../environment";
-import { Avatar, Game, GameLobby, Player, User } from "../generated/models";
+import { Avatar, Game, GameLobby, Player, User, GamePlaying } from "../generated/models";
 import { GameStateKind, GameStateKindMap, playerFromModel } from "../model";
 import { GameModel, PlayerModel } from "../store";
 
@@ -17,7 +17,8 @@ export const joinGame = async (
   user: User,
   dataSources: TTTDataSources
 ): Promise<Game> => {
-  const maybeGameInLobby = await dataSources.gameStore.firstGameInLobby(user.id);
+  const userId = parseInt(user.id);
+  const maybeGameInLobby = await dataSources.gameStore.firstGameInLobby(userId);
   if (maybeGameInLobby) {
     return joinExistingGame(maybeGameInLobby, user, dataSources);
   } else {
@@ -34,7 +35,7 @@ const joinNewGame = async (
   const userId = parseInt(user.id);
   const { game: coreGame } = await dataSources.gameAPI.postGame(id);
   const storeGame = await dataSources.gameStore.createGame(id, userId, avatar);
-  await dataSources.gameStore.reloadPlayers(storeGame);
+
   return combineGames(coreGame, storeGame);
 };
 
@@ -43,7 +44,10 @@ const joinExistingGame = async (
   user: User,
   dataSources: TTTDataSources
 ): Promise<Game> => {
-  return {} as Game;
+  const userId = parseInt(user.id);
+  const storeGame = await dataSources.gameStore.joinGame(game, userId);
+  const { game: coreGame } = await dataSources.gameAPI.getGameById(game.id);
+  return combineGames(coreGame, storeGame);
 };
 
 export const combineGames = (coreGame: CoreGame, storeGame: GameModel): Game => {
@@ -52,13 +56,12 @@ export const combineGames = (coreGame: CoreGame, storeGame: GameModel): Game => 
 
   switch (__typename) {
     case GameStateKindMap.GameLobby:
-      const state: GameLobby = {
-        __typename,
-        waiting: resolveWaitingPlayer(storeGame)
-      };
       return {
         id,
-        state
+        state: {
+          __typename,
+          waiting: resolveWaitingPlayer(storeGame)
+        }
       };
     case GameStateKindMap.GamePlaying:
       return {} as Game;

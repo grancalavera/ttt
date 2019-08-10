@@ -52,6 +52,20 @@ export class GameStore extends DataSource<Context> {
     } else {
       await game.setPlayerX(player);
     }
+    await this.reloadPlayers(game);
+    return game;
+  }
+
+  async joinGame(game: GameModel, userId: number): Promise<GameModel> {
+    if (game.playerO) {
+      const player = await this.createPlayer(userId, Avatar.X);
+      await game.setPlayerX(player);
+    } else {
+      const player = await this.createPlayer(userId, Avatar.O);
+      await game.setPlayerO(player);
+    }
+    await game.update({ state: GameStateKindMap.GamePlaying });
+    await this.reloadPlayers(game);
     return game;
   }
 
@@ -60,7 +74,7 @@ export class GameStore extends DataSource<Context> {
     return userModel;
   }
 
-  public async reloadPlayers(game: GameModel): Promise<GameModel> {
+  private async reloadPlayers(game: GameModel): Promise<GameModel> {
     return await game.reload({
       include: includePlayers
     });
