@@ -1,12 +1,14 @@
-import { MutationResolvers, QueryResolvers, Resolvers, User } from "../generated/models";
-import { joinGame } from "./join-game";
-import { getAllGames } from "./get-all-games";
+import { ErrorResponse } from "@grancalavera/ttt-api";
+
 import { assertNever } from "../common";
+import { MutationResolvers, QueryResolvers, Resolvers } from "../generated/models";
 import { LOGGED_IN, LOGGED_OUT } from "../model";
+import { getAllGames } from "./get-all-games";
+import { joinGame } from "./join-game";
 
 const Query: QueryResolvers = {
   me: (_, __, { userStatus }) => (userStatus.kind === LOGGED_IN ? userStatus.user : null),
-  games: (_, __, { dataSources }) => getAllGames(dataSources)
+  games: (_, __, { dataSources }) => getAllGames(dataSources).catch(handleSimpleError)
 };
 
 const Mutation: MutationResolvers = {
@@ -34,5 +36,28 @@ const Mutation: MutationResolvers = {
 };
 
 const resolvers: Resolvers = { Query, Mutation };
-
 export { resolvers };
+
+const getErrorResponse = (error?: any): ErrorResponse => {
+  if (
+    error &&
+    error.extensions &&
+    error.extensions.response &&
+    error.extensions.response.body &&
+    error.extensions.response.body.code &&
+    typeof error.extensions.response.body.code === "string" &&
+    error.extensions.response.body.message &&
+    typeof error.extensions.response.body.message === "string" &&
+    error.extensions.response.body.context &&
+    typeof error.extensions.response.body.context === "object"
+  ) {
+    return error.extensions.response.body as ErrorResponse;
+  } else {
+    throw new Error(error);
+  }
+};
+
+const handleSimpleError = (error?: any) => {
+  const errorResponse = getErrorResponse(error);
+  throw new Error(errorResponse.message);
+};

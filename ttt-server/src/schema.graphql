@@ -11,7 +11,7 @@ type Query {
 
 type Mutation {
   login(email: String!): String
-  playMove(gameId: ID!, avatar: Avatar!, position: Position!): JoinGameResult!
+  playMove(gameId: ID!, avatar: Avatar!, position: Position!): PlayMoveResult!
   joinGame: JoinGameResult!
 }
 
@@ -26,9 +26,37 @@ type User {
   email: String!
 }
 
+union Game = GameLobby | GamePlaying | GameOverWin | GameOverTie
 union JoinGameResult = GameLobby | GamePlaying | GameOverWin | GameOverTie
 
-union Game = GameLobby | GamePlaying | GameOverWin | GameOverTie
+union PlayMoveResult =
+    GameLobby
+  | GamePlaying
+  | GameOverWin
+  | GameOverTie
+  | ErrorGameOver
+  | ErrorWrongMove
+  | ErrorWrongTurn
+
+type ErrorGameOver {
+  message: String!
+}
+
+type ErrorInvalidMove {
+  message: String!
+}
+
+type ErrorNotFound {
+  message: String!
+}
+
+type ErrorWrongMove {
+  message: String!
+}
+
+type ErrorWrongTurn {
+  message: String!
+}
 
 type GameLobby {
   id: ID!
@@ -61,7 +89,6 @@ type GameOverTie {
 type Player {
   user: User!
   avatar: Avatar!
-  games: [Game!]
 }
 
 type Move {
