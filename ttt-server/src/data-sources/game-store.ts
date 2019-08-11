@@ -25,6 +25,10 @@ export class GameStore extends DataSource<Context> {
     return GameModel.findAll({ include: includePlayers });
   }
 
+  async findGameById(gameId: string): Promise<GameModel> {
+    return {} as GameModel;
+  }
+
   async firstGameInLobby(userId: number): Promise<GameModel | null> {
     const game = await GameModel.findOne({
       where: {
