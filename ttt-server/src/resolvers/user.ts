@@ -1,7 +1,7 @@
-import { Context } from "../environment";
-import { LOGGED_IN, LOGGED_OUT } from "../model";
-import { User } from "../generated/models";
 import { assertNever } from "../common";
+import { Context } from "../environment";
+import { User } from "../generated/models";
+import { LOGGED_IN, LOGGED_OUT } from "../model";
 
 export const me = (context: Context): User | null => {
   const { userStatus } = context;

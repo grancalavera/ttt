@@ -11,7 +11,7 @@ import {
 } from "@grancalavera/ttt-core";
 
 import { assertNever, chooseAvatar } from "../common";
-import { TTTDataSources } from "../environment";
+import { TTTDataSources, Context } from "../environment";
 import {
   Avatar,
   Game,
@@ -24,16 +24,14 @@ import {
 import { GameTypename, playerFromModel } from "../model";
 import { GameModel } from "../store";
 
-export const joinGame = async (
-  user: User,
-  dataSources: TTTDataSources
-): Promise<JoinGameResult> => {
+export const joinGame = async (user: User, context: Context): Promise<JoinGameResult> => {
   const userId = parseInt(user.id);
-  const maybeGameInLobby = await dataSources.gameStore.firstGameInLobby(userId);
+  const { gameStore } = context.dataSources;
+  const maybeGameInLobby = await gameStore.firstGameInLobby(userId);
   if (maybeGameInLobby) {
-    return joinExistingGame(maybeGameInLobby, user, dataSources);
+    return joinExistingGame(maybeGameInLobby, user, context);
   } else {
-    return joinNewGame(uuid(), user, chooseAvatar(), dataSources);
+    return joinNewGame(uuid(), user, chooseAvatar(), context);
   }
 };
 
@@ -41,23 +39,24 @@ const joinNewGame = async (
   id: string,
   user: User,
   avatar: Avatar,
-  dataSources: TTTDataSources
+  context: Context
 ): Promise<JoinGameResult> => {
   const userId = parseInt(user.id);
-  const { game: coreGame } = await dataSources.gameAPI.postGame(id);
-  const storeGame = await dataSources.gameStore.createGame(id, userId, avatar);
-
+  const { gameStore, gameAPI } = context.dataSources;
+  const { game: coreGame } = await gameAPI.postGame(id);
+  const storeGame = await gameStore.createGame(id, userId, avatar);
   return combineGames(coreGame, storeGame);
 };
 
 const joinExistingGame = async (
   game: GameModel,
   user: User,
-  dataSources: TTTDataSources
+  context: Context
 ): Promise<JoinGameResult> => {
+  const { gameStore, gameAPI } = context.dataSources;
   const userId = parseInt(user.id);
-  const storeGame = await dataSources.gameStore.joinGame(game, userId);
-  const { game: coreGame } = await dataSources.gameAPI.getGameById(game.id);
+  const storeGame = await gameStore.joinGame(game, userId);
+  const { game: coreGame } = await gameAPI.getGameById(game.id);
   return combineGames(coreGame, storeGame);
 };
 

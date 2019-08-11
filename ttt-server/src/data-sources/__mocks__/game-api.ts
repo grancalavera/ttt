@@ -1,6 +1,6 @@
 // https://jestjs.io/docs/en/es6-class-mocks
 
-import { createGame, CoreGame } from "@grancalavera/ttt-core";
+import { createGame, CoreGame, CoreMove } from "@grancalavera/ttt-core";
 import { Move } from "../../generated/models";
 import { coreMoveFromMove } from "../../common";
 import { IGameAPI } from "../game-api";
@@ -40,10 +40,10 @@ class MockGameAPI implements IGameAPI {
     return this._sendGameResponse(id, game);
   }
 
-  postMove(id: string, move: Move) {
+  postMove(id: string, move: CoreMove) {
     const game = this._gameById(id);
     if (game) {
-      game.moves = [coreMoveFromMove(move), ...game.moves];
+      game.moves = [move, ...game.moves];
       return this._sendGameResponse(id, game);
     } else {
       return this._sendGameNotFound(id);

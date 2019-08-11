@@ -1,11 +1,7 @@
-import { ErrorResponse, ErrorCode } from "@grancalavera/ttt-api";
+import { ErrorCode, ErrorResponse } from "@grancalavera/ttt-api";
+
 import { assertNever } from "../common";
-import {
-  ErrorGameOver,
-  ErrorWrongMove,
-  ErrorWrongTurn,
-  ErrorNotFound
-} from "../generated/models";
+import { ErrorGameOver, ErrorWrongMove, ErrorWrongTurn } from "../generated/models";
 
 export const handleSimpleError = (error?: any) => {
   const errorResponse = getErrorResponse(error);

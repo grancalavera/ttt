@@ -2,10 +2,7 @@ import { DataSource, DataSourceConfig } from "apollo-datasource";
 
 import { Context } from "../environment";
 import { Avatar } from "../generated/models";
-import { GameTypename } from "../model";
 import { GameModel, PlayerModel, UserModel } from "../store";
-
-import { Op } from "sequelize";
 
 export class GameStore extends DataSource<Context> {
   private context!: Context;
@@ -26,7 +23,12 @@ export class GameStore extends DataSource<Context> {
   }
 
   async findGameById(gameId: string): Promise<GameModel> {
-    return {} as GameModel;
+    const game = await GameModel.findByPk(gameId);
+    if (game) {
+      return await reloadPlayers(game);
+    } else {
+      throw new Error(`unknown game ${gameId}`);
+    }
   }
 
   async firstGameInLobby(userId: number): Promise<GameModel | null> {
@@ -56,7 +58,7 @@ export class GameStore extends DataSource<Context> {
     } else {
       await game.setPlayerX(player);
     }
-    await this.reloadPlayers(game);
+    await reloadPlayers(game);
     return game;
   }
 
@@ -69,7 +71,7 @@ export class GameStore extends DataSource<Context> {
       await game.setPlayerO(player);
     }
     await game.update({ isInLobby: false });
-    await this.reloadPlayers(game);
+    await reloadPlayers(game);
     return game;
   }
 
@@ -77,13 +79,11 @@ export class GameStore extends DataSource<Context> {
     const [userModel] = await UserModel.findOrCreate({ where: { email } });
     return userModel;
   }
-
-  private async reloadPlayers(game: GameModel): Promise<GameModel> {
-    return await game.reload({
-      include: includePlayers
-    });
-  }
 }
+const reloadPlayers = async (game: GameModel): Promise<GameModel> =>
+  await game.reload({
+    include: includePlayers
+  });
 
 const includePlayer = (as: "playerO" | "playerX") => {
   return {

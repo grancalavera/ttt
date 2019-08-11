@@ -1,5 +1,5 @@
 import { create as createStore, UserModel } from "../store";
-import { TTTDataSources } from "../environment";
+import { TTTDataSources, Context } from "../environment";
 import { User, Game } from "../generated/models";
 import { joinGame } from "./join-game";
 import { GameAPI } from "../data-sources/game-api";
@@ -10,18 +10,17 @@ import { getAllGames } from "./get-all-games";
 
 jest.mock("../data-sources/game-api");
 
-const mockDataSources = () =>
-  ({
-    gameAPI: new GameAPI("no-required"),
-    gameStore: new GameStore()
-  } as TTTDataSources);
-
 describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
   let alice: User;
   let bob: User;
   let jane: User;
 
-  const dataSources = mockDataSources();
+  const context = {
+    dataSources: {
+      gameAPI: new GameAPI("no-required"),
+      gameStore: new GameStore()
+    }
+  } as Context;
 
   beforeAll(async () => {
     const storage = `./join-game.test.sqlite`;
@@ -37,7 +36,7 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
     let game: Game;
 
     beforeAll(async () => {
-      game = await joinGame(alice, dataSources);
+      game = await joinGame(alice, context);
     });
 
     it("the game's state should be 'GameLobby'", () => {
@@ -55,16 +54,16 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
 
   describe("Alice joins another game, then:", () => {
     beforeAll(async () => {
-      await joinGame(alice, dataSources);
+      await joinGame(alice, context);
     });
 
     it("There should be two games", async () => {
-      const games = await getAllGames(dataSources);
+      const games = await getAllGames(context);
       expect(games.length).toBe(2);
     });
 
     it("Alice should be waiting at the lobby of all games", async () => {
-      const games = await getAllGames(dataSources);
+      const games = await getAllGames(context);
       const actual = games.map(game => {
         if (game.__typename === GameTypename.GameLobby) {
           return game.waiting.user.email;
@@ -80,11 +79,11 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
     let game: Game;
 
     beforeAll(async () => {
-      game = await joinGame(bob, dataSources);
+      game = await joinGame(bob, context);
     });
 
     it("There should be two games", async () => {
-      const games = await getAllGames(dataSources);
+      const games = await getAllGames(context);
       expect(games.length).toBe(2);
     });
 

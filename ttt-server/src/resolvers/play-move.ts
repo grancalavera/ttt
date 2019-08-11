@@ -45,8 +45,8 @@ export const playMove = async (
   const { gameAPI, gameStore } = context.dataSources;
   try {
     const move = coreMoveFromMove({ avatar, position });
-    const storeGame = await gameStore.findGameById(gameId);
     const { game: coreGame } = await gameAPI.postMove(gameId, move);
+    const storeGame = await gameStore.findGameById(gameId);
     return {} as PlayMoveResult;
   } catch (e) {
     return handleMoveError(e);
