@@ -1,4 +1,4 @@
-import { Sequelize, Model, INTEGER, STRING, NUMBER } from "sequelize";
+import { INTEGER, Model, NUMBER, Sequelize, STRING } from "sequelize";
 
 export const store = new Sequelize({
   dialect: "sqlite",

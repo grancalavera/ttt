@@ -20,8 +20,9 @@ import {
 } from "@grancalavera/ttt-core";
 
 import { GameModel, MoveModel, store, toUnsafeMove } from "./store";
+import { GameResponse, ErrorCode, ErrorResponse, MovesResponse } from "./model";
 
-export function assertNever(value: never): never {
+function assertNever(value: never): never {
   throw new Error(`unexpected value ${value}`);
 }
 
@@ -34,30 +35,6 @@ const coerceToUUID = coerce(
   (x: any): x is string => typeof x === "string",
   discarded => `type coercion for UUID failed: ${discarded} is not a string`
 );
-
-export enum ErrorCode {
-  NotFound = "the requested game does not exist",
-  GameOver = "game over: the requested game is over",
-  WrongTurn = "wrong player: not this player's turn",
-  WrongMove = "wrong move: position already taken",
-  InvalidMove = "invalid move: either the Player or the Position are invalid"
-}
-
-export interface GameResponse {
-  id: string;
-  game: CoreGame;
-}
-
-export interface MovesResponse {
-  id: string;
-  moves: CoreMove[];
-}
-
-export interface ErrorResponse {
-  code: ErrorCode;
-  message: string;
-  context: any;
-}
 
 const commitMove = (gameId: string, game: CoreGamePlaying, move: CoreMove) => {
   const [player, position] = move;
