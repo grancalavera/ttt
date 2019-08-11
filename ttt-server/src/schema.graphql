@@ -30,8 +30,7 @@ union Game = GameLobby | GamePlaying | GameOverWin | GameOverTie
 union JoinGameResult = GameLobby | GamePlaying | GameOverWin | GameOverTie
 
 union PlayMoveResult =
-    GameLobby
-  | GamePlaying
+    GamePlaying
   | GameOverWin
   | GameOverTie
   | ErrorGameOver
