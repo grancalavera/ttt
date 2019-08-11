@@ -78,19 +78,18 @@ enum Avatar {
 
 """
 Represents a tic-tac-toe board, like this:
-
-P0 P1 P2
-P3 P4 P5
-P6 P7 P8
+A B C
+D E F
+G H I
 """
 enum Position {
-  P0
-  P1
-  P2
-  P3
-  P4
-  P5
-  P6
-  P7
-  P8
+  A
+  B
+  C
+  D
+  E
+  F
+  G
+  H
+  I
 }

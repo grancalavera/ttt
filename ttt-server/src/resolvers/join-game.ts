@@ -7,7 +7,8 @@ import {
   CoreGame,
   CoreMove,
   CorePlayer,
-  CorePosition
+  CorePosition,
+  coerceToPosition
 } from "@grancalavera/ttt-core";
 
 import { assertNever, chooseAvatar } from "../common";
@@ -107,13 +108,13 @@ const corePlayerToPlayer = (corePlayer: CorePlayer, storeGame: GameModel): Playe
 
 const corePositionToPosition = (position: CorePosition): Position =>
   [
-    Position.P0,
-    Position.P1,
-    Position.P2,
-    Position.P3,
-    Position.P4,
-    Position.P5,
-    Position.P6,
-    Position.P7,
-    Position.P8
+    Position.A,
+    Position.B,
+    Position.C,
+    Position.D,
+    Position.E,
+    Position.F,
+    Position.G,
+    Position.H,
+    Position.I
   ][position];
