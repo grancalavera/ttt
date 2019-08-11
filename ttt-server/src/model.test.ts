@@ -1,17 +1,17 @@
-import { GameStateKindMap, AllStateKinds } from "./model";
+import { GameTypename } from "./model";
 import { assertNever } from "./common";
 
 describe("StateKindMap", () => {
   it("should enumerate all state kinds", () => {
-    AllStateKinds.forEach(kind => {
+    Object.values(GameTypename).forEach(kind => {
       switch (kind) {
-        case GameStateKindMap.GameLobby:
+        case GameTypename.GameLobby:
           break;
-        case GameStateKindMap.GameOverTie:
+        case GameTypename.GameOverTie:
           break;
-        case GameStateKindMap.GameOverWin:
+        case GameTypename.GameOverWin:
           break;
-        case GameStateKindMap.GamePlaying:
+        case GameTypename.GamePlaying:
           break;
         default:
           assertNever(kind);

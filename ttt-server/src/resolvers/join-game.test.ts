@@ -4,7 +4,7 @@ import { User, Game } from "../generated/models";
 import { joinGame } from "./join-game";
 import { GameAPI } from "../data-sources/game-api";
 
-import { GameStateKindMap, loginFromModel } from "../model";
+import { GameTypename, loginFromModel } from "../model";
 import { GameStore } from "../data-sources/game-store";
 import { getAllGames } from "./get-all-games";
 
@@ -41,12 +41,12 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
     });
 
     it("the game's state should be 'GameLobby'", () => {
-      expect(game.state.__typename).toBe(GameStateKindMap.GameLobby);
+      expect(game.__typename).toBe(GameTypename.GameLobby);
     });
 
     it("Alice should be the player 'waiting' at the lobby", () => {
-      if (game.state.__typename === GameStateKindMap.GameLobby) {
-        expect(game.state.waiting.user).toStrictEqual(alice);
+      if (game.__typename === GameTypename.GameLobby) {
+        expect(game.waiting.user).toStrictEqual(alice);
       } else {
         throw new Error("Unexpected game state");
       }
@@ -66,8 +66,8 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
     it("Alice should be waiting at the lobby of all games", async () => {
       const games = await getAllGames(dataSources);
       const actual = games.map(game => {
-        if (game.state.__typename === GameStateKindMap.GameLobby) {
-          return game.state.waiting.user.email;
+        if (game.__typename === GameTypename.GameLobby) {
+          return game.waiting.user.email;
         } else {
           throw new Error("Unexpected game state");
         }
@@ -89,32 +89,29 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
     });
 
     it("the game status should be 'GamePlaying'", () => {
-      expect(game.state.__typename).toBe(GameStateKindMap.GamePlaying);
+      expect(game.__typename).toBe(GameTypename.GamePlaying);
     });
 
     it("Alice and Bob should be the players in the game", () => {
-      if (game.state.__typename === GameStateKindMap.GamePlaying) {
-        const playerEmails = [
-          game.state.oPlayer.user.email,
-          game.state.xPlayer.user.email
-        ];
+      if (game.__typename === GameTypename.GamePlaying) {
+        const playerEmails = [game.oPlayer.user.email, game.xPlayer.user.email];
         const includesAlice = playerEmails.includes(alice.email);
         const includesBob = playerEmails.includes(bob.email);
         expect(includesAlice).toBeTruthy();
         expect(includesBob).toBeTruthy();
       } else {
-        throw new Error(`unexpected game state "${game.state.__typename}"`);
+        throw new Error(`unexpected game state "${game.__typename}"`);
       }
     });
 
     it("Alice OR Bob should be current player in the game", () => {
-      if (game.state.__typename === GameStateKindMap.GamePlaying) {
+      if (game.__typename === GameTypename.GamePlaying) {
         const playerEmails = [alice.email, bob.email];
-        const currentPlayerEmail = game.state.currentPlayer.user.email;
+        const currentPlayerEmail = game.currentPlayer.user.email;
         const includesCurrentPlayer = playerEmails.includes(currentPlayerEmail);
         expect(includesCurrentPlayer).toBeTruthy();
       } else {
-        throw new Error(`unexpected game state "${game.state.__typename}"`);
+        throw new Error(`unexpected game state "${game.__typename}"`);
       }
     });
   });

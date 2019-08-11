@@ -1,4 +1,4 @@
-import { Avatar, GameState, Player, User } from "./generated/models";
+import { Avatar, Game, Player, User } from "./generated/models";
 import { PlayerModel, UserModel } from "./store";
 
 export const LOGGED_OUT = "LOGGED_OUT";
@@ -16,16 +16,15 @@ export interface LoggedIn {
   kind: typeof LOGGED_IN;
   user: User;
 }
-export type GameStateKind = Exclude<GameState["__typename"], undefined>;
 
-export const GameStateKindMap: { [k in GameStateKind]: k } = {
+type TypeNames = Exclude<Game["__typename"], undefined>;
+
+export const GameTypename: { [k in TypeNames]: k } = {
   GameLobby: "GameLobby",
   GameOverTie: "GameOverTie",
   GameOverWin: "GameOverWin",
   GamePlaying: "GamePlaying"
 };
-
-export const AllStateKinds = Object.values(GameStateKindMap);
 
 export const loginFromModel = (model: UserModel): LoggedIn => ({
   kind: LOGGED_IN,

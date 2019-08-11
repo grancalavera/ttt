@@ -7,20 +7,27 @@ import {
   CoreGame,
   CoreMove,
   CorePlayer,
-  CorePosition,
-  coerceToPosition
+  CorePosition
 } from "@grancalavera/ttt-core";
 
 import { assertNever, chooseAvatar } from "../common";
 import { TTTDataSources } from "../environment";
-import { Avatar, Game, Move, Player, Position, User } from "../generated/models";
-import { GameStateKindMap, playerFromModel } from "../model";
+import {
+  Avatar,
+  Game,
+  Move,
+  Player,
+  Position,
+  User,
+  JoinGameResult
+} from "../generated/models";
+import { GameTypename, playerFromModel } from "../model";
 import { GameModel } from "../store";
 
 export const joinGame = async (
   user: User,
   dataSources: TTTDataSources
-): Promise<Game> => {
+): Promise<JoinGameResult> => {
   const userId = parseInt(user.id);
   const maybeGameInLobby = await dataSources.gameStore.firstGameInLobby(userId);
   if (maybeGameInLobby) {
@@ -35,7 +42,7 @@ const joinNewGame = async (
   user: User,
   avatar: Avatar,
   dataSources: TTTDataSources
-): Promise<Game> => {
+): Promise<JoinGameResult> => {
   const userId = parseInt(user.id);
   const { game: coreGame } = await dataSources.gameAPI.postGame(id);
   const storeGame = await dataSources.gameStore.createGame(id, userId, avatar);
@@ -47,7 +54,7 @@ const joinExistingGame = async (
   game: GameModel,
   user: User,
   dataSources: TTTDataSources
-): Promise<Game> => {
+): Promise<JoinGameResult> => {
   const userId = parseInt(user.id);
   const storeGame = await dataSources.gameStore.joinGame(game, userId);
   const { game: coreGame } = await dataSources.gameAPI.getGameById(game.id);
@@ -60,10 +67,8 @@ export const combineGames = (coreGame: CoreGame, storeGame: GameModel): Game => 
   if (storeGame.isInLobby) {
     return {
       id,
-      state: {
-        __typename: GameStateKindMap.GameLobby,
-        waiting: resolveWaitingPlayer(storeGame)
-      }
+      __typename: GameTypename.GameLobby,
+      waiting: resolveWaitingPlayer(storeGame)
     };
   }
 
@@ -71,13 +76,11 @@ export const combineGames = (coreGame: CoreGame, storeGame: GameModel): Game => 
     case CORE_GAME_PLAYING:
       return {
         id,
-        state: {
-          __typename: GameStateKindMap.GamePlaying,
-          currentPlayer: corePlayerToPlayer(coreGame.currentPlayer, storeGame),
-          moves: coreGame.moves.map(coreMoveToMove),
-          oPlayer: playerFromModel(storeGame.playerO!),
-          xPlayer: playerFromModel(storeGame.playerX!)
-        }
+        __typename: GameTypename.GamePlaying,
+        currentPlayer: corePlayerToPlayer(coreGame.currentPlayer, storeGame),
+        moves: coreGame.moves.map(coreMoveToMove),
+        oPlayer: playerFromModel(storeGame.playerO!),
+        xPlayer: playerFromModel(storeGame.playerX!)
       };
     case CORE_GAME_OVER_TIE:
       return {} as Game;

@@ -2,7 +2,7 @@ import { DataSource, DataSourceConfig } from "apollo-datasource";
 
 import { Context } from "../environment";
 import { Avatar } from "../generated/models";
-import { GameStateKindMap } from "../model";
+import { GameTypename } from "../model";
 import { GameModel, PlayerModel, UserModel } from "../store";
 
 import { Op } from "sequelize";

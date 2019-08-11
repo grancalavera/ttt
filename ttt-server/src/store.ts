@@ -9,7 +9,6 @@ import {
   BelongsToSetAssociationMixin,
   BOOLEAN
 } from "sequelize";
-import { GameStateKind, AllStateKinds } from "./model";
 
 export class UserModel extends Model {
   public readonly id!: number;

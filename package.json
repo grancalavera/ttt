@@ -8,6 +8,7 @@
   "scripts": {
     "prebuild": "yarn generate",
     "build": "lerna run build",
+    "start:clean": "lerna run start:clean",
     "test": "lerna run test",
     "generate": "graphql-codegen",
     "bootstrap": "lerna bootstrap"
