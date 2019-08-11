@@ -4,7 +4,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "start:clean": "rm store.sqlite && yarn start",
+    "start:clean": "rm -f store.sqlite && yarn start",
     "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "build": "tsc"
   },

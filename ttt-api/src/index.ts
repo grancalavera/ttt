@@ -35,6 +35,14 @@ const coerceToUUID = coerce(
   discarded => `type coercion for UUID failed: ${discarded} is not a string`
 );
 
+export enum ErrorCode {
+  NotFound = "the requested game does not exist",
+  GameOver = "game over: the requested game is over",
+  WrongTurn = "wrong player: not this player's turn",
+  WrongMove = "wrong move: position already taken",
+  InvalidMove = "invalid move: either the Player or the Position are invalid"
+}
+
 export interface GameResponse {
   id: string;
   game: CoreGame;
@@ -43,6 +51,12 @@ export interface GameResponse {
 export interface MovesResponse {
   id: string;
   moves: CoreMove[];
+}
+
+export interface ErrorResponse {
+  code: ErrorCode;
+  message: string;
+  context: any;
 }
 
 const commitMove = (gameId: string, game: CoreGamePlaying, move: CoreMove) => {
@@ -103,7 +117,6 @@ const gameResponseFromModel = (gameModel: GameModel): GameResponse => {
       return { id, game: { kind, moves } };
     case CORE_GAME_OVER_WIN:
       const winner = coerceToPlayer(gameModel.winner);
-      // TODO: persist winning move
       const winningMove = findWin(winner, moves)!;
       return { id, game: { kind, moves, winner, winningMove } };
     default:
@@ -118,18 +131,24 @@ const catchAndFail = (status: number, res: Response) => (e: Error) => {
   res.json({ message: e.message });
 };
 
-const badRequest = (status: number, message: string) => (res: Response, context: any) =>
-  res.status(status).send({ message, context });
+const badRequest = (status: number, code: ErrorCode) => (
+  res: Response,
+  context: any = {}
+) => {
+  const errorResponse: ErrorResponse = {
+    code,
+    message: code.valueOf(),
+    context
+  };
+  res.status(status).send(errorResponse);
+};
 
-const gameNotFound = badRequest(404, "the requested game does not exist");
+const gameNotFound = badRequest(404, ErrorCode.NotFound);
 
-const gameOver = badRequest(400, "the requested game is over");
-const wrongTurn = badRequest(400, "wrong player: not this player's turn");
-const wrongMove = badRequest(400, "wrong move: position already taken");
-const invalidMove = badRequest(
-  400,
-  "invalid move: either the Player or the Position are invalid"
-);
+const gameOver = badRequest(400, ErrorCode.GameOver);
+const wrongTurn = badRequest(400, ErrorCode.WrongTurn);
+const wrongMove = badRequest(400, ErrorCode.WrongMove);
+const invalidMove = badRequest(400, ErrorCode.InvalidMove);
 
 const findGameById = (id: string, transaction?: Transaction): Promise<GameModel | null> =>
   GameModel.findOne({
