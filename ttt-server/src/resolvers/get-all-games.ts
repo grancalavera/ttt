@@ -1,7 +1,7 @@
 import { Context } from "../environment";
 import { Game } from "../generated/models";
 import { GameModel } from "../store";
-import { combineGames } from "./join-game";
+import { combineGames } from "./combine-games";
 
 export const getAllGames = async (context: Context): Promise<Game[]> => {
   const { dataSources } = context;

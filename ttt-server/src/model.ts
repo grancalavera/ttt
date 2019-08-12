@@ -31,16 +31,24 @@ export const loginFromModel = (model: UserModel): LoggedIn => ({
   user: userFromModel(model)
 });
 
-export const userFromModel = (userModel: UserModel): User => {
-  return {
-    email: userModel.email,
-    id: userModel.id.toString()
-  };
+export const userFromModel = (userModel?: UserModel): User => {
+  if (userModel) {
+    return {
+      email: userModel.email,
+      id: userModel.id.toString()
+    };
+  } else {
+    throw new Error("undefined `playerModel`. Did you forget to cal `reloadPlayers`?");
+  }
 };
 
-export const playerFromModel = (playerModel: PlayerModel): Player => {
-  return {
-    avatar: playerModel.avatar as Avatar,
-    user: userFromModel(playerModel.user!)
-  };
+export const playerFromModel = (playerModel?: PlayerModel): Player => {
+  if (playerModel) {
+    return {
+      avatar: playerModel.avatar as Avatar,
+      user: userFromModel(playerModel.user)
+    };
+  } else {
+    throw new Error("undefined playerModel. Did you forget to cal `reloadPlayers`?");
+  }
 };

@@ -30,6 +30,7 @@ export interface CoreGameOverTie {
   kind: typeof CORE_GAME_OVER_TIE;
   moves: CoreMove[];
 }
+
 export interface CoreGameOverWin {
   kind: typeof CORE_GAME_OVER_WIN;
   winner: CorePlayer;

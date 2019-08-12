@@ -75,7 +75,8 @@ type GameOverWin {
   xPlayer: Player!
   oPlayer: Player!
   moves: [Move!]!
-  winner: Player
+  winner: Player!
+  winningMove: Win!
 }
 
 type GameOverTie {
@@ -93,6 +94,12 @@ type Player {
 type Move {
   position: Position!
   avatar: Avatar!
+}
+
+type Win {
+  p1: Position!
+  p2: Position!
+  p3: Position!
 }
 
 """
