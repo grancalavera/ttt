@@ -1,5 +1,5 @@
 import { MutationResolvers, QueryResolvers, Resolvers } from "../generated/models";
-import { handleSimpleError } from "./common";
+import { handleSimpleError } from "../common";
 import { getAllGames } from "./get-all-games";
 import { joinGame } from "./join-game";
 import { playMove } from "./play-move";

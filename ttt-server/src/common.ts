@@ -1,16 +1,12 @@
+import { ErrorResponse } from "@grancalavera/ttt-api";
 import {
   coerceToPlayer,
-  coerceToPosition,
-  CORE_GAME_OVER_TIE,
-  CORE_GAME_OVER_WIN,
   CORE_GAME_PLAYING,
   CoreGame,
+  CoreGamePlaying,
   CoreMove,
   CorePlayer,
   CorePosition,
-  CoreGamePlaying,
-  CoreGameOverTie,
-  CoreGameOverWin,
   CoreWin
 } from "@grancalavera/ttt-core";
 
@@ -18,24 +14,41 @@ import { Avatar, Move, Player, Position, Win } from "./generated/models";
 import { playerFromModel } from "./model";
 import { GameModel } from "./store";
 
+export const handleSimpleError = (error?: any) => {
+  const errorResponse = getErrorResponse(error);
+  throw new Error(errorResponse.message);
+};
+
+export const getErrorResponse = (error?: any): ErrorResponse => {
+  if (
+    error &&
+    error.extensions &&
+    error.extensions.response &&
+    error.extensions.response.body &&
+    error.extensions.response.body.code &&
+    typeof error.extensions.response.body.code === "string" &&
+    error.extensions.response.body.message &&
+    typeof error.extensions.response.body.message === "string" &&
+    error.extensions.response.body.context &&
+    typeof error.extensions.response.body.context === "object"
+  ) {
+    return error.extensions.response.body as ErrorResponse;
+  } else {
+    throw new Error(error);
+  }
+};
+
 export function assertNever(value: never): never {
   throw new Error(`unexpected value ${value}`);
 }
 
 export const chooseAvatar = (): Avatar => (Math.random() < 0.5 ? Avatar.X : Avatar.O);
 
-const corePlayerFromMove = (move: Move): CorePlayer => coerceToPlayer(move.avatar);
-
-const corePositionFromMove = (move: Move): CorePosition =>
-  [move.position]
-    .map(p => p.replace("P", ""))
-    .map(p => parseInt(p))
-    .map(p => coerceToPosition(p))[0];
-
-export const coreMoveFromMove = (move: Move): CoreMove => [
-  corePlayerFromMove(move),
-  corePositionFromMove(move)
-];
+export const coreMoveFromMove = (move: Move): CoreMove => {
+  const player = coerceToPlayer(move.avatar);
+  const position = corePositionFromPosition(move.position);
+  return [player, position];
+};
 
 export const corePositionFromPosition = (position: Position): CorePosition => {
   switch (position) {
@@ -104,9 +117,3 @@ export const resolveWaitingPlayer = (storeGame: GameModel): Player => {
 
 export const isCoreGamePlaying = (coreGame: CoreGame): coreGame is CoreGamePlaying =>
   coreGame.kind === CORE_GAME_PLAYING;
-
-export const isCoreGameOverTie = (coreGame: CoreGame): coreGame is CoreGameOverTie =>
-  coreGame.kind === CORE_GAME_OVER_TIE;
-
-export const isCoreGameOverWin = (coreGame: CoreGame): coreGame is CoreGameOverWin =>
-  coreGame.kind === CORE_GAME_OVER_WIN;

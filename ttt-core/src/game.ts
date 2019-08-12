@@ -90,17 +90,17 @@ export const isMove = (x: [string, number]): x is CoreMove => {
 
 export const coerceToPlayer = coerce(
   isPlayer,
-  discarded => `${discarded} is not a valid Player`
+  discarded => `coercion failed: ${discarded} is not a valid Player`
 );
 
 export const coerceToPosition = coerce(
   isPos,
-  discarded => `${discarded} is not a valid Position`
+  discarded => `coercion failed: ${discarded} is not a valid Position`
 );
 
 export const coerceToGameState = coerce(
   isGameState,
-  discarded => `${discarded} is not a valid GameState`
+  discarded => `coercion failed: ${discarded} is not a valid GameState`
 );
 
 export const coerceToMove = coerce(

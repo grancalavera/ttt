@@ -31,7 +31,7 @@ export class GameAPI extends RESTDataSource implements IGameAPI {
     return this.post<GameResponse>("ttt", { id });
   }
 
-  public postMove(id: string, move: CoreMove) {
-    return this.post<GameResponse>(`ttt/${id}/moves`, move);
+  public postMove(id: string, [player, position]: CoreMove) {
+    return this.post<GameResponse>(`ttt/${id}/moves`, { player, position });
   }
 }

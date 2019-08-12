@@ -18,7 +18,6 @@ type Mutation {
 type Subscription {
   moves(gameId: ID!): Move!
   game(gameId: ID!): Game!
-  # joinGame(userId: ID!): Game!
 }
 
 type User {
