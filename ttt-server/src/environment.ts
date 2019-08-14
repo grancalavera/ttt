@@ -1,5 +1,5 @@
 import { AuthenticationError } from "apollo-server";
-import { Request } from "express";
+import express from "express";
 import isEmail from "isemail";
 
 import { assertNever } from "./common";
@@ -8,6 +8,7 @@ import { User } from "./generated/models";
 import { UserModel } from "./store";
 import { GameAPI } from "./data-sources/game-api";
 import { loginFromModel, UserStatus, LOGGED_IN, LOGGED_OUT, PromiseType } from "./model";
+import { ExecutionParams } from "subscriptions-transport-ws";
 
 export const dataSources = () => ({
   gameStore: new GameStore(),
@@ -31,7 +32,7 @@ const makeSecureResolver = <T>(userStatus: UserStatus) => (
 
 const logout = { kind: LOGGED_OUT } as const;
 
-const resolveUserStatus = async (req: Request): Promise<UserStatus> => {
+const resolveUserStatus = async (req: express.Request): Promise<UserStatus> => {
   // if auth is empty => logout
   const auth = req.headers.authorization || "";
   if (!auth) return logout;
@@ -44,13 +45,26 @@ const resolveUserStatus = async (req: Request): Promise<UserStatus> => {
   return maybeUser ? loginFromModel(maybeUser) : logout;
 };
 
-export const context = async ({ req }: { req: Request }) => {
-  const userStatus = await resolveUserStatus(req);
-  const resolveWithSecurity: SecureCallback = makeSecureResolver(userStatus);
-  const gameAPIBaseURL = "http://localhost:9000";
-  return { userStatus, resolveWithSecurity, gameAPIBaseURL };
+// This type is defined somewhere in apollo-server-core I think but
+// I just was not able to get it from there for some reason.
+interface ExpressContext {
+  req: express.Request;
+  res: express.Response;
+  connection?: ExecutionParams<ExpressContext>;
+}
+
+export const context = async ({ req, connection }: ExpressContext) => {
+  if (connection) {
+    return connection.context;
+  } else {
+    const userStatus = await resolveUserStatus(req);
+    const resolveWithSecurity: SecureCallback = makeSecureResolver(userStatus);
+    const gameAPIBaseURL = "http://localhost:9000";
+    return { userStatus, resolveWithSecurity, gameAPIBaseURL };
+  }
 };
+
 export type TTTDataSources = ReturnType<typeof dataSources>;
-export type Context = PromiseType<ReturnType<typeof context>> & {
+export type TTTContext = PromiseType<ReturnType<typeof context>> & {
   dataSources: TTTDataSources;
 };

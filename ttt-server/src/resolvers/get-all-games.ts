@@ -1,9 +1,9 @@
-import { Context } from "../environment";
+import { TTTContext } from "../environment";
 import { Game } from "../generated/models";
 import { GameModel } from "../store";
 import { combineGames } from "./combine-games";
 
-export const getAllGames = async (context: Context): Promise<Game[]> => {
+export const getAllGames = async (context: TTTContext): Promise<Game[]> => {
   const { dataSources } = context;
   const apiGames = await dataSources.gameAPI.getAllGames();
   const storeGamesMap = await dataSources.gameStore

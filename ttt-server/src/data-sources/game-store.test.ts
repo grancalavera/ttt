@@ -1,13 +1,13 @@
 import { UserModel, GameModel } from "../store";
 import { create as createStore } from "../store";
 import { GameStore } from "./game-store";
-import { Context } from "../environment";
+import { TTTContext } from "../environment";
 import { DataSourceConfig } from "apollo-datasource";
 import { Avatar } from "../generated/models";
 
 describe("Creating games for Alice and Bob", () => {
   const gameStore = new GameStore();
-  gameStore.initialize({} as DataSourceConfig<Context>);
+  gameStore.initialize({} as DataSourceConfig<TTTContext>);
 
   let alice: UserModel;
   let bob: UserModel;

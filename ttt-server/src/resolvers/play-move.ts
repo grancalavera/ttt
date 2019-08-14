@@ -7,7 +7,7 @@ import {
 } from "@grancalavera/ttt-core";
 
 import { assertNever, coreMoveFromMove } from "../common";
-import { Context } from "../environment";
+import { TTTContext } from "../environment";
 import {
   Avatar,
   PlayMoveResult,
@@ -27,7 +27,7 @@ export const playMove = async (
   gameId: string,
   avatar: Avatar,
   position: Position,
-  context: Context
+  context: TTTContext
 ): Promise<PlayMoveResult> => {
   const { gameAPI, gameStore } = context.dataSources;
   try {

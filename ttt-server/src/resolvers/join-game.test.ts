@@ -1,5 +1,5 @@
 import { create as createStore, UserModel } from "../store";
-import { TTTDataSources, Context } from "../environment";
+import { TTTDataSources, TTTContext } from "../environment";
 import { User, Game } from "../generated/models";
 import { joinGame } from "./join-game";
 import { GameAPI } from "../data-sources/game-api";
@@ -20,7 +20,7 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
       gameAPI: new GameAPI("no-required"),
       gameStore: new GameStore()
     }
-  } as Context;
+  } as TTTContext;
 
   beforeAll(async () => {
     const storage = `./join-game.test.sqlite`;

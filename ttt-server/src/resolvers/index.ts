@@ -1,9 +1,15 @@
-import { MutationResolvers, QueryResolvers, Resolvers } from "../generated/models";
+import {
+  MutationResolvers,
+  QueryResolvers,
+  Resolvers,
+  SubscriptionResolvers
+} from "../generated/models";
 import { handleSimpleError } from "../common";
 import { getAllGames } from "./get-all-games";
 import { joinGame } from "./join-game";
 import { playMove } from "./play-move";
 import * as user from "./user";
+import { pubsub, PUBSUB_GAME, PUBSUB_MOVES } from "../pubsub";
 
 const Query: QueryResolvers = {
   me: (_, __, context) => user.me(context),
@@ -22,5 +28,14 @@ const Mutation: MutationResolvers = {
   }
 };
 
-const resolvers: Resolvers = { Query, Mutation };
+const Subscription: SubscriptionResolvers = {
+  game: {
+    subscribe: () => pubsub.asyncIterator([PUBSUB_GAME])
+  },
+  moves: {
+    subscribe: () => pubsub.asyncIterator([PUBSUB_MOVES])
+  }
+};
+
+const resolvers: Resolvers = { Query, Mutation, Subscription };
 export { resolvers };

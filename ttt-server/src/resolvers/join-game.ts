@@ -1,7 +1,7 @@
 import uuid from "uuid/v4";
 
 import { chooseAvatar, isCoreGamePlaying } from "../common";
-import { Context } from "../environment";
+import { TTTContext } from "../environment";
 import {
   Avatar,
   GameLobby,
@@ -12,7 +12,10 @@ import {
 import { GameModel } from "../store";
 import { gameInLobby, gamePlaying } from "./combine-games";
 
-export const joinGame = async (user: User, context: Context): Promise<JoinGameResult> => {
+export const joinGame = async (
+  user: User,
+  context: TTTContext
+): Promise<JoinGameResult> => {
   const userId = parseInt(user.id);
   const { gameStore } = context.dataSources;
 
@@ -28,7 +31,7 @@ const joinNewGame = async (
   id: string,
   user: User,
   avatar: Avatar,
-  context: Context
+  context: TTTContext
 ): Promise<GameLobby> => {
   const userId = parseInt(user.id);
   const { gameStore, gameAPI } = context.dataSources;
@@ -41,7 +44,7 @@ const joinNewGame = async (
 const joinExistingGame = async (
   game: GameModel,
   user: User,
-  context: Context
+  context: TTTContext
 ): Promise<GamePlaying> => {
   const { gameStore, gameAPI } = context.dataSources;
   const userId = parseInt(user.id);

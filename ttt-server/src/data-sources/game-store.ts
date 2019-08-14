@@ -1,13 +1,13 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
 
-import { Context } from "../environment";
+import { TTTContext } from "../environment";
 import { Avatar } from "../generated/models";
 import { GameModel, PlayerModel, UserModel } from "../store";
 
-export class GameStore extends DataSource<Context> {
-  private context!: Context;
+export class GameStore extends DataSource<TTTContext> {
+  private context!: TTTContext;
 
-  initialize({ context }: DataSourceConfig<Context>) {
+  initialize({ context }: DataSourceConfig<TTTContext>) {
     this.context = context;
   }
 
