@@ -16,4 +16,4 @@ config:
   # see: https://graphql-code-generator.com/docs/generated-config/typescript-resolvers#noschemastitching-boolean-default-value-false
   noSchemaStitching: true
   immutableTypes: true
-  contextType: ../environment#Context
+  contextType: ../environment#TTTContext

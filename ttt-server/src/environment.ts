@@ -53,18 +53,21 @@ interface ExpressContext {
   connection?: ExecutionParams<ExpressContext>;
 }
 
-export const context = async ({ req, connection }: ExpressContext) => {
+export const context = async ({ req, res, connection }: ExpressContext) => {
+  const userStatus = await resolveUserStatus(req);
+  const resolveWithSecurity: SecureCallback = makeSecureResolver(userStatus);
+  const gameAPIBaseURL = "http://localhost:9000";
+  const ctx = { userStatus, resolveWithSecurity, gameAPIBaseURL };
+
   if (connection) {
-    return connection.context;
+    return { req, res, connection, ...ctx };
   } else {
-    const userStatus = await resolveUserStatus(req);
-    const resolveWithSecurity: SecureCallback = makeSecureResolver(userStatus);
-    const gameAPIBaseURL = "http://localhost:9000";
-    return { userStatus, resolveWithSecurity, gameAPIBaseURL };
+    return ctx;
   }
 };
 
 export type TTTDataSources = ReturnType<typeof dataSources>;
+
 export type TTTContext = PromiseType<ReturnType<typeof context>> & {
   dataSources: TTTDataSources;
 };
