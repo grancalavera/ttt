@@ -1,4 +1,4 @@
-import { AuthenticationError } from "apollo-server";
+import { AuthenticationError, PubSub } from "apollo-server";
 import express from "express";
 import isEmail from "isemail";
 
@@ -10,9 +10,15 @@ import { GameAPI } from "./data-sources/game-api";
 import { loginFromModel, UserStatus, LOGGED_IN, LOGGED_OUT, PromiseType } from "./model";
 import { ExecutionParams } from "subscriptions-transport-ws";
 
+const apiBaseURL = process.env.API_BASE_URL!;
+
+// if (!apiBaseURL) {
+//   throw new Error('missing required environment variable "API_BASE_URL"');
+// }
+
 export const dataSources = () => ({
   gameStore: new GameStore(),
-  gameAPI: new GameAPI("http://localhost:5000")
+  gameAPI: new GameAPI(apiBaseURL || "http://localhost:5000")
 });
 
 type SecureCallback = <T>(callback: (user: User) => T) => T;
@@ -32,9 +38,7 @@ const makeSecureResolver = <T>(userStatus: UserStatus) => (
 
 const logout = { kind: LOGGED_OUT } as const;
 
-const resolveUserStatus = async (req: express.Request): Promise<UserStatus> => {
-  // if auth is empty => logout
-  const auth = req.headers.authorization || "";
+const resolveUserStatus = async (auth?: string): Promise<UserStatus> => {
   if (!auth) return logout;
 
   // if email is invalid => logout
@@ -53,21 +57,21 @@ interface ExpressContext {
   connection?: ExecutionParams<ExpressContext>;
 }
 
-export const context = async ({ req, res, connection }: ExpressContext) => {
-  const userStatus = await resolveUserStatus(req);
-  const resolveWithSecurity: SecureCallback = makeSecureResolver(userStatus);
-  const gameAPIBaseURL = "http://localhost:9000";
-  const ctx = { userStatus, resolveWithSecurity, gameAPIBaseURL };
-
+export const context = async ({ req, connection }: ExpressContext) => {
   if (connection) {
-    return { req, res, connection, ...ctx };
+    return connection.context;
   } else {
+    const userStatus = await resolveUserStatus(req.headers.authorization);
+    const resolveWithSecurity: SecureCallback = makeSecureResolver(userStatus);
+    const ctx = { userStatus, resolveWithSecurity };
     return ctx;
   }
 };
 
 export type TTTDataSources = ReturnType<typeof dataSources>;
 
-export type TTTContext = PromiseType<ReturnType<typeof context>> & {
+export interface TTTContext {
+  userStatus: UserStatus;
+  resolveWithSecurity: SecureCallback;
   dataSources: TTTDataSources;
-};
+}

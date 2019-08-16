@@ -11,6 +11,7 @@ import {
 } from "../generated/models";
 import { GameModel } from "../store";
 import { gameInLobby, gamePlaying } from "./combine-games";
+import { PUBSUB_GAME_CHANGED, pubsub } from "../pubsub";
 
 export const joinGame = async (
   user: User,
@@ -20,25 +21,12 @@ export const joinGame = async (
   const { gameStore } = context.dataSources;
 
   const maybeGameInLobby = await gameStore.firstGameInLobby(userId);
-  if (maybeGameInLobby) {
-    return joinExistingGame(maybeGameInLobby, user, context);
-  } else {
-    return joinNewGame(uuid(), user, chooseAvatar(), context);
-  }
-};
+  const gameChanged = maybeGameInLobby
+    ? await joinExistingGame(maybeGameInLobby, user, context)
+    : await joinNewGame(uuid(), user, chooseAvatar(), context);
 
-const joinNewGame = async (
-  id: string,
-  user: User,
-  avatar: Avatar,
-  context: TTTContext
-): Promise<GameLobby> => {
-  const userId = parseInt(user.id);
-  const { gameStore, gameAPI } = context.dataSources;
-
-  await gameAPI.postGame(id);
-  const storeGame = await gameStore.createGame(id, userId, avatar);
-  return gameInLobby(storeGame);
+  pubsub.publish(PUBSUB_GAME_CHANGED, { gameChanged });
+  return gameChanged;
 };
 
 const joinExistingGame = async (
@@ -57,4 +45,18 @@ const joinExistingGame = async (
   } else {
     throw new Error(`unexpected CoreGame kind "${coreGame.kind}"`);
   }
+};
+
+const joinNewGame = async (
+  id: string,
+  user: User,
+  avatar: Avatar,
+  context: TTTContext
+): Promise<GameLobby> => {
+  const userId = parseInt(user.id);
+  const { gameStore, gameAPI } = context.dataSources;
+
+  await gameAPI.postGame(id);
+  const storeGame = await gameStore.createGame(id, userId, avatar);
+  return gameInLobby(storeGame);
 };

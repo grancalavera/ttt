@@ -1,15 +1,18 @@
+import { withFilter, ResolverFn, FilterFn } from "apollo-server";
+
+import { handleSimpleError } from "../common";
 import {
   MutationResolvers,
   QueryResolvers,
   Resolvers,
-  SubscriptionResolvers
+  SubscriptionResolvers,
+  Game
 } from "../generated/models";
-import { handleSimpleError } from "../common";
+import { PUBSUB_GAME_CHANGED, PUBSUB_MOVE_PLAYED, pubsub } from "../pubsub";
 import { getAllGames } from "./get-all-games";
 import { joinGame } from "./join-game";
 import { playMove } from "./play-move";
 import * as user from "./user";
-import { pubsub, PUBSUB_GAME, PUBSUB_MOVES } from "../pubsub";
 
 const Query: QueryResolvers = {
   me: (_, __, context) => user.me(context),
@@ -28,14 +31,32 @@ const Mutation: MutationResolvers = {
   }
 };
 
+const resolveMovePlayedSubscription: ResolverFn = () =>
+  pubsub.asyncIterator([PUBSUB_MOVE_PLAYED]);
+
+const filterMovePlayedSubscription: FilterFn = (game: Game, { gameId }) =>
+  gameId === game.__typename;
+
+const resolveGameChangedSubscription: ResolverFn = () => {
+  return pubsub.asyncIterator([PUBSUB_GAME_CHANGED]);
+};
+
+const filterGameChangedSubscription: FilterFn = (
+  { gameChanged }: { gameChanged: Game },
+  { gameId }
+) => {
+  return gameId === gameChanged.id;
+};
+
 const Subscription: SubscriptionResolvers = {
-  game: {
-    subscribe: () => pubsub.asyncIterator([PUBSUB_GAME])
+  gameChanged: {
+    subscribe: withFilter(resolveGameChangedSubscription, filterGameChangedSubscription)
   },
-  moves: {
-    subscribe: () => pubsub.asyncIterator([PUBSUB_MOVES])
+  movePlayed: {
+    subscribe: withFilter(resolveMovePlayedSubscription, filterMovePlayedSubscription)
   }
 };
 
 const resolvers: Resolvers = { Query, Mutation, Subscription };
+
 export { resolvers };

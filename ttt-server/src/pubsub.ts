@@ -1,6 +1,7 @@
 import { PubSub } from "apollo-server";
 
-export const PUBSUB_GAME = "PUBSUB_GAME";
-export const PUBSUB_MOVES = "PUBSUB_MOVES";
+export const PUBSUB_GAME_CHANGED = "PUBSUB_GAME_CHANGED";
+export const PUBSUB_MOVE_PLAYED = "PUBSUB_MOVE_PLAYED";
 
+// TODO: move to datasource
 export const pubsub = new PubSub();

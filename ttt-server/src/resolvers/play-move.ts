@@ -22,6 +22,7 @@ import {
 import { gameOverTie, gameOverWin, gamePlaying } from "./combine-games";
 import { getErrorResponse } from "../common";
 import { GameModel } from "../store";
+import { pubsub, PUBSUB_GAME_CHANGED } from "../pubsub";
 
 export const playMove = async (
   gameId: string,
@@ -34,7 +35,10 @@ export const playMove = async (
     const move = coreMoveFromMove({ avatar, position });
     const { game: coreGame } = await gameAPI.postMove(gameId, move);
     const storeGame = await gameStore.findGameById(gameId);
-    return advanceGameStep(coreGame, storeGame);
+    const gameChanged = advanceGameStep(coreGame, storeGame);
+
+    pubsub.publish(PUBSUB_GAME_CHANGED, { gameChanged });
+    return gameChanged;
   } catch (e) {
     return handlePlayMoveError(e);
   }

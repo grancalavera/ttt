@@ -16,8 +16,8 @@ type Mutation {
 }
 
 type Subscription {
-  moves(gameId: ID!): Move!
-  game(gameId: ID!): Game!
+  movePlayed(gameId: ID!): Move!
+  gameChanged(gameId: ID!): Game!
 }
 
 type User {
@@ -26,7 +26,7 @@ type User {
 }
 
 union Game = GameLobby | GamePlaying | GameOverWin | GameOverTie
-union JoinGameResult = GameLobby | GamePlaying | GameOverWin | GameOverTie
+union JoinGameResult = GameLobby | GamePlaying
 
 union PlayMoveResult =
     GamePlaying
