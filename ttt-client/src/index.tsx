@@ -9,7 +9,6 @@ import { loader } from "graphql.macro";
 import { resolvers } from "./resolvers";
 import { IsUserLoggedInQuery } from "./generated/models";
 import { Login } from "./containers/login";
-import { LogoutButton } from "./components/logout-button";
 import { Button } from "./components/button";
 import { GlobalStyle } from "./global";
 
