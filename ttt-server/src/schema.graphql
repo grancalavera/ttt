@@ -16,13 +16,18 @@ type Mutation {
 }
 
 type Subscription {
-  movePlayed(gameId: ID!): Move!
+  movePlayed(gameId: ID!): MovePlayed!
   gameChanged(gameId: ID!): Game!
 }
 
 type User {
   id: ID!
   email: String!
+}
+
+type MovePlayed {
+  gameId: ID!
+  move: Move!
 }
 
 union Game = GameLobby | GamePlaying | GameOverWin | GameOverTie

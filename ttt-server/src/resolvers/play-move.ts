@@ -17,12 +17,13 @@ import {
   ErrorWrongTurn,
   GamePlaying,
   GameOverTie,
-  GameOverWin
+  GameOverWin,
+  MovePlayed
 } from "../generated/models";
 import { gameOverTie, gameOverWin, gamePlaying } from "./combine-games";
 import { getErrorResponse } from "../common";
 import { GameModel } from "../store";
-import { pubsub, PUBSUB_GAME_CHANGED } from "../pubsub";
+import { pubsub, PUBSUB_GAME_CHANGED, PUBSUB_MOVE_PLAYED } from "../pubsub";
 
 export const playMove = async (
   gameId: string,
@@ -32,11 +33,18 @@ export const playMove = async (
 ): Promise<PlayMoveResult> => {
   const { gameAPI, gameStore } = context.dataSources;
   try {
-    const move = coreMoveFromMove({ avatar, position });
-    const { game: coreGame } = await gameAPI.postMove(gameId, move);
+    const move = { avatar, position };
+    const coreMove = coreMoveFromMove(move);
+    const { game: coreGame } = await gameAPI.postMove(gameId, coreMove);
     const storeGame = await gameStore.findGameById(gameId);
     const gameChanged = advanceGameStep(coreGame, storeGame);
 
+    const movePlayed: MovePlayed = {
+      gameId: storeGame.id,
+      move
+    };
+
+    pubsub.publish(PUBSUB_MOVE_PLAYED, { movePlayed });
     pubsub.publish(PUBSUB_GAME_CHANGED, { gameChanged });
     return gameChanged;
   } catch (e) {

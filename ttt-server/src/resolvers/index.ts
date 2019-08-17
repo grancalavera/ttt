@@ -6,7 +6,8 @@ import {
   QueryResolvers,
   Resolvers,
   SubscriptionResolvers,
-  Game
+  Game,
+  MovePlayed
 } from "../generated/models";
 import { PUBSUB_GAME_CHANGED, PUBSUB_MOVE_PLAYED, pubsub } from "../pubsub";
 import { getAllGames } from "./get-all-games";
@@ -34,8 +35,12 @@ const Mutation: MutationResolvers = {
 const resolveMovePlayedSubscription: ResolverFn = () =>
   pubsub.asyncIterator([PUBSUB_MOVE_PLAYED]);
 
-const filterMovePlayedSubscription: FilterFn = (game: Game, { gameId }) =>
-  gameId === game.__typename;
+const filterMovePlayedSubscription: FilterFn = (
+  { movePlayed }: { movePlayed: MovePlayed },
+  { gameId }
+) => {
+  return gameId === movePlayed.gameId;
+};
 
 const resolveGameChangedSubscription: ResolverFn = () => {
   return pubsub.asyncIterator([PUBSUB_GAME_CHANGED]);
