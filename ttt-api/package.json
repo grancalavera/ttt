@@ -10,12 +10,12 @@
   },
   "dependencies": {
     "express": "4.17.1",
-    "sequelize": "5.9.4",
-    "sqlite3": "4.0.9"
+    "sequelize": "5.15.0",
+    "sqlite3": "4.1.0"
   },
   "devDependencies": {
     "@types/node": "12.7.2",
-    "@types/sequelize": "4.28.3",
+    "@types/sequelize": "4.28.4",
     "@types/sqlite3": "3.1.5",
     "@types/validator": "10.11.1",
     "nodemon": "1.19.1",

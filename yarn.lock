@@ -2702,10 +2702,10 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/sequelize@4.28.3":
-  version "4.28.3"
-  resolved "https://registry.yarnpkg.com/@types/sequelize/-/sequelize-4.28.3.tgz#c393bf3cbfea2e18786ce43267e5921d91e27d4e"
-  integrity sha512-Z+gbWsLmGnqnAz91I8Wtfbe+4D1aUyQ4aawYfohpvar4Azr8aSNwzS1rFQYO2dk6zcClt5k9n0qCek/YAq4WNw==
+"@types/sequelize@4.28.4":
+  version "4.28.4"
+  resolved "https://registry.yarnpkg.com/@types/sequelize/-/sequelize-4.28.4.tgz#89262cca5de285d115afefd56c91cb46050d9def"
+  integrity sha512-kN9pBVtl6ed0xB0XwCUWNO7xJRREVBglo95TsEkAhs1JILsnDrJitUcUXQp+bqohKLqxRFfR56qT28OXZ7CiEA==
   dependencies:
     "@types/bluebird" "*"
     "@types/continuation-local-storage" "*"
@@ -12445,31 +12445,10 @@ sequelize-pool@^2.3.0:
   resolved "https://registry.yarnpkg.com/sequelize-pool/-/sequelize-pool-2.3.0.tgz#64f1fe8744228172c474f530604b6133be64993d"
   integrity sha512-Ibz08vnXvkZ8LJTiUOxRcj1Ckdn7qafNZ2t59jYHMX1VIebTAOYefWdRYFt6z6+hy52WGthAHAoLc9hvk3onqA==
 
-sequelize@5.12.2:
-  version "5.12.2"
-  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-5.12.2.tgz#72d9d7a2f59d50b0bf4f25aea68106c121bfe867"
-  integrity sha512-SUFm5q998PR4MUruxlnkJW8wjDQgpEr7PBnGwPxWdl7n5P0tNVuabu+LW8u8yzn1/jVuyR+7MI0G6jR0l7fu+Q==
-  dependencies:
-    bluebird "^3.5.0"
-    cls-bluebird "^2.1.0"
-    debug "^4.1.1"
-    dottie "^2.0.0"
-    inflection "1.12.0"
-    lodash "^4.17.11"
-    moment "^2.24.0"
-    moment-timezone "^0.5.21"
-    retry-as-promised "^3.1.0"
-    semver "^6.1.1"
-    sequelize-pool "^2.3.0"
-    toposort-class "^1.0.1"
-    uuid "^3.2.1"
-    validator "^10.11.0"
-    wkx "^0.4.6"
-
-sequelize@5.9.4:
-  version "5.9.4"
-  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-5.9.4.tgz#70af68085dee0ff1da220a719be549bd3e892600"
-  integrity sha512-smkcfCYn9X6DA6iaXmZBYui8GqpHcYe/nKImSJ592RdHzpIajyhkSEXQLMtxrO0YiUKqHTTcK9Twp9uUBsj1Rg==
+sequelize@5.15.0:
+  version "5.15.0"
+  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-5.15.0.tgz#99aeb863709b5c68881ef60eb566801fae149fb1"
+  integrity sha512-w0jS4dcwLblIo284Yotb96noYrn6PUO92NtCE3VTDZxUgknfJZXfsbpsz+GqhIoE6gW1b8fsppwvk8fQTIPrlA==
   dependencies:
     bluebird "^3.5.0"
     cls-bluebird "^2.1.0"
@@ -12854,10 +12833,10 @@ sprintf-js@~1.0.2:
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
 
-sqlite3@4.0.9:
-  version "4.0.9"
-  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-4.0.9.tgz#cff74550fa5a1159956815400bdef69245557640"
-  integrity sha512-IkvzjmsWQl9BuBiM4xKpl5X8WCR4w0AeJHRdobCdXZ8dT/lNc1XS6WqvY35N6+YzIIgzSBeY5prdFObID9F9tA==
+sqlite3@4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-4.1.0.tgz#e051fb9c133be15726322a69e2e37ec560368380"
+  integrity sha512-RvqoKxq+8pDHsJo7aXxsFR18i+dU2Wp5o12qAJOV5LNcDt+fgJsc2QKKg3sIRfXrN9ZjzY1T7SNe/DFVqAXjaw==
   dependencies:
     nan "^2.12.1"
     node-pre-gyp "^0.11.0"
