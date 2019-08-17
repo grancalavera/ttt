@@ -1,15 +1,14 @@
-import { pubsub, PUBSUB_MOVE_PLAYED, PUBSUB_GAME_CHANGED } from "../pubsub";
+import {
+  pubsub,
+  PUBSUB_MOVE_PLAYED,
+  PUBSUB_GAME_CHANGED,
+  PUBSUB_GAME_ADDED
+} from "../pubsub";
 import { MovePlayed, Game } from "../generated/models";
 import { ResolverFn, FilterFn, withFilter } from "apollo-server";
 
-const resolveMovePlayedSubscription: ResolverFn = () =>
-  pubsub.asyncIterator([PUBSUB_MOVE_PLAYED]);
-
-const filterMovePlayedSubscription: FilterFn = (
-  { movePlayed }: { movePlayed: MovePlayed },
-  { gameId }
-) => {
-  return gameId === movePlayed.gameId;
+const resolveGameAddedSubscription: ResolverFn = () => {
+  return pubsub.asyncIterator([PUBSUB_GAME_ADDED]);
 };
 
 const resolveGameChangedSubscription: ResolverFn = () => {
@@ -23,12 +22,22 @@ const filterGameChangedSubscription: FilterFn = (
   return gameId === gameChanged.id;
 };
 
-export const subscribeToGameChanged = withFilter(
-  resolveGameChangedSubscription,
-  filterGameChangedSubscription
-);
+const resolveMovePlayedSubscription: ResolverFn = () =>
+  pubsub.asyncIterator([PUBSUB_MOVE_PLAYED]);
 
-export const subscribeToMovePlayed = withFilter(
-  resolveMovePlayedSubscription,
-  filterMovePlayedSubscription
-);
+const filterMovePlayedSubscription: FilterFn = (
+  { movePlayed }: { movePlayed: MovePlayed },
+  { gameId }
+) => {
+  return gameId === movePlayed.gameId;
+};
+
+export const subscribeToGameAdded = { subscribe: resolveGameAddedSubscription };
+
+export const subscribeToGameChanged = {
+  subscribe: withFilter(resolveGameChangedSubscription, filterGameChangedSubscription)
+};
+
+export const subscribeToMovePlayed = {
+  subscribe: withFilter(resolveMovePlayedSubscription, filterMovePlayedSubscription)
+};

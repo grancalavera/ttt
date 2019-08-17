@@ -11,7 +11,7 @@ import {
 } from "../generated/models";
 import { GameModel } from "../store";
 import { gameInLobby, gamePlaying } from "./combine-games";
-import { PUBSUB_GAME_CHANGED, pubsub } from "../pubsub";
+import { PUBSUB_GAME_CHANGED, pubsub, PUBSUB_GAME_ADDED } from "../pubsub";
 
 export const joinGame = async (
   user: User,
@@ -21,12 +21,27 @@ export const joinGame = async (
   const { gameStore } = context.dataSources;
 
   const maybeGameInLobby = await gameStore.firstGameInLobby(userId);
-  const gameChanged = maybeGameInLobby
+  const game = maybeGameInLobby
     ? await joinExistingGame(maybeGameInLobby, user, context)
     : await joinNewGame(uuid(), user, chooseAvatar(), context);
+  return game;
+};
 
-  pubsub.publish(PUBSUB_GAME_CHANGED, { gameChanged });
-  return gameChanged;
+const joinNewGame = async (
+  id: string,
+  user: User,
+  avatar: Avatar,
+  context: TTTContext
+): Promise<GameLobby> => {
+  const userId = parseInt(user.id);
+  const { gameStore, gameAPI } = context.dataSources;
+
+  await gameAPI.postGame(id);
+  const storeGame = await gameStore.createGame(id, userId, avatar);
+  const gameAdded = gameInLobby(storeGame);
+
+  pubsub.publish(PUBSUB_GAME_ADDED, { gameAdded });
+  return gameAdded;
 };
 
 const joinExistingGame = async (
@@ -41,22 +56,11 @@ const joinExistingGame = async (
   const { game: coreGame } = await gameAPI.getGameById(game.id);
 
   if (isCoreGamePlaying(coreGame)) {
-    return gamePlaying(coreGame, storeGame);
+    const gameChanged = gamePlaying(coreGame, storeGame);
+
+    pubsub.publish(PUBSUB_GAME_CHANGED, { gameChanged });
+    return gameChanged;
   } else {
     throw new Error(`unexpected CoreGame kind "${coreGame.kind}"`);
   }
-};
-
-const joinNewGame = async (
-  id: string,
-  user: User,
-  avatar: Avatar,
-  context: TTTContext
-): Promise<GameLobby> => {
-  const userId = parseInt(user.id);
-  const { gameStore, gameAPI } = context.dataSources;
-
-  await gameAPI.postGame(id);
-  const storeGame = await gameStore.createGame(id, userId, avatar);
-  return gameInLobby(storeGame);
 };

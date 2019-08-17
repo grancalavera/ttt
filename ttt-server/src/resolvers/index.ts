@@ -3,16 +3,18 @@ import {
   MutationResolvers,
   QueryResolvers,
   Resolvers,
-  SubscriptionResolvers,
-  Game,
-  MovePlayed
+  SubscriptionResolvers
 } from "../generated/models";
-import { PUBSUB_GAME_CHANGED, PUBSUB_MOVE_PLAYED, pubsub } from "../pubsub";
+
 import { getAllGames } from "./get-all-games";
 import { joinGame } from "./join-game";
 import { playMove } from "./play-move";
 import * as user from "./user";
-import { subscribeToGameChanged, subscribeToMovePlayed } from "./subscriptions";
+import {
+  subscribeToGameChanged,
+  subscribeToMovePlayed,
+  subscribeToGameAdded
+} from "./subscriptions";
 
 const Query: QueryResolvers = {
   me: (_, __, context) => user.me(context),
@@ -32,14 +34,10 @@ const Mutation: MutationResolvers = {
 };
 
 const Subscription: SubscriptionResolvers = {
-  gameChanged: {
-    subscribe: subscribeToGameChanged
-  },
-  movePlayed: {
-    subscribe: subscribeToMovePlayed
-  }
+  gameAdded: subscribeToGameAdded,
+  gameChanged: subscribeToGameChanged,
+  movePlayed: subscribeToMovePlayed
 };
 
 const resolvers: Resolvers = { Query, Mutation, Subscription };
-
 export { resolvers };
