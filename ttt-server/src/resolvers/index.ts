@@ -1,5 +1,3 @@
-import { withFilter, ResolverFn, FilterFn } from "apollo-server";
-
 import { handleSimpleError } from "../common";
 import {
   MutationResolvers,
@@ -14,6 +12,7 @@ import { getAllGames } from "./get-all-games";
 import { joinGame } from "./join-game";
 import { playMove } from "./play-move";
 import * as user from "./user";
+import { subscribeToGameChanged, subscribeToMovePlayed } from "./subscriptions";
 
 const Query: QueryResolvers = {
   me: (_, __, context) => user.me(context),
@@ -32,33 +31,12 @@ const Mutation: MutationResolvers = {
   }
 };
 
-const resolveMovePlayedSubscription: ResolverFn = () =>
-  pubsub.asyncIterator([PUBSUB_MOVE_PLAYED]);
-
-const filterMovePlayedSubscription: FilterFn = (
-  { movePlayed }: { movePlayed: MovePlayed },
-  { gameId }
-) => {
-  return gameId === movePlayed.gameId;
-};
-
-const resolveGameChangedSubscription: ResolverFn = () => {
-  return pubsub.asyncIterator([PUBSUB_GAME_CHANGED]);
-};
-
-const filterGameChangedSubscription: FilterFn = (
-  { gameChanged }: { gameChanged: Game },
-  { gameId }
-) => {
-  return gameId === gameChanged.id;
-};
-
 const Subscription: SubscriptionResolvers = {
   gameChanged: {
-    subscribe: withFilter(resolveGameChangedSubscription, filterGameChangedSubscription)
+    subscribe: subscribeToGameChanged
   },
   movePlayed: {
-    subscribe: withFilter(resolveMovePlayedSubscription, filterMovePlayedSubscription)
+    subscribe: subscribeToMovePlayed
   }
 };
 
