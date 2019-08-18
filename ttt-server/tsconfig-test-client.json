@@ -3,13 +3,13 @@
     "target": "es6",
     "module": "commonjs",
     "lib": ["es2018", "dom"],
-    "outDir": "dist",
+    "outDir": "dist-test-client",
     "strict": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true
   },
-  "include": ["src"],
-  "exclude": ["test-server/**/*.ts"]
+  "include": ["test-client"],
+  "exclude": ["src"]
 }

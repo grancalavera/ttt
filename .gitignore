@@ -92,6 +92,7 @@ typings/
 
 # ttt
 dist
+dist-test-client
 generated
 *.sqlite
 etc

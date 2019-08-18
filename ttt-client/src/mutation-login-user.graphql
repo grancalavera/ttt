@@ -1,3 +1,0 @@
-mutation LoginUser($email: String!) {
-  login(email: $email)
-}

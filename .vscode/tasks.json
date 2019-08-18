@@ -2,19 +2,24 @@
   // See https://go.microsoft.com/fwlink/?LinkId=733558
   // for the documentation about the tasks.json format
   "version": "2.0.0",
-  "tasks": [{
-    "label": "build-server",
-    "type": "shell",
-    "command": "cd ./ttt-server && yarn build",
-    "problemMatcher": [
-      "$tsc"
-    ]
-  }, {
-    "label": "build-api",
-    "type": "shell",
-    "command": "cd ./ttt-api && yarn build",
-    "problemMatcher": [
-      "$tsc"
-    ]
-  }]
+  "tasks": [
+    {
+      "label": "build-server",
+      "type": "shell",
+      "command": "cd ./ttt-server && yarn build",
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "build-test-client",
+      "type": "shell",
+      "command": "cd ./ttt-server && yarn build:test-client",
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "build-api",
+      "type": "shell",
+      "command": "cd ./ttt-api && yarn build",
+      "problemMatcher": ["$tsc"]
+    }
+  ]
 }

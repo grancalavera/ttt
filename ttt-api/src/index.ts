@@ -9,7 +9,6 @@ import {
   CORE_GAME_OVER_TIE,
   CORE_GAME_OVER_WIN,
   CORE_GAME_PLAYING,
-  CoreGame,
   CoreGamePlaying,
   CoreMove,
   createGame,
