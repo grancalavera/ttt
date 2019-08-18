@@ -1,6 +1,6 @@
-import { InMemoryCache } from "apollo-cache-inmemory";
+import { InMemoryCache, IntrospectionFragmentMatcher } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import { GameLobby, GamePlaying } from "../src/generated/models";
+import { GameLobby, GamePlaying, JoinGameResult } from "../src/generated/models";
 // udpate headers
 // https://www.apollographql.com/docs/react/recipes/authentication/#header
 import { setContext } from "apollo-link-context";
@@ -10,6 +10,9 @@ import * as isEmail from "isemail";
 // https://github.com/apollographql/apollo-link/issues/513#issuecomment-384743835
 import fetch from "isomorphic-fetch";
 import { assertNever } from "../src/common";
+
+// https://www.apollographql.com/docs/react/advanced/fragments/#fragment-matcher
+import introspectionResult from "./generated/introspection-result";
 
 const email = process.argv[2];
 let authorization: string = "";
@@ -22,6 +25,13 @@ try {
 }
 
 console.log(`welcome ${email}`);
+
+const fragmentMatcher = new IntrospectionFragmentMatcher({
+  introspectionQueryResultData: introspectionResult
+});
+const cache = new InMemoryCache({
+  fragmentMatcher
+});
 
 const httpLink = createHttpLink({
   uri: "http://localhost:4000/",
@@ -41,7 +51,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache,
   link: authLink.concat(httpLink),
   name: "ttt-test-client",
   defaultOptions: {
@@ -86,18 +96,13 @@ client
     return client.mutate({ mutation: joinGame });
   })
   .then(result => {
-    const game: GameLobby | GamePlaying = result.data.joinGame;
+    const game: JoinGameResult = result.data.joinGame;
     console.log(`joined game with id: "${result.data.joinGame.id}"`);
 
-    switch (game.__typename) {
-      case "GameLobby":
-        console.log("...waiting for more players to join");
-        break;
-      case "GamePlaying":
-        console.log("...checking if it is our turn to play");
-        break;
-      default:
-        assertNever(game);
+    if (game.__typename === "GameLobby") {
+      console.log("...waiting for more players to join");
+    } else {
+      console.log("...checking if it is our turn to play");
     }
   })
   .catch(e => {
