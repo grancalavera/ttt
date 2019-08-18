@@ -198,14 +198,14 @@ client
   });
 
 const onGameChanged = (myEmail: string, game: Game): void => {
-  console.log("checking if it is our turn to play...");
-
   if (game.__typename === "GamePlaying") {
+    console.log("checking if it is our turn to play...");
     const currentEmail = game.currentPlayer.user.email;
     const { avatar } = game.currentPlayer;
     const gameId = game.id;
 
     if (currentEmail === myEmail) {
+      console.log(`is ${myEmail}'s turn, playing`);
       const positions = shuffle([
         Position.A,
         Position.B,
@@ -222,6 +222,8 @@ const onGameChanged = (myEmail: string, game: Game): void => {
         console.error(`play failed`);
         console.log(e);
       });
+    } else {
+      console.log(`is not ${myEmail}'s turn, pass`);
     }
     return;
   }
