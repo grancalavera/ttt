@@ -8,6 +8,11 @@ generates:
   ttt-server/src/generated/models.ts:
     - typescript
     - typescript-resolvers
+  # https://graphql-code-generator.com/docs/plugins/fragment-matcher
+  ttt-server/test-client/generated/introspection-result.ts:
+    - fragment-matcher
+  ttt-client/src/generated/introspection-result.ts:
+    - fragment-matcher
 config:
   # see: https://github.com/dotansimha/graphql-code-generator/issues/1133
   # see: https://github.com/dotansimha/graphql-code-generator/issues/1133#issuecomment-474766729
