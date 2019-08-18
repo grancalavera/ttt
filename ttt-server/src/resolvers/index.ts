@@ -9,20 +9,23 @@ import {
 import { getAllGames } from "./get-all-games";
 import { joinGame } from "./join-game";
 import { playMove } from "./play-move";
-import * as user from "./user";
+
 import {
   subscribeToGameChanged,
   subscribeToMovePlayed,
-  subscribeToGameAdded
+  subscribeToGameAdded,
+  subscribeToUserCreated
 } from "./subscriptions";
+import { getMe, login, getAllUsers } from "./user";
 
 const Query: QueryResolvers = {
-  me: (_, __, context) => user.me(context),
-  games: (_, __, context) => getAllGames(context).catch(handleSimpleError)
+  me: (_, __, context) => getMe(context),
+  games: (_, __, context) => getAllGames(context).catch(handleSimpleError),
+  users: (_, __, context) => getAllUsers(context).catch(handleSimpleError)
 };
 
 const Mutation: MutationResolvers = {
-  login: async (_, { email }, context) => user.login(email, context),
+  login: async (_, { email }, context) => login(email, context),
   joinGame: (_, __, context) => {
     const { resolveWithSecurity } = context;
     return resolveWithSecurity(user => joinGame(user, context));
@@ -36,7 +39,8 @@ const Mutation: MutationResolvers = {
 const Subscription: SubscriptionResolvers = {
   gameAdded: subscribeToGameAdded,
   gameChanged: subscribeToGameChanged,
-  movePlayed: subscribeToMovePlayed
+  movePlayed: subscribeToMovePlayed,
+  userCreated: subscribeToUserCreated
 };
 
 const resolvers: Resolvers = { Query, Mutation, Subscription };

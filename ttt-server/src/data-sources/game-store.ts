@@ -1,7 +1,7 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
 
 import { TTTContext } from "../environment";
-import { Avatar } from "../generated/models";
+import { Avatar, User } from "../generated/models";
 import { GameModel, PlayerModel, UserModel } from "../store";
 
 export class GameStore extends DataSource<TTTContext> {
@@ -75,9 +75,16 @@ export class GameStore extends DataSource<TTTContext> {
     return game;
   }
 
-  async findOrCreateUser(email: string): Promise<UserModel> {
-    const [userModel] = await UserModel.findOrCreate({ where: { email } });
-    return userModel;
+  async findOrCreateUser(
+    email: string
+  ): Promise<{ userModel: UserModel; created: boolean }> {
+    const [userModel, created] = await UserModel.findOrCreate({ where: { email } });
+    return { userModel, created };
+  }
+
+  async findAllUsers(): Promise<UserModel[]> {
+    const users = await UserModel.findAll();
+    return users;
   }
 }
 const reloadPlayers = async (game: GameModel): Promise<GameModel> =>

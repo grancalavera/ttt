@@ -1,31 +1,44 @@
+import * as isEmail from "isemail";
+
 import { assertNever } from "../common";
 import { TTTContext } from "../environment";
 import { User } from "../generated/models";
-import { LOGGED_IN, LOGGED_OUT } from "../model";
+import { LOGGED_IN, LOGGED_OUT, userFromModel } from "../model";
+import { pubsub, PUBSUB_USER_CREATED } from "../pubsub";
 
-export const me = (context: TTTContext): User | null => {
+export const getMe = (context: TTTContext): User | null => {
   const { userStatus } = context;
   return userStatus.kind === LOGGED_IN ? userStatus.user : null;
 };
 
-export const login = async (email: string, context: TTTContext) => {
+export const login = async (email: string, context: TTTContext): Promise<string> => {
   const {
     dataSources: { gameStore },
     userStatus
   } = context;
-  let userEmail;
 
   switch (userStatus.kind) {
     case LOGGED_IN:
-      userEmail = userStatus.user.email;
-      break;
+      return createToken(userStatus.user.email);
     case LOGGED_OUT:
-      const user = await gameStore.findOrCreateUser(email);
-      userEmail = user.email;
-      break;
+      isEmail.validate(email);
+      const { userModel, created } = await gameStore.findOrCreateUser(email);
+      if (created) {
+        pubsub.publish(PUBSUB_USER_CREATED, { userCreated: userFromModel(userModel) });
+      }
+      return createToken(userModel.email);
     default:
-      assertNever(userStatus);
+      return assertNever(userStatus);
   }
+};
 
-  return userEmail ? new Buffer(userEmail).toString("base64") : null;
+export const getAllUsers = async (context: TTTContext) => {
+  const userModels = await context.dataSources.gameStore.findAllUsers();
+  const users = userModels.map(userFromModel);
+  return users;
+};
+
+const createToken = (email: string): string => {
+  const token = new Buffer(email).toString("base64");
+  return token;
 };

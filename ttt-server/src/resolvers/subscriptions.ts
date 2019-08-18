@@ -2,13 +2,18 @@ import {
   pubsub,
   PUBSUB_MOVE_PLAYED,
   PUBSUB_GAME_CHANGED,
-  PUBSUB_GAME_ADDED
+  PUBSUB_GAME_ADDED,
+  PUBSUB_USER_CREATED
 } from "../pubsub";
 import { MovePlayed, Game } from "../generated/models";
 import { ResolverFn, FilterFn, withFilter } from "apollo-server";
 
 const resolveGameAddedSubscription: ResolverFn = () => {
   return pubsub.asyncIterator([PUBSUB_GAME_ADDED]);
+};
+
+const resolveUserCreatedSubscription: ResolverFn = () => {
+  return pubsub.asyncIterator([PUBSUB_USER_CREATED]);
 };
 
 const resolveGameChangedSubscription: ResolverFn = () => {
@@ -31,6 +36,8 @@ const filterMovePlayedSubscription: FilterFn = (
 ) => {
   return gameId === movePlayed.gameId;
 };
+
+export const subscribeToUserCreated = { subscribe: resolveUserCreatedSubscription };
 
 export const subscribeToGameAdded = { subscribe: resolveGameAddedSubscription };
 

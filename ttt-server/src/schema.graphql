@@ -7,6 +7,7 @@ schema {
 type Query {
   me: User
   games: [Game]
+  users: [User]
 }
 
 type Mutation {
@@ -19,6 +20,7 @@ type Subscription {
   movePlayed(gameId: ID!): MovePlayed!
   gameChanged(gameId: ID!): Game!
   gameAdded: GameLobby!
+  userCreated: User!
 }
 
 type User {
@@ -101,6 +103,9 @@ type Move {
   avatar: Avatar!
 }
 
+# this can be inferred from the parent
+# remove from the api and use ttt-core
+# to extract from the game
 type Win {
   p1: Position!
   p2: Position!
