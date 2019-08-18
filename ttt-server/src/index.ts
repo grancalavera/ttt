@@ -18,6 +18,7 @@ store
   .create({ storage: "./store.sqlite" })
   .sync()
   .then(() => server.listen())
-  .then(({ url }) => {
+  .then(({ url, subscriptionsUrl }) => {
     console.log(`🚀  Server ready at ${url}`);
+    console.log(`🚀 Subscriptions ready at ${subscriptionsUrl}`);
   });
