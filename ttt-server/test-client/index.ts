@@ -10,8 +10,17 @@ import * as isEmail from "isemail";
 import fetch from "isomorphic-fetch";
 import WebSocket from "ws";
 
-import { JoinGameResult, Game } from "../src/generated/models";
+import {
+  JoinGameResult,
+  Game,
+  GameChanged,
+  Move,
+  Position,
+  PlayMoveResult,
+  Avatar
+} from "../src/generated/models";
 import introspectionResult from "./generated/introspection-result";
+import { assertNever } from "../src/common";
 
 // https://www.apollographql.com/docs/react/recipes/authentication/#header
 // https://github.com/apollographql/apollo-link/issues/513#issuecomment-384743835
@@ -102,6 +111,7 @@ const joinGame = gql`
           user {
             email
           }
+          avatar
         }
       }
     }
@@ -113,9 +123,16 @@ const subscribeToGameChanged = gql`
     gameChanged(gameId: $gameId) {
       __typename
       ... on GamePlaying {
+        id
         moves {
           avatar
           position
+        }
+        currentPlayer {
+          user {
+            email
+          }
+          avatar
         }
       }
       ... on GameOverWin {
@@ -125,6 +142,14 @@ const subscribeToGameChanged = gql`
           }
         }
       }
+    }
+  }
+`;
+
+const playMove = gql`
+  mutation PlayMove($gameId: ID!, $avatar: Avatar!, $position: Position!) {
+    playMove(gameId: $gameId, avatar: $avatar, position: $position) {
+      __typename
     }
   }
 `;
@@ -148,12 +173,12 @@ client
 
     gameChanged$.subscribe(
       ({ data }) => {
-        const update: Game = data.gameChanged;
-        console.log("gameChanged");
-        console.log(JSON.stringify(update, null, 2));
+        const update: GameChanged = data.gameChanged;
+        onGameChanged(email, update);
         return;
       },
       error => {
+        console.log(JSON.stringify(error, null, 2));
         return;
       },
       () => {
@@ -162,12 +187,84 @@ client
     );
 
     if (game.__typename === "GameLobby") {
-      console.log("...waiting for more players to join");
+      console.log("waiting for more players to join...");
     } else {
-      console.log("...checking if it is our turn to play");
+      onGameChanged(email, game);
     }
   })
   .catch(e => {
     console.error(e.message || e);
     console.error(e.stack || "");
   });
+
+const onGameChanged = (myEmail: string, game: Game): void => {
+  console.log("checking if it is our turn to play...");
+
+  if (game.__typename === "GamePlaying") {
+    const currentEmail = game.currentPlayer.user.email;
+    const { avatar } = game.currentPlayer;
+    const gameId = game.id;
+
+    if (currentEmail === myEmail) {
+      const positions = shuffle([
+        Position.A,
+        Position.B,
+        Position.C,
+        Position.D,
+        Position.E,
+        Position.F,
+        Position.G,
+        Position.H,
+        Position.I
+      ]);
+
+      tryMove(positions, gameId, avatar).catch(e => {
+        console.error(`play failed`);
+        console.log(e);
+      });
+    }
+    return;
+  }
+
+  if (game.__typename === "GameOverTie" || game.__typename === "GameOverWin") {
+    console.log("game over");
+    return;
+  }
+
+  if (game.__typename === "GameLobby") {
+    throw new Error("unexpected game state");
+  }
+
+  console.log("not our turn, waiting...");
+};
+
+const tryMove = (
+  positions: Position[],
+  gameId: string,
+  avatar: Avatar
+): Promise<void> => {
+  const [position, ...rest] = positions;
+  return client
+    .mutate({ mutation: playMove, variables: { gameId, avatar, position } })
+    .then(result => {
+      const moveResult: PlayMoveResult = result.data.playMove;
+      if (moveResult.__typename === "ErrorWrongMove") {
+        console.log("ERROR! Move taken, trying again...");
+        return tryMove(rest, gameId, avatar);
+      }
+    });
+};
+
+const shuffle = <T extends any>(list: T[]): T[] => {
+  if (list.length === 0) {
+    return [];
+  } else {
+    const i = randInt(0, list.length - 1);
+    const x = list[i];
+    const rest = [...list.slice(0, i), ...list.slice(i + 1)];
+    return [x, ...shuffle(rest)];
+  }
+};
+
+export const randInt = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min + 1)) + min;
