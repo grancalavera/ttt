@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start": "nodemon --watch 'src/**/*.ts' --exec ts-node -r dotenv/config src/index.ts",
-    "start:test-client": "nodemon --watch test-client/**/*.ts --exec 'ts-node --project tsconfig-test-client.json test-client/index.ts'",
     "start:clean": "rm -f store.sqlite && yarn start",
+    "start:test-client": "nodemon --watch 'test-client/index.ts' --exec ts-node --project tsconfig-test-client.json test-client/index.ts",
     "postbuild": "cp src/schema.graphql dist/",
     "build": "tsc",
     "build:test-client": "tsc --project tsconfig-test-client.json",
