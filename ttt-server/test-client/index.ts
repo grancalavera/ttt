@@ -8,7 +8,7 @@ import { getMainDefinition } from "apollo-utilities";
 import gql from "graphql-tag";
 import * as isEmail from "isemail";
 import fetch from "isomorphic-fetch";
-import * as WebSocket from "isomorphic-ws";
+import WebSocket from "ws";
 
 import { JoinGameResult } from "../src/generated/models";
 import introspectionResult from "./generated/introspection-result";
