@@ -27,7 +27,8 @@
       "program": "${workspaceFolder}/ttt-server/test-client/index.ts",
       "cwd": "${workspaceFolder}/ttt-server",
       "preLaunchTask": "build-test-client",
-      "outFiles": ["${workspaceFolder}/ttt-server/dist-test-client/**/*.js"]
+      "outFiles": ["${workspaceFolder}/ttt-server/dist-test-client/**/*.js"],
+      "args": ["debugger@ttt.com"]
     },
     {
       "type": "node",
