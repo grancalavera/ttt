@@ -1,18 +1,21 @@
 import { InMemoryCache, IntrospectionFragmentMatcher } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import { GameLobby, GamePlaying, JoinGameResult } from "../src/generated/models";
-// udpate headers
-// https://www.apollographql.com/docs/react/recipes/authentication/#header
+import { split } from "apollo-link";
 import { setContext } from "apollo-link-context";
 import { createHttpLink } from "apollo-link-http";
+import { WebSocketLink } from "apollo-link-ws";
+import { getMainDefinition } from "apollo-utilities";
 import gql from "graphql-tag";
 import * as isEmail from "isemail";
-// https://github.com/apollographql/apollo-link/issues/513#issuecomment-384743835
 import fetch from "isomorphic-fetch";
-import { assertNever } from "../src/common";
+import * as WebSocket from "isomorphic-ws";
 
-// https://www.apollographql.com/docs/react/advanced/fragments/#fragment-matcher
+import { JoinGameResult } from "../src/generated/models";
 import introspectionResult from "./generated/introspection-result";
+
+// https://www.apollographql.com/docs/react/recipes/authentication/#header
+// https://github.com/apollographql/apollo-link/issues/513#issuecomment-384743835
+// https://www.apollographql.com/docs/react/advanced/fragments/#fragment-matcher
 
 const email = process.argv[2];
 let authorization: string = "";
@@ -38,6 +41,14 @@ const httpLink = createHttpLink({
   fetch
 });
 
+const wsLink = new WebSocketLink({
+  uri: `ws://localhost:5000/`,
+  options: {
+    reconnect: true
+  },
+  webSocketImpl: WebSocket
+});
+
 const authLink = setContext((_, { headers }) => {
   const context = {
     headers: {
@@ -50,9 +61,20 @@ const authLink = setContext((_, { headers }) => {
   return context;
 });
 
+const link = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === "OperationDefinition" && definition.operation === "subscription"
+    );
+  },
+  wsLink,
+  authLink.concat(httpLink)
+);
+
 const client = new ApolloClient({
   cache,
-  link: authLink.concat(httpLink),
+  link,
   name: "ttt-test-client",
   defaultOptions: {
     watchQuery: {

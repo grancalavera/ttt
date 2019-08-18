@@ -1,4 +1,4 @@
-import { AuthenticationError, PubSub } from "apollo-server";
+import { AuthenticationError } from "apollo-server";
 import express from "express";
 import isEmail from "isemail";
 
@@ -7,7 +7,7 @@ import { GameStore } from "./data-sources/game-store";
 import { User } from "./generated/models";
 import { UserModel } from "./store";
 import { GameAPI } from "./data-sources/game-api";
-import { loginFromModel, UserStatus, LOGGED_IN, LOGGED_OUT, PromiseType } from "./model";
+import { loginFromModel, UserStatus, LOGGED_IN, LOGGED_OUT } from "./model";
 import { ExecutionParams } from "subscriptions-transport-ws";
 
 const apiBaseURL = process.env.API_BASE_URL!;
