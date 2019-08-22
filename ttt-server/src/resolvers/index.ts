@@ -5,18 +5,16 @@ import {
   Resolvers,
   SubscriptionResolvers
 } from "../generated/models";
-
 import { getAllGames } from "./get-all-games";
 import { joinGame } from "./join-game";
 import { playMove } from "./play-move";
-
 import {
+  subscribeToGameAdded,
   subscribeToGameChanged,
   subscribeToMovePlayed,
-  subscribeToGameAdded,
   subscribeToUserCreated
 } from "./subscriptions";
-import { getMe, login, getAllUsers } from "./user";
+import { getAllUsers, getMe, login } from "./user";
 
 const Query: QueryResolvers = {
   me: (_, __, context) => getMe(context),
