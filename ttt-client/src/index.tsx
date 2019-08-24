@@ -1,16 +1,14 @@
-import React, { Fragment } from "react";
-import ReactDOM from "react-dom";
-import * as serviceWorker from "./serviceWorker";
+import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { HttpLink } from "apollo-link-http";
-import { ApolloProvider, Query } from "react-apollo";
-import { InMemoryCache } from "apollo-cache-inmemory";
 import { loader } from "graphql.macro";
-import { resolvers } from "./resolvers";
-import { IsUserLoggedInQuery } from "./generated/models";
+import React from "react";
+import { ApolloProvider, Query } from "react-apollo";
+import ReactDOM from "react-dom";
 import { Login } from "./containers/login";
-import { Button } from "./components/button";
-import { GlobalStyle } from "./global";
+import { IsUserLoggedInQuery } from "./generated/models";
+import { resolvers } from "./resolvers";
+import * as serviceWorker from "./serviceWorker";
 
 const typeDefs = loader("./schema.graphql");
 const IS_LOGGED_IN = loader("./query-is-user-logged-in.graphql");
@@ -36,7 +34,6 @@ cache.writeData({ data: { isLoggedIn: !!localStorage.getItem("token") } });
 
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <GlobalStyle />
     <Query<IsUserLoggedInQuery> query={IS_LOGGED_IN}>
       {({ data }) => {
         const onLogout = () => {
@@ -45,12 +42,10 @@ ReactDOM.render(
         };
         if (data && data.isLoggedIn) {
           return (
-            <Fragment>
+            <>
               <p>is logged in</p>
-              <Button onClick={onLogout} primary={true}>
-                Logout
-              </Button>
-            </Fragment>
+              <button onClick={onLogout}>Logout</button>
+            </>
           );
         } else {
           return <Login />;
