@@ -20,7 +20,6 @@ import {
   Avatar
 } from "../src/generated/models";
 import introspectionResult from "./generated/introspection-result";
-import { assertNever } from "../src/common";
 
 // https://www.apollographql.com/docs/react/recipes/authentication/#header
 // https://github.com/apollographql/apollo-link/issues/513#issuecomment-384743835
