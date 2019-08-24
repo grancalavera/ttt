@@ -1,16 +1,16 @@
 import React from "react";
 import { ApolloConsumer, Mutation } from "react-apollo";
 import { loader } from "graphql.macro";
-import { LoginUserMutation, LoginUserMutationVariables } from "../generated/models";
+import { LoginMutation, LoginMutationVariables } from "../generated/models";
 import { LoginForm } from "../components/login-form";
 
-const LOGIN_USER = loader("../mutation-login-user.graphql");
+const LOGIN_USER = loader("../mutation-login.graphql");
 
 export const Login = () => {
   return (
     <ApolloConsumer>
       {client => (
-        <Mutation<LoginUserMutation, LoginUserMutationVariables>
+        <Mutation<LoginMutation, LoginMutationVariables>
           mutation={LOGIN_USER}
           onCompleted={({ login }) => {
             if (login) {

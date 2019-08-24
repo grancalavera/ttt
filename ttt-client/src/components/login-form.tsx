@@ -1,9 +1,8 @@
-import React, { useState } from "react";
-
 import * as isEmail from "isemail";
-import { Button, Input } from "./button";
+import React, { useState } from "react";
 import styled from "styled-components/macro";
 import { color, ColorProps } from "styled-system";
+import { Button, Input } from "./button";
 
 interface LoginFormProps {
   onLogin: (args: { email: string }) => void;
@@ -36,4 +35,3 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
 const Box = styled.div<ColorProps>`
   ${color}
 `;
-1;

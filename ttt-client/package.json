@@ -47,5 +47,10 @@
     "@types/styled-system": "^5.1.0",
     "react-scripts": "3.1.1",
     "typescript": "3.5.3"
+  },
+  "babelMacros": {
+    "styledComponents": {
+      "pure": true
+    }
   }
 }
