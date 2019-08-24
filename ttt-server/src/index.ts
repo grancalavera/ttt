@@ -8,17 +8,17 @@ import { join } from "path";
 const typeDefs = importSchema(join(__dirname, "schema.graphql"));
 
 const schema = makeExecutableSchema({
-  typeDefs,
   // this should be fine because we're adding __typename to all members of union types
   // also, I didn't found a way to implement a __resolveType function that would work
   // when the parent is a Promise
-  resolverValidationOptions: { requireResolversForResolveType: false }
+  resolverValidationOptions: { requireResolversForResolveType: false },
+  typeDefs,
+  resolvers
 });
 
 const server = new ApolloServer({
   schema,
   dataSources,
-  resolvers,
   context
 });
 
