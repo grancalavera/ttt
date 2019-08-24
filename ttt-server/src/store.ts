@@ -9,6 +9,7 @@ import {
   BelongsToSetAssociationMixin,
   BOOLEAN
 } from "sequelize";
+import { Avatar, Position } from "./generated/models";
 
 export class UserModel extends Model {
   public readonly id!: number;
@@ -19,7 +20,7 @@ export class UserModel extends Model {
 
 export class PlayerModel extends Model {
   public id!: number;
-  public avatar!: "O" | "X";
+  public avatar!: Avatar;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -35,6 +36,9 @@ export class PlayerModel extends Model {
 export class GameModel extends Model {
   public id!: string;
   public isInLobby!: boolean;
+
+  public firstMoveAvatar!: Avatar;
+  public firstMovePosition!: Position;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;

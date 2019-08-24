@@ -9,15 +9,13 @@ import gql from "graphql-tag";
 import * as isEmail from "isemail";
 import fetch from "isomorphic-fetch";
 import WebSocket from "ws";
-
 import {
-  JoinGameResult,
+  Avatar,
   Game,
   GameChanged,
-  Move,
-  Position,
+  JoinGameResult,
   PlayMoveResult,
-  Avatar
+  Position
 } from "../src/generated/models";
 import introspectionResult from "./generated/introspection-result";
 

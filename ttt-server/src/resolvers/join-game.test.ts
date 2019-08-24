@@ -1,19 +1,17 @@
-import { create as createStore, UserModel } from "../store";
-import { TTTDataSources, TTTContext } from "../environment";
-import { User, Game } from "../generated/models";
-import { joinGame } from "./join-game";
 import { GameAPI } from "../data-sources/game-api";
-
-import { GameTypename, loginFromModel } from "../model";
 import { GameStore } from "../data-sources/game-store";
+import { TTTContext } from "../environment";
+import { Game, User } from "../generated/models";
+import { GameTypename, loginFromModel } from "../model";
+import { create as createStore, UserModel } from "../store";
 import { getAllGames } from "./get-all-games";
+import { joinGame } from "./join-game";
 
 jest.mock("../data-sources/game-api");
 
 describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
   let alice: User;
   let bob: User;
-  let jane: User;
 
   const context = {
     dataSources: {
@@ -25,10 +23,9 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
   beforeAll(async () => {
     const storage = `./join-game.test.sqlite`;
     await createStore({ storage }).sync({ force: true });
-    [alice, bob, jane] = await UserModel.bulkCreate([
+    [alice, bob] = await UserModel.bulkCreate([
       { email: "alice@email.com" },
-      { email: "bob@email.com" },
-      { email: "jane@email.com" }
+      { email: "bob@email.com" }
     ]).then(users => users.map(loginFromModel).map(({ user }) => user));
   });
 
