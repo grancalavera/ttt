@@ -6,16 +6,20 @@
   "scripts": {
     "start:clean": "rm -f store.sqlite && yarn start",
     "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "start:simulation": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/simulation.ts",
     "build": "tsc"
   },
   "dependencies": {
     "express": "4.17.1",
     "sequelize": "5.15.0",
-    "sqlite3": "4.1.0"
+    "sqlite3": "4.1.0",
+    "isomorphic-fetch": "2.2.1",
+    "uuid": "3.3.3"
   },
   "devDependencies": {
     "@types/node": "12.7.2",
     "@types/validator": "10.11.2",
+    "@types/uuid": "3.4.5",
     "nodemon": "1.19.1",
     "ts-node": "8.3.0",
     "typescript": "3.5.3"

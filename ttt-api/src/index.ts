@@ -1,29 +1,24 @@
-import express, { Response } from "express";
-import { Transaction } from "sequelize/types";
-
 import {
+  assertNever,
   coerce,
   coerceToGameState,
   coerceToMove,
   coerceToPlayer,
+  CoreGamePlaying,
+  CoreMove,
   CORE_GAME_OVER_TIE,
   CORE_GAME_OVER_WIN,
   CORE_GAME_PLAYING,
-  CoreGamePlaying,
-  CoreMove,
   createGame,
   findWin,
   isPosTaken,
   nextPlayer,
   resolveGame
 } from "@grancalavera/ttt-core";
-
+import express, { Response } from "express";
+import { Transaction } from "sequelize/types";
+import { ErrorCode, ErrorResponse, GameResponse, MovesResponse } from "./model";
 import { GameModel, MoveModel, store, toUnsafeMove } from "./store";
-import { GameResponse, ErrorCode, ErrorResponse, MovesResponse } from "./model";
-
-function assertNever(value: never): never {
-  throw new Error(`unexpected value ${value}`);
-}
 
 const app = express();
 app.use(express.json());
@@ -244,7 +239,7 @@ app.post("/ttt/:id/moves", async (req, res) => {
   }
 });
 
-store.sync().then(() => {
+store.sync({ force: true }).then(() => {
   app.listen(port, () => {
     console.log(`server started at  http://localhost:${port}`);
   });

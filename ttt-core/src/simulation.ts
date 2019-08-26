@@ -1,14 +1,13 @@
 import {
-  CorePosition,
-  board,
-  randInt,
-  nextPlayer,
-  resolveGame,
-  CoreBoard,
   CoreMove,
-  CORE_GAME_OVER_WIN,
+  CorePosition,
   CORE_GAME_OVER_TIE,
-  CORE_GAME_PLAYING
+  CORE_GAME_OVER_WIN,
+  CORE_GAME_PLAYING,
+  nextPlayer,
+  randInt,
+  renderGame,
+  resolveGame
 } from "./game";
 
 const turn = (
@@ -39,7 +38,7 @@ export const play = (
   positions: CorePosition[] = shuffledPositions(),
   moves: CoreMove[] = []
 ) => {
-  console.log(renderGame(board)(moves));
+  console.log(renderGame(moves));
   const result = resolveGame(moves);
   const gameOver = (message: string) => console.log(`Game over: ${message}`);
 
@@ -57,31 +56,6 @@ export const play = (
     default:
       assertNever(result);
   }
-};
-
-const gameToBoardView = (board: CoreBoard, moves: CoreMove[]): string[] =>
-  board.map(i => {
-    const maybeMove = moves.find(([_, x]) => x === i);
-    if (maybeMove) {
-      return maybeMove[0];
-    } else {
-      return " ";
-    }
-  });
-
-export const renderGame = (board: CoreBoard) => (moves: CoreMove[]): string => {
-  const b = gameToBoardView(board, moves);
-  return `
-┌─────────────────┐
-│                 │
-│    ${b[0]} │ ${b[1]} │ ${b[2]}    │
-│   ───┼───┼───   │
-│    ${b[3]} │ ${b[4]} │ ${b[5]}    │
-│   ───┼───┼───   │
-│    ${b[6]} │ ${b[7]} │ ${b[8]}    │
-│                 │
-└─────────────────┘
-`;
 };
 
 function assertNever(x: never) {

@@ -112,10 +112,10 @@ or ${position} is an invalid Position`
 );
 
 // prettier-ignore
-export const board: CoreBoard = [ 0, 1, 2
-                                , 3, 4, 5
-                                , 6, 7, 8
-                                ];
+const coreBoard: CoreBoard = [ 0, 1, 2
+                             , 3, 4, 5
+                             , 6, 7, 8
+                             ];
 
 export const isPosTaken = (pos: CorePosition, moves: CoreMove[]): boolean =>
   moves.some(([_, p]) => pos === p);
@@ -148,7 +148,7 @@ export const resolveGame = (moves: CoreMove[]): CoreGame => {
     const winningMove = oWinningMove;
     const winner = "O";
     return gameOverWin({ winner, winningMove, moves });
-  } else if (moves.length === board.length) {
+  } else if (moves.length === coreBoard.length) {
     return gameOverTie({ moves });
   } else {
     return nextTurn({ currentPlayer: nextPlayer(moves), moves });
@@ -166,3 +166,43 @@ export const nextPlayer = (moves: CoreMove[]): CorePlayer => {
 
 export const randInt = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
+
+export function assertNever(value: never): never {
+  throw new Error(`unexpected value ${value}`);
+}
+
+export const shuffle = <T extends any>(list: T[]): T[] => {
+  if (list.length === 0) {
+    return [];
+  } else {
+    const i = randInt(0, list.length - 1);
+    const x = list[i];
+    const rest = [...list.slice(0, i), ...list.slice(i + 1)];
+    return [x, ...shuffle(rest)];
+  }
+};
+
+const gameToBoardView = (board: CoreBoard, moves: CoreMove[]): string[] =>
+  board.map(i => {
+    const maybeMove = moves.find(([_, x]) => x === i);
+    if (maybeMove) {
+      return maybeMove[0];
+    } else {
+      return " ";
+    }
+  });
+
+export const renderGame = (moves: CoreMove[]): string => {
+  const b = gameToBoardView(coreBoard, moves);
+  return `
+┌─────────────────┐
+│                 │
+│    ${b[0]} │ ${b[1]} │ ${b[2]}    │
+│   ───┼───┼───   │
+│    ${b[3]} │ ${b[4]} │ ${b[5]}    │
+│   ───┼───┼───   │
+│    ${b[6]} │ ${b[7]} │ ${b[8]}    │
+│                 │
+└─────────────────┘
+`;
+};
