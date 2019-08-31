@@ -18,8 +18,9 @@ import {
 import express, { Response } from "express";
 import { Transaction } from "sequelize/types";
 import { ErrorCode, ErrorResponse, GameResponse, MovesResponse } from "./model";
-import { GameModel, MoveModel, store, toUnsafeMove } from "./store";
+import { GameModel, MoveModel, create, toUnsafeMove } from "./store";
 
+const store = create("./store.sqlite");
 const app = express();
 app.use(express.json());
 
@@ -239,7 +240,7 @@ app.post("/ttt/:id/moves", async (req, res) => {
   }
 });
 
-store.sync({ force: true }).then(() => {
+store.sync().then(() => {
   app.listen(port, () => {
     console.log(`server started at  http://localhost:${port}`);
   });
