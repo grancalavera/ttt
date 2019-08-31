@@ -8,7 +8,7 @@ import {
   CorePosition,
   findWin
 } from "@grancalavera/ttt-core";
-import { MoveModel } from "./store";
+import { StandaloneMoveModel as MoveModel } from "./store";
 
 type Turn =
   | { kind: "AnyPlayer" }

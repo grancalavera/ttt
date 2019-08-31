@@ -18,9 +18,8 @@ import {
 import express, { Response } from "express";
 import { Transaction } from "sequelize/types";
 import { ErrorCode, ErrorResponse, GameResponse, MovesResponse } from "./model";
-import { GameModel, MoveModel, create, toUnsafeMove } from "./store";
+import { GameModel, MoveModel, toUnsafeMove, store } from "./store";
 
-const store = create("./store.sqlite");
 const app = express();
 app.use(express.json());
 

@@ -1,8 +1,7 @@
 import uuid = require("uuid");
 import { CorePlayer, CorePosition } from "@grancalavera/ttt-core";
-
-import { create, MoveModel } from "./store";
-import { playMove, WrongTurnError, PositionPlayedError, GameOverError } from "./moves";
+import { GameOverError, playMove, PositionPlayedError, WrongTurnError } from "./moves";
+import { create, StandaloneMoveModel as MoveModel } from "./store";
 
 const FirstGameID = uuid();
 const NineMovesGameId = uuid();

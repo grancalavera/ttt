@@ -1,5 +1,10 @@
 import { INTEGER, Model, NUMBER, Sequelize, STRING } from "sequelize";
 
+export const store = new Sequelize({
+  dialect: "sqlite",
+  storage: "./store.sqlite"
+});
+
 export class GameModel extends Model {
   public readonly id!: number;
   public readonly nextPlayer!: string;
@@ -16,7 +21,20 @@ export class MoveModel extends Model {
   public readonly id!: number;
   public readonly player!: string;
   public readonly position!: number;
+
   public readonly gameId!: string;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
+
+export class StandaloneMoveModel extends Model {
+  public readonly id!: number;
+  public readonly player!: string;
+  public readonly position!: number;
+
+  public readonly gameId!: string;
+
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -26,34 +44,42 @@ export const toUnsafeMove = ({ player, position }: MoveModel): [string, number] 
   position
 ];
 
+GameModel.init(
+  {
+    id: { type: STRING, primaryKey: true },
+    nextPlayer: { type: STRING },
+    status: { type: STRING, allowNull: false },
+    winner: { type: STRING }
+  },
+  { sequelize: store, tableName: "games" }
+);
+
+MoveModel.init(
+  {
+    id: { type: INTEGER, autoIncrement: true, primaryKey: true },
+    player: { type: STRING, allowNull: false },
+    position: { type: NUMBER, allowNull: false }
+  },
+  { sequelize: store, tableName: "moves" }
+);
+
 export const create = (storage: string) => {
   const sequelize = new Sequelize({
     dialect: "sqlite",
     storage
   });
 
-  GameModel.init(
-    {
-      id: { type: STRING, primaryKey: true },
-      nextPlayer: { type: STRING },
-      status: { type: STRING, allowNull: false },
-      winner: { type: STRING }
-    },
-    { sequelize, tableName: "games" }
-  );
-
-  MoveModel.init(
+  StandaloneMoveModel.init(
     {
       id: { type: INTEGER, autoIncrement: true, primaryKey: true },
       player: { type: STRING, allowNull: false },
       position: { type: NUMBER, allowNull: false },
       gameId: { type: STRING, allowNull: false }
     },
-    { sequelize, tableName: "moves" }
+    { sequelize, tableName: "standalone-moves" }
   );
-
-  // GameModel.hasMany(MoveModel, { as: "moves", foreignKey: "gameId", sourceKey: "id" });
-  // MoveModel.belongsTo(GameModel, { foreignKey: "gameId", targetKey: "id" });
-
   return sequelize;
 };
+
+GameModel.hasMany(MoveModel, { as: "moves", foreignKey: "gameId", sourceKey: "id" });
+MoveModel.belongsTo(GameModel, { foreignKey: "gameId", targetKey: "id" });
