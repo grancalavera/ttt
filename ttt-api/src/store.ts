@@ -52,6 +52,9 @@ MoveModel.init(
   { sequelize: store, tableName: "moves" }
 );
 
+GameModel.hasMany(MoveModel, { as: "moves", foreignKey: "gameId", sourceKey: "id" });
+MoveModel.belongsTo(GameModel, { foreignKey: "gameId", targetKey: "id" });
+
 export class StandaloneMoveModel extends Model {
   public readonly id!: string;
   public readonly player!: string;
@@ -81,6 +84,3 @@ export const create = (storage: string) => {
 
   return sequelize;
 };
-
-GameModel.hasMany(MoveModel, { as: "moves", foreignKey: "gameId", sourceKey: "id" });
-MoveModel.belongsTo(GameModel, { foreignKey: "gameId", targetKey: "id" });

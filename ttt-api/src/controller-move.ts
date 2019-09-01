@@ -10,6 +10,7 @@ import {
 } from "@grancalavera/ttt-core";
 import uuid from "uuid/v4";
 import { StandaloneMoveModel as MoveModel } from "./store";
+import { ResponseMove } from "./model";
 
 type Turn =
   | { kind: "AnyPlayer" }
@@ -44,7 +45,7 @@ export const playMove = async (
   gameId: string,
   player: CorePlayer,
   position: CorePosition
-): Promise<MoveModel> => {
+): Promise<ResponseMove> => {
   const moves = await MoveModel.findAll({ where: { gameId } });
   const turn = currentTurn(gameId, moves);
 
@@ -53,13 +54,21 @@ export const playMove = async (
   ensurePositionHasNotBeenPlayed(position, moves);
 
   const id = uuid();
-  return await MoveModel.create({ id, gameId, player, position });
+  const move = { id, gameId, player, position };
+
+  try {
+    await MoveModel.create(move);
+  } catch (e) {
+    throw new Error(`failed to create move: ${JSON.stringify(move, null, 2)}`);
+  }
+
+  return move;
 };
 
 const currentTurn = (gameId: string, moves: MoveModel[]): Turn => {
   if (moves.length === 0) {
     return { kind: "AnyPlayer" };
-  } else if (moves.length === 9) {
+  } else if (moves.length >= 9) {
     throw new GameOverError(gameId);
   } else {
     const lastMove = moves[moves.length - 1];

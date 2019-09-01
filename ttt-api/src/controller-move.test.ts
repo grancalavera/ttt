@@ -1,6 +1,11 @@
-import uuid = require("uuid");
 import { CorePlayer, CorePosition } from "@grancalavera/ttt-core";
-import { GameOverError, playMove, PositionPlayedError, WrongTurnError } from "./moves";
+import uuid from "uuid/v4";
+import {
+  GameOverError,
+  playMove,
+  PositionPlayedError,
+  WrongTurnError
+} from "./controller-move";
 import { create, StandaloneMoveModel as MoveModel } from "./store";
 
 const FirstGameID = uuid();
@@ -14,7 +19,7 @@ const Bob: CorePlayer = "X";
 const BobsFirstMove: CorePosition = 2;
 
 beforeAll(async () => {
-  await create("./move.test.sqlite").sync({ force: true, logging: false });
+  await create("./controller-move.test.sqlite").sync({ force: true, logging: false });
 });
 
 describe(`Given there are no moves on game ${FirstGameID}`, () => {

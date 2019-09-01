@@ -1,4 +1,4 @@
-import { CoreGame, CoreMove } from "@grancalavera/ttt-core";
+import { CoreGame, CoreMove, CorePlayer, CorePosition } from "@grancalavera/ttt-core";
 
 export enum ErrorCode {
   NotFound = "the requested game does not exist",
@@ -23,3 +23,18 @@ export interface ErrorResponse {
   message: string;
   context: any;
 }
+
+export interface ResponseGame {
+  id: string;
+  isGameOver: boolean;
+  moves: CoreMove[];
+  currentPlayer?: CorePlayer;
+  winner?: CorePlayer;
+}
+
+export type ResponseMove = {
+  id: string;
+  gameId: string;
+  player: CorePlayer;
+  position: CorePosition;
+};
