@@ -87,10 +87,12 @@ describe(`Given ${Alice} played the 9th move on game ${NineMovesGameId}`, () => 
   beforeAll(async () => {
     await MoveModel.bulkCreate(
       [0, 1, 2, 3, 4, 5, 6, 7, 8].map(position => ({
+        id: uuid(),
         gameId: NineMovesGameId,
         position,
         player: Alice
-      }))
+      })),
+      { logging: false }
     );
   });
 
@@ -109,10 +111,12 @@ describe(`Given ${Alice} has won game ${AliceWinsGameId} before the 9th move`, (
   beforeAll(async () => {
     await MoveModel.bulkCreate(
       [0, 1, 2].map(position => ({
+        id: uuid(),
         gameId: AliceWinsGameId,
         position,
         player: Alice
-      }))
+      })),
+      { logging: false }
     );
   });
 

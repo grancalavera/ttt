@@ -28,17 +28,6 @@ export class MoveModel extends Model {
   public readonly updatedAt!: Date;
 }
 
-export class StandaloneMoveModel extends Model {
-  public readonly id!: number;
-  public readonly player!: string;
-  public readonly position!: number;
-
-  public readonly gameId!: string;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-}
-
 export const toUnsafeMove = ({ player, position }: MoveModel): [string, number] => [
   player,
   position
@@ -63,6 +52,17 @@ MoveModel.init(
   { sequelize: store, tableName: "moves" }
 );
 
+export class StandaloneMoveModel extends Model {
+  public readonly id!: string;
+  public readonly player!: string;
+  public readonly position!: number;
+
+  public readonly gameId!: string;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
+
 export const create = (storage: string) => {
   const sequelize = new Sequelize({
     dialect: "sqlite",
@@ -71,13 +71,14 @@ export const create = (storage: string) => {
 
   StandaloneMoveModel.init(
     {
-      id: { type: INTEGER, autoIncrement: true, primaryKey: true },
+      id: { type: STRING, primaryKey: true, allowNull: false },
       player: { type: STRING, allowNull: false },
       position: { type: NUMBER, allowNull: false },
       gameId: { type: STRING, allowNull: false }
     },
     { sequelize, tableName: "standalone-moves" }
   );
+
   return sequelize;
 };
 

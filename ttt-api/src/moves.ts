@@ -8,6 +8,7 @@ import {
   CorePosition,
   findWin
 } from "@grancalavera/ttt-core";
+import uuid from "uuid/v4";
 import { StandaloneMoveModel as MoveModel } from "./store";
 
 type Turn =
@@ -51,7 +52,8 @@ export const playMove = async (
   ensureNoOneHasWonTheGame(gameId, moves);
   ensurePositionHasNotBeenPlayed(position, moves);
 
-  return await MoveModel.create({ gameId, player, position });
+  const id = uuid();
+  return await MoveModel.create({ id, gameId, player, position });
 };
 
 const currentTurn = (gameId: string, moves: MoveModel[]): Turn => {
@@ -99,8 +101,9 @@ const ensureNoOneHasWonTheGame = (gameId: string, moves: MoveModel[]): void => {
   const coreMoves: CoreMove[] = moves.map(({ player, position }) =>
     coerceToMove([player, position])
   );
-  const oWins = !!findWin("O", coreMoves);
-  const xWins = !!findWin("X", coreMoves);
+
+  const oWins = findWin("O", coreMoves);
+  const xWins = findWin("X", coreMoves);
 
   if (oWins || xWins) {
     throw new GameOverError(gameId);
