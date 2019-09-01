@@ -8,29 +8,29 @@ export enum ErrorCode {
   InvalidMove = "invalid move: either the Player or the Position are invalid"
 }
 
-export interface GameResponse {
+export type GameResponse = {
   id: string;
   game: CoreGame;
-}
+};
 
-export interface MovesResponse {
+export type MovesResponse = {
   id: string;
   moves: CoreMove[];
-}
+};
 
-export interface ErrorResponse {
+export type ErrorResponse = {
   code: ErrorCode;
   message: string;
   context: any;
-}
+};
 
-export interface ResponseGame {
+export type ResponseGame = {
   id: string;
   isGameOver: boolean;
   moves: CoreMove[];
   currentPlayer?: CorePlayer;
   winner?: CorePlayer;
-}
+};
 
 export type ResponseMove = {
   id: string;

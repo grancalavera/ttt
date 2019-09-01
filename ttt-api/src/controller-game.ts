@@ -1,9 +1,33 @@
+import { groupBy, map, pipe, values } from "ramda";
+import {
+  currentPlayerFromMoves,
+  isGameOverFromMoves,
+  winnerFromMoves,
+  coreMovesFromMoves
+} from "./controller-common";
 import { ResponseGame } from "./model";
+import { StandaloneMoveModel as MoveModel } from "./store";
 
 export const findAllGames = async (): Promise<ResponseGame[]> => {
-  throw new Error(`controller "${findAllGames}" not implemented`);
+  const moves = await MoveModel.findAll();
+  return allGamesFromMoves(moves);
 };
 
-export const findGamesById = async (id: string): Promise<ResponseGame | null> => {
-  throw new Error(`controller "${findGamesById}" not implemented`);
+export const findGameById = async (gameId: string): Promise<ResponseGame | null> => {
+  const moves = await MoveModel.findAll({ where: { gameId } });
+  return moves.length ? gameFromMoves(moves) : null;
 };
+
+const gameFromMoves = (moves: MoveModel[]): ResponseGame => ({
+  id: moves[0].gameId,
+  currentPlayer: currentPlayerFromMoves(moves),
+  isGameOver: isGameOverFromMoves(moves),
+  winner: winnerFromMoves(moves),
+  moves: coreMovesFromMoves(moves)
+});
+
+const allGamesFromMoves = pipe(
+  groupBy(({ gameId }: MoveModel) => gameId),
+  values,
+  map(gameFromMoves)
+);

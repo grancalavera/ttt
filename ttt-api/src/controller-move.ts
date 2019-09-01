@@ -11,11 +11,7 @@ import {
 import uuid from "uuid/v4";
 import { StandaloneMoveModel as MoveModel } from "./store";
 import { ResponseMove } from "./model";
-
-type Turn =
-  | { kind: "AnyPlayer" }
-  | { kind: "SomePlayer"; player: CorePlayer }
-  | { kind: "NoPlayer" };
+import { currentTurn, Turn, winnerFromMoves } from "./controller-common";
 
 export class PositionPlayedError extends Error {
   constructor(
@@ -47,7 +43,7 @@ export const playMove = async (
   position: CorePosition
 ): Promise<ResponseMove> => {
   const moves = await MoveModel.findAll({ where: { gameId } });
-  const turn = currentTurn(gameId, moves);
+  const turn = currentTurn(moves);
 
   ensurePlayerCanPlayTurn(player, turn);
   ensureNoOneHasWonTheGame(gameId, moves);
@@ -63,18 +59,6 @@ export const playMove = async (
   }
 
   return move;
-};
-
-const currentTurn = (gameId: string, moves: MoveModel[]): Turn => {
-  if (moves.length === 0) {
-    return { kind: "AnyPlayer" };
-  } else if (moves.length >= 9) {
-    throw new GameOverError(gameId);
-  } else {
-    const lastMove = moves[moves.length - 1];
-    const player = lastMove.player === "O" ? "X" : "O";
-    return { kind: "SomePlayer", player };
-  }
 };
 
 const ensurePlayerCanPlayTurn = (player: CorePlayer, turn: Turn): void => {
@@ -107,14 +91,7 @@ const ensurePositionHasNotBeenPlayed = (
 };
 
 const ensureNoOneHasWonTheGame = (gameId: string, moves: MoveModel[]): void => {
-  const coreMoves: CoreMove[] = moves.map(({ player, position }) =>
-    coerceToMove([player, position])
-  );
-
-  const oWins = findWin("O", coreMoves);
-  const xWins = findWin("X", coreMoves);
-
-  if (oWins || xWins) {
+  if (winnerFromMoves(moves)) {
     throw new GameOverError(gameId);
   }
 };
