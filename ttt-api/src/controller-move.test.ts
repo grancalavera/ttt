@@ -19,7 +19,7 @@ const Bob: CorePlayer = "X";
 const BobsFirstMove: CorePosition = 2;
 
 beforeAll(async () => {
-  await create("./controller-move.test.sqlite").sync({ force: true, logging: false });
+  await create("./controller-move.test.sqlite").sync({ force: true });
 });
 
 describe(`Given there are no moves on game ${FirstGameID}`, () => {

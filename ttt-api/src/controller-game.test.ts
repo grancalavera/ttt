@@ -26,7 +26,7 @@ interface FindByIdExpectation {
 }
 
 beforeAll(async () => {
-  await create("./controller-game.test.sqlite").sync({ force: true, logging: false });
+  await create("./controller-game.test.sqlite").sync({ force: true });
 });
 
 describe("Given there are no games", () => {

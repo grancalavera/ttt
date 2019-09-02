@@ -69,7 +69,8 @@ export class StandaloneMoveModel extends Model {
 export const create = (storage: string) => {
   const sequelize = new Sequelize({
     dialect: "sqlite",
-    storage
+    storage,
+    logging: () => {}
   });
 
   StandaloneMoveModel.init(

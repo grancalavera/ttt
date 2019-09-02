@@ -1,17 +1,14 @@
 import {
   assertNever,
-  coerceToMove,
   coerceToPlayer,
   coerceToPosition,
-  CoreMove,
   CorePlayer,
-  CorePosition,
-  findWin
+  CorePosition
 } from "@grancalavera/ttt-core";
 import uuid from "uuid/v4";
-import { StandaloneMoveModel as MoveModel } from "./store";
-import { ResponseMove } from "./model";
 import { currentTurn, Turn, winnerFromMoves } from "./controller-common";
+import { ResponseMove } from "./model";
+import { StandaloneMoveModel as MoveModel } from "./store";
 
 export class PositionPlayedError extends Error {
   constructor(
