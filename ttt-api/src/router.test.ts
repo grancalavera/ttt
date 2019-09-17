@@ -1,22 +1,10 @@
 import express from "express";
 import request from "supertest";
-import {
-  router,
-  InvalidPlayer,
-  InvalidPosition,
-  invalidPlayer,
-  invalidPosition
-} from "./router";
-import { create } from "./store";
-import { CorePlayer } from "@grancalavera/ttt-core";
 import uuid from "uuid/v4";
+import { invalidPlayer, invalidPosition, router } from "./router";
 
 const app = express();
 app.use(router);
-
-beforeAll(async () => {
-  await create("./router.test.sqlite").sync({ force: true });
-});
 
 interface POSTMoveValidationExpectation {
   player: string;
@@ -32,6 +20,7 @@ describe.each`
   ${"x"} | ${0}     | ${{ status: 400, body: { errors: [invalidPlayer("x")] } }}
   ${"o"} | ${0}     | ${{ status: 400, body: { errors: [invalidPlayer("o")] } }}
   ${"o"} | ${9}     | ${{ status: 400, body: { errors: [invalidPlayer("o"), invalidPosition(9)] } }}
+  ${"X"} | ${-1}    | ${{ status: 400, body: { errors: [invalidPosition(-1)] } }}
   ${"X"} | ${9}     | ${{ status: 400, body: { errors: [invalidPosition(9)] } }}
   ${"O"} | ${0}     | ${{ status: 200 }}
   ${"X"} | ${0}     | ${{ status: 200 }}
