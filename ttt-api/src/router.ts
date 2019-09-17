@@ -1,6 +1,14 @@
-import { Router, RequestHandler, ErrorRequestHandler } from "express";
+import { RequestHandler, Router } from "express";
+import { body, ValidationError, validationResult } from "express-validator";
 
 const router = Router();
+const INVALID_PLAYER = "INVALID_PLAYER";
+const INVALID_POSITION = "INVALID_POSITION";
+
+export interface InvalidRequest {
+  error: "InvalidRequest";
+  message: string;
+}
 
 export interface InvalidPlayer {
   error: "InvalidPlayer";
@@ -36,20 +44,38 @@ router.get("/:id", (req, res) => {
   res.status(418).end();
 });
 
-// ResponseMove
-/*
-interface Body {
-  player:'X'|'O';
-  position: 0 | 1 | 2
-            3 | 4 | 5
-            6 | 7 | 8;
-  gameId:string
-}
-*/
-const validateMoveRequest: RequestHandler[] = [];
+const validateMoveRequest: RequestHandler[] = [
+  body("player")
+    .matches(/^(O|X){1}$/)
+    .withMessage(INVALID_PLAYER),
+  body("position")
+    .matches(/^[012345678]{1}$/)
+    .withMessage(INVALID_POSITION)
+];
 
 const handleMoveRequest: RequestHandler = (req, res) => {
-  res.status(418).end();
+  const { player, position } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res
+      .status(400)
+      .json({ errors: errors.array().map(toResponseError({ player, position })) });
+  } else {
+    res.status(200).end();
+  }
+};
+
+const toResponseError = ({ player, position }: { player: any; position: any }) => (
+  error: ValidationError
+): InvalidPlayer | InvalidPosition | InvalidRequest => {
+  switch (error.msg) {
+    case INVALID_PLAYER:
+      return invalidPlayer(player);
+    case INVALID_POSITION:
+      return invalidPosition(position);
+    default:
+      return { error: "InvalidRequest", message: `Invalid request: ${error.msg}` };
+  }
 };
 
 router.post("/moves", validateMoveRequest, handleMoveRequest);

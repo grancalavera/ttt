@@ -3,7 +3,7 @@ import request from "supertest";
 import uuid from "uuid/v4";
 import { invalidPlayer, invalidPosition, router } from "./router";
 
-const app = express();
+const app = express().use(express.json());
 app.use(router);
 
 interface POSTMoveValidationExpectation {
@@ -22,24 +22,24 @@ describe.each`
   ${"o"} | ${9}     | ${{ status: 400, body: { errors: [invalidPlayer("o"), invalidPosition(9)] } }}
   ${"X"} | ${-1}    | ${{ status: 400, body: { errors: [invalidPosition(-1)] } }}
   ${"X"} | ${9}     | ${{ status: 400, body: { errors: [invalidPosition(9)] } }}
-  ${"O"} | ${0}     | ${{ status: 200 }}
-  ${"X"} | ${0}     | ${{ status: 200 }}
-  ${"O"} | ${1}     | ${{ status: 200 }}
-  ${"X"} | ${1}     | ${{ status: 200 }}
-  ${"O"} | ${2}     | ${{ status: 200 }}
-  ${"X"} | ${2}     | ${{ status: 200 }}
-  ${"O"} | ${3}     | ${{ status: 200 }}
-  ${"X"} | ${3}     | ${{ status: 200 }}
-  ${"O"} | ${4}     | ${{ status: 200 }}
-  ${"X"} | ${4}     | ${{ status: 200 }}
-  ${"O"} | ${5}     | ${{ status: 200 }}
-  ${"X"} | ${5}     | ${{ status: 200 }}
-  ${"O"} | ${6}     | ${{ status: 200 }}
-  ${"X"} | ${6}     | ${{ status: 200 }}
-  ${"O"} | ${7}     | ${{ status: 200 }}
-  ${"X"} | ${7}     | ${{ status: 200 }}
-  ${"O"} | ${8}     | ${{ status: 200 }}
-  ${"X"} | ${8}     | ${{ status: 200 }}
+  ${"O"} | ${0}     | ${{ status: 200, body: {} }}
+  ${"X"} | ${0}     | ${{ status: 200, body: {} }}
+  ${"O"} | ${1}     | ${{ status: 200, body: {} }}
+  ${"X"} | ${1}     | ${{ status: 200, body: {} }}
+  ${"O"} | ${2}     | ${{ status: 200, body: {} }}
+  ${"X"} | ${2}     | ${{ status: 200, body: {} }}
+  ${"O"} | ${3}     | ${{ status: 200, body: {} }}
+  ${"X"} | ${3}     | ${{ status: 200, body: {} }}
+  ${"O"} | ${4}     | ${{ status: 200, body: {} }}
+  ${"X"} | ${4}     | ${{ status: 200, body: {} }}
+  ${"O"} | ${5}     | ${{ status: 200, body: {} }}
+  ${"X"} | ${5}     | ${{ status: 200, body: {} }}
+  ${"O"} | ${6}     | ${{ status: 200, body: {} }}
+  ${"X"} | ${6}     | ${{ status: 200, body: {} }}
+  ${"O"} | ${7}     | ${{ status: 200, body: {} }}
+  ${"X"} | ${7}     | ${{ status: 200, body: {} }}
+  ${"O"} | ${8}     | ${{ status: 200, body: {} }}
+  ${"X"} | ${8}     | ${{ status: 200, body: {} }}
 `("Given $player played $position", expectation => {
   const { player, position, expected }: POSTMoveValidationExpectation = expectation;
   const { status, body } = expected;
