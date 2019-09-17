@@ -1,9 +1,10 @@
 import express from "express";
-import request from "supertest";
-import uuid from "uuid/v4";
-import { invalidPlayer, invalidPosition, router, missingGameId } from "./router";
 import { isEmpty } from "ramda";
+import request from "supertest";
+import { invalidPlayer, invalidPosition, missingGameId, router } from "./router";
+import "./controller-move";
 
+jest.mock("./controller-move");
 const app = express().use(express.json());
 app.use(router);
 

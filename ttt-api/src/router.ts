@@ -1,5 +1,7 @@
 import { RequestHandler, Router } from "express";
 import { body, ValidationError, validationResult } from "express-validator";
+import { coerceToPlayer, coerceToPosition } from "@grancalavera/ttt-core";
+import { playMove } from "./controller-move";
 
 const router = Router();
 const INVALID_PLAYER = "INVALID_PLAYER";
@@ -67,14 +69,17 @@ const validateMoveRequest: RequestHandler[] = [
     .withMessage(MISSING_GAME_ID)
 ];
 
-const handleMoveRequest: RequestHandler = (req, res) => {
-  const { player, position } = req.body;
+const handleMoveRequest: RequestHandler = async (req, res) => {
+  const { player, position, gameId } = req.body;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res
       .status(400)
       .json({ errors: errors.array().map(toResponseError({ player, position })) });
   } else {
+    const corePlayer = coerceToPlayer(player);
+    const corePosition = coerceToPosition(position);
+    await playMove(gameId, corePlayer, corePosition);
     res.status(200).end();
   }
 };
