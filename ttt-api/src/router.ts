@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, RequestHandler, ErrorRequestHandler } from "express";
 
 const router = Router();
 
@@ -46,8 +46,12 @@ interface Body {
   gameId:string
 }
 */
-router.post("/moves", (req, res) => {
+const validateMoveRequest: RequestHandler[] = [];
+
+const handleMoveRequest: RequestHandler = (req, res) => {
   res.status(418).end();
-});
+};
+
+router.post("/moves", validateMoveRequest, handleMoveRequest);
 
 export { router };
