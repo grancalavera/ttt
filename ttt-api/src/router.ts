@@ -4,9 +4,15 @@ import { body, ValidationError, validationResult } from "express-validator";
 const router = Router();
 const INVALID_PLAYER = "INVALID_PLAYER";
 const INVALID_POSITION = "INVALID_POSITION";
+const MISSING_GAME_ID = "MISSING_GAME_ID";
 
 export interface InvalidRequest {
   error: "InvalidRequest";
+  message: string;
+}
+
+export interface MissingGameId {
+  error: "MissingGameId";
   message: string;
 }
 
@@ -34,6 +40,11 @@ export const invalidPosition = (position: any): InvalidPosition => ({
   invalidPosition: position
 });
 
+export const missingGameId = (): MissingGameId => ({
+  error: "MissingGameId",
+  message: "Missing required game id"
+});
+
 // ResponseGame[]
 router.get("/", (req, res) => {
   res.status(418).end();
@@ -50,7 +61,10 @@ const validateMoveRequest: RequestHandler[] = [
     .withMessage(INVALID_PLAYER),
   body("position")
     .matches(/^[012345678]{1}$/)
-    .withMessage(INVALID_POSITION)
+    .withMessage(INVALID_POSITION),
+  body("gameId")
+    .exists({ checkFalsy: true })
+    .withMessage(MISSING_GAME_ID)
 ];
 
 const handleMoveRequest: RequestHandler = (req, res) => {
@@ -67,12 +81,14 @@ const handleMoveRequest: RequestHandler = (req, res) => {
 
 const toResponseError = ({ player, position }: { player: any; position: any }) => (
   error: ValidationError
-): InvalidPlayer | InvalidPosition | InvalidRequest => {
+): InvalidPlayer | InvalidPosition | MissingGameId | InvalidRequest => {
   switch (error.msg) {
     case INVALID_PLAYER:
       return invalidPlayer(player);
     case INVALID_POSITION:
       return invalidPosition(position);
+    case MISSING_GAME_ID:
+      return missingGameId();
     default:
       return { error: "InvalidRequest", message: `Invalid request: ${error.msg}` };
   }
