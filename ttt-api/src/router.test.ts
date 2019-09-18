@@ -1,5 +1,4 @@
 import express from "express";
-import { isEmpty } from "ramda";
 import request from "supertest";
 import { invalidPlayer, invalidPosition, missingGameId, router } from "./router";
 import "./controller-move";
@@ -8,7 +7,7 @@ jest.mock("./controller-move");
 const app = express().use(express.json());
 app.use(router);
 
-interface POSTMoveValidationExpectation {
+interface POSTMoveFixture {
   gameId?: string;
   player: string;
   position: number;
@@ -45,17 +44,12 @@ describe.each`
   ${"game-id"} | ${"X"} | ${7}     | ${{ status: 200, body: {} }}
   ${"game-id"} | ${"O"} | ${8}     | ${{ status: 200, body: {} }}
   ${"game-id"} | ${"X"} | ${8}     | ${{ status: 200, body: {} }}
-`('Given $player played $position on game "$gameId"', expectation => {
-  const {
-    gameId,
-    player,
-    position,
-    expected
-  }: POSTMoveValidationExpectation = expectation;
+`('Given $player played $position on game "$gameId"', fixture => {
+  const { gameId, player, position, expected }: POSTMoveFixture = fixture;
   const { status, body } = expected;
 
   it(`Then we expect a response with status ${status} and ${
-    isEmpty(body) ? "an empty body" : "errors in the body"
+    status === 400 ? "errors in the body" : "an empty body"
   }`, async () => {
     await request(app)
       .post("/moves")

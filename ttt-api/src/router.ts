@@ -1,9 +1,9 @@
 import { RequestHandler, Router } from "express";
-import { body, ValidationError, validationResult } from "express-validator";
+import { body, ValidationError, validationResult, check } from "express-validator";
 import { coerceToPlayer, coerceToPosition } from "@grancalavera/ttt-core";
 import { playMove } from "./controller-move";
+import { findAllGames, findGameById } from "./controller-game";
 
-const router = Router();
 const INVALID_PLAYER = "INVALID_PLAYER";
 const INVALID_POSITION = "INVALID_POSITION";
 const MISSING_GAME_ID = "MISSING_GAME_ID";
@@ -16,6 +16,12 @@ export interface InvalidRequest {
 export interface MissingGameId {
   error: "MissingGameId";
   message: string;
+}
+
+export interface GameNotFound {
+  error: "GameNotFound";
+  message: string;
+  gameId: string;
 }
 
 export interface InvalidPlayer {
@@ -47,15 +53,15 @@ export const missingGameId = (): MissingGameId => ({
   message: "Missing required game id"
 });
 
-// ResponseGame[]
-router.get("/", (req, res) => {
-  res.status(418).end();
+export const gameNotFound = (gameId: string): GameNotFound => ({
+  error: "GameNotFound",
+  message: `Game "${gameId}" not found`,
+  gameId
 });
 
-// ResponseGame
-router.get("/:id", (req, res) => {
-  res.status(418).end();
-});
+const validateGameId = check("gameId")
+  .exists()
+  .withMessage(MISSING_GAME_ID);
 
 const validateMoveRequest: RequestHandler[] = [
   body("player")
@@ -64,10 +70,23 @@ const validateMoveRequest: RequestHandler[] = [
   body("position")
     .matches(/^[012345678]{1}$/)
     .withMessage(INVALID_POSITION),
-  body("gameId")
-    .exists({ checkFalsy: true })
-    .withMessage(MISSING_GAME_ID)
+  validateGameId
 ];
+
+const handleGetGameByIdRequest: RequestHandler = async (req, res) => {
+  const { gameId } = req.params;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).json({ errors: errors.array().map(missingGameId) });
+  } else {
+    const maybeGame = await findGameById(gameId);
+    if (maybeGame) {
+      res.status(200).json(maybeGame);
+    } else {
+      res.status(404).json({ errors: [gameNotFound(gameId)] });
+    }
+  }
+};
 
 const handleMoveRequest: RequestHandler = async (req, res) => {
   const { player, position, gameId } = req.body;
@@ -99,6 +118,13 @@ const toResponseError = ({ player, position }: { player: any; position: any }) =
   }
 };
 
+const router = Router();
+
+router.get("/", async (_, res) => {
+  const allGames = await findAllGames();
+  res.status(200).json(allGames);
+});
+router.get("/:gameId", validateGameId, handleGetGameByIdRequest);
 router.post("/moves", validateMoveRequest, handleMoveRequest);
 
 export { router };
