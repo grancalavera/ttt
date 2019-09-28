@@ -73,11 +73,11 @@ const validateMoveRequest: RequestHandler[] = [
   validateGameId
 ];
 
-const handleGetGameByIdRequest: RequestHandler = async (req, res) => {
+const handleGetGameByIdRequest: RequestHandler = async (req, res, next) => {
   const { gameId } = req.params;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    res.status(400).json({ errors: errors.array().map(missingGameId) });
+    next(errors.array().map(missingGameId));
   } else {
     const maybeGame = await findGameById(gameId);
     if (maybeGame) {
@@ -88,13 +88,11 @@ const handleGetGameByIdRequest: RequestHandler = async (req, res) => {
   }
 };
 
-const handleMoveRequest: RequestHandler = async (req, res) => {
+const handleMoveRequest: RequestHandler = async (req, res, next) => {
   const { player, position, gameId } = req.body;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    res
-      .status(400)
-      .json({ errors: errors.array().map(toResponseError({ player, position })) });
+    next(errors.array().map(toResponseError({ player, position })));
   } else {
     const corePlayer = coerceToPlayer(player);
     const corePosition = coerceToPosition(position);
