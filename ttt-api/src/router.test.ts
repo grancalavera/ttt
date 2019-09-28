@@ -1,9 +1,10 @@
 import express from "express";
 import request from "supertest";
 import { invalidPlayer, invalidPosition, missingGameId, router } from "./router";
-import "./controller-move";
 
-jest.mock("./controller-move");
+jest.mock("./services/game");
+jest.mock("./services/move");
+
 const app = express().use(express.json());
 app.use(router);
 

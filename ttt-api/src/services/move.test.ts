@@ -1,12 +1,7 @@
 import { CorePlayer, CorePosition } from "@grancalavera/ttt-core";
 import uuid from "uuid/v4";
-import {
-  GameOverError,
-  playMove,
-  PositionPlayedError,
-  WrongTurnError
-} from "./controller-move";
-import { create, StandaloneMoveModel as MoveModel } from "./store";
+import { GameOverError, playMove, PositionPlayedError, WrongTurnError } from "./move";
+import { create, StandaloneMoveModel as MoveModel } from "../store";
 
 const FirstGameID = uuid();
 const NineMovesGameId = uuid();

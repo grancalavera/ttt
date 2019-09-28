@@ -1,8 +1,8 @@
 import { CorePlayer, CorePosition } from "@grancalavera/ttt-core";
-import { create, StandaloneMoveModel as MoveModel } from "./store";
+import { create, StandaloneMoveModel as MoveModel } from "../store";
 import uuid from "uuid/v4";
-import { ResponseGame } from "./model";
-import { findAllGames, findGameById } from "./controller-game";
+import { ResponseGame } from "../model";
+import { findAllGames, findGameById } from "./game";
 
 const Alice: CorePlayer = "O";
 const Bob: CorePlayer = "X";

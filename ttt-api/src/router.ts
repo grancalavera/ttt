@@ -1,8 +1,8 @@
 import { RequestHandler, Router } from "express";
 import { body, ValidationError, validationResult, check } from "express-validator";
 import { coerceToPlayer, coerceToPosition } from "@grancalavera/ttt-core";
-import { playMove } from "./controller-move";
-import { findAllGames, findGameById } from "./controller-game";
+import { playMove } from "./services/move";
+import { findAllGames, findGameById } from "./services/game";
 
 const INVALID_PLAYER = "INVALID_PLAYER";
 const INVALID_POSITION = "INVALID_POSITION";

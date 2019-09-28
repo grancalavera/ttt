@@ -6,9 +6,9 @@ import {
   CorePosition
 } from "@grancalavera/ttt-core";
 import uuid from "uuid/v4";
-import { currentTurn, Turn, winnerFromMoves } from "./controller-common";
-import { ResponseMove } from "./model";
-import { StandaloneMoveModel as MoveModel } from "./store";
+import { currentTurn, Turn, winnerFromMoves } from "./common";
+import { ResponseMove } from "../model";
+import { StandaloneMoveModel as MoveModel } from "../store";
 
 export class PositionPlayedError extends Error {
   constructor(

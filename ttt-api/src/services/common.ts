@@ -1,4 +1,4 @@
-import { StandaloneMoveModel as MoveModel } from "./store";
+import { StandaloneMoveModel as MoveModel } from "../store";
 import { CorePlayer, CoreMove, coerceToMove, findWin } from "@grancalavera/ttt-core";
 
 export type Turn =

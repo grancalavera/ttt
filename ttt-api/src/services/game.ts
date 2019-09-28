@@ -4,9 +4,9 @@ import {
   isGameOverFromMoves,
   winnerFromMoves,
   coreMovesFromMoves
-} from "./controller-common";
-import { ResponseGame } from "./model";
-import { StandaloneMoveModel as MoveModel } from "./store";
+} from "./common";
+import { ResponseGame } from "../model";
+import { StandaloneMoveModel as MoveModel } from "../store";
 
 export const findAllGames = async (): Promise<ResponseGame[]> => {
   const moves = await MoveModel.findAll();
