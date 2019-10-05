@@ -1,11 +1,9 @@
 import { CorePlayer, CorePosition } from "@grancalavera/ttt-core";
-import { create, StandaloneMoveModel as MoveModel } from "../store";
 import uuid from "uuid/v4";
+import { alice, bob } from "../fixtures";
 import { ResponseGame } from "../model";
+import { create, StandaloneMoveModel as MoveModel } from "../store";
 import { findAllGames, findGameById } from "./game";
-
-const Alice: CorePlayer = "O";
-const Bob: CorePlayer = "X";
 
 interface FindAllExpectation {
   player: CorePlayer;
@@ -58,10 +56,10 @@ describe("Given there are no games", () => {
 
 describe.each`
   player   | position | gameId      | expected
-  ${Alice} | ${0}     | ${"game-1"} | ${1}
-  ${Bob}   | ${1}     | ${"game-1"} | ${1}
-  ${Alice} | ${0}     | ${"game-2"} | ${2}
-  ${Alice} | ${0}     | ${"game-3"} | ${3}
+  ${alice} | ${0}     | ${"game-1"} | ${1}
+  ${bob}   | ${1}     | ${"game-1"} | ${1}
+  ${alice} | ${0}     | ${"game-2"} | ${2}
+  ${alice} | ${0}     | ${"game-3"} | ${3}
 `("Finding all games:", expectation => {
   const { player, position, gameId, expected }: FindAllExpectation = expectation;
   describe(`Given ${player} plays ${position} on ${gameId}`, () => {
@@ -85,20 +83,20 @@ describe.each`
 
 describe.each`
   player   | position | gameId             | expected
-  ${Alice} | ${0}     | ${`${Alice}-wins`} | ${{ isGameOver: false, currentPlayer: Bob }}
-  ${Bob}   | ${1}     | ${`${Alice}-wins`} | ${{ isGameOver: false, currentPlayer: Alice }}
-  ${Alice} | ${3}     | ${`${Alice}-wins`} | ${{ isGameOver: false, currentPlayer: Bob }}
-  ${Bob}   | ${2}     | ${`${Alice}-wins`} | ${{ isGameOver: false, currentPlayer: Alice }}
-  ${Alice} | ${6}     | ${`${Alice}-wins`} | ${{ isGameOver: true, winner: Alice }}
-  ${Alice} | ${1}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: Bob }}
-  ${Bob}   | ${0}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: Alice }}
-  ${Alice} | ${3}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: Bob }}
-  ${Bob}   | ${2}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: Alice }}
-  ${Alice} | ${5}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: Bob }}
-  ${Bob}   | ${4}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: Alice }}
-  ${Alice} | ${6}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: Bob }}
-  ${Bob}   | ${7}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: Alice }}
-  ${Alice} | ${8}     | ${"game-tie"}      | ${{ isGameOver: true }}
+  ${alice} | ${0}     | ${`${alice}-wins`} | ${{ isGameOver: false, currentPlayer: bob }}
+  ${bob}   | ${1}     | ${`${alice}-wins`} | ${{ isGameOver: false, currentPlayer: alice }}
+  ${alice} | ${3}     | ${`${alice}-wins`} | ${{ isGameOver: false, currentPlayer: bob }}
+  ${bob}   | ${2}     | ${`${alice}-wins`} | ${{ isGameOver: false, currentPlayer: alice }}
+  ${alice} | ${6}     | ${`${alice}-wins`} | ${{ isGameOver: true, winner: alice }}
+  ${alice} | ${1}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: bob }}
+  ${bob}   | ${0}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: alice }}
+  ${alice} | ${3}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: bob }}
+  ${bob}   | ${2}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: alice }}
+  ${alice} | ${5}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: bob }}
+  ${bob}   | ${4}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: alice }}
+  ${alice} | ${6}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: bob }}
+  ${bob}   | ${7}     | ${"game-tie"}      | ${{ isGameOver: false, currentPlayer: alice }}
+  ${alice} | ${8}     | ${"game-tie"}      | ${{ isGameOver: true }}
 `("Finding a game by id:", expectation => {
   const { player, position, gameId, expected }: FindByIdExpectation = expectation;
   const { currentPlayer, isGameOver, winner } = expected;

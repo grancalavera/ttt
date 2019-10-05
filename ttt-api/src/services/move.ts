@@ -6,33 +6,10 @@ import {
   CorePosition
 } from "@grancalavera/ttt-core";
 import uuid from "uuid/v4";
-import { currentTurn, Turn, winnerFromMoves } from "./common";
+import { GameOverError, PositionPlayedError, WrongTurnError } from "../exceptions";
 import { ResponseMove } from "../model";
 import { StandaloneMoveModel as MoveModel } from "../store";
-
-export class PositionPlayedError extends Error {
-  constructor(
-    public readonly playedByPlayer: CorePlayer,
-    public readonly playedPosition: CorePosition
-  ) {
-    super("Error: Position already played");
-    this.name = "PositionPlayedError";
-  }
-}
-
-export class GameOverError extends Error {
-  constructor(public readonly gameId: string) {
-    super("Error: Game over");
-    this.name = "GameOverError";
-  }
-}
-
-export class WrongTurnError extends Error {
-  constructor(public readonly wrongPlayer: CorePlayer) {
-    super("Error: Wrong turn");
-    this.name = "WrongTurnError";
-  }
-}
+import { currentTurn, Turn, winnerFromMoves } from "./common";
 
 export const playMove = async (
   gameId: string,
@@ -42,7 +19,7 @@ export const playMove = async (
   const moves = await MoveModel.findAll({ where: { gameId } });
   const turn = currentTurn(moves);
 
-  ensurePlayerCanPlayTurn(player, turn);
+  ensurePlayerCanPlayTurn(gameId, player, turn);
   ensureNoOneHasWonTheGame(gameId, moves);
   ensurePositionHasNotBeenPlayed(position, moves);
 
@@ -58,7 +35,11 @@ export const playMove = async (
   return move;
 };
 
-const ensurePlayerCanPlayTurn = (player: CorePlayer, turn: Turn): void => {
+const ensurePlayerCanPlayTurn = (
+  gameId: string,
+  player: CorePlayer,
+  turn: Turn
+): void => {
   switch (turn.kind) {
     case "AnyPlayer":
       return;
@@ -69,7 +50,7 @@ const ensurePlayerCanPlayTurn = (player: CorePlayer, turn: Turn): void => {
         throw new WrongTurnError(player);
       }
     case "NoPlayer":
-      throw new GameOverError(player);
+      throw new GameOverError(gameId);
     default:
       assertNever(turn);
   }

@@ -1,4 +1,4 @@
-import express, { ErrorRequestHandler } from "express";
+import express from "express";
 import request from "supertest";
 import { router } from "./router";
 
@@ -18,13 +18,13 @@ interface POSTMoveFixture {
 
 describe.each`
   gameId       | player | position | status
-  ${"game-id"} | ${"x"} | ${0}     | ${500}
-  ${"game-id"} | ${"o"} | ${0}     | ${500}
-  ${"game-id"} | ${"X"} | ${-1}    | ${500}
-  ${"game-id"} | ${"o"} | ${9}     | ${500}
-  ${"game-id"} | ${"X"} | ${9}     | ${500}
-  ${undefined} | ${"X"} | ${0}     | ${500}
-  ${undefined} | ${"o"} | ${9}     | ${500}
+  ${"game-id"} | ${"x"} | ${0}     | ${400}
+  ${"game-id"} | ${"o"} | ${0}     | ${400}
+  ${"game-id"} | ${"X"} | ${-1}    | ${400}
+  ${"game-id"} | ${"o"} | ${9}     | ${400}
+  ${"game-id"} | ${"X"} | ${9}     | ${400}
+  ${undefined} | ${"X"} | ${0}     | ${400}
+  ${undefined} | ${"o"} | ${9}     | ${400}
   ${"game-id"} | ${"O"} | ${0}     | ${200}
   ${"game-id"} | ${"X"} | ${0}     | ${200}
   ${"game-id"} | ${"O"} | ${1}     | ${200}
@@ -46,9 +46,7 @@ describe.each`
 `('Given $player played $position on game "$gameId"', fixture => {
   const { gameId, player, position, status }: POSTMoveFixture = fixture;
 
-  it(`Then we expect a response with status ${status} and ${
-    status === 400 ? "errors in the body" : "an empty body"
-  }`, async () => {
+  it(`Then we expect a response with status ${status}`, async () => {
     await request(app)
       .post("/moves")
       .send({ position, player, gameId })

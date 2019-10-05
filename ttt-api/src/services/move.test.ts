@@ -1,131 +1,114 @@
-import { CorePlayer, CorePosition } from "@grancalavera/ttt-core";
-import uuid from "uuid/v4";
-import { GameOverError, playMove, PositionPlayedError, WrongTurnError } from "./move";
+import { CorePosition } from "@grancalavera/ttt-core";
+import { GameOverError, PositionPlayedError, WrongTurnError } from "../exceptions";
+import {
+  alice,
+  bob,
+  mkGame_gameOverAliceTies,
+  mkGame_gameOverAliceWins
+} from "../fixtures";
 import { create, StandaloneMoveModel as MoveModel } from "../store";
+import { playMove } from "./move";
 
-const FirstGameID = uuid();
-const NineMovesGameId = uuid();
-const AliceWinsGameId = uuid();
+const firstGameID = "first-game";
+const nineMovesGameId = "nine-moves-game";
+const aliceWinsGameId = "alice-wins-game";
 
-const Alice: CorePlayer = "O";
-const AlicesFirstMove: CorePosition = 1;
-
-const Bob: CorePlayer = "X";
-const BobsFirstMove: CorePosition = 2;
+const alicesFirstMove: CorePosition = 1;
+const bobsFirstMove: CorePosition = 2;
 
 beforeAll(async () => {
   await create("./controller-move.test.sqlite").sync({ force: true });
 });
 
-describe(`Given there are no moves on game ${FirstGameID}`, () => {
-  describe(`When ${Alice} plays ${AlicesFirstMove} on game ${FirstGameID}`, () => {
+describe(`Given there are no moves on game ${firstGameID}`, () => {
+  describe(`When ${alice} plays ${alicesFirstMove} on game ${firstGameID}`, () => {
     let moves: MoveModel[];
     let lastMove: MoveModel;
 
     beforeAll(async () => {
-      await playMove(FirstGameID, Alice, AlicesFirstMove);
-      moves = await MoveModel.findAll({ where: { gameId: FirstGameID } });
+      await playMove(firstGameID, alice, alicesFirstMove);
+      moves = await MoveModel.findAll({ where: { gameId: firstGameID } });
       lastMove = moves[moves.length - 1];
     });
 
-    it(`then there should exist only 1 move on game ${FirstGameID}`, () => {
+    it(`then there should exist only 1 move on game ${firstGameID}`, () => {
       expect(moves.length).toBe(1);
     });
 
-    it(`and ${Alice} should be the player on the last move`, () => {
-      expect(lastMove.player).toBe(Alice);
+    it(`and ${alice} should be the player on the last move`, () => {
+      expect(lastMove.player).toBe(alice);
     });
 
-    it(`and ${AlicesFirstMove} should be the position on the last move`, () => {
-      expect(lastMove.position).toBe(AlicesFirstMove);
-    });
-  });
-
-  describe(`When ${Alice} tries to play a move on ${FirstGameID} but it's ${Bob}'s turn`, () => {
-    const playWrongTurn = async () => playMove(FirstGameID, Alice, AlicesFirstMove);
-
-    it(`then ${AlicesFirstMove} should not be allowed to play because is not ${Alice}'s turn`, async () => {
-      await expect(playWrongTurn()).rejects.toThrowError(new WrongTurnError(Alice));
+    it(`and ${alicesFirstMove} should be the position on the last move`, () => {
+      expect(lastMove.position).toBe(alicesFirstMove);
     });
   });
 
-  describe(`When ${Bob} tries to play ${AlicesFirstMove} on ${FirstGameID} but ${Alice} has already played ${AlicesFirstMove}`, () => {
-    const playPlayedPosition = async () => playMove(FirstGameID, Bob, AlicesFirstMove);
+  describe(`When ${alice} tries to play a move on ${firstGameID} but it's ${bob}'s turn`, () => {
+    const playWrongTurn = async () => playMove(firstGameID, alice, alicesFirstMove);
 
-    it(`then ${Bob} should not be allowed to play because ${AlicesFirstMove} has been played already`, async () => {
+    it(`then ${alicesFirstMove} should not be allowed to play because is not ${alice}'s turn`, async () => {
+      await expect(playWrongTurn()).rejects.toThrowError(new WrongTurnError(alice));
+    });
+  });
+
+  describe(`When ${bob} tries to play ${alicesFirstMove} on ${firstGameID} but ${alice} has already played ${alicesFirstMove}`, () => {
+    const playPlayedPosition = async () => playMove(firstGameID, bob, alicesFirstMove);
+
+    it(`then ${bob} should not be allowed to play because ${alicesFirstMove} has been played already`, async () => {
       await expect(playPlayedPosition()).rejects.toThrowError(
-        new PositionPlayedError(Alice, AlicesFirstMove)
+        new PositionPlayedError(alice, alicesFirstMove)
       );
     });
   });
 
-  describe(`When Bob plays the second move on ${FirstGameID}`, () => {
+  describe(`When Bob plays the second move on ${firstGameID}`, () => {
     let moves: MoveModel[];
     let lastMove: MoveModel;
 
     beforeAll(async () => {
-      await playMove(FirstGameID, Bob, BobsFirstMove);
-      moves = await MoveModel.findAll({ where: { gameId: FirstGameID } });
+      await playMove(firstGameID, bob, bobsFirstMove);
+      moves = await MoveModel.findAll({ where: { gameId: firstGameID } });
       lastMove = moves[moves.length - 1];
     });
 
-    it(`then there should exist 2 moves on ${FirstGameID}`, () => {
+    it(`then there should exist 2 moves on ${firstGameID}`, () => {
       expect(moves.length).toBe(2);
     });
 
-    it(`and ${Bob} should be the player on the last move`, () => {
-      expect(lastMove.player).toBe(Bob);
+    it(`and ${bob} should be the player on the last move`, () => {
+      expect(lastMove.player).toBe(bob);
     });
 
-    it(`and ${BobsFirstMove} should be the position on the last move`, () => {
-      expect(lastMove.position).toBe(BobsFirstMove);
+    it(`and ${bobsFirstMove} should be the position on the last move`, () => {
+      expect(lastMove.position).toBe(bobsFirstMove);
     });
   });
 });
 
-describe(`Given ${Alice} played the 9th move on game ${NineMovesGameId}`, () => {
-  beforeAll(async () => {
-    await MoveModel.bulkCreate(
-      [0, 1, 2, 3, 4, 5, 6, 7, 8].map(position => ({
-        id: uuid(),
-        gameId: NineMovesGameId,
-        position,
-        player: Alice
-      })),
-      { logging: false }
-    );
-  });
+describe(`Given ${alice} played the 9th move on game ${nineMovesGameId}`, () => {
+  beforeAll(async () => mkGame_gameOverAliceTies(nineMovesGameId));
 
-  describe(`When ${Bob} plays a move on game ${NineMovesGameId}`, () => {
-    const playMoveOnGameOver = async () => playMove(NineMovesGameId, Bob, 0);
+  describe(`When ${bob} plays a move on game ${nineMovesGameId}`, () => {
+    const playMoveOnGameOver = async () => playMove(nineMovesGameId, bob, 0);
 
-    it(`then ${Bob}'s move should not be allowed because the game ${NineMovesGameId} is over`, async () => {
+    it(`then ${bob}'s move should not be allowed because the game ${nineMovesGameId} is over`, async () => {
       await expect(playMoveOnGameOver()).rejects.toThrowError(
-        new GameOverError(NineMovesGameId)
+        new GameOverError(nineMovesGameId)
       );
     });
   });
 });
 
-describe(`Given ${Alice} has won game ${AliceWinsGameId} before the 9th move`, () => {
-  beforeAll(async () => {
-    await MoveModel.bulkCreate(
-      [0, 1, 2].map(position => ({
-        id: uuid(),
-        gameId: AliceWinsGameId,
-        position,
-        player: Alice
-      })),
-      { logging: false }
-    );
-  });
+describe(`Given ${alice} has won game ${aliceWinsGameId} before the 9th move`, () => {
+  beforeAll(async () => mkGame_gameOverAliceWins(aliceWinsGameId));
 
-  describe(`When ${Bob} plays a move on game ${AliceWinsGameId}`, () => {
-    const playMoveOnGameOver = async () => playMove(AliceWinsGameId, Bob, 3);
+  describe(`When ${bob} plays a move on game ${aliceWinsGameId}`, () => {
+    const playMoveOnGameOver = async () => playMove(aliceWinsGameId, bob, 3);
 
-    it(`then ${Bob} should not be allowed to play because the game ${AliceWinsGameId} is over`, async () => {
+    it(`then ${bob} should not be allowed to play because the game ${aliceWinsGameId} is over`, async () => {
       await expect(playMoveOnGameOver()).rejects.toThrowError(
-        new GameOverError(AliceWinsGameId)
+        new GameOverError(aliceWinsGameId)
       );
     });
   });
