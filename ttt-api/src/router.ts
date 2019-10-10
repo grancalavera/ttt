@@ -1,6 +1,11 @@
 import { RequestHandler, Router } from "express";
 import { body, ValidationError, validationResult, check } from "express-validator";
-import { coerceToPlayer, coerceToPosition } from "@grancalavera/ttt-core";
+import {
+  coerceToPlayer,
+  coerceToPosition,
+  CorePlayer,
+  CorePosition
+} from "@grancalavera/ttt-core";
 import { playMove } from "./services/move";
 import { findAllGames, findGameById } from "./services/game";
 
@@ -58,13 +63,19 @@ const handleMoveRequest: RequestHandler = async (req, res, next) => {
       errors: errors.array().map(toResponseError({ player, position }))
     });
   } else {
-    const corePlayer = coerceToPlayer(player);
-    const corePosition = coerceToPosition(position);
+    let corePlayer: CorePlayer;
+    let corePosition: CorePosition;
     try {
-      await playMove(gameId, corePlayer, corePosition);
-      res.status(200).end();
+      corePlayer = coerceToPlayer(player);
+      corePosition = coerceToPosition(position);
+      try {
+        await playMove(gameId, corePlayer, corePosition);
+        res.status(200).end();
+      } catch (e) {
+        next({ status: 400, errors: [extractException(e)] });
+      }
     } catch (e) {
-      next({ status: 400, errors: [extractException(e)] });
+      next({ status: 400, errors: [e.message] });
     }
   }
 };

@@ -6,7 +6,7 @@ import {
   mkGame_gameOverAliceTies,
   mkGame_gameOverAliceWins
 } from "../etc/fixtures";
-import { create, StandaloneMoveModel as MoveModel } from "../store";
+import { create, MoveModel } from "../store";
 import { playMove } from "./move";
 
 const firstGameID = "first-game";

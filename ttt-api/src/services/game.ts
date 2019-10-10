@@ -6,7 +6,7 @@ import {
   coreMovesFromMoves
 } from "./common";
 import { ResponseGame } from "../model";
-import { StandaloneMoveModel as MoveModel } from "../store";
+import { MoveModel } from "../store";
 
 export const findAllGames = async (): Promise<ResponseGame[]> => {
   const moves = await MoveModel.findAll();
