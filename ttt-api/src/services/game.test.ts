@@ -1,6 +1,6 @@
 import { CorePlayer, CorePosition } from "@grancalavera/ttt-core";
 import uuid from "uuid/v4";
-import { alice, bob } from "../fixtures";
+import { alice, bob } from "../etc/fixtures";
 import { ResponseGame } from "../model";
 import { create, StandaloneMoveModel as MoveModel } from "../store";
 import { findAllGames, findGameById } from "./game";

@@ -6,7 +6,7 @@ import {
   CorePosition
 } from "@grancalavera/ttt-core";
 import uuid from "uuid/v4";
-import { GameOverError, PositionPlayedError, WrongTurnError } from "../exceptions";
+import { GameOverError, PositionPlayedError, WrongTurnError } from "../etc/exceptions";
 import { ResponseMove } from "../model";
 import { StandaloneMoveModel as MoveModel } from "../store";
 import { currentTurn, Turn, winnerFromMoves } from "./common";

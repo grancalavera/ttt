@@ -15,14 +15,14 @@ import {
   move_aliceTies,
   move_aliceWins,
   move_bobPlaysOnZero
-} from "./fixtures";
-import { invalidPlayer, invalidPosition, GameOverError } from "./exceptions";
-import { PositionPlayedError, WrongTurnError, extractException } from "./exceptions";
+} from "./etc/fixtures";
+import { invalidPlayer, invalidPosition, GameOverError } from "./etc/exceptions";
+import { PositionPlayedError, WrongTurnError, extractException } from "./etc/exceptions";
 import { create } from "./store";
 
 beforeAll(async () => create("./app.test.sqlite").sync({ force: true }));
 
-interface MoveScenario {
+interface Scenario {
   // given
   gameId: string;
   existingMoves: CoreMove[];
@@ -45,17 +45,17 @@ const givenMessage = (gameId: string, existingMoves: [string, number][]) => {
   }
 };
 
-const mkTestCase = (
+const mkScenario = (
   title: string,
   prefix: string,
-  mkMoveScenario: (gameId: string) => MoveScenario
-): [string, MoveScenario] => {
+  mkScenarioBody: (gameId: string) => Scenario
+): [string, Scenario] => {
   const gameId = `${prefix}-${uuid()}`;
-  return [title, mkMoveScenario(gameId)];
+  return [title, mkScenarioBody(gameId)];
 };
 
-const scenarios: [string, MoveScenario][] = [
-  mkTestCase("Playing the first move on a game", "new-game", gameId => ({
+const scenarios: [string, Scenario][] = [
+  mkScenario("Playing the first move on a game", "new-game", gameId => ({
     gameId,
     existingMoves: [],
     rawMove: move_alicePlaysOnZero,
@@ -69,7 +69,7 @@ const scenarios: [string, MoveScenario][] = [
       currentPlayer: bob
     }
   })),
-  mkTestCase("Winning a game", "win-game", gameId => ({
+  mkScenario("Winning a game", "win-game", gameId => ({
     gameId,
     existingMoves: moves_aliceWinsNext,
     rawMove: move_aliceWins,
@@ -83,7 +83,7 @@ const scenarios: [string, MoveScenario][] = [
       winner: alice
     }
   })),
-  mkTestCase("Ending a game in a tie", "tie-game", gameId => ({
+  mkScenario("Ending a game in a tie", "tie-game", gameId => ({
     gameId,
     existingMoves: moves_aliceTiesNext,
     rawMove: move_aliceTies,
@@ -92,7 +92,7 @@ const scenarios: [string, MoveScenario][] = [
     moveBody: {},
     gameBody: { id: gameId, isGameOver: true, moves: moves_gameOverAliceTies }
   })),
-  mkTestCase("Playing in someone else's turn", "wrong-turn-game", gameId => ({
+  mkScenario("Playing in someone else's turn", "wrong-turn-game", gameId => ({
     gameId,
     existingMoves: [move_alicePlaysOnZero],
     rawMove: move_alicePlaysOnOne,
@@ -106,7 +106,7 @@ const scenarios: [string, MoveScenario][] = [
       currentPlayer: bob
     }
   })),
-  mkTestCase(
+  mkScenario(
     "Playing an already played position",
     "play-on-already-played-position",
     gameId => ({
@@ -130,7 +130,7 @@ const scenarios: [string, MoveScenario][] = [
       }
     })
   ),
-  mkTestCase("Playing on a game that's already over", "game-over-game", gameId => ({
+  mkScenario("Playing on a game that's already over", "game-over-game", gameId => ({
     gameId,
     existingMoves: moves_gameOverAliceWins,
     rawMove: [alice, 0],
@@ -144,7 +144,7 @@ const scenarios: [string, MoveScenario][] = [
       winner: alice
     }
   })),
-  mkTestCase("Playing with an invalid player", "invalid-player-game", gameId => ({
+  mkScenario("Playing with an invalid player", "invalid-player-game", gameId => ({
     gameId,
     existingMoves: [move_alicePlaysOnZero],
     rawMove: [":P", 1],
@@ -158,7 +158,7 @@ const scenarios: [string, MoveScenario][] = [
       currentPlayer: bob
     }
   })),
-  mkTestCase("Playing an invalid position", "invalid-position-game", gameId => ({
+  mkScenario("Playing an invalid position", "invalid-position-game", gameId => ({
     gameId,
     existingMoves: [move_alicePlaysOnZero],
     rawMove: [alice, 9],
@@ -172,7 +172,7 @@ const scenarios: [string, MoveScenario][] = [
       currentPlayer: bob
     }
   })),
-  mkTestCase(
+  mkScenario(
     "Playing an invalid position with an invalid player",
     "invalid-position-game",
     gameId => ({
@@ -201,7 +201,7 @@ describe.each(scenarios)("%s", (_, scenario) => {
     gameBody,
     moveBody,
     existingMoves = []
-  }: MoveScenario = scenario;
+  }: Scenario = scenario;
 
   const [player, position] = rawMove;
   let moveResp: request.Response;

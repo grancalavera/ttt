@@ -14,7 +14,7 @@ import {
   invalidPosition,
   missingGameId,
   extractException
-} from "./exceptions";
+} from "./etc/exceptions";
 
 const INVALID_PLAYER = "INVALID_PLAYER";
 const INVALID_POSITION = "INVALID_POSITION";
