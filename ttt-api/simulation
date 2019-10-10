@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+GAME_ID=$(uuidgen)
+CURRENT_PLAYER=($(shuf -e O X))
+
+function move {
+  cat <<EOF
+{
+  "gameId": "${1}"
+  "player": "${2}",
+  "position": "${3}"
+}
+EOF
+}
+
+function next_player {
+  local current=$1
+  if [ $current = "O" ]; then
+    echo X
+  else
+    echo O
+  fi
+}
+
+# ID=$(uuidgen)
+# GAME=http://localhost:5000/ttt
+# MOVES="${GAME}/${ID}/moves"
+# LAST_MOVE=$(curl -s -H "Content-Type:application/json" --data "$(generate_id ${ID})" "${GAME}")
+# echo "${LAST_MOVE}"
+
+# function move {
+#   local POSITION=${1}
+#   local PLAYER=$(echo "${LAST_MOVE}" | jq -r '.game.currentPlayer')
+#   local MOVE=$(generate_move ${PLAYER} ${POSITION})
+#   LAST_MOVE=$(curl -s -H "Content-Type:application/json" --data "${MOVE}" "${MOVES}")
+#   echo "${LAST_MOVE}"
+# }
+
+for p in $(shuf -e 0 1 2 3 4 5 6 7 8); do
+  echo $(move ${GAME_ID} ${CURRENT_PLAYER} ${p})
+  CURRENT_PLAYER=$(next_player ${CURRENT_PLAYER})
+done
