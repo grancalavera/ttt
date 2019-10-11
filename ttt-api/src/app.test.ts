@@ -1,7 +1,7 @@
 import { CoreMove } from "@grancalavera/ttt-core";
 import request from "supertest";
 import uuid from "uuid/v4";
-import { app } from "./app";
+import { mkApp } from "./app";
 import {
   alice,
   bob,
@@ -19,6 +19,8 @@ import {
 import { invalidPlayer, invalidPosition, GameOverError } from "./etc/exceptions";
 import { PositionPlayedError, WrongTurnError, extractException } from "./etc/exceptions";
 import { create } from "./store";
+
+const app = mkApp("/");
 
 beforeAll(async () => create("./app.test.sqlite").sync({ force: true }));
 
@@ -215,11 +217,11 @@ describe.each(scenarios)("%s", (_, scenario) => {
         }
 
         moveResp = await request(app)
-          .post("/ttt/moves")
+          .post("/moves")
           .send({ gameId, player, position });
 
         gameResp = await request(app)
-          .get(`/ttt/${gameId}`)
+          .get(`/${gameId}`)
           .send();
       });
 

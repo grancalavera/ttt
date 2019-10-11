@@ -8,7 +8,8 @@
     "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "start:simulation": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/simulation.ts",
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "express": "4.17.1",
