@@ -215,11 +215,11 @@ describe.each(scenarios)("%s", (_, scenario) => {
         }
 
         moveResp = await request(app)
-          .post("/moves")
+          .post("/ttt/moves")
           .send({ gameId, player, position });
 
         gameResp = await request(app)
-          .get(`/${gameId}`)
+          .get(`/ttt/${gameId}`)
           .send();
       });
 
