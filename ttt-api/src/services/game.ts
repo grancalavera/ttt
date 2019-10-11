@@ -5,20 +5,20 @@ import {
   winnerFromMoves,
   coreMovesFromMoves
 } from "./common";
-import { ResponseGame } from "../model";
+import { GameResponse } from "../model";
 import { MoveModel } from "../store";
 
-export const findAllGames = async (): Promise<ResponseGame[]> => {
+export const findAllGames = async (): Promise<GameResponse[]> => {
   const moves = await MoveModel.findAll();
   return allGamesFromMoves(moves);
 };
 
-export const findGameById = async (gameId: string): Promise<ResponseGame | null> => {
+export const findGameById = async (gameId: string): Promise<GameResponse | null> => {
   const moves = await MoveModel.findAll({ where: { gameId } });
   return moves.length ? gameFromMoves(moves) : null;
 };
 
-const gameFromMoves = (moves: MoveModel[]): ResponseGame => ({
+const gameFromMoves = (moves: MoveModel[]): GameResponse => ({
   id: moves[0].gameId,
   currentPlayer: currentPlayerFromMoves(moves),
   isGameOver: isGameOverFromMoves(moves),

@@ -1,7 +1,7 @@
 import { CorePlayer, CorePosition } from "@grancalavera/ttt-core";
 import uuid from "uuid/v4";
 import { alice, bob } from "../etc/fixtures";
-import { ResponseGame } from "../model";
+import { GameResponse } from "../model";
 import { create, MoveModel } from "../store";
 import { findAllGames, findGameById } from "./game";
 
@@ -29,7 +29,7 @@ beforeAll(async () => {
 
 describe("Given there are no games", () => {
   describe("When I try to find all the games", () => {
-    let games: ResponseGame[];
+    let games: GameResponse[];
 
     beforeAll(async () => {
       games = await findAllGames();
@@ -42,7 +42,7 @@ describe("Given there are no games", () => {
 
   const gameId = "any-game";
   describe(`When I try to find ${gameId} by ID`, () => {
-    let maybeGame: ResponseGame | null;
+    let maybeGame: GameResponse | null;
 
     beforeAll(async () => {
       maybeGame = await findGameById(gameId);
@@ -68,7 +68,7 @@ describe.each`
     );
 
     describe("When I try to find all games", () => {
-      let games: ResponseGame[];
+      let games: GameResponse[];
 
       beforeAll(async () => {
         games = await findAllGames();
@@ -107,8 +107,8 @@ describe.each`
     );
 
     describe(`When I try to find ${gameId}`, () => {
-      let maybeGame: ResponseGame | null;
-      let game: ResponseGame;
+      let maybeGame: GameResponse | null;
+      let game: GameResponse;
 
       beforeAll(async () => {
         maybeGame = await findGameById(gameId);

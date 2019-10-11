@@ -1,6 +1,6 @@
 import { CoreMove, CorePlayer, CorePosition } from "@grancalavera/ttt-core";
 
-export type ResponseGame = {
+export type GameResponse = {
   id: string;
   isGameOver: boolean;
   moves: CoreMove[];
@@ -8,7 +8,7 @@ export type ResponseGame = {
   winner?: CorePlayer;
 };
 
-export type ResponseMove = {
+export type MoveResponse = {
   id: string;
   gameId: string;
   player: CorePlayer;

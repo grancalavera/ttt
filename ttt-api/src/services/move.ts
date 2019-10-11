@@ -7,7 +7,7 @@ import {
 } from "@grancalavera/ttt-core";
 import uuid from "uuid/v4";
 import { GameOverError, PositionPlayedError, WrongTurnError } from "../etc/exceptions";
-import { ResponseMove } from "../model";
+import { MoveResponse } from "../model";
 import { MoveModel } from "../store";
 import { currentTurn, Turn, winnerFromMoves } from "./common";
 
@@ -15,7 +15,7 @@ export const playMove = async (
   gameId: string,
   player: CorePlayer,
   position: CorePosition
-): Promise<ResponseMove> => {
+): Promise<MoveResponse> => {
   const moves = await MoveModel.findAll({ where: { gameId } });
   const turn = currentTurn(moves);
 
