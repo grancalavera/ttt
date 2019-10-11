@@ -5,7 +5,6 @@ import { CoreMove } from "@grancalavera/ttt-core";
 export interface IGameAPI {
   getAllGames: () => Promise<GameResponse[]>;
   getGameById: (id: string) => Promise<GameResponse>;
-  getMovesByGameId: (id: string) => Promise<MovesResponse>;
   postGame: (id: string) => Promise<GameResponse>;
   postMove: (id: string, move: CoreMove) => Promise<GameResponse>;
 }
@@ -21,10 +20,6 @@ export class GameAPI extends RESTDataSource implements IGameAPI {
 
   public getGameById(id: string) {
     return this.get<GameResponse>(`ttt/${id}`);
-  }
-
-  public getMovesByGameId(id: string) {
-    return this.get<MovesResponse>(`ttt/${id}/moves`);
   }
 
   public postGame(id: string) {
