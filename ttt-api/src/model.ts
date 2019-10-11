@@ -1,5 +1,10 @@
 import { CoreMove, CorePlayer, CorePosition } from "@grancalavera/ttt-core";
 
+export interface Move {
+  readonly gameId: string;
+  readonly coreMove: CoreMove;
+}
+
 export type GameResponse = {
   id: string;
   isGameOver: boolean;

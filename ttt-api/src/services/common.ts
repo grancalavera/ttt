@@ -1,31 +1,36 @@
+import { coerceToMove, CoreMove, CorePlayer, findWin } from "@grancalavera/ttt-core";
+import { Move } from "../model";
 import { MoveModel } from "../store";
-import { CorePlayer, CoreMove, coerceToMove, findWin } from "@grancalavera/ttt-core";
+
+export const moveModelsToMoves = (moves: MoveModel[]): Move[] =>
+  moves.map(moveModelToMove);
+
+export const movesToCoreMoves = (moves: Move[]): CoreMove[] => moves.map(m => m.coreMove);
+
+const moveModelToMove = ({ gameId, player, position }: MoveModel): Move => ({
+  gameId,
+  coreMove: coerceToMove([player, position])
+});
 
 export type Turn =
   | { kind: "AnyPlayer" }
   | { kind: "SomePlayer"; player: CorePlayer }
   | { kind: "NoPlayer" };
 
-export const currentTurn = (moves: MoveModel[]): Turn => {
+export const currentTurn = (moves: Move[]): Turn => {
   if (moves.length === 0) {
     return { kind: "AnyPlayer" };
   } else if (moves.length >= 9 || winnerFromMoves(moves)) {
     return { kind: "NoPlayer" };
   } else {
-    const lastMove = moves[moves.length - 1];
-    const player = lastMove.player === "O" ? "X" : "O";
+    const [lastPlayer, _] = moves[moves.length - 1].coreMove;
+    const player = lastPlayer === "O" ? "X" : "O";
     return { kind: "SomePlayer", player };
   }
 };
 
-export const currentPlayerFromMoves = (moves: MoveModel[]): CorePlayer | undefined => {
-  const turn = currentTurn(moves);
-  return turn.kind === "SomePlayer" ? turn.player : undefined;
-};
-
-export const winnerFromMoves = (moves: MoveModel[]): CorePlayer | undefined => {
-  const coreMoves = coreMovesFromMoves(moves);
-
+export const winnerFromMoves = (moves: Move[]): CorePlayer | undefined => {
+  const coreMoves = moves.map(({ coreMove }) => coreMove);
   if (findWin("O", coreMoves)) {
     return "O";
   } else if (findWin("X", coreMoves)) {
@@ -35,8 +40,10 @@ export const winnerFromMoves = (moves: MoveModel[]): CorePlayer | undefined => {
   }
 };
 
-export const isGameOverFromMoves = (moves: MoveModel[]): boolean =>
-  moves.length >= 9 || !!winnerFromMoves(moves);
+export const currentPlayerFromMoves = (moves: Move[]): CorePlayer | undefined => {
+  const turn = currentTurn(moves);
+  return turn.kind === "SomePlayer" ? turn.player : undefined;
+};
 
-export const coreMovesFromMoves = (moves: MoveModel[]): CoreMove[] =>
-  moves.map(({ player, position }) => coerceToMove([player, position]));
+export const isGameOver = (moves: Move[]): boolean =>
+  moves.length >= 9 || !!winnerFromMoves(moves);

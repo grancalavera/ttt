@@ -4,7 +4,6 @@ export class MoveModel extends Model {
   public readonly id!: string;
   public readonly player!: string;
   public readonly position!: number;
-
   public readonly gameId!: string;
 
   public readonly createdAt!: Date;

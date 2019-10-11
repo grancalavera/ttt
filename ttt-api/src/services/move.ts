@@ -1,22 +1,17 @@
-import {
-  assertNever,
-  coerceToPlayer,
-  coerceToPosition,
-  CorePlayer,
-  CorePosition
-} from "@grancalavera/ttt-core";
+import { assertNever, CoreMove, CorePlayer, CorePosition } from "@grancalavera/ttt-core";
 import uuid from "uuid/v4";
 import { GameOverError, PositionPlayedError, WrongTurnError } from "../etc/exceptions";
-import { MoveResponse } from "../model";
+import { MoveResponse, Move } from "../model";
 import { MoveModel } from "../store";
-import { currentTurn, Turn, winnerFromMoves } from "./common";
+import { moveModelsToMoves, currentTurn, Turn, winnerFromMoves } from "./common";
 
 export const playMove = async (
   gameId: string,
   player: CorePlayer,
   position: CorePosition
 ): Promise<MoveResponse> => {
-  const moves = await MoveModel.findAll({ where: { gameId } });
+  const moveModels = await MoveModel.findAll({ where: { gameId } });
+  const moves = moveModelsToMoves(moveModels);
   const turn = currentTurn(moves);
 
   ensurePlayerCanPlayTurn(gameId, player, turn);
@@ -56,19 +51,15 @@ const ensurePlayerCanPlayTurn = (
   }
 };
 
-const ensurePositionHasNotBeenPlayed = (
-  position: CorePosition,
-  moves: MoveModel[]
-): void => {
-  const maybeMove = moves.find(m => m.position === position);
+const ensurePositionHasNotBeenPlayed = (position: CorePosition, moves: Move[]): void => {
+  const maybeMove = moves.find(m => m.coreMove[1] === position);
   if (maybeMove) {
-    const playedBy = coerceToPlayer(maybeMove.player);
-    const playedPosition = coerceToPosition(maybeMove.position);
+    const [playedBy, playedPosition] = maybeMove.coreMove;
     throw new PositionPlayedError(playedBy, playedPosition);
   }
 };
 
-const ensureNoOneHasWonTheGame = (gameId: string, moves: MoveModel[]): void => {
+const ensureNoOneHasWonTheGame = (gameId: string, moves: Move[]): void => {
   if (winnerFromMoves(moves)) {
     throw new GameOverError(gameId);
   }
