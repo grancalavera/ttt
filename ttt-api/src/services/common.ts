@@ -1,13 +1,23 @@
 import { coerceToMove, CoreMove, CorePlayer, findWin } from "@grancalavera/ttt-core";
-import { Move } from "../model";
+import { Move, GameResponse } from "../model";
 import { MoveModel } from "../store";
+
+export const movesToGameResponse = (moves: Move[]): GameResponse => {
+  return {
+    id: moves[0].gameId,
+    currentPlayer: currentPlayerFromMoves(moves),
+    isGameOver: isGameOver(moves),
+    winner: winnerFromMoves(moves),
+    moves: movesToCoreMoves(moves)
+  };
+};
 
 export const moveModelsToMoves = (moves: MoveModel[]): Move[] =>
   moves.map(moveModelToMove);
 
 export const movesToCoreMoves = (moves: Move[]): CoreMove[] => moves.map(m => m.coreMove);
 
-const moveModelToMove = ({ gameId, player, position }: MoveModel): Move => ({
+export const moveModelToMove = ({ gameId, player, position }: MoveModel): Move => ({
   gameId,
   coreMove: coerceToMove([player, position])
 });
