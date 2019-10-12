@@ -1,6 +1,12 @@
 import { coerceToMove, CoreMove, CorePlayer, findWin } from "@grancalavera/ttt-core";
-import { Move, GameResponse } from "../model";
+import { groupBy, map, pipe, values } from "ramda";
+import { GameResponse, Move } from "../model";
 import { MoveModel } from "../store";
+
+export type Turn =
+  | { kind: "AnyPlayer" }
+  | { kind: "SomePlayer"; player: CorePlayer }
+  | { kind: "NoPlayer" };
 
 export const movesToGameResponse = (moves: Move[]): GameResponse => {
   return {
@@ -12,6 +18,12 @@ export const movesToGameResponse = (moves: Move[]): GameResponse => {
   };
 };
 
+export const moveModelsToGameResponses = pipe(
+  groupBy(({ gameId }: Move) => gameId),
+  values,
+  map(x => movesToGameResponse(x))
+);
+
 export const moveModelsToMoves = (moves: MoveModel[]): Move[] =>
   moves.map(moveModelToMove);
 
@@ -21,11 +33,6 @@ export const moveModelToMove = ({ gameId, player, position }: MoveModel): Move =
   gameId,
   coreMove: coerceToMove([player, position])
 });
-
-export type Turn =
-  | { kind: "AnyPlayer" }
-  | { kind: "SomePlayer"; player: CorePlayer }
-  | { kind: "NoPlayer" };
 
 export const currentTurn = (moves: Move[]): Turn => {
   if (moves.length === 0) {

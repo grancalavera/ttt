@@ -1,23 +1,19 @@
-import { groupBy, map, pipe, values } from "ramda";
 import { GameResponse } from "../model";
 import { MoveModel } from "../store";
-import { moveModelToMove, movesToGameResponse } from "./common";
-
-const gameFromMoves = (moveModels: MoveModel[]): GameResponse =>
-  movesToGameResponse(moveModels.map(moveModelToMove));
-
-const allGamesFromMoves = pipe(
-  groupBy(({ gameId }: MoveModel) => gameId),
-  values,
-  map(gameFromMoves)
-);
+import {
+  moveModelsToGameResponses,
+  moveModelsToMoves,
+  moveModelToMove,
+  movesToGameResponse
+} from "./common";
 
 export const findAllGames = async (): Promise<GameResponse[]> => {
-  const moves = await MoveModel.findAll();
-  return allGamesFromMoves(moves);
+  const moveModels = await MoveModel.findAll();
+  const moves = moveModelsToMoves(moveModels);
+  return moveModelsToGameResponses(moves);
 };
 
 export const findGameById = async (gameId: string): Promise<GameResponse | null> => {
-  const moves = await MoveModel.findAll({ where: { gameId } });
-  return moves.length ? gameFromMoves(moves) : null;
+  const moveModels = await MoveModel.findAll({ where: { gameId } });
+  return moveModels.length ? movesToGameResponse(moveModels.map(moveModelToMove)) : null;
 };
