@@ -15,9 +15,14 @@ import {
   move_aliceTies,
   move_aliceWins,
   move_bobPlaysOnZero
-} from "./etc/fixtures";
-import { invalidPlayer, invalidPosition, GameOverError } from "./etc/exceptions";
-import { PositionPlayedError, WrongTurnError, extractException } from "./etc/exceptions";
+} from "./fixtures";
+import {
+  invalidPlayer,
+  invalidPosition,
+  GameOverError,
+  validationError
+} from "./exceptions";
+import { PositionPlayedError, WrongTurnError, extractException } from "./exceptions";
 import { create } from "./store";
 
 const app = mkApp("/");
@@ -100,7 +105,7 @@ const scenarios: [string, Scenario][] = [
     rawMove: move_alicePlaysOnOne,
     moveStatus: 400,
     gameStatus: 200,
-    moveBody: { errors: [extractException(new WrongTurnError(alice))] },
+    moveBody: extractException(new WrongTurnError(alice)),
     gameBody: {
       id: gameId,
       isGameOver: false,
@@ -117,13 +122,9 @@ const scenarios: [string, Scenario][] = [
       rawMove: move_bobPlaysOnZero,
       moveStatus: 400,
       gameStatus: 200,
-      moveBody: {
-        errors: [
-          extractException(
-            new PositionPlayedError(move_alicePlaysOnZero[0], move_alicePlaysOnZero[1])
-          )
-        ]
-      },
+      moveBody: extractException(
+        new PositionPlayedError(move_alicePlaysOnZero[0], move_alicePlaysOnZero[1])
+      ),
       gameBody: {
         id: gameId,
         isGameOver: false,
@@ -138,7 +139,7 @@ const scenarios: [string, Scenario][] = [
     rawMove: [alice, 0],
     moveStatus: 400,
     gameStatus: 200,
-    moveBody: { errors: [extractException(new GameOverError(gameId))] },
+    moveBody: extractException(new GameOverError(gameId)),
     gameBody: {
       id: gameId,
       isGameOver: true,
@@ -151,7 +152,7 @@ const scenarios: [string, Scenario][] = [
     existingMoves: [move_alicePlaysOnZero],
     rawMove: [":P", 1],
     moveStatus: 400,
-    moveBody: { errors: [invalidPlayer(":P")] },
+    moveBody: validationError([invalidPlayer(":P")]),
     gameStatus: 200,
     gameBody: {
       id: gameId,
@@ -165,7 +166,7 @@ const scenarios: [string, Scenario][] = [
     existingMoves: [move_alicePlaysOnZero],
     rawMove: [alice, 9],
     moveStatus: 400,
-    moveBody: { errors: [invalidPosition(9)] },
+    moveBody: validationError([invalidPosition(9)]),
     gameStatus: 200,
     gameBody: {
       id: gameId,
@@ -182,7 +183,7 @@ const scenarios: [string, Scenario][] = [
       existingMoves: [move_alicePlaysOnZero],
       rawMove: [":)", 9],
       moveStatus: 400,
-      moveBody: { errors: [invalidPlayer(":)"), invalidPosition(9)] },
+      moveBody: validationError([invalidPlayer(":)"), invalidPosition(9)]),
       gameStatus: 200,
       gameBody: {
         id: gameId,
