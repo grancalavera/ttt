@@ -20,7 +20,7 @@ import {
   invalidPlayer,
   invalidPosition,
   GameOverError,
-  validationError
+  invalidRequest
 } from "./exceptions";
 import { PositionPlayedError, WrongTurnError, extractException } from "./exceptions";
 import { create } from "./store";
@@ -152,7 +152,7 @@ const scenarios: [string, Scenario][] = [
     existingMoves: [move_alicePlaysOnZero],
     rawMove: [":P", 1],
     moveStatus: 400,
-    moveBody: validationError([invalidPlayer(":P")]),
+    moveBody: invalidRequest("InvalidPlayer", [invalidPlayer(":P")]),
     gameStatus: 200,
     gameBody: {
       id: gameId,
@@ -166,7 +166,7 @@ const scenarios: [string, Scenario][] = [
     existingMoves: [move_alicePlaysOnZero],
     rawMove: [alice, 9],
     moveStatus: 400,
-    moveBody: validationError([invalidPosition(9)]),
+    moveBody: invalidRequest("InvalidPosition", [invalidPosition(9)]),
     gameStatus: 200,
     gameBody: {
       id: gameId,
@@ -183,7 +183,10 @@ const scenarios: [string, Scenario][] = [
       existingMoves: [move_alicePlaysOnZero],
       rawMove: [":)", 9],
       moveStatus: 400,
-      moveBody: validationError([invalidPlayer(":)"), invalidPosition(9)]),
+      moveBody: invalidRequest("InvalidPlayer, InvalidPosition", [
+        invalidPlayer(":)"),
+        invalidPosition(9)
+      ]),
       gameStatus: 200,
       gameBody: {
         id: gameId,

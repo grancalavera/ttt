@@ -1,25 +1,22 @@
-import { RequestHandler, Router } from "express";
-import { body, ValidationError, validationResult, check } from "express-validator";
 import {
   coerceToPlayer,
   coerceToPosition,
   CorePlayer,
   CorePosition
 } from "@grancalavera/ttt-core";
-import { playMove } from "./services/move";
-import { findAllGames, findGameById } from "./services/game";
-
+import { RequestHandler, Router } from "express";
+import { body, check, ValidationError, validationResult } from "express-validator";
 import {
-  InvalidPlayer,
-  InvalidPosition,
-  InvalidRequest,
-  MissingGameId,
+  extractException,
   gameNotFound,
   invalidPlayer,
   invalidPosition,
-  missingGameId,
-  extractException
+  InvalidRequest,
+  invalidRequest,
+  missingGameId
 } from "./exceptions";
+import { findAllGames, findGameById } from "./services/game";
+import { playMove } from "./services/move";
 
 const INVALID_PLAYER = "INVALID_PLAYER";
 const INVALID_POSITION = "INVALID_POSITION";
@@ -43,13 +40,13 @@ const handleGetGameByIdRequest: RequestHandler = async (req, res, next) => {
   const { gameId } = req.params;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    next({ status: 400, errors: errors.array().map(missingGameId) });
+    next({ status: 400, body: missingGameId() });
   } else {
     const maybeGame = await findGameById(gameId);
     if (maybeGame) {
       res.status(200).json(maybeGame);
     } else {
-      res.status(404).json({ errors: [gameNotFound(gameId)] });
+      res.status(404).json(gameNotFound(gameId));
     }
   }
 };
@@ -57,41 +54,64 @@ const handleGetGameByIdRequest: RequestHandler = async (req, res, next) => {
 const handleMoveRequest: RequestHandler = async (req, res, next) => {
   const { player, position, gameId } = req.body;
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
-    next({
+    return next({
       status: 400,
-      errors: errors.array().map(toResponseError({ player, position }))
+      body: validationErrorsToInvalidRequest(player, position, errors.array())
     });
-  } else {
-    let corePlayer: CorePlayer;
-    let corePosition: CorePosition;
-    try {
-      corePlayer = coerceToPlayer(player);
-      corePosition = coerceToPosition(position);
-      try {
-        await playMove(gameId, corePlayer, corePosition);
-        res.status(200).end();
-      } catch (e) {
-        next({ status: 400, errors: [extractException(e)] });
-      }
-    } catch (e) {
-      next({ status: 400, errors: [e.message] });
-    }
+  }
+
+  let corePlayer: CorePlayer;
+  let corePosition: CorePosition;
+
+  try {
+    corePlayer = coerceToPlayer(player);
+    corePosition = coerceToPosition(position);
+  } catch (e) {
+    next({ status: 400, body: e.message });
+    return;
+  }
+
+  try {
+    await playMove(gameId, corePlayer, corePosition);
+    res.status(200).end();
+  } catch (e) {
+    next({ status: 400, body: extractException(e) });
   }
 };
 
-const toResponseError = ({ player, position }: { player: any; position: any }) => (
+// `any` is OK b/c this is part of the validation code, and we can actually get
+// *anything* from the user at this point :P
+const validationErrorsToInvalidRequest = (
+  player: any,
+  position: any,
+  validationErrors: ValidationError[]
+): InvalidRequest => {
+  const seed: { message: string[]; errors: any[] } = { message: [], errors: [] };
+  const { message, errors } = validationErrors.reduce((result, error) => {
+    const [err, msg] = toResponseError_(player, position, error);
+    result.errors.push(err);
+    result.message.push(msg);
+    return result;
+  }, seed);
+  return invalidRequest(message.join(", "), errors);
+};
+
+const toResponseError_ = (
+  player: any,
+  position: any,
   error: ValidationError
-): InvalidPlayer | InvalidPosition | MissingGameId | InvalidRequest => {
+): [any, string] => {
   switch (error.msg) {
     case INVALID_PLAYER:
-      return invalidPlayer(player);
+      return [invalidPlayer(player), "InvalidPlayer"];
     case INVALID_POSITION:
-      return invalidPosition(position);
+      return [invalidPosition(position), "InvalidPosition"];
     case MISSING_GAME_ID:
-      return missingGameId();
+      return [missingGameId(), "MissingGameId"];
     default:
-      return { name: "InvalidRequest", message: `Invalid request: ${error.msg}` };
+      return [{}, ""];
   }
 };
 

@@ -9,7 +9,7 @@ export const mkApp = (baseUrl: string) =>
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   const status = err.status || 500;
-  const errors = err.errors || [err.message];
+  const body = err.body || {};
   res.status(status);
-  res.json({ errors });
+  res.json(body);
 };

@@ -3,6 +3,7 @@ import { CorePlayer, CorePosition } from "@grancalavera/ttt-core";
 export interface InvalidRequest {
   name: "InvalidRequest";
   message: string;
+  errors: any[];
 }
 
 export interface MissingGameId {
@@ -14,11 +15,6 @@ export interface GameNotFound {
   name: "GameNotFound";
   message: string;
   gameId: string;
-}
-
-export interface ValidationError {
-  name: "ValidationError";
-  errors: (InvalidPlayer | InvalidPosition)[];
 }
 
 export interface InvalidPlayer {
@@ -33,10 +29,9 @@ export interface InvalidPosition {
   message: string;
 }
 
-export const validationError = (
-  errors: (InvalidPlayer | InvalidPosition)[]
-): ValidationError => ({
-  name: "ValidationError",
+export const invalidRequest = (message: string, errors: any[] = []): InvalidRequest => ({
+  name: "InvalidRequest",
+  message,
   errors
 });
 
