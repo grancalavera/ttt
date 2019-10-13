@@ -2,7 +2,7 @@
   "name": "@grancalavera/ttt-api",
   "version": "0.0.0",
   "license": "MIT",
-  "main": "lib/model.js",
+  "main": "dist/lib.js",
   "scripts": {
     "start:clean": "rm -f store.sqlite && yarn start",
     "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
