@@ -12,6 +12,7 @@ import {
 import { GameModel } from "../store";
 import { gameInLobby, gamePlaying } from "./combine-games";
 import { PUBSUB_GAME_CHANGED, pubsub, PUBSUB_GAME_ADDED } from "../pubsub";
+import { isGameResponse, isErrorResponse } from "@grancalavera/ttt-api";
 
 export const joinGame = async (
   user: User,
@@ -36,7 +37,6 @@ const joinNewGame = async (
   const userId = parseInt(user.id);
   const { gameStore, gameAPI } = context.dataSources;
 
-  await gameAPI.postGame(id);
   const storeGame = await gameStore.createGame(id, userId, avatar);
   const gameAdded = gameInLobby(storeGame);
 
@@ -53,14 +53,17 @@ const joinExistingGame = async (
   const userId = parseInt(user.id);
 
   const storeGame = await gameStore.joinGame(game, userId);
-  const { game: coreGame } = await gameAPI.getGameById(game.id);
+  const response = await gameAPI.getGameById(game.id);
 
-  if (isCoreGamePlaying(coreGame)) {
-    const gameChanged = gamePlaying(coreGame, storeGame);
-
+  if (isGameResponse(response)) {
+    const gameChanged = gamePlaying(response, storeGame);
     pubsub.publish(PUBSUB_GAME_CHANGED, { gameChanged });
     return gameChanged;
+  } else if (isErrorResponse(response)) {
+    throw new Error(`GameErrorResponse: "${response.errors.join(",")}"`);
   } else {
-    throw new Error(`unexpected CoreGame kind "${coreGame.kind}"`);
+    throw new Error(
+      `Unkown response when trying to join existing game: ${JSON.stringify(response)}`
+    );
   }
 };

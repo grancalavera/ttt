@@ -13,9 +13,23 @@ export type GameResponse = {
   winner?: CorePlayer;
 };
 
+export type ErrorResponse = {
+  errors: any[];
+};
+
 export type MoveResponse = {
   id: string;
   gameId: string;
   player: CorePlayer;
   position: CorePosition;
+};
+
+export const isGameResponse = (x: any): x is GameResponse => {
+  const mustHave = ["id", "isGameOver", "moves"];
+  const actualKeys = Object.keys(x || {});
+  return mustHave.every(key => actualKeys.includes(key));
+};
+
+export const isErrorResponse = (x: any): x is ErrorResponse => {
+  return !!x.errors && x.errors.length;
 };

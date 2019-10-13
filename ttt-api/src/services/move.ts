@@ -1,9 +1,9 @@
-import { assertNever, CoreMove, CorePlayer, CorePosition } from "@grancalavera/ttt-core";
+import { assertNever, CorePlayer, CorePosition } from "@grancalavera/ttt-core";
 import uuid from "uuid/v4";
-import { GameOverError, PositionPlayedError, WrongTurnError } from "../etc/exceptions";
-import { MoveResponse, Move } from "../model";
+import { GameOverError, PositionPlayedError, WrongTurnError } from "../exceptions";
+import { Move, MoveResponse } from "../model";
 import { MoveModel } from "../store";
-import { moveModelsToMoves, currentTurn, Turn, winnerFromMoves } from "./common";
+import { currentTurn, moveModelsToMoves, Turn, winnerFromMoves } from "./common";
 
 export const playMove = async (
   gameId: string,

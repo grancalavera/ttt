@@ -1,46 +1,23 @@
-import { ErrorResponse } from "@grancalavera/ttt-api";
+import { GameResponse } from "@grancalavera/ttt-api";
 import {
+  assertNever,
   coerceToPlayer,
-  CORE_GAME_PLAYING,
   CoreGame,
   CoreGamePlaying,
   CoreMove,
   CorePlayer,
   CorePosition,
-  CoreWin
+  CoreWin,
+  CORE_GAME_PLAYING,
+  findWin
 } from "@grancalavera/ttt-core";
-
 import { Avatar, Move, Player, Position, Win } from "./generated/models";
 import { playerFromModel } from "./model";
 import { GameModel } from "./store";
 
 export const handleSimpleError = (error?: any) => {
-  const errorResponse = getErrorResponse(error);
-  throw new Error(errorResponse.message);
+  throw new Error(error);
 };
-
-export const getErrorResponse = (error?: any): ErrorResponse => {
-  if (
-    error &&
-    error.extensions &&
-    error.extensions.response &&
-    error.extensions.response.body &&
-    error.extensions.response.body.code &&
-    typeof error.extensions.response.body.code === "string" &&
-    error.extensions.response.body.message &&
-    typeof error.extensions.response.body.message === "string" &&
-    error.extensions.response.body.context &&
-    typeof error.extensions.response.body.context === "object"
-  ) {
-    return error.extensions.response.body as ErrorResponse;
-  } else {
-    throw new Error(error);
-  }
-};
-
-export function assertNever(value: never): never {
-  throw new Error(`unexpected value ${value}`);
-}
 
 export const chooseAvatar = (): Avatar => (Math.random() < 0.5 ? Avatar.X : Avatar.O);
 
@@ -75,7 +52,12 @@ export const corePositionFromPosition = (position: Position): CorePosition => {
   }
 };
 
-export const coreWinToWin = (coreWin: CoreWin): Win => ({
+export const findWinningMove = (gameResponse: GameResponse): Win | undefined => {
+  const win = findWin("O", gameResponse.moves) || findWin("X", gameResponse.moves);
+  return win ? coreWinToWin(win) : undefined;
+};
+
+const coreWinToWin = (coreWin: CoreWin): Win => ({
   p1: positionFromCorePosition(coreWin[0]),
   p2: positionFromCorePosition(coreWin[1]),
   p3: positionFromCorePosition(coreWin[2])

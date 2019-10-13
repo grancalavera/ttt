@@ -1,40 +1,29 @@
 // https://jestjs.io/docs/en/es6-class-mocks
 
-import { CoreGame, CoreMove } from "@grancalavera/ttt-core";
+import { Move, movesToGameResponse } from "@grancalavera/ttt-api";
 import { IGameAPI } from "../game-api";
 
 class MockGameAPI implements IGameAPI {
-  private games: { [id: string]: CoreGame } = {};
+  private moves: { [gameId: string]: Move[] } = {};
 
-  private _gameById(id: string): CoreGame | undefined {
-    return this.games[id];
-  }
-
-  private _sendGameNotFound(id: string) {
-    return Promise.reject(`game ${id} does not exist`);
-  }
-
-  private _sendGameResponse(id: string, game?: CoreGame) {
-    return game ? Promise.resolve({ id, game }) : this._sendGameNotFound(id);
+  private _getGameById(gameId: string) {
+    const moves = this.moves[gameId];
+    return movesToGameResponse(moves);
   }
 
   getAllGames() {
-    const games = Object.keys(this.games).map(id => ({ id, game: this.games[id] }));
-    return Promise.resolve(games);
+    const gameResponses = Object.keys(this.moves).map(this._getGameById.bind(this));
+    return Promise.resolve(gameResponses);
   }
 
-  getGameById(id: string) {
-    return this._sendGameResponse(id, this._gameById(id));
+  getGameById(gameId: string) {
+    return Promise.resolve(this._getGameById(gameId));
   }
 
-  postMove(id: string, move: CoreMove) {
-    const game = this._gameById(id);
-    if (game) {
-      game.moves = [move, ...game.moves];
-      return this._sendGameResponse(id, game);
-    } else {
-      return this._sendGameNotFound(id);
-    }
+  postMove(move: Move) {
+    const { gameId } = move;
+    this.moves[gameId].push(move);
+    return Promise.resolve(this._getGameById(gameId));
   }
 }
 

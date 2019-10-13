@@ -27,7 +27,7 @@ export const moveModelsToGameResponses = pipe(
 export const moveModelsToMoves = (moves: MoveModel[]): Move[] =>
   moves.map(moveModelToMove);
 
-export const movesToCoreMoves = (moves: Move[]): CoreMove[] => moves.map(m => m.coreMove);
+const movesToCoreMoves = (moves: Move[]): CoreMove[] => moves.map(m => m.coreMove);
 
 export const moveModelToMove = ({ gameId, player, position }: MoveModel): Move => ({
   gameId,

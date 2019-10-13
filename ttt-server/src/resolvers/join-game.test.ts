@@ -47,6 +47,11 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
         throw new Error("Unexpected game state");
       }
     });
+
+    it("There should be one game", async () => {
+      const games = await getAllGames(context);
+      expect(games.length).toBe(1);
+    });
   });
 
   describe("Alice joins another game, then:", () => {
@@ -72,7 +77,7 @@ describe("Alice, Bob and Jane are the first users to ever join a game.", () => {
     });
   });
 
-  describe("Bob joins a game", () => {
+  fdescribe("Bob joins a game", () => {
     let game: Game;
 
     beforeAll(async () => {

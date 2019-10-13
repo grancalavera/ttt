@@ -1,4 +1,3 @@
-import { ErrorCode } from "@grancalavera/ttt-api";
 import {
   CORE_GAME_OVER_TIE,
   CORE_GAME_OVER_WIN,
@@ -6,7 +5,7 @@ import {
   CoreGame
 } from "@grancalavera/ttt-core";
 
-import { assertNever, coreMoveFromMove } from "../common";
+import { coreMoveFromMove } from "../common";
 import { TTTContext } from "../environment";
 import {
   Avatar,
@@ -21,7 +20,6 @@ import {
   MovePlayed
 } from "../generated/models";
 import { gameOverTie, gameOverWin, gamePlaying } from "./combine-games";
-import { getErrorResponse } from "../common";
 import { GameModel } from "../store";
 import { pubsub, PUBSUB_GAME_CHANGED, PUBSUB_MOVE_PLAYED } from "../pubsub";
 

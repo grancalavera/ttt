@@ -1,5 +1,5 @@
 import { GameTypename } from "./model";
-import { assertNever } from "./common";
+import { assertNever } from "@grancalavera/ttt-core";
 
 describe("StateKindMap", () => {
   it("should enumerate all state kinds", () => {

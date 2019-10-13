@@ -1,37 +1,28 @@
-import { GameModel } from "../store";
-import { GameTypename, playerFromModel } from "../model";
+import { GameResponse } from "@grancalavera/ttt-api";
+import { CorePlayer } from "@grancalavera/ttt-core";
 import {
-  resolveWaitingPlayer,
-  corePlayerToPlayer,
   coreMoveToMove,
-  coreWinToWin,
-  assertNever
+  corePlayerToPlayer,
+  findWinningMove,
+  resolveWaitingPlayer
 } from "../common";
-import {
-  CoreGamePlaying,
-  CoreGameOverTie,
-  CoreGameOverWin,
-  CORE_GAME_PLAYING,
-  CORE_GAME_OVER_TIE,
-  CORE_GAME_OVER_WIN,
-  CoreGame
-} from "@grancalavera/ttt-core";
-import { GamePlaying, GameOverTie, GameOverWin, Game } from "../generated/models";
+import { Game, GameOverTie, GameOverWin, GamePlaying } from "../generated/models";
+import { GameTypename, playerFromModel } from "../model";
+import { GameModel } from "../store";
 
-export const combineGames = (coreGame: CoreGame, storeGame: GameModel): Game => {
+export const combineGames = (storeGame: GameModel, gameResponse?: GameResponse): Game => {
   if (storeGame.isInLobby) {
     return gameInLobby(storeGame);
   }
 
-  switch (coreGame.kind) {
-    case CORE_GAME_PLAYING:
-      return gamePlaying(coreGame, storeGame);
-    case CORE_GAME_OVER_TIE:
-      return gameOverTie(coreGame, storeGame);
-    case CORE_GAME_OVER_WIN:
-      return gameOverWin(coreGame, storeGame);
-    default:
-      return assertNever(coreGame);
+  if (gameResponse && gameResponse.isGameOver && gameResponse.winner) {
+    return gameOverWin(gameResponse, storeGame, gameResponse.winner);
+  } else if (gameResponse && gameResponse.isGameOver) {
+    return gameOverTie(gameResponse, storeGame);
+  } else if (gameResponse) {
+    return gamePlaying(gameResponse, storeGame);
+  } else {
+    throw new Error("Missing API game for a store game that should be playing");
   }
 };
 
@@ -42,34 +33,41 @@ export const gameInLobby = (storeGame: GameModel) => ({
 });
 
 export const gamePlaying = (
-  coreGame: CoreGamePlaying,
+  gameResponse: GameResponse,
   storeGame: GameModel
-): GamePlaying => ({
-  __typename: GameTypename.GamePlaying,
-  currentPlayer: corePlayerToPlayer(coreGame.currentPlayer, storeGame),
-  ...commonGame(coreGame, storeGame)
-});
+): GamePlaying => {
+  if (gameResponse.currentPlayer) {
+    return {
+      __typename: GameTypename.GamePlaying,
+      currentPlayer: corePlayerToPlayer(gameResponse.currentPlayer, storeGame),
+      ...commonGame(gameResponse, storeGame)
+    };
+  } else {
+    throw new Error("Invalid existing game: currentPlayer is missing");
+  }
+};
 
 export const gameOverTie = (
-  coreGame: CoreGameOverTie,
+  gameResponse: GameResponse,
   storeGame: GameModel
 ): GameOverTie => ({
   id: storeGame.id,
   __typename: GameTypename.GameOverTie,
-  ...commonGame(coreGame, storeGame)
+  ...commonGame(gameResponse, storeGame)
 });
 
 export const gameOverWin = (
-  coreGame: CoreGameOverWin,
-  storeGame: GameModel
+  gameResponse: GameResponse,
+  storeGame: GameModel,
+  winner: CorePlayer
 ): GameOverWin => ({
   __typename: GameTypename.GameOverWin,
-  winner: corePlayerToPlayer(coreGame.winner, storeGame),
-  winningMove: coreWinToWin(coreGame.winningMove),
-  ...commonGame(coreGame, storeGame)
+  winner: corePlayerToPlayer(winner, storeGame),
+  winningMove: findWinningMove(gameResponse)!,
+  ...commonGame(gameResponse, storeGame)
 });
 
-const commonGame = (coreGame: CoreGame, storeGame: GameModel) => ({
+const commonGame = (coreGame: GameResponse, storeGame: GameModel) => ({
   id: storeGame.id,
   moves: coreGame.moves.map(coreMoveToMove),
   oPlayer: playerFromModel(storeGame.playerO),

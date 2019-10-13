@@ -2,13 +2,13 @@ import { AuthenticationError } from "apollo-server";
 import express from "express";
 import isEmail from "isemail";
 
-import { assertNever } from "./common";
 import { GameStore } from "./data-sources/game-store";
 import { User } from "./generated/models";
 import { UserModel } from "./store";
 import { GameAPI } from "./data-sources/game-api";
 import { loginFromModel, UserStatus, LOGGED_IN, LOGGED_OUT } from "./model";
 import { ExecutionParams } from "subscriptions-transport-ws";
+import { assertNever } from "@grancalavera/ttt-core";
 
 const apiBaseURL = process.env.API_BASE_URL!;
 

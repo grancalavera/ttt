@@ -1,11 +1,11 @@
 import { CorePosition } from "@grancalavera/ttt-core";
-import { GameOverError, PositionPlayedError, WrongTurnError } from "../etc/exceptions";
+import { GameOverError, PositionPlayedError, WrongTurnError } from "../exceptions";
 import {
   alice,
   bob,
   mkGame_gameOverAliceTies,
   mkGame_gameOverAliceWins
-} from "../etc/fixtures";
+} from "../fixtures";
 import { create, MoveModel } from "../store";
 import { playMove } from "./move";
 
