@@ -152,7 +152,7 @@ const scenarios: [string, Scenario][] = [
     existingMoves: [move_alicePlaysOnZero],
     rawMove: [":P", 1],
     moveStatus: 400,
-    moveBody: invalidRequest("InvalidPlayer", [invalidPlayer(":P")]),
+    moveBody: invalidPlayer(":P"),
     gameStatus: 200,
     gameBody: {
       id: gameId,
@@ -166,7 +166,7 @@ const scenarios: [string, Scenario][] = [
     existingMoves: [move_alicePlaysOnZero],
     rawMove: [alice, 9],
     moveStatus: 400,
-    moveBody: invalidRequest("InvalidPosition", [invalidPosition(9)]),
+    moveBody: invalidPosition(9),
     gameStatus: 200,
     gameBody: {
       id: gameId,

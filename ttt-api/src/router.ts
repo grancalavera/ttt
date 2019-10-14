@@ -56,12 +56,20 @@ const handleMoveRequest: RequestHandler = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
+    const errorsArray = errors.array();
+    let body;
+
+    if (errorsArray.length > 1) {
+      body = validationErrorsToInvalidRequest(player, position, errors.array());
+    } else {
+      body = toResponseError(player, position, errorsArray[0])[0];
+    }
+
     return next({
       status: 400,
-      body: validationErrorsToInvalidRequest(player, position, errors.array())
+      body
     });
   }
-
   let corePlayer: CorePlayer;
   let corePosition: CorePosition;
 
@@ -90,7 +98,7 @@ const validationErrorsToInvalidRequest = (
 ): InvalidRequest => {
   const seed: { message: string[]; errors: any[] } = { message: [], errors: [] };
   const { message, errors } = validationErrors.reduce((result, error) => {
-    const [err, msg] = toResponseError_(player, position, error);
+    const [err, msg] = toResponseError(player, position, error);
     result.errors.push(err);
     result.message.push(msg);
     return result;
@@ -98,7 +106,7 @@ const validationErrorsToInvalidRequest = (
   return invalidRequest(message.join(", "), errors);
 };
 
-const toResponseError_ = (
+const toResponseError = (
   player: any,
   position: any,
   error: ValidationError
