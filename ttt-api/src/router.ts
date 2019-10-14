@@ -70,18 +70,10 @@ const handleMoveRequest: RequestHandler = async (req, res, next) => {
       body
     });
   }
-  let corePlayer: CorePlayer;
-  let corePosition: CorePosition;
 
   try {
-    corePlayer = coerceToPlayer(player);
-    corePosition = coerceToPosition(position);
-  } catch (e) {
-    next({ status: 400, body: e.message });
-    return;
-  }
-
-  try {
+    const corePlayer = coerceToPlayer(player);
+    const corePosition = coerceToPosition(position);
     await playMove(gameId, corePlayer, corePosition);
     res.status(200).end();
   } catch (e) {

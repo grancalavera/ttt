@@ -1,4 +1,13 @@
 import { CoreMove, CorePlayer, CorePosition } from "@grancalavera/ttt-core";
+import {
+  MissingGameId,
+  GameNotFound,
+  InvalidPosition,
+  PositionPlayedError,
+  WrongTurn,
+  GameOver,
+  InvalidRequest
+} from "./exceptions";
 
 export interface Move {
   readonly gameId: string;
@@ -13,9 +22,15 @@ export type GameResponse = {
   winner?: CorePlayer;
 };
 
-export type ErrorResponse = {
-  errors: any[];
-};
+export type ErrorResponse =
+  | MissingGameId
+  | GameNotFound
+  | InvalidPosition
+  | InvalidPosition
+  | PositionPlayedError
+  | GameOver
+  | WrongTurn
+  | InvalidRequest;
 
 export type MoveResponse = {
   id: string;

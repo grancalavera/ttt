@@ -1,59 +1,75 @@
 import { CorePlayer, CorePosition } from "@grancalavera/ttt-core";
 
 export interface InvalidRequest {
-  name: "InvalidRequest";
+  kind: "InvalidRequest";
   message: string;
   errors: any[];
 }
 
 export interface MissingGameId {
-  name: "MissingGameId";
+  kind: "MissingGameId";
   message: string;
 }
 
 export interface GameNotFound {
-  name: "GameNotFound";
+  kind: "GameNotFound";
   message: string;
   gameId: string;
 }
 
 export interface InvalidPlayer {
-  name: "InvalidPlayer";
+  kind: "InvalidPlayer";
   invalidPlayer: any;
   message: string;
 }
 
 export interface InvalidPosition {
-  name: "InvalidPosition";
+  kind: "InvalidPosition";
   invalidPosition: any;
   message: string;
 }
 
+export interface PositionPlayed {
+  kind: "PositionPlayed";
+  playedByPlayer: CorePlayer;
+  playedPosition: CorePosition;
+}
+
+export interface GameOver {
+  kind: "GameOver";
+  gameId: string;
+}
+
+export interface WrongTurn {
+  kind: "WrongTurn";
+  wrongPlayer: CorePlayer;
+}
+
 export const invalidRequest = (message: string, errors: any[] = []): InvalidRequest => ({
-  name: "InvalidRequest",
+  kind: "InvalidRequest",
   message,
   errors
 });
 
 export const invalidPlayer = (player: any): InvalidPlayer => ({
-  name: "InvalidPlayer",
+  kind: "InvalidPlayer",
   message: `Invalid player "${player}, valid players are "O" and "X" only`,
   invalidPlayer: player
 });
 
 export const invalidPosition = (position: any): InvalidPosition => ({
-  name: "InvalidPosition",
+  kind: "InvalidPosition",
   message: `Invalid position "${position}", valid moves are integer values from 0 inclusive to 8 inclusive`,
   invalidPosition: position
 });
 
 export const missingGameId = (): MissingGameId => ({
-  name: "MissingGameId",
+  kind: "MissingGameId",
   message: "Missing required game id"
 });
 
 export const gameNotFound = (gameId: string): GameNotFound => ({
-  name: "GameNotFound",
+  kind: "GameNotFound",
   message: `Game "${gameId}" not found`,
   gameId
 });
@@ -86,24 +102,22 @@ export class WrongTurnError extends Error {
   }
 }
 
+const isGameOverError = (e: Error): e is GameOverError => e.name === GAME_OVER_ERROR;
+const isWrongTurnError = (e: Error): e is WrongTurnError => e.name === WRONG_TURN_ERROR;
 const isPositionPlayedError = (e: Error): e is PositionPlayedError =>
   e.name === POSITION_PLAYED_ERROR;
-
-const isGameOverError = (e: Error): e is GameOverError => e.name === GAME_OVER_ERROR;
-
-const isWrongTurnError = (e: Error): e is WrongTurnError => e.name === WRONG_TURN_ERROR;
 
 export const extractException = (e: Error): any => {
   if (isPositionPlayedError(e)) {
     const { name, playedByPlayer, playedPosition } = e;
-    return { name, playedByPlayer, playedPosition };
+    return { kind: name, playedByPlayer, playedPosition };
   } else if (isGameOverError(e)) {
     const { name, gameId } = e;
-    return { name, gameId };
+    return { kind: name, gameId };
   } else if (isWrongTurnError(e)) {
     const { name, wrongPlayer } = e;
-    return { name, wrongPlayer };
+    return { kind: name, wrongPlayer };
   } else {
-    throw e;
+    return e;
   }
 };
