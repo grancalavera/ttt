@@ -25,7 +25,6 @@ type Subscription {
 
 type User {
   id: ID!
-  email: String!
 }
 
 type MovePlayed {

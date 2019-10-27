@@ -1,10 +1,10 @@
-import { GameErrorResponse, GameResponse, Move } from "@grancalavera/ttt-api";
+import { GameResponse, ErrorResponse, Move } from "@grancalavera/ttt-api";
 import { RESTDataSource } from "apollo-datasource-rest";
 
 export interface IGameAPI {
   getAllGames: () => Promise<GameResponse[]>;
-  getGameById: (id: string) => Promise<GameResponse | GameErrorResponse>;
-  postMove: (move: Move) => Promise<GameResponse | GameErrorResponse>;
+  getGameById: (id: string) => Promise<GameResponse | ErrorResponse>;
+  postMove: (move: Move) => Promise<GameResponse | ErrorResponse>;
 }
 
 export class GameAPI extends RESTDataSource implements IGameAPI {
@@ -12,12 +12,13 @@ export class GameAPI extends RESTDataSource implements IGameAPI {
     super();
   }
 
-  public getAllGames() {
-    return this.get<GameResponse[]>("ttt");
+  public async getAllGames() {
+    const g = await this.get<GameResponse[]>("ttt");
+    return g;
   }
 
   public getGameById(id: string) {
-    return this.get<GameResponse | GameErrorResponse>(`ttt/${id}`);
+    return this.get<GameResponse | ErrorResponse>(`ttt/${id}`);
   }
 
   public async postMove(move: Move) {

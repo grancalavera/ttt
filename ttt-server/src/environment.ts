@@ -12,10 +12,6 @@ import { assertNever } from "@grancalavera/ttt-core";
 
 const apiBaseURL = process.env.API_BASE_URL!;
 
-// if (!apiBaseURL) {
-//   throw new Error('missing required environment variable "API_BASE_URL"');
-// }
-
 export const dataSources = () => ({
   gameStore: new GameStore(),
   gameAPI: new GameAPI(apiBaseURL || "http://localhost:5000")
@@ -41,7 +37,6 @@ const logout = { kind: LOGGED_OUT } as const;
 const resolveUserStatus = async (auth?: string): Promise<UserStatus> => {
   if (!auth) return logout;
 
-  // if email is invalid => logout
   const decoded = new Buffer(auth, "base64").toString("ascii");
   if (!isEmail.validate(decoded)) return logout;
 

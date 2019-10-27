@@ -1,6 +1,6 @@
 import * as isEmail from "isemail";
 
-import { assertNever } from "../common";
+import { assertNever } from "@grancalavera/ttt-core";
 import { TTTContext } from "../environment";
 import { User } from "../generated/models";
 import { LOGGED_IN, LOGGED_OUT, userFromModel } from "../model";
@@ -19,14 +19,14 @@ export const login = async (email: string, context: TTTContext): Promise<string>
 
   switch (userStatus.kind) {
     case LOGGED_IN:
-      return createToken(userStatus.user.email);
+      return createToken(userStatus.user.id);
     case LOGGED_OUT:
       isEmail.validate(email);
       const { userModel, created } = await gameStore.findOrCreateUser(email);
       if (created) {
         pubsub.publish(PUBSUB_USER_CREATED, { userCreated: userFromModel(userModel) });
       }
-      return createToken(userModel.email);
+      return createToken(userModel.id.toString());
     default:
       return assertNever(userStatus);
   }

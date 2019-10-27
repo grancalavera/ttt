@@ -18,7 +18,7 @@ export const joinGame = async (
   user: User,
   context: TTTContext
 ): Promise<JoinGameResult> => {
-  const userId = parseInt(user.id);
+  const userId = user.id;
   const { gameStore } = context.dataSources;
 
   const maybeGameInLobby = await gameStore.firstGameInLobby(userId);
@@ -34,7 +34,7 @@ const joinNewGame = async (
   avatar: Avatar,
   context: TTTContext
 ): Promise<GameLobby> => {
-  const userId = parseInt(user.id);
+  const userId = user.id;
   const { gameStore, gameAPI } = context.dataSources;
 
   const storeGame = await gameStore.createGame(id, userId, avatar);
@@ -50,7 +50,7 @@ const joinExistingGame = async (
   context: TTTContext
 ): Promise<GamePlaying> => {
   const { gameStore, gameAPI } = context.dataSources;
-  const userId = parseInt(user.id);
+  const userId = user.id;
 
   const storeGame = await gameStore.joinGame(game, userId);
   const response = await gameAPI.getGameById(game.id);

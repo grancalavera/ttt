@@ -34,11 +34,10 @@ export const loginFromModel = (model: UserModel): LoggedIn => ({
 export const userFromModel = (userModel?: UserModel): User => {
   if (userModel) {
     return {
-      email: userModel.email,
-      id: userModel.id.toString()
+      id: userModel.id
     };
   } else {
-    throw new Error("undefined `playerModel`. Did you forget to cal `reloadPlayers`?");
+    throw new Error("undefined `playerModel`. Did you forget to call `reloadPlayers`?");
   }
 };
 
@@ -49,6 +48,6 @@ export const playerFromModel = (playerModel?: PlayerModel): Player => {
       user: userFromModel(playerModel.user)
     };
   } else {
-    throw new Error("undefined playerModel. Did you forget to cal `reloadPlayers`?");
+    throw new Error("undefined playerModel. Did you forget to call `reloadPlayers`?");
   }
 };

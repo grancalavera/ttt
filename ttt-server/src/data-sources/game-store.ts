@@ -11,7 +11,7 @@ export class GameStore extends DataSource<TTTContext> {
     this.context = context;
   }
 
-  private async createPlayer(userId: number, avatar: Avatar): Promise<PlayerModel> {
+  private async createPlayer(userId: string, avatar: Avatar): Promise<PlayerModel> {
     const user = await UserModel.findByPk(userId);
     const player = await PlayerModel.create({ avatar: avatar.valueOf() });
     await player.setUser(user!);
@@ -19,7 +19,8 @@ export class GameStore extends DataSource<TTTContext> {
   }
 
   async getAllGames(): Promise<GameModel[]> {
-    return GameModel.findAll({ include: includePlayers });
+    const g = await GameModel.findAll({ include: includePlayers });
+    return g;
   }
 
   async findGameById(gameId: string): Promise<GameModel> {
@@ -31,7 +32,7 @@ export class GameStore extends DataSource<TTTContext> {
     }
   }
 
-  async firstGameInLobby(userId: number): Promise<GameModel | null> {
+  async firstGameInLobby(userId: string): Promise<GameModel | null> {
     const game = await GameModel.findOne({
       where: {
         isInLobby: true
@@ -50,7 +51,7 @@ export class GameStore extends DataSource<TTTContext> {
     return game;
   }
 
-  async createGame(id: string, userId: number, avatar: Avatar): Promise<GameModel> {
+  async createGame(id: string, userId: string, avatar: Avatar): Promise<GameModel> {
     const player = await this.createPlayer(userId, avatar);
     const game = await GameModel.create({ id });
     if (avatar == Avatar.O) {
@@ -62,7 +63,7 @@ export class GameStore extends DataSource<TTTContext> {
     return game;
   }
 
-  async joinGame(game: GameModel, userId: number): Promise<GameModel> {
+  async joinGame(game: GameModel, userId: string): Promise<GameModel> {
     if (game.playerO) {
       const player = await this.createPlayer(userId, Avatar.X);
       await game.setPlayerX(player);

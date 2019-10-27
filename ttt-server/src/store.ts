@@ -12,8 +12,7 @@ import {
 import { Avatar, Position } from "./generated/models";
 
 export class UserModel extends Model {
-  public readonly id!: number;
-  public readonly email!: string;
+  public readonly id!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -66,8 +65,7 @@ export const create = ({ storage }: { storage: string }) => {
 
   UserModel.init(
     {
-      id: { type: INTEGER, autoIncrement: true, primaryKey: true },
-      email: { type: STRING, allowNull: false }
+      id: { type: STRING, primaryKey: true }
     },
     { sequelize, tableName: "ttt-users" }
   );
