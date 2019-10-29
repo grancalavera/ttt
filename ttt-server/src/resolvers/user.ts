@@ -1,14 +1,12 @@
 import * as isEmail from "isemail";
-
-import { assertNever } from "@grancalavera/ttt-core";
 import { TTTContext } from "../environment";
 import { User } from "../generated/models";
-import { LOGGED_IN, LOGGED_OUT, userFromModel } from "../model";
+import { userFromModel } from "../model";
 import { pubsub, PUBSUB_USER_CREATED } from "../pubsub";
 
 export const getMe = (context: TTTContext): User | null => {
   const { userStatus } = context;
-  return userStatus.kind === LOGGED_IN ? userStatus.user : null;
+  return userStatus.isLoggedIn ? userStatus.user : null;
 };
 
 export const login = async (email: string, context: TTTContext): Promise<string> => {
@@ -17,18 +15,15 @@ export const login = async (email: string, context: TTTContext): Promise<string>
     userStatus
   } = context;
 
-  switch (userStatus.kind) {
-    case LOGGED_IN:
-      return createToken(userStatus.user.id);
-    case LOGGED_OUT:
-      isEmail.validate(email);
-      const { userModel, created } = await gameStore.findOrCreateUser(email);
-      if (created) {
-        pubsub.publish(PUBSUB_USER_CREATED, { userCreated: userFromModel(userModel) });
-      }
-      return createToken(userModel.id.toString());
-    default:
-      return assertNever(userStatus);
+  if (userStatus.isLoggedIn) {
+    return createToken(userStatus.user.id);
+  } else {
+    isEmail.validate(email);
+    const { userModel, created } = await gameStore.findOrCreateUser(email);
+    if (created) {
+      pubsub.publish(PUBSUB_USER_CREATED, { userCreated: userFromModel(userModel) });
+    }
+    return createToken(userModel.id.toString());
   }
 };
 

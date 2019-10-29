@@ -1,7 +1,6 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
-
 import { TTTContext } from "../environment";
-import { Avatar, User } from "../generated/models";
+import { Avatar } from "../generated/models";
 import { GameModel, PlayerModel, UserModel } from "../store";
 
 export class GameStore extends DataSource<TTTContext> {
@@ -88,6 +87,7 @@ export class GameStore extends DataSource<TTTContext> {
     return users;
   }
 }
+
 const reloadPlayers = async (game: GameModel): Promise<GameModel> =>
   await game.reload({
     include: includePlayers

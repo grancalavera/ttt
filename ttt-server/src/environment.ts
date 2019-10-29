@@ -1,14 +1,12 @@
 import { AuthenticationError } from "apollo-server";
 import express from "express";
 import isEmail from "isemail";
-
+import { ExecutionParams } from "subscriptions-transport-ws";
+import { GameAPI } from "./data-sources/game-api";
 import { GameStore } from "./data-sources/game-store";
 import { User } from "./generated/models";
+import { loginFromModel, UserStatus } from "./model";
 import { UserModel } from "./store";
-import { GameAPI } from "./data-sources/game-api";
-import { loginFromModel, UserStatus, LOGGED_IN, LOGGED_OUT } from "./model";
-import { ExecutionParams } from "subscriptions-transport-ws";
-import { assertNever } from "@grancalavera/ttt-core";
 
 const apiBaseURL = process.env.API_BASE_URL!;
 
@@ -22,20 +20,17 @@ type SecureCallback = <T>(callback: (user: User) => T) => T;
 const makeSecureResolver = <T>(userStatus: UserStatus) => (
   callback: (user: User) => T
 ): T => {
-  switch (userStatus.kind) {
-    case LOGGED_IN:
-      return callback(userStatus.user);
-    case LOGGED_OUT:
-      throw new AuthenticationError("Unauthorized");
-    default:
-      return assertNever(userStatus);
+  if (userStatus.isLoggedIn) {
+    return callback(userStatus.user);
+  } else {
+    throw new AuthenticationError("Unauthorized");
   }
 };
 
-const logout = { kind: LOGGED_OUT } as const;
+const logout = { isLoggedIn: false } as const;
 
 const resolveUserStatus = async (auth?: string): Promise<UserStatus> => {
-  if (!auth) return logout;
+  if (!auth) return { isLoggedIn: false };
 
   const decoded = new Buffer(auth, "base64").toString("ascii");
   if (!isEmail.validate(decoded)) return logout;
