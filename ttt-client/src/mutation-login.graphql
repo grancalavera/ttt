@@ -1,3 +1,8 @@
-mutation Login($email: String!) {
-  login(email: $email)
+mutation Login($id: ID) {
+  login(id: $id) {
+    user {
+      id
+    }
+    created
+  }
 }

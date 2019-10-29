@@ -11,7 +11,7 @@ type Query {
 }
 
 type Mutation {
-  login(email: String!): String
+  login(id: ID): LoginResult!
   playMove(gameId: ID!, avatar: Avatar!, position: Position!): PlayMoveResult!
   joinGame: JoinGameResult!
 }
@@ -25,6 +25,11 @@ type Subscription {
 
 type User {
   id: ID!
+}
+
+type LoginResult {
+  user: User!
+  created: Boolean!
 }
 
 type MovePlayed {
