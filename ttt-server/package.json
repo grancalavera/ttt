@@ -33,7 +33,7 @@
     "isomorphic-fetch": "2.2.1",
     "isomorphic-ws": "4.0.1",
     "lodash": "4.17.15",
-    "sequelize": "5.15.0",
+    "sequelize": "5.21.2",
     "sqlite3": "4.1.0",
     "subscriptions-transport-ws": "0.9.16",
     "uuid": "3.3.2",
