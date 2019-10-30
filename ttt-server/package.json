@@ -30,7 +30,6 @@
     "graphql": "14.4.2",
     "graphql-import": "0.7.1",
     "graphql-tag": "2.10.1",
-    "isemail": "3.2.0",
     "isomorphic-fetch": "2.2.1",
     "isomorphic-ws": "4.0.1",
     "lodash": "4.17.15",
