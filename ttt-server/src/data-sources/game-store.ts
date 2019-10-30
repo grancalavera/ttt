@@ -76,9 +76,9 @@ export class GameStore extends DataSource<TTTContext> {
   }
 
   async findOrCreateUser(
-    email: string
+    id: string
   ): Promise<{ userModel: UserModel; created: boolean }> {
-    const [userModel, created] = await UserModel.findOrCreate({ where: { email } });
+    const [userModel, created] = await UserModel.findOrCreate({ where: { id } });
     return { userModel, created };
   }
 

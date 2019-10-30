@@ -23,7 +23,7 @@ const Query: QueryResolvers = {
 };
 
 const Mutation: MutationResolvers = {
-  login: async (_, { email }, context) => login(email, context),
+  login: async (_, { id }, context) => login(context, id),
   joinGame: (_, __, context) => {
     const { resolveWithSecurity } = context;
     return resolveWithSecurity(user => joinGame(user, context));

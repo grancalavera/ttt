@@ -14,6 +14,8 @@ export interface LoggedIn {
   user: User;
 }
 
+export const loggedOut: UserStatus = { isLoggedIn: false };
+
 type TypeNames = Exclude<Game["__typename"], undefined>;
 
 export const GameTypename: { [k in TypeNames]: k } = {
@@ -32,7 +34,7 @@ export const userFromModel = (userModel?: UserModel): User => {
   if (userModel) {
     return { id: userModel.id };
   } else {
-    throw new Error("undefined `playerModel`. Did you forget to call `reloadPlayers`?");
+    throw new Error("cannot convert undefined `UserModel` to `User`");
   }
 };
 

@@ -1,11 +1,10 @@
 import { AuthenticationError } from "apollo-server";
 import express from "express";
-import isEmail from "isemail";
 import { ExecutionParams } from "subscriptions-transport-ws";
 import { GameAPI } from "./data-sources/game-api";
 import { GameStore } from "./data-sources/game-store";
 import { User } from "./generated/models";
-import { loginFromModel, UserStatus } from "./model";
+import { loggedOut, loginFromModel, UserStatus } from "./model";
 import { UserModel } from "./store";
 
 const apiBaseURL = process.env.API_BASE_URL!;
@@ -26,17 +25,16 @@ const makeSecureResolver = <T>(userStatus: UserStatus) => (
     throw new AuthenticationError("Unauthorized");
   }
 };
-
-const logout = { isLoggedIn: false } as const;
-
+/**
+ *
+ * @param auth a pseudo authorization header that carries the base64
+ * encoded user id
+ */
 const resolveUserStatus = async (auth?: string): Promise<UserStatus> => {
-  if (!auth) return { isLoggedIn: false };
-
-  const decoded = new Buffer(auth, "base64").toString("ascii");
-  if (!isEmail.validate(decoded)) return logout;
-
-  const maybeUser = await UserModel.findOne({ where: { email: decoded } });
-  return maybeUser ? loginFromModel(maybeUser) : logout;
+  if (!auth) return loggedOut;
+  const id = new Buffer(auth, "base64").toString("ascii");
+  const maybeUser = await UserModel.findOne({ where: { id } });
+  return maybeUser ? loginFromModel(maybeUser) : loggedOut;
 };
 
 // This type is defined somewhere in apollo-server-core I think but
