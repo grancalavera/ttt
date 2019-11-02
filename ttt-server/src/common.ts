@@ -84,12 +84,11 @@ export const coreMoveToMove = ([player, position]: CoreMove): Move => ({
 export const corePlayerToPlayer = (
   corePlayer: CorePlayer,
   storeGame: GameModel
-): Player =>
-  playerFromModel(corePlayer === "O" ? storeGame.playerO! : storeGame.playerX!);
+): Player => playerFromModel(corePlayer === "O" ? storeGame.userO! : storeGame.playerX!);
 
 export const resolveWaitingPlayer = (storeGame: GameModel): Player => {
-  if (storeGame.playerO) {
-    return playerFromModel(storeGame.playerO);
+  if (storeGame.userO) {
+    return playerFromModel(storeGame.userO);
   } else if (storeGame.playerX) {
     return playerFromModel(storeGame.playerX);
   } else {

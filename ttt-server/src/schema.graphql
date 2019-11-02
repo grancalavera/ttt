@@ -12,14 +12,14 @@ type Query {
 
 type Mutation {
   login(id: ID): LoginResult!
-  playMove(gameId: ID!, avatar: Avatar!, position: Position!): PlayMoveResult!
   joinGame: JoinGameResult!
+  playMove(input: PlayMoveInput!): PlayMoveResult!
 }
 
 type Subscription {
-  movePlayed(gameId: ID!): MovePlayed!
-  gameChanged(gameId: ID!): GameChanged!
-  gameAdded: GameLobby!
+  gameChanged(gameId: ID!): Game!
+  # I want these two for debugging only
+  gameAdded: Game!
   userCreated: User!
 }
 
@@ -32,22 +32,27 @@ type LoginResult {
   created: Boolean!
 }
 
-type MovePlayed {
+type JoinGameResult {
   gameId: ID!
-  move: Move!
+  token: Token!
 }
 
-union Game = GameLobby | GamePlaying | GameOverWin | GameOverTie
-union JoinGameResult = GameLobby | GamePlaying
-union GameChanged = GamePlaying | GameOverWin | GameOverTie
+input PlayMoveInput {
+  gameId: ID!
+  token: Token!
+  position: Position!
+}
 
 union PlayMoveResult =
-    GamePlaying
-  | GameOverWin
-  | GameOverTie
+    MoveResult
   | ErrorGameOver
   | ErrorWrongMove
   | ErrorWrongTurn
+  | ErrorInvalidMove
+
+type MoveResult {
+  id: ID!
+}
 
 type ErrorGameOver {
   message: String!
@@ -69,43 +74,29 @@ type ErrorWrongTurn {
   message: String!
 }
 
-type GameLobby {
-  id: ID!
-  waiting: Player!
-}
+union Game = GamePlaying | GameOverWin | GameOverTie
 
 type GamePlaying {
   id: ID!
-  xPlayer: Player!
-  oPlayer: Player!
   moves: [Move!]!
-  currentPlayer: Player!
+  next: Token!
 }
 
 type GameOverWin {
   id: ID!
-  xPlayer: Player!
-  oPlayer: Player!
   moves: [Move!]!
-  winner: Player!
+  winner: Token!
   winningMove: Win!
 }
 
 type GameOverTie {
   id: ID!
-  xPlayer: Player!
-  oPlayer: Player!
   moves: [Move!]!
-}
-
-type Player {
-  user: User!
-  avatar: Avatar!
 }
 
 type Move {
   position: Position!
-  avatar: Avatar!
+  token: Token!
 }
 
 # this can be inferred from the parent
@@ -120,7 +111,7 @@ type Win {
 """
 The Os and Xs in tic-tac-toe
 """
-enum Avatar {
+enum Token {
   O
   X
 }

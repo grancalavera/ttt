@@ -25,6 +25,7 @@ const makeSecureResolver = <T>(userStatus: UserStatus) => (
     throw new AuthenticationError("Unauthorized");
   }
 };
+
 /**
  *
  * @param auth a pseudo authorization header that carries the base64
