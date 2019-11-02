@@ -1,7 +1,7 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
 import { TTTContext } from "../environment";
-import { Avatar } from "../generated/models";
-import { GameModel, PlayerModel, UserModel } from "../store";
+import { GameModel, UserModel } from "../store";
+import { Token } from "../generated/models";
 
 export class GameStore extends DataSource<TTTContext> {
   private context!: TTTContext;
@@ -10,68 +10,37 @@ export class GameStore extends DataSource<TTTContext> {
     this.context = context;
   }
 
-  private async createPlayer(userId: string, avatar: Avatar): Promise<PlayerModel> {
-    const user = await UserModel.findByPk(userId);
-    const player = await PlayerModel.create({ avatar: avatar.valueOf() });
-    await player.setUser(user!);
-    return player;
-  }
-
   async getAllGames(): Promise<GameModel[]> {
-    const g = await GameModel.findAll({ include: includePlayers });
+    const g = await GameModel.findAll({ include: includeUsers });
     return g;
   }
 
   async findGameById(gameId: string): Promise<GameModel> {
     const game = await GameModel.findByPk(gameId);
     if (game) {
-      return await reloadPlayers(game);
+      return await reloadUsers(game);
     } else {
-      throw new Error(`unknown game ${gameId}`);
+      throw new Error(`game ${gameId} not found`);
     }
   }
 
-  async firstGameInLobby(userId: string): Promise<GameModel | null> {
-    const game = await GameModel.findOne({
-      where: {
-        isInLobby: true
-      },
-      include: includePlayers
-    });
-
-    if (game && game.playerO && game.playerO.user!.id === userId) {
-      return null;
-    }
-
-    if (game && game.playerX && game.playerX.user!.id === userId) {
-      return null;
-    }
-
-    return game;
+  async findFirstPartialGame(): Promise<GameModel | null> {
+    throw new Error("findFirstPartialGame not implemented");
   }
 
-  async createGame(id: string, userId: string, avatar: Avatar): Promise<GameModel> {
-    const player = await this.createPlayer(userId, avatar);
+  async createGame(id: string, userId: string): Promise<GameModel> {
     const game = await GameModel.create({ id });
-    if (avatar == Avatar.O) {
-      await game.setPlayerO(player);
-    } else {
-      await game.setPlayerX(player);
-    }
-    await reloadPlayers(game);
-    return game;
+    return this.joinGame(game, userId, Token.O);
   }
 
-  async joinGame(game: GameModel, userId: string): Promise<GameModel> {
-    if (game.playerO) {
-      const player = await this.createPlayer(userId, Avatar.X);
-      await game.setPlayerX(player);
+  async joinGame(game: GameModel, userId: string, withToken: Token): Promise<GameModel> {
+    const user = await UserModel.findByPk(userId);
+    if (withToken === Token.O) {
+      await game.setUserO(user!);
     } else {
-      const player = await this.createPlayer(userId, Avatar.O);
-      await game.setPlayerO(player);
+      await game.setUserX(user!);
     }
-    await game.update({ isInLobby: false });
-    await reloadPlayers(game);
+    await reloadUsers(game);
     return game;
   }
 
@@ -88,17 +57,17 @@ export class GameStore extends DataSource<TTTContext> {
   }
 }
 
-const reloadPlayers = async (game: GameModel): Promise<GameModel> =>
+const reloadUsers = async (game: GameModel): Promise<GameModel> =>
   await game.reload({
-    include: includePlayers
+    include: includeUsers
   });
 
-const includePlayer = (as: "playerO" | "playerX") => {
+const includeUser = (as: "userO" | "userX") => {
   return {
-    model: PlayerModel,
+    model: UserModel,
     as,
     include: [{ model: UserModel, as: "user" }]
   };
 };
 
-const includePlayers = [includePlayer("playerO"), includePlayer("playerX")];
+const includeUsers = [includeUser("userO"), includeUser("userX")];

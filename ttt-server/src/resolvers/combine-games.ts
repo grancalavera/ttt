@@ -70,6 +70,6 @@ export const gameOverWin = (
 const commonGame = (coreGame: GameResponse, storeGame: GameModel) => ({
   id: storeGame.id,
   moves: coreGame.moves.map(coreMoveToMove),
-  oPlayer: playerFromModel(storeGame.playerO),
+  oPlayer: playerFromModel(storeGame.userO),
   xPlayer: playerFromModel(storeGame.playerX)
 });

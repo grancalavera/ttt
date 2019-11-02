@@ -1,15 +1,11 @@
 import {
-  Sequelize,
-  Model,
-  INTEGER,
-  STRING,
-  ENUM,
-  BelongsToGetAssociationMixin,
   Association,
+  BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
-  BOOLEAN
+  Model,
+  Sequelize,
+  STRING
 } from "sequelize";
-import { Avatar, Position } from "./generated/models";
 
 export class UserModel extends Model {
   public readonly id!: string;
@@ -17,43 +13,24 @@ export class UserModel extends Model {
   public readonly updatedAt!: Date;
 }
 
-export class PlayerModel extends Model {
-  public id!: number;
-  public avatar!: Avatar;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-
-  public getUser!: BelongsToGetAssociationMixin<UserModel>;
-  public setUser!: BelongsToSetAssociationMixin<UserModel, UserModel["id"]>;
-  public user?: UserModel;
-
-  public static associations: {
-    user: Association<PlayerModel, UserModel>;
-  };
-}
-
 export class GameModel extends Model {
   public id!: string;
-  public isInLobby!: boolean;
 
-  public firstMoveAvatar!: Avatar;
-  public firstMovePosition!: Position;
+  public getUserO!: BelongsToGetAssociationMixin<UserModel>;
+  public setUserO!: BelongsToSetAssociationMixin<UserModel, UserModel["id"]>;
+  public userO?: UserModel;
+
+  public getUserX!: BelongsToGetAssociationMixin<UserModel>;
+  public setUserX!: BelongsToSetAssociationMixin<UserModel, UserModel["id"]>;
+  public userX?: UserModel;
+
+  public static associations: {
+    userO: Association<GameModel, UserModel>;
+    userX: Association<GameModel, UserModel>;
+  };
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-
-  public getPlayerO!: BelongsToGetAssociationMixin<PlayerModel>;
-  public setPlayerO!: BelongsToSetAssociationMixin<PlayerModel, PlayerModel["id"]>;
-  public playerO?: PlayerModel;
-
-  public getPlayerX!: BelongsToGetAssociationMixin<PlayerModel>;
-  public setPlayerX!: BelongsToSetAssociationMixin<PlayerModel, PlayerModel["id"]>;
-  public playerX?: PlayerModel;
-
-  public static associations: {
-    playerO: Association<GameModel, PlayerModel>;
-    playerX: Association<GameModel, PlayerModel>;
-  };
 }
 
 export const create = ({ storage }: { storage: string }) => {
@@ -70,25 +47,15 @@ export const create = ({ storage }: { storage: string }) => {
     { sequelize, tableName: "ttt-users" }
   );
 
-  PlayerModel.init(
-    {
-      id: { type: INTEGER, autoIncrement: true, primaryKey: true },
-      avatar: { type: ENUM("O", "X"), allowNull: false }
-    },
-    { sequelize, tableName: "ttt-players" }
-  );
-
   GameModel.init(
     {
-      id: { type: STRING, primaryKey: true },
-      isInLobby: { type: BOOLEAN, defaultValue: true }
+      id: { type: STRING, primaryKey: true }
     },
     { sequelize, tableName: "ttt-games" }
   );
 
-  PlayerModel.belongsTo(UserModel, { as: "user", foreignKey: "user_id" });
-  GameModel.belongsTo(PlayerModel, { as: "playerO", foreignKey: "playerO_id" });
-  GameModel.belongsTo(PlayerModel, { as: "playerX", foreignKey: "playerX_id" });
+  GameModel.belongsTo(UserModel, { as: "userO", foreignKey: "userO_id" });
+  GameModel.belongsTo(UserModel, { as: "userX", foreignKey: "userX_id" });
 
   return sequelize;
 };
