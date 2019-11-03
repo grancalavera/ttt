@@ -5,8 +5,6 @@ describe("StateKindMap", () => {
   it("should enumerate all state kinds", () => {
     Object.values(GameTypename).forEach(kind => {
       switch (kind) {
-        case GameTypename.GameLobby:
-          break;
         case GameTypename.GameOverTie:
           break;
         case GameTypename.GameOverWin:

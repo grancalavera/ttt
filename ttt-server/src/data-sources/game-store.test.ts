@@ -1,9 +1,7 @@
-import { UserModel, GameModel } from "../store";
-import { create as createStore } from "../store";
-import { GameStore } from "./game-store";
-import { TTTContext } from "../environment";
 import { DataSourceConfig } from "apollo-datasource";
-import { Avatar } from "../generated/models";
+import { TTTContext } from "../environment";
+import { create as createStore, GameModel, UserModel } from "../store";
+import { GameStore } from "./game-store";
 
 describe("Creating games for Alice and Bob", () => {
   const gameStore = new GameStore();
@@ -31,8 +29,8 @@ describe("Creating games for Alice and Bob", () => {
     const game2_Id = "game-2";
 
     beforeAll(async () => {
-      game1 = await gameStore.createGame(game1_Id, alice.id, Avatar.O);
-      game2 = await gameStore.createGame(game2_Id, alice.id, Avatar.O);
+      game1 = await gameStore.createGame(game1_Id, alice.id);
+      game2 = await gameStore.createGame(game2_Id, alice.id);
     });
 
     it.todo("Alice should be playerO in game-1");
