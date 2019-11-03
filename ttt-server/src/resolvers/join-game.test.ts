@@ -35,14 +35,7 @@ describe("given there are no games on the system", () => {
       result = await joinGame(alice, context);
     });
 
-    it("then alice should able to play a move", () => {
-      if (result.__typename === "GamePlaying") {
-        playMove(result.id, "O", 0, context);
-      } else {
-        throw new Error(`unexpected play move result ${result.__typename}`);
-      }
-    });
-
+    it.todo("then alice should able to play a move");
     it.todo("and the next player should be bob");
   });
 

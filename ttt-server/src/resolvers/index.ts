@@ -11,7 +11,6 @@ import { playMove } from "./play-move";
 import {
   subscribeToGameAdded,
   subscribeToGameChanged,
-  subscribeToMovePlayed,
   subscribeToUserCreated
 } from "./subscriptions";
 import { getAllUsers, getMe, login } from "./user";
@@ -23,21 +22,22 @@ const Query: QueryResolvers = {
 };
 
 const Mutation: MutationResolvers = {
-  login: async (_, { id }, context) => login(context, id),
+  login: async (_, { id }, context) => {
+    return login(context, id);
+  },
   joinGame: (_, __, context) => {
     const { resolveWithSecurity } = context;
     return resolveWithSecurity(user => joinGame(user, context));
   },
-  playMove: (_, { gameId, avatar, position }, context) => {
+  playMove: (_, { gameId, token, position }, context) => {
     const { resolveWithSecurity } = context;
-    return resolveWithSecurity(() => playMove(gameId, avatar, position, context));
+    return resolveWithSecurity(() => playMove(gameId, token, position, context));
   }
 };
 
 const Subscription: SubscriptionResolvers = {
   gameAdded: subscribeToGameAdded,
   gameChanged: subscribeToGameChanged,
-  movePlayed: subscribeToMovePlayed,
   userCreated: subscribeToUserCreated
 };
 

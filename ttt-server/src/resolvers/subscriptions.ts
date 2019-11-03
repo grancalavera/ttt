@@ -1,12 +1,11 @@
+import { FilterFn, ResolverFn, withFilter } from "apollo-server";
+import { Game } from "../generated/models";
 import {
   pubsub,
-  PUBSUB_MOVE_PLAYED,
-  PUBSUB_GAME_CHANGED,
   PUBSUB_GAME_ADDED,
+  PUBSUB_GAME_CHANGED,
   PUBSUB_USER_CREATED
 } from "../pubsub";
-import { MovePlayed, Game } from "../generated/models";
-import { ResolverFn, FilterFn, withFilter } from "apollo-server";
 
 const resolveGameAddedSubscription: ResolverFn = () => {
   return pubsub.asyncIterator([PUBSUB_GAME_ADDED]);
@@ -27,24 +26,10 @@ const filterGameChangedSubscription: FilterFn = (
   return gameId === gameChanged.id;
 };
 
-const resolveMovePlayedSubscription: ResolverFn = () =>
-  pubsub.asyncIterator([PUBSUB_MOVE_PLAYED]);
-
-const filterMovePlayedSubscription: FilterFn = (
-  { movePlayed }: { movePlayed: MovePlayed },
-  { gameId }
-) => {
-  return gameId === movePlayed.gameId;
-};
-
 export const subscribeToUserCreated = { subscribe: resolveUserCreatedSubscription };
 
 export const subscribeToGameAdded = { subscribe: resolveGameAddedSubscription };
 
 export const subscribeToGameChanged = {
   subscribe: withFilter(resolveGameChangedSubscription, filterGameChangedSubscription)
-};
-
-export const subscribeToMovePlayed = {
-  subscribe: withFilter(resolveMovePlayedSubscription, filterMovePlayedSubscription)
 };

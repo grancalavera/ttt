@@ -24,7 +24,7 @@ const server = new ApolloServer({
 
 store
   .create({ storage: "./store.sqlite" })
-  .sync()
+  .sync({ force: true })
   .then(() => server.listen())
   .then(({ url, subscriptionsUrl }) => {
     console.log(`🚀  Server ready at ${url}`);

@@ -1,9 +1,9 @@
 import { TTTContext } from "../environment";
-import { Avatar, PlayMoveResult, Position } from "../generated/models";
+import { PlayMoveResult, Position, Token } from "../generated/models";
 
 export const playMove = async (
   gameId: string,
-  avatar: Avatar,
+  token: Token,
   position: Position,
   context: TTTContext
 ): Promise<PlayMoveResult> => {

@@ -5,24 +5,19 @@ import {
   CoreGame,
   CoreGamePlaying,
   CoreMove,
-  CorePlayer,
   CorePosition,
   CoreWin,
   CORE_GAME_PLAYING,
   findWin
 } from "@grancalavera/ttt-core";
-import { Avatar, Move, Player, Position, Win } from "./generated/models";
-import { playerFromModel } from "./model";
-import { GameModel } from "./store";
+import { Move, Position, Win } from "./generated/models";
 
 export const handleSimpleError = (error?: any) => {
   throw new Error(error);
 };
 
-export const chooseAvatar = (): Avatar => (Math.random() < 0.5 ? Avatar.X : Avatar.O);
-
 export const coreMoveFromMove = (move: Move): CoreMove => {
-  const player = coerceToPlayer(move.avatar);
+  const player = coerceToPlayer(move.token);
   const position = corePositionFromPosition(move.position);
   return [player, position];
 };
@@ -75,26 +70,6 @@ export const positionFromCorePosition = (position: CorePosition): Position =>
     Position.H,
     Position.I
   ][position];
-
-export const coreMoveToMove = ([player, position]: CoreMove): Move => ({
-  position: positionFromCorePosition(position),
-  avatar: player === "O" ? Avatar.O : Avatar.X
-});
-
-export const corePlayerToPlayer = (
-  corePlayer: CorePlayer,
-  storeGame: GameModel
-): Player => playerFromModel(corePlayer === "O" ? storeGame.userO! : storeGame.playerX!);
-
-export const resolveWaitingPlayer = (storeGame: GameModel): Player => {
-  if (storeGame.userO) {
-    return playerFromModel(storeGame.userO);
-  } else if (storeGame.playerX) {
-    return playerFromModel(storeGame.playerX);
-  } else {
-    throw new Error("Illegal game: a game must have at least one player");
-  }
-};
 
 export const isCoreGamePlaying = (coreGame: CoreGame): coreGame is CoreGamePlaying =>
   coreGame.kind === CORE_GAME_PLAYING;

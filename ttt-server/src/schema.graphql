@@ -13,7 +13,7 @@ type Query {
 type Mutation {
   login(id: ID): LoginResult!
   joinGame: JoinGameResult!
-  playMove(input: PlayMoveInput!): PlayMoveResult!
+  playMove(gameId: ID!, token: Token!, position: Position!): PlayMoveResult!
 }
 
 type Subscription {
@@ -35,12 +35,6 @@ type LoginResult {
 type JoinGameResult {
   gameId: ID!
   token: Token!
-}
-
-input PlayMoveInput {
-  gameId: ID!
-  token: Token!
-  position: Position!
 }
 
 union PlayMoveResult =
