@@ -73,3 +73,5 @@ export const positionFromCorePosition = (position: CorePosition): Position =>
 
 export const isCoreGamePlaying = (coreGame: CoreGame): coreGame is CoreGamePlaying =>
   coreGame.kind === CORE_GAME_PLAYING;
+
+export const REFRESH_TOKEN_COOKIE = "et3";
