@@ -1,4 +1,15 @@
-import { Query, Resolver } from "type-graphql";
+import { Query, Resolver, ObjectType, Field } from "type-graphql";
+import fieldConfig from "graphql-query-complexity/dist/estimators/fieldConfig";
+import { User } from "../entity/user";
+
+@ObjectType()
+class LoginResponse {
+  @Field(() => String)
+  accessToken!: string;
+
+  @Field(() => User)
+  user!: User;
+}
 
 @Resolver()
 export class UserResolver {
