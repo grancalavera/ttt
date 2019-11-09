@@ -1,5 +1,10 @@
 import { MiddlewareFn } from "type-graphql";
-import { TTTContext, decodeToken } from "../context";
+import { TTTContext, decodeToken } from "./context";
+import { User } from "./entity/user";
+import { sign } from "jsonwebtoken";
+import { Response } from "express";
+
+export const REFRESH_TOKEN_COOKIE = "et3";
 
 export const isAuth: MiddlewareFn<TTTContext> = ({ context }, next) => {
   try {
@@ -17,4 +22,24 @@ export const isAuth: MiddlewareFn<TTTContext> = ({ context }, next) => {
     console.error(e);
     throw new Error("not authorized");
   }
+};
+
+export const createAccessToken = (user: User) => {
+  return sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET!, {
+    expiresIn: "15m"
+  });
+};
+
+export const createRefreshToken = (user: User) => {
+  return sign(
+    { userId: user.id, tokenVersion: user.tokenVersion },
+    process.env.REFRESH_TOKEN_SECRET!,
+    {
+      expiresIn: "7d"
+    }
+  );
+};
+
+export const sendRefreshToken = (res: Response, token: string): void => {
+  res.cookie("et3", token, { httpOnly: true, path: "/refresh_token" });
 };

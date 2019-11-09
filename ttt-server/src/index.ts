@@ -1,29 +1,24 @@
 import { ApolloServer } from "apollo-server-express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import "dotenv/config";
 import express from "express";
 import "reflect-metadata";
 import { buildSchema } from "type-graphql";
-import { createConnection } from "typeorm";
-import { REFRESH_TOKEN_COOKIE } from "./common";
+import { REFRESH_TOKEN_COOKIE } from "./auth";
+import { createConnection } from "./context";
 import { UserResolver } from "./resolvers/user";
 
-const port = 4000;
+const port = process.env.PORT || 4000;
 
 (async () => {
-  await createConnection({
-    type: "sqlite",
-    database: "et3.sqlite",
-    entities: ["src/entity/**/*.ts"],
-    synchronize: true,
-    cli: {
-      entitiesDir: "src/entity"
-    }
-  });
+  // pass a flag from env vars to sync on startup (conditionally)
+  await createConnection(true).then(c => c.close());
 
   const app = express();
   app.use(express.json());
-  app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+  // app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+  app.use(cors({ origin: "http://localhost:4000", credentials: true }));
   app.use(cookieParser());
 
   // move the routes somewhere else
@@ -44,7 +39,7 @@ const port = 4000;
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({ resolvers: [UserResolver] }),
-    context: ({ req, res }) => ({ req, res })
+    context: ({ req, res }) => ({ req, res, createConnection })
   });
 
   apolloServer.applyMiddleware({ app, cors: false });
