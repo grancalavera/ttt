@@ -1,18 +1,17 @@
-import "reflect-metadata";
-import express from "express";
 import { ApolloServer } from "apollo-server-express";
-import { buildSchema } from "type-graphql";
-import { UserResolver } from "./resolvers/user";
-import cors from "cors";
 import cookieParser from "cookie-parser";
-import { REFRESH_TOKEN_COOKIE } from "./common";
+import cors from "cors";
+import express from "express";
+import "reflect-metadata";
+import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
-import { User } from "./entity/user";
+import { REFRESH_TOKEN_COOKIE } from "./common";
+import { UserResolver } from "./resolvers/user";
 
 const port = 4000;
 
 (async () => {
-  const connection = await createConnection({
+  await createConnection({
     type: "sqlite",
     database: "et3.sqlite",
     entities: ["src/entity/**/*.ts"],
@@ -21,12 +20,6 @@ const port = 4000;
       entitiesDir: "src/entity"
     }
   });
-
-  const user = new User();
-  await connection.manager.save(user);
-
-  const users = await connection.manager.find(User);
-  console.log(users);
 
   const app = express();
   app.use(express.json());
