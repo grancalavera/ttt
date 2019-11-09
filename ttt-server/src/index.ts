@@ -6,10 +6,28 @@ import { UserResolver } from "./resolvers/user";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { REFRESH_TOKEN_COOKIE } from "./common";
+import { createConnection } from "typeorm";
+import { User } from "./entity/user";
 
 const port = 4000;
 
 (async () => {
+  const connection = await createConnection({
+    type: "sqlite",
+    database: "et3.sqlite",
+    entities: ["src/entity/**/*.ts"],
+    synchronize: true,
+    cli: {
+      entitiesDir: "src/entity"
+    }
+  });
+
+  const user = new User();
+  await connection.manager.save(user);
+
+  const users = await connection.manager.find(User);
+  console.log(users);
+
   const app = express();
   app.use(express.json());
   app.use(cors({ origin: "http://localhost:3000", credentials: true }));
