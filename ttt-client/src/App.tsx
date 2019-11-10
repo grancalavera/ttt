@@ -10,12 +10,12 @@ export const App: React.FC = () => {
     }
   `;
 
-  const { data, loading } = useQuery(PING);
+  const { data, loading } = useQuery(PING, { fetchPolicy: "network-only" });
 
   return (
     <>
-      {loading ? <p>loading...</p> : <pre>{JSON.stringify(data, null, 2)}</pre>}
       <Button intent="danger" text="install all the viruses" />
+      {loading ? <p>loading...</p> : <pre>{JSON.stringify(data, null, 2)}</pre>}
     </>
   );
 };

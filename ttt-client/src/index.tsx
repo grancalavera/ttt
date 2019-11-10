@@ -1,12 +1,16 @@
-import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloProvider,
+  from as linkFrom,
+  InMemoryCache
+} from "@apollo/client";
 import React from "react";
 import ReactDOM from "react-dom";
 import { App } from "./App";
+import { authLinkMiddleware, httpLinkMiddleware, pauseMiddleware } from "./middleware";
 
 const client = new ApolloClient({
-  link: new HttpLink({
-    uri: "http://localhost:4000/graphql"
-  }),
+  link: linkFrom([authLinkMiddleware, pauseMiddleware, httpLinkMiddleware]),
   cache: new InMemoryCache()
 });
 

@@ -31,7 +31,6 @@ class RegisterResponse {
 export class UserResolver {
   @Query(() => String)
   ping() {
-    console.log("UserResolver.ping()");
     return "pong";
   }
 
