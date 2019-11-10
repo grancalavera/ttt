@@ -17,8 +17,7 @@ const port = process.env.PORT || 4000;
 
   const app = express();
   app.use(express.json());
-  // app.use(cors({ origin: "http://localhost:3000", credentials: true }));
-  app.use(cors({ origin: "http://localhost:4000", credentials: true }));
+  app.use(cors({ origin: "http://localhost:3000", credentials: true }));
   app.use(cookieParser());
 
   // move the routes somewhere else
