@@ -1,7 +1,0 @@
-mutation Register {
-  user {
-    id
-    tokenVersion
-  }
-  accessToken
-}
