@@ -8,9 +8,11 @@ import {
   UseMiddleware
 } from "type-graphql";
 import { isAuth, createAccessToken, createRefreshToken, sendRefreshToken } from "../auth";
-import { TTTContext } from "../context";
+import { TTTContext, CreateConnection } from "../context";
 import { User } from "../entity/user";
 import { Response } from "express";
+import { Connection } from "typeorm";
+import { withConnection } from "../common";
 
 // there's no login in et3, just auto anonymous registration
 // if your refresh token expires your user becomes unreachable
@@ -45,18 +47,20 @@ export class UserResolver {
   async register(@Ctx() { res, createConnection }: TTTContext): Promise<
     RegisterResponse
   > {
-    try {
-      const user = new User();
-      const connection = await createConnection();
-      await connection.manager.save(user);
-      await user.reload();
-      await connection.close();
-      sendRefreshToken(res, createRefreshToken(user));
-      return { user, accessToken: createAccessToken(user) };
-    } catch (e) {
-      console.error("failed to register anonymous user");
-      console.error(e);
-      throw new Error("unknown error");
-    }
+    const { user, accessToken } = await register(res, createConnection);
+    return { user, accessToken };
   }
 }
+
+export const register = async (res: Response, createConnection: CreateConnection) => {
+  return withConnection(createConnection, async connection => {
+    const user = new User();
+    await connection.manager.save(user);
+    await user.reload();
+    sendRefreshToken(res, createRefreshToken(user));
+    return {
+      user,
+      accessToken: createAccessToken(user)
+    };
+  });
+};

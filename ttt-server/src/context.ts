@@ -2,11 +2,13 @@ import { Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 import { createConnection as internal_createConnection, Connection } from "typeorm";
 
+export type CreateConnection = (synchronize?: boolean) => Promise<Connection>;
+
 export interface TTTContext {
   req: Request;
   res: Response;
   payload?: AccessTokenPayload;
-  createConnection: (synchronize?: boolean) => Promise<Connection>;
+  createConnection: CreateConnection;
 }
 
 export interface AccessTokenPayload {

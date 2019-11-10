@@ -3,11 +3,20 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import "dotenv/config";
 import express from "express";
+import { verify } from "jsonwebtoken";
 import "reflect-metadata";
 import { buildSchema } from "type-graphql";
-import { REFRESH_TOKEN_COOKIE } from "./auth";
-import { createConnection } from "./context";
-import { UserResolver } from "./resolvers/user";
+import {
+  REFRESH_TOKEN_COOKIE,
+  sendRefreshToken,
+  createRefreshToken,
+  createAccessToken
+} from "./auth";
+import { createConnection, CreateConnection } from "./context";
+import { User } from "./entity/user";
+import { register, UserResolver } from "./resolvers/user";
+import { Connection } from "typeorm";
+import { withConnection } from "./common";
 
 const port = process.env.PORT || 4000;
 
@@ -30,9 +39,33 @@ const port = process.env.PORT || 4000;
   app.post("/refresh_token", async (req, res) => {
     const token = req.cookies[REFRESH_TOKEN_COOKIE];
 
-    if (!token) {
-      res.statusCode = 401;
-      return res.send({});
+    try {
+      if (!token) {
+        throw new Error("missing refresh token");
+      }
+
+      const payload: any = verify(token, process.env.REFRESH_TOKEN_SECRET!);
+
+      const user = await withConnection(createConnection, () =>
+        User.findOne({ id: payload.userId })
+      );
+
+      if (!user) {
+        throw new Error(`user ${payload.userId} does not exist`);
+      }
+
+      if (user.tokenVersion !== payload.tokenVersion) {
+        throw new Error("token version mismatch");
+      }
+
+      console.log("sending refreshed tokens...");
+      sendRefreshToken(res, createRefreshToken(user));
+      res.send({ accessToken: createAccessToken(user) });
+    } catch (e) {
+      console.error("failed to refresh token, registering new user");
+      console.error(e.message || e);
+      const { accessToken } = await register(res, createConnection);
+      return res.send({ accessToken });
     }
   });
 
