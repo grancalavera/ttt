@@ -13,27 +13,27 @@ import {
   subscribeToGameChanged,
   subscribeToUserCreated
 } from "./subscriptions";
-import { getAllUsers, getMe, login } from "./user";
+// import { getAllUsers, getMe, login } from "./user";
 
-const Query: QueryResolvers = {
-  me: (_, __, context) => getMe(context),
-  games: (_, __, context) => getAllGames(context).catch(handleSimpleError),
-  users: (_, __, context) => getAllUsers(context).catch(handleSimpleError)
-};
+// const Query: QueryResolvers = {
+//   me: (_, __, context) => getMe(context),
+//   games: (_, __, context) => getAllGames(context).catch(handleSimpleError),
+//   users: (_, __, context) => getAllUsers(context).catch(handleSimpleError)
+// };
 
-const Mutation: MutationResolvers = {
-  login: async (_, { id }, context) => {
-    return login(context, id);
-  },
-  joinGame: (_, __, context) => {
-    const { resolveWithSecurity } = context;
-    return resolveWithSecurity(user => joinGame(user, context));
-  },
-  playMove: (_, { gameId, token, position }, context) => {
-    const { resolveWithSecurity } = context;
-    return resolveWithSecurity(() => playMove(gameId, token, position, context));
-  }
-};
+// const Mutation: MutationResolvers = {
+//   login: async (_, { id }, context) => {
+//     return login(context, id);
+//   },
+//   joinGame: (_, __, context) => {
+//     const { resolveWithSecurity } = context;
+//     return resolveWithSecurity(user => joinGame(user, context));
+//   },
+//   playMove: (_, { gameId, token, position }, context) => {
+//     const { resolveWithSecurity } = context;
+//     return resolveWithSecurity(() => playMove(gameId, token, position, context));
+//   }
+// };
 
 const Subscription: SubscriptionResolvers = {
   gameAdded: subscribeToGameAdded,
@@ -41,5 +41,5 @@ const Subscription: SubscriptionResolvers = {
   userCreated: subscribeToUserCreated
 };
 
-const resolvers: Resolvers = { Query, Mutation, Subscription };
-export { resolvers };
+// const resolvers: Resolvers = { Query, Mutation, Subscription };
+// export { resolvers };

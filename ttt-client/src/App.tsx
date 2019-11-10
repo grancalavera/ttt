@@ -1,21 +1,34 @@
-import { Button } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
-import React from "react";
-import { gql, useQuery } from "@apollo/client";
+import React, { useEffect } from "react";
+import { setAccessToken } from "./access-token";
+import { Routes } from "./routes";
+import { useState } from "react";
 
 export const App: React.FC = () => {
-  const PING = gql`
-    query Ping {
-      ping
-    }
-  `;
+  const [loading, setLoading] = useState(true);
 
-  const { data, loading } = useQuery(PING, { fetchPolicy: "network-only" });
+  useEffect(() => {
+    (async () => {
+      const response = await fetch("http://localhost:4000/refresh_token", {
+        method: "POST",
+        credentials: "include"
+      });
+      const { accessToken } = await response.json();
+      setAccessToken(accessToken);
+      if (response.status !== 200) {
+        console.error("failed to refresh token!");
+      }
+      setLoading(false);
+    })();
+  }, []);
 
-  return (
-    <>
-      <Button intent="danger" text="install all the viruses" />
-      {loading ? <p>loading...</p> : <pre>{JSON.stringify(data, null, 2)}</pre>}
-    </>
-  );
+  return loading ? <>Loading...</> : <Routes />;
 };
+
+// const PING = gql`
+//   query Ping {
+//     ping
+//   }
+// `;
+
+// const { data, loading } = useQuery(PING, { fetchPolicy: "network-only" });

@@ -3,18 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "3.0.0-beta.6",
     "@blueprintjs/core": "3.19.1",
     "@types/jest": "24.0.22",
     "@types/node": "12.12.7",
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.4",
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0",
-    "react-scripts": "3.2.0",
-    "typescript": "3.7.2",
+    "@types/react-router-dom": "5.1.2",
     "graphql": "14.5.8",
     "jwt-decode": "2.2.0",
-    "@apollo/client": "3.0.0-beta.6"
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
+    "react-router-dom": "5.1.2",
+    "react-scripts": "3.2.0",
+    "typescript": "3.7.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "1.8.3",
