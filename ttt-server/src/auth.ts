@@ -1,7 +1,7 @@
 import { MiddlewareFn } from "type-graphql";
-import { TTTContext, decodeToken } from "./context";
+import { TTTContext } from "./context";
 import { User } from "./entity/user";
-import { sign } from "jsonwebtoken";
+import { sign, verify } from "jsonwebtoken";
 import { Response } from "express";
 
 export const REFRESH_TOKEN_COOKIE = "et3";
@@ -10,7 +10,8 @@ export const isAuth: MiddlewareFn<TTTContext> = ({ context }, next) => {
   try {
     const authorization = context.req.headers["authorization"]!;
     const token = authorization.split(" ")[1];
-    context.payload = decodeToken(token);
+    const payload = decodeToken(token);
+    context.payload = payload;
     return next();
   } catch (e) {
     console.error("`isAuth: either:");
@@ -19,7 +20,8 @@ export const isAuth: MiddlewareFn<TTTContext> = ({ context }, next) => {
     console.error("`isAuth: 3. the token verification failed, or");
     console.error("`isAuth: 4. the token payload is invalid.");
     console.error(JSON.stringify(context.req.headers, null, 2));
-    console.error(e);
+    console.error(e.message);
+    console.log(e.stack);
     throw new Error("not authorized");
   }
 };
@@ -42,4 +44,10 @@ export const createRefreshToken = (user: User) => {
 
 export const sendRefreshToken = (res: Response, token: string): void => {
   res.cookie("et3", token, { httpOnly: true, path: "/refresh_token" });
+};
+
+const decodeToken = (token: string) => {
+  const secret = process.env.ACCESS_TOKEN_SECRET!;
+  const payload = verify(token, secret);
+  return payload;
 };

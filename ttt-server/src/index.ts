@@ -35,12 +35,7 @@ const port = process.env.PORT || 4000;
   app.use(cors({ origin: "http://localhost:3000", credentials: true }));
   app.use(cookieParser());
 
-  // move the routes somewhere else
-  app.get("/", (_, res) => {
-    res.send(`
-<a href="/graphql">click here to install all the viruses</a>
-    `);
-  });
+  app.get("/", (_, res) => res.redirect("/graphql"));
 
   app.post("/refresh_token", async (req, res) => {
     const token = req.cookies[REFRESH_TOKEN_COOKIE];
