@@ -4,6 +4,7 @@
     "codegen",
     "inmemory",
     "pubsub",
+    "typeorm",
     "whoami"
   ]
 }

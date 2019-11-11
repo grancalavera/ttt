@@ -8,7 +8,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "experimentalDecorators": true
   },
   "include": ["src"],

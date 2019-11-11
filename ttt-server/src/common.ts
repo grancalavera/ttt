@@ -11,8 +11,6 @@ import {
   findWin
 } from "@grancalavera/ttt-core";
 import { Move, Position, Win } from "./generated/models";
-import { CreateConnection } from "./context";
-import { Connection } from "typeorm";
 
 export const handleSimpleError = (error?: any) => {
   throw new Error(error);
@@ -75,19 +73,3 @@ export const positionFromCorePosition = (position: CorePosition): Position =>
 
 export const isCoreGamePlaying = (coreGame: CoreGame): coreGame is CoreGamePlaying =>
   coreGame.kind === CORE_GAME_PLAYING;
-
-export const withConnection = async <T = void>(
-  createConnection: CreateConnection,
-  run: (connection: Connection) => Promise<T>
-) => {
-  const connection = await createConnection();
-  try {
-    return run(connection);
-  } catch (e) {
-    console.error("operation with connection failed");
-    console.error(e.message || e);
-    throw new Error("unknown error");
-  } finally {
-    connection.close();
-  }
-};

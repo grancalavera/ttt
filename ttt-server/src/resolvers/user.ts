@@ -1,3 +1,4 @@
+import { Response } from "express";
 import {
   Ctx,
   Field,
@@ -7,12 +8,10 @@ import {
   Resolver,
   UseMiddleware
 } from "type-graphql";
-import { isAuth, createAccessToken, createRefreshToken, sendRefreshToken } from "../auth";
-import { TTTContext, CreateConnection } from "../context";
+import { getConnection } from "typeorm";
+import { createAccessToken, createRefreshToken, isAuth, sendRefreshToken } from "../auth";
+import { TTTContext } from "../context";
 import { User } from "../entity/user";
-import { Response } from "express";
-import { Connection } from "typeorm";
-import { withConnection } from "../common";
 
 // there's no login in et3, just auto anonymous registration
 // if your refresh token expires your user becomes unreachable
@@ -36,6 +35,11 @@ export class UserResolver {
     return "pong";
   }
 
+  @Query(() => [User])
+  users() {
+    return User.find();
+  }
+
   @Query(() => String)
   @UseMiddleware(isAuth)
   whoami(@Ctx() { payload }: TTTContext) {
@@ -44,23 +48,19 @@ export class UserResolver {
   }
 
   @Mutation(() => RegisterResponse)
-  async register(@Ctx() { res, createConnection }: TTTContext): Promise<
-    RegisterResponse
-  > {
-    const { user, accessToken } = await register(res, createConnection);
+  async register(@Ctx() { res }: TTTContext): Promise<RegisterResponse> {
+    const { user, accessToken } = await registerUser(res);
     return { user, accessToken };
   }
 }
 
-export const register = async (res: Response, createConnection: CreateConnection) => {
-  return withConnection(createConnection, async connection => {
-    const user = new User();
-    await connection.manager.save(user);
-    await user.reload();
-    sendRefreshToken(res, createRefreshToken(user));
-    return {
-      user,
-      accessToken: createAccessToken(user)
-    };
-  });
+export const registerUser = async (res: Response) => {
+  const user = new User();
+  await user.save();
+  await user.reload();
+  sendRefreshToken(res, createRefreshToken(user));
+  return {
+    user,
+    accessToken: createAccessToken(user)
+  };
 };
