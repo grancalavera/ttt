@@ -7,10 +7,14 @@ import {
 import React from "react";
 import ReactDOM from "react-dom";
 import { App } from "./App";
-import { authLinkMiddleware, httpLinkMiddleware, pauseMiddleware } from "./middleware";
+import {
+  authLinkMiddleware,
+  httpLinkMiddleware,
+  refreshJWTMiddleware
+} from "./middleware";
 
 const client = new ApolloClient({
-  link: linkFrom([authLinkMiddleware, pauseMiddleware, httpLinkMiddleware]),
+  link: linkFrom([refreshJWTMiddleware, authLinkMiddleware, httpLinkMiddleware]),
   cache: new InMemoryCache()
 });
 

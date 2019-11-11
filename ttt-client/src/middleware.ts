@@ -1,5 +1,8 @@
-import { ApolloLink, HttpLink, Observable, FetchResult } from "@apollo/client";
-import { getAccessToken } from "./access-token";
+import { ApolloLink, FetchResult, HttpLink, Observable } from "@apollo/client";
+import { getAccessToken, setAccessToken } from "./access-token";
+import { decode } from "jsonwebtoken";
+
+export const noopMiddleware = new ApolloLink((o, f) => f(o));
 
 export const authLinkMiddleware = new ApolloLink((operation, forward) => {
   const accessToken = getAccessToken();
@@ -30,10 +33,32 @@ export const pauseMiddleware = new ApolloLink(
     })
 );
 
+export const refreshJWTMiddleware = new ApolloLink((operation, forward) => {
+  const payload: any = decode(getAccessToken());
+  const isExpired = 1000 * payload.exp < Date.now();
+
+  if (isExpired) {
+    return new Observable<FetchResult>(observer => {
+      fetch("http://localhost:4000/refresh_token", {
+        method: "POST",
+        credentials: "include"
+      }).then(async response => {
+        const { accessToken } = await response.json();
+        setAccessToken(accessToken);
+        forward(operation).subscribe({
+          next: observer.next.bind(observer),
+          complete: observer.complete.bind(observer),
+          error: observer.error.bind(observer)
+        });
+      });
+    });
+  } else {
+    return forward(operation);
+  }
+});
+
 export const httpLinkMiddleware = new HttpLink({
   uri: "http://localhost:4000/graphql",
   // https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials
   credentials: "include"
 });
-
-export const noopMiddleware = new ApolloLink((o, f) => f(o));
