@@ -6,23 +6,29 @@ import express from "express";
 import { verify } from "jsonwebtoken";
 import "reflect-metadata";
 import { buildSchema } from "type-graphql";
+import { createConnection } from "typeorm";
 import {
-  REFRESH_TOKEN_COOKIE,
-  sendRefreshToken,
+  createAccessToken,
   createRefreshToken,
-  createAccessToken
+  REFRESH_TOKEN_COOKIE,
+  sendRefreshToken
 } from "./auth";
-import { createConnection, CreateConnection } from "./context";
 import { User } from "./entity/user";
-import { register, UserResolver } from "./resolvers/user";
-import { Connection } from "typeorm";
-import { withConnection } from "./common";
+import { registerUser, UserResolver } from "./resolvers/user";
 
 const port = process.env.PORT || 4000;
 
 (async () => {
   // pass a flag from env vars to sync on startup (conditionally)
-  await createConnection(true).then(c => c.close());
+  await createConnection({
+    type: "sqlite",
+    database: "et3.sqlite",
+    entities: ["src/entity/**/*.ts"],
+    synchronize: true,
+    cli: {
+      entitiesDir: "src/entity"
+    }
+  });
 
   const app = express();
   app.use(express.json());
@@ -45,10 +51,7 @@ const port = process.env.PORT || 4000;
       }
 
       const payload: any = verify(token, process.env.REFRESH_TOKEN_SECRET!);
-
-      const user = await withConnection(createConnection, () =>
-        User.findOne({ id: payload.userId })
-      );
+      const user = await User.findOne({ id: payload.userId });
 
       if (!user) {
         throw new Error(`user ${payload.userId} does not exist`);
@@ -62,9 +65,11 @@ const port = process.env.PORT || 4000;
       sendRefreshToken(res, createRefreshToken(user));
       res.send({ accessToken: createAccessToken(user) });
     } catch (e) {
-      console.error("failed to refresh token, registering new user");
       console.error(e.message || e);
-      const { accessToken } = await register(res, createConnection);
+      const { accessToken, user } = await registerUser(res);
+      console.error("failed to refresh token, registering new user");
+      console.log(accessToken);
+      console.log(JSON.stringify(user));
       return res.send({ accessToken });
     }
   });

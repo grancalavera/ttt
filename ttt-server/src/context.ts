@@ -1,14 +1,10 @@
 import { Request, Response } from "express";
 import { verify } from "jsonwebtoken";
-import { createConnection as internal_createConnection, Connection } from "typeorm";
-
-export type CreateConnection = (synchronize?: boolean) => Promise<Connection>;
 
 export interface TTTContext {
   req: Request;
   res: Response;
   payload?: AccessTokenPayload;
-  createConnection: CreateConnection;
 }
 
 export interface AccessTokenPayload {
@@ -25,16 +21,4 @@ export const decodeToken = (token: string): AccessTokenPayload => {
   } else {
     throw new Error("invalid JWT payload");
   }
-};
-
-export const createConnection = async (synchronize: boolean = false) => {
-  return internal_createConnection({
-    type: "sqlite",
-    database: "et3.sqlite",
-    entities: ["src/entity/**/*.ts"],
-    synchronize,
-    cli: {
-      entitiesDir: "src/entity"
-    }
-  });
 };

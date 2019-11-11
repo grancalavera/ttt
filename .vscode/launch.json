@@ -15,10 +15,11 @@
       "type": "node",
       "request": "launch",
       "name": "server",
-      "program": "${workspaceFolder}/ttt-server/src/index.ts",
+      "args": ["${workspaceFolder}/ttt-server/src/index.ts"],
       "cwd": "${workspaceFolder}/ttt-server",
-      "preLaunchTask": "build-server",
-      "outFiles": ["${workspaceFolder}/ttt-server/dist/**/*.js"]
+      "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+      "protocol": "inspector",
+      "sourceMaps": true
     },
     {
       "type": "node",
