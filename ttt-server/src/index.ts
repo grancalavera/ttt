@@ -22,7 +22,7 @@ const port = process.env.PORT || 4000;
   // pass a flag from env vars to sync on startup (conditionally)
   await createConnection({
     type: "sqlite",
-    database: "et3.sqlite",
+    database: "ttt.sqlite",
     entities: ["src/entity/**/*.ts"],
     synchronize: true,
     cli: {

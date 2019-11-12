@@ -1,7 +1,7 @@
 import { Button, Navbar } from "@blueprintjs/core";
 import React from "react";
 import { BrowserRouter, NavLink, Route, Switch } from "react-router-dom";
-import { useQuery, gql } from "@apollo/client";
+import { useWhoamiQuery } from "./generated/graphql";
 
 export const Routes: React.FC = () => (
   <BrowserRouter>
@@ -36,19 +36,12 @@ const Header: React.FC = () => (
 
 const Home: React.FC = () => <>Home</>;
 const Whoami: React.FC = () => {
-  const { data, loading, error } = useQuery(
-    gql`
-      query Whoami {
-        whoami
-      }
-    `,
-    { fetchPolicy: "network-only" }
-  );
+  const { data, loading, error } = useWhoamiQuery({ fetchPolicy: "network-only" });
 
   return (
     <>
       <p>Who Am I?</p>
-      {error ? <>Not Authorized</> : loading ? <>Loading...</> : <>{data.whoami}</>}
+      {error ? <>Not Authorized</> : loading ? <>Loading...</> : <>{data!.whoami}</>}
     </>
   );
 };
