@@ -5,11 +5,6 @@
   "dependencies": {
     "@apollo/client": "3.0.0-beta.6",
     "@blueprintjs/core": "3.19.1",
-    "@types/jest": "24.0.22",
-    "@types/node": "12.12.7",
-    "@types/react": "16.9.11",
-    "@types/react-dom": "16.9.4",
-    "@types/react-router-dom": "5.1.2",
     "graphql": "14.5.8",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
@@ -20,12 +15,16 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "1.8.3",
-    "@graphql-codegen/typescript": "1.8.3",
     "@graphql-codegen/typescript-operations": "1.8.3",
     "@graphql-codegen/typescript-react-apollo": "1.8.3",
+    "@graphql-codegen/typescript": "1.8.3",
     "@types/graphql": "14.5.0",
+    "@types/jest": "24.0.22",
     "@types/jwt-decode": "2.2.1",
-    "@types/react-router-dom": "5.1.2"
+    "@types/node": "12.12.7",
+    "@types/react-dom": "16.9.4",
+    "@types/react-router-dom": "5.1.2",
+    "@types/react": "16.9.11"
   },
   "scripts": {
     "start": "BROWSER=none react-scripts start",
