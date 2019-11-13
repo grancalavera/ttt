@@ -5,6 +5,7 @@
   "dependencies": {
     "@apollo/client": "3.0.0-beta.6",
     "@blueprintjs/core": "3.19.1",
+    "@grancalavera/ttt-core": "^0.0.0",
     "graphql": "14.5.8",
     "jsonwebtoken": "8.5.1",
     "react": "^16.11.0",

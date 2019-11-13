@@ -7,9 +7,7 @@
   "license": "MIT",
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "build": "lerna run build",
-    "generate": "graphql-codegen",
-    "prebuild": "yarn generate",
+    "build": "lerna run build --stream",
     "start:clean": "lerna run start:clean",
     "start": "lerna run start",
     "test": "lerna run test"
