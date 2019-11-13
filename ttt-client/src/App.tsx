@@ -1,8 +1,7 @@
 import "@blueprintjs/core/lib/css/blueprint.css";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { setAccessToken } from "./access-token";
-import { Routes } from "./routes";
-import { useState } from "react";
+import { useWhoamiQuery } from "./generated/graphql";
 
 export const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -22,13 +21,13 @@ export const App: React.FC = () => {
     })();
   }, []);
 
-  return loading ? <>Loading...</> : <Routes />;
+  return loading ? <>Loading...</> : <Whoami />;
 };
 
-// const PING = gql`
-//   query Ping {
-//     ping
-//   }
-// `;
-
-// const { data, loading } = useQuery(PING, { fetchPolicy: "network-only" });
+const Whoami: React.FC = () => {
+  const { data, loading, error } = useWhoamiQuery({ fetchPolicy: "network-only" });
+  if (error) return <>Not Authorized</>;
+  if (loading) return <>Loading...</>;
+  if (data) return <>{data.whoami}</>;
+  throw new Error("undefined query state");
+};
