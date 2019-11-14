@@ -1,33 +1,35 @@
 import "@blueprintjs/core/lib/css/blueprint.css";
-import React, { useEffect, useState } from "react";
-import { setAccessToken } from "./access-token";
-import { useWhoamiQuery } from "./generated/graphql";
+import React from "react";
+import { useWhoamiQuery, usePingQuery } from "./generated/graphql";
+import { useRefreshToken } from "./hooks/useRefreshToken";
 
 export const App: React.FC = () => {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      const response = await fetch("http://localhost:4000/refresh_token", {
-        method: "POST",
-        credentials: "include"
-      });
-      const { accessToken } = await response.json();
-      setAccessToken(accessToken);
-      if (response.status !== 200) {
-        console.error("failed to refresh token!");
-      }
-      setLoading(false);
-    })();
-  }, []);
-
-  return loading ? <>Loading...</> : <Whoami />;
+  const loading = useRefreshToken();
+  return (
+    <div>
+      <Ping />
+      {loading ? <div>Loading...</div> : <Whoami />}
+    </div>
+  );
 };
 
 const Whoami: React.FC = () => {
-  const { data, loading, error } = useWhoamiQuery({ fetchPolicy: "network-only" });
-  if (error) return <>Not Authorized</>;
-  if (loading) return <>Loading...</>;
-  if (data) return <>{data.whoami}</>;
+  const { data, loading, error } = useWhoamiQuery({
+    fetchPolicy: "network-only"
+  });
+  if (error) throw error;
+  if (loading) return <div>Loading...</div>;
+  if (data) return <div>{data.whoami}</div>;
+  throw new Error("undefined query state");
+};
+
+const Ping: React.FC = () => {
+  const { data, loading, error } = usePingQuery({
+    fetchPolicy: "network-only"
+  });
+
+  if (error) throw error;
+  if (loading) return <div>Loading...</div>;
+  if (data) return <div>{data.ping}</div>;
   throw new Error("undefined query state");
 };

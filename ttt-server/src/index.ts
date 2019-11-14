@@ -15,6 +15,7 @@ import {
 } from "./auth";
 import { User } from "./entity/user";
 import { registerUser, UserResolver } from "./resolvers/user";
+import { UtilsResolver } from "./resolvers/utils";
 
 const port = process.env.PORT || 4000;
 
@@ -70,7 +71,7 @@ const port = process.env.PORT || 4000;
   });
 
   const apolloServer = new ApolloServer({
-    schema: await buildSchema({ resolvers: [UserResolver] }),
+    schema: await buildSchema({ resolvers: [UserResolver, UtilsResolver] }),
     context: ({ req, res }) => ({ req, res, createConnection })
   });
 
