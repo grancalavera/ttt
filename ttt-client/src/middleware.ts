@@ -34,7 +34,11 @@ export const pauseMiddleware = new ApolloLink(
 );
 
 export const refreshJWTMiddleware = new ApolloLink((operation, forward) => {
+  // we may not have a token yet, but we want to allow public areas
+  // the application to be accessible
   const payload: any = decode(getAccessToken());
+  if (!payload || !payload.exp) return forward(operation);
+
   const isExpired = 1000 * payload.exp < Date.now();
 
   if (isExpired) {

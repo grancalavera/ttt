@@ -8,12 +8,16 @@ import {
   Resolver,
   UseMiddleware
 } from "type-graphql";
-import { getConnection } from "typeorm";
-import { createAccessToken, createRefreshToken, isAuth, sendRefreshToken } from "../auth";
+import {
+  createAccessToken,
+  createRefreshToken,
+  isAuth,
+  sendRefreshToken
+} from "../auth";
 import { TTTContext } from "../context";
 import { User } from "../entity/user";
 
-// there's no login in et3, just auto anonymous registration
+// there's no login in ttt, just auto anonymous registration
 // if your refresh token expires your user becomes unreachable
 // and a new user is created
 // must somehow handle stale games, a game in which some user has
@@ -30,11 +34,6 @@ class RegisterResponse {
 
 @Resolver()
 export class UserResolver {
-  @Query(() => String)
-  ping() {
-    return "pong";
-  }
-
   @Query(() => [User])
   users() {
     return User.find();
