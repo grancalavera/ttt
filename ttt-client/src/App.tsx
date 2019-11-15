@@ -1,10 +1,15 @@
+import { Button } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import React, { FC } from "react";
-import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
-import { usePingQuery, useWhoamiQuery } from "./generated/graphql";
+import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
+import {
+  useJoinMutation,
+  usePingQuery,
+  useWhoamiQuery
+} from "./generated/graphql";
 import { useRefreshToken } from "./hooks/useRefreshToken";
 
-export const App: React.FC = () => {
+export const App: FC = () => {
   const loading = useRefreshToken();
   return loading ? <Loading /> : <Routes />;
 };
@@ -13,7 +18,7 @@ const Routes: FC = () => (
   <BrowserRouter>
     <Switch>
       <Route path="/" exact>
-        <div>All good, you can play now.</div>
+        <TTT />
       </Route>
 
       <Route path="/whoami" exact>
@@ -27,7 +32,27 @@ const Routes: FC = () => (
   </BrowserRouter>
 );
 
-const Whoami: React.FC = () => {
+const TTT: FC = () => {
+  const [join, { data }] = useJoinMutation();
+  const handleJoin = () => {
+    join();
+  };
+
+  return (
+    <div>
+      <p>All good, you can play now.</p>
+      {data ? (
+        <p>This is the game :P</p>
+      ) : (
+        <p>
+          <Button text="Play" onClick={handleJoin} />
+        </p>
+      )}
+    </div>
+  );
+};
+
+const Whoami: FC = () => {
   const { data, loading, error } = useWhoamiQuery({
     fetchPolicy: "network-only"
   });
@@ -46,7 +71,7 @@ const Whoami: React.FC = () => {
   throw new Error("undefined query state");
 };
 
-const Ping: React.FC = () => {
+const Ping: FC = () => {
   const { data, loading, error } = usePingQuery({
     fetchPolicy: "network-only"
   });
