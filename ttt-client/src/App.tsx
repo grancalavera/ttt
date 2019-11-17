@@ -1,17 +1,35 @@
 import { Button } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
-import React, { FC } from "react";
-import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
+import { assertNever } from "@grancalavera/ttt-core";
+import React, { FC, useEffect } from "react";
+import {
+  BrowserRouter,
+  Link,
+  Route,
+  Switch,
+  RouteComponentProps
+} from "react-router-dom";
 import {
   useJoinMutation,
   usePingQuery,
+  useRegisterMutation,
   useWhoamiQuery
 } from "./generated/graphql";
 import { useRefreshToken } from "./hooks/useRefreshToken";
 
 export const App: FC = () => {
-  const loading = useRefreshToken();
-  return loading ? <Loading /> : <Routes />;
+  const authStatus = useRefreshToken();
+
+  switch (authStatus) {
+    case "loading":
+      return <Loading />;
+    case "authorized":
+      return <Routes />;
+    case "unauthorized":
+      return <Register />;
+    default:
+      return assertNever(authStatus);
+  }
 };
 
 const Routes: FC = () => (
@@ -88,6 +106,25 @@ const Ping: FC = () => {
       </>
     );
   throw new Error("undefined query state");
+};
+
+const Register: FC = () => {
+  const [register] = useRegisterMutation();
+
+  const handleRegister = async () => {
+    const response = await register();
+    if (response.data) {
+      console.log(response.data.register.accessToken);
+    } else {
+      throw new Error("registration failed");
+    }
+  };
+
+  useEffect(() => {
+    handleRegister();
+  }, []);
+
+  return <Loading />;
 };
 
 const Loading: FC = () => <div>Loading...</div>;

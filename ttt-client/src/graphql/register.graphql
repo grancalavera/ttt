@@ -1,0 +1,9 @@
+mutation Register {
+  register {
+    user {
+      id
+      tokenVersion
+    }
+    accessToken
+  }
+}

@@ -4,7 +4,6 @@ import {
   createAccessToken,
   createRefreshToken,
   REFRESH_TOKEN_COOKIE,
-  registerUser,
   sendRefreshToken
 } from "../auth";
 import { User } from "../entity/user";
@@ -35,13 +34,10 @@ router.post("/refresh_token", async (req, res) => {
 
     console.log("sending refreshed tokens...");
     sendRefreshToken(res, createRefreshToken(user));
-    res.send({ accessToken: createAccessToken(user) });
+    res.json({ accessToken: createAccessToken(user) });
   } catch (e) {
     console.error(e.message || e);
-    const { accessToken, user } = await registerUser(res);
-    console.error("failed to refresh token, registering new user");
-    console.log(accessToken);
-    console.log(JSON.stringify(user));
-    return res.send({ accessToken });
+    res.statusCode = 401;
+    res.json({});
   }
 });

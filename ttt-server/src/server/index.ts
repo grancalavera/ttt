@@ -4,7 +4,7 @@ import cors from "cors";
 import express from "express";
 import { readFileSync } from "fs";
 import { join } from "path";
-import { secure } from "../auth";
+import { mkSecureResolver } from "../auth";
 import { resolvers } from "../resolvers";
 import { router } from "./router";
 
@@ -32,7 +32,7 @@ export const mkServer = async (origin: string) => {
         return connection;
       }
 
-      return { req, res, secure: secure(req) };
+      return { req, res, secure: mkSecureResolver(req) };
     },
     dataSources: () => ({}),
     schema
