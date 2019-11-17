@@ -1,11 +1,11 @@
-import {
-  coerceToPlayer,
-  coerceToPosition,
-  CorePlayer,
-  CorePosition
-} from "@grancalavera/ttt-core";
+import { coerceToPlayer, coerceToPosition } from "@grancalavera/ttt-core";
 import { RequestHandler, Router } from "express";
-import { body, check, ValidationError, validationResult } from "express-validator";
+import {
+  body,
+  check,
+  ValidationError,
+  validationResult
+} from "express-validator";
 import {
   extractException,
   gameNotFound,
@@ -88,7 +88,10 @@ const validationErrorsToInvalidRequest = (
   position: any,
   validationErrors: ValidationError[]
 ): InvalidRequest => {
-  const seed: { message: string[]; errors: any[] } = { message: [], errors: [] };
+  const seed: { message: string[]; errors: any[] } = {
+    message: [],
+    errors: []
+  };
   const { message, errors } = validationErrors.reduce((result, error) => {
     const [err, msg] = toResponseError(player, position, error);
     result.errors.push(err);

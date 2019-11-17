@@ -16,6 +16,7 @@ import {
 } from "../auth";
 import { TTTContext } from "../context";
 import { User } from "../entity/user";
+import { getRepository } from "typeorm";
 
 // there's no login in ttt, just auto anonymous registration
 // if your refresh token expires your user becomes unreachable

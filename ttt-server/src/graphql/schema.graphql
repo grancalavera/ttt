@@ -1,0 +1,24 @@
+type Game {
+  id: String!
+}
+
+type Mutation {
+  join: Boolean!
+  register: RegisterResponse!
+}
+
+type Query {
+  users: [User!]!
+  whoami: String!
+  ping: String!
+}
+
+type RegisterResponse {
+  accessToken: String!
+  user: User!
+}
+
+type User {
+  id: Int!
+  tokenVersion: Int!
+}

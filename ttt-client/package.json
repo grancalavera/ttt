@@ -15,9 +15,6 @@
     "typescript": "3.7.2"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "1.8.3",
-    "@graphql-codegen/typescript": "1.8.3",
-    "@graphql-codegen/typescript-react-apollo": "1.8.3",
     "@types/graphql": "14.5.0",
     "@types/jest": "24.0.22",
     "@types/node": "12.12.7",
@@ -29,8 +26,7 @@
     "start": "BROWSER=none react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "gen": "graphql-codegen --config codegen.yml"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"

@@ -28,6 +28,7 @@
     "jsonwebtoken": "8.5.1",
     "reflect-metadata": "0.1.13",
     "sequelize": "5.21.2",
+    "sqlite3": "4.1.0",
     "type-graphql": "0.17.5",
     "typeorm": "0.2.20",
     "typescript": "3.7.2",
