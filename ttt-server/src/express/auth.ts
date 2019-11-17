@@ -7,7 +7,7 @@ import {
   sendRefreshToken
 } from "../auth";
 import { User } from "../entity/user";
-import { registerUser } from "../resolvers/user";
+import { registerUser } from "../auth";
 
 export const auth = Router();
 

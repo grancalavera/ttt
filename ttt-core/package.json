@@ -14,7 +14,7 @@
     "test-watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/test.ts"
   },
   "devDependencies": {
-    "@types/node": "12.7.2",
+    "@types/node": "12.12.8",
     "nodemon": "1.19.1",
     "ts-node": "8.3.0",
     "typescript": "3.5.3"
