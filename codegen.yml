@@ -1,24 +1,40 @@
 overwrite: true
-schema: "ttt-*/src/**/schema.graphql"
-documents: "ttt-*/src/**/{query,mutation,subscription}*.graphql"
+
+schema: "ttt-server/src/graphql/schema.graphql"
+documents: "ttt-client/src/graphql/*.graphql"
+
 generates:
-  ttt-client/src/generated/models.ts:
-    - typescript
-    - typescript-operations
-  ttt-server/src/generated/models.ts:
+  ttt-server/src/generated/graphql.ts:
     - typescript
     - typescript-resolvers
-  # https://graphql-code-generator.com/docs/plugins/fragment-matcher
-  ttt-server/test-client/generated/introspection-result.ts:
-    - fragment-matcher
+
+  ttt-client/src/generated/graphql.tsx:
+    - typescript
+    - typescript-operations
+    - typescript-react-apollo
+
   ttt-client/src/generated/introspection-result.ts:
+    # https://graphql-code-generator.com/docs/plugins/fragment-matcher
     - fragment-matcher
+
+  ttt-server/src/generated/introspection-result.ts:
+    # https://graphql-code-generator.com/docs/plugins/fragment-matcher
+    - fragment-matcher
+
 config:
+  immutableTypes: true
+
   # see: https://github.com/dotansimha/graphql-code-generator/issues/1133
   # see: https://github.com/dotansimha/graphql-code-generator/issues/1133#issuecomment-474766729
   # see: https://graphql-code-generator.com/docs/generated-config/typescript-resolvers#usage-example-1
   useIndexSignature: true
   # see: https://graphql-code-generator.com/docs/generated-config/typescript-resolvers#noschemastitching-boolean-default-value-false
   noSchemaStitching: true
-  immutableTypes: true
-  contextType: ../environment#TTTContext
+  contextType: ../context#TTTContext
+
+  withHOC: false
+  withComponent: false
+  withHooks: true
+  gqlImport: "@apollo/client#gql"
+  apolloReactCommonImportFrom: "@apollo/client"
+  apolloReactHooksImportFrom: "@apollo/client"

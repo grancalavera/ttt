@@ -9,7 +9,8 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": false,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["src"],
   "exclude": ["test-server/**/*.ts"]

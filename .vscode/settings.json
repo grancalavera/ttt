@@ -2,8 +2,10 @@
   "cSpell.words": [
     "browserslist",
     "codegen",
+    "datasource",
     "inmemory",
     "pubsub",
+    "typecheck",
     "typeorm",
     "whoami"
   ]
