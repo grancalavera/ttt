@@ -4,15 +4,17 @@ import {
   createAccessToken,
   createRefreshToken,
   REFRESH_TOKEN_COOKIE,
+  registerUser,
   sendRefreshToken
 } from "../auth";
 import { User } from "../entity/user";
-import { registerUser } from "../auth";
 
-export const auth = Router();
+export const router = Router();
+
+router.get("/", (_, res) => res.redirect("/graphql"));
 
 // see https://github.com/auth0/express-jwt
-auth.post("/refresh_token", async (req, res) => {
+router.post("/refresh_token", async (req, res) => {
   const token = req.cookies[REFRESH_TOKEN_COOKIE];
 
   try {

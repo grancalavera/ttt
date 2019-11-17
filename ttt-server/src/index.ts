@@ -1,22 +1,21 @@
 import "dotenv/config";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
-import { mkServer } from "./apollo/server";
+import { mkServer } from "./server";
 import { User } from "./entity/user";
-import { mkApp } from "./express/app";
 
-const port = process.env.PORT!;
+main();
 
-(async () => {
+async function main() {
+  const port = process.env.PORT!;
+  const origin = process.env.ORIGIN!;
+
   const connection = await createConnection(process.env.CONNECTION!);
   User.useConnection(connection);
 
-  const app = mkApp();
-  const server = await mkServer();
+  const server = await mkServer(origin);
 
-  server.applyMiddleware({ app, cors: false });
-
-  app.listen(port, () => {
+  server.listen(port, () => {
     console.log(`express + graphql server running at port ${port}`);
   });
-})();
+}
