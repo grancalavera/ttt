@@ -9,7 +9,7 @@ type Mutation {
 
 type Query {
   users: [User!]!
-  whoami: String!
+  whoami: String
   ping: String!
 }
 

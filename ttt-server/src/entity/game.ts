@@ -1,10 +1,7 @@
-import { ObjectType, Field } from "type-graphql";
 import { Entity, BaseEntity, PrimaryColumn } from "typeorm";
 
-@ObjectType()
-// @Entity("games")
+@Entity("games")
 export class Game extends BaseEntity {
-  @Field(() => String)
-  // @PrimaryColumn()
+  @PrimaryColumn()
   id!: string;
 }

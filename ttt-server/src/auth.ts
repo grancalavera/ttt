@@ -1,27 +1,27 @@
-import { MiddlewareFn } from "type-graphql";
-import { TTTContext } from "./context";
-import { User } from "./entity/user";
+import { Request, Response } from "express";
 import { sign, verify } from "jsonwebtoken";
-import { Response } from "express";
+import { User } from "./entity/user";
 
 export const REFRESH_TOKEN_COOKIE = "et3";
 
-export const isAuth: MiddlewareFn<TTTContext> = ({ context }, next) => {
+export type SecureResolver = <T = void>(callback: (token: any) => T) => T;
+type MakeSecureResolver = (req: Request) => SecureResolver;
+
+export const secure: MakeSecureResolver = req => callback => {
   try {
-    const authorization = context.req.headers["authorization"]!;
-    const token = authorization.split(" ")[1];
-    const payload = decodeToken(token);
-    context.payload = payload;
-    return next();
+    const authorization = req.headers["authorization"]!;
+    const tokenString = authorization.split(" ")[1];
+    const token = decodeToken(tokenString);
+    return callback(token);
   } catch (e) {
     console.error("`isAuth: either:");
     console.error('`isAuth: 1. there is no "authorization" header, or');
     console.error('`isAuth: 2. the "authorization" header invalid, or');
     console.error("`isAuth: 3. the token verification failed, or");
     console.error("`isAuth: 4. the token payload is invalid.");
-    console.error(JSON.stringify(context.req.headers, null, 2));
+    console.error(JSON.stringify(req.headers, null, 2));
     console.error(e.message);
-    console.log(e.stack);
+    console.error(e.stack);
     throw new Error("not authorized");
   }
 };
@@ -44,6 +44,17 @@ export const createRefreshToken = (user: User) => {
 
 export const sendRefreshToken = (res: Response, token: string): void => {
   res.cookie("et3", token, { httpOnly: true, path: "/refresh_token" });
+};
+
+export const registerUser = async (res: Response) => {
+  const user = new User();
+  await user.save();
+  await user.reload();
+  sendRefreshToken(res, createRefreshToken(user));
+  return {
+    user,
+    accessToken: createAccessToken(user)
+  };
 };
 
 const decodeToken = (token: string) => {
