@@ -1,25 +1,33 @@
 import { useEffect, useState } from "react";
 import { setAccessToken } from "../access-token";
+import { useRegisterMutation } from "../generated/graphql";
 
-export type AuthStatus = "loading" | "authorized" | "unauthorized";
+export const useAuthentication = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [register] = useRegisterMutation();
 
-export const useRefreshToken = () => {
-  const [authStatus, setAuthStatus] = useState<AuthStatus>("loading");
   useEffect(() => {
     (async () => {
       const response = await fetch("http://localhost:4000/refresh_token", {
         method: "POST",
         credentials: "include"
       });
-      const { accessToken } = await response.json();
-      setAccessToken(accessToken);
-      if (response.status !== 200) {
-        console.error("failed to refresh token!");
-        setAuthStatus("unauthorized");
+
+      if (response.ok) {
+        const { accessToken } = await response.json();
+        setAccessToken(accessToken);
+        setIsAuthenticated(true);
       } else {
-        setAuthStatus("authorized");
+        const registerResponse = await register();
+        if (registerResponse.data && registerResponse.data.register) {
+          setAccessToken(registerResponse.data.register.accessToken);
+          setIsAuthenticated(true);
+        } else {
+          throw new Error("failed to register anonymous user");
+        }
       }
     })();
-  }, []);
-  return authStatus;
+  }, [register]);
+
+  return isAuthenticated;
 };
