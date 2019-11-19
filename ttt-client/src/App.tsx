@@ -34,18 +34,23 @@ const Routes: FC = () => (
 
 const TTT: FC = () => {
   const [join, { data }] = useJoinMutation();
-  const handleJoin = () => {
-    join();
-  };
+
+  // look into `data`
+  // if `token` is equal to `next`
+  // then we move to TURN
+  // otherwise we move to WAIT
 
   return (
     <div>
       <p>All good, you can play now.</p>
       {data ? (
-        <p>This is the game :P</p>
+        <>
+          <p>This is the game:</p>
+          <pre>{JSON.stringify(data, null, 2)}</pre>
+        </>
       ) : (
         <p>
-          <Button text="Play" onClick={handleJoin} />
+          <Button text="Play" onClick={() => join()} />
         </p>
       )}
     </div>

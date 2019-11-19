@@ -31,7 +31,7 @@
     "sqlite3": "4.1.0",
     "typeorm": "0.2.20",
     "typescript": "3.7.2",
-    "uuid": "3.3.2"
+    "uuid": "3.3.3"
   },
   "devDependencies": {
     "@types/cookie-parser": "1.4.2",
@@ -41,6 +41,7 @@
     "@types/jest": "24.0.22",
     "@types/jsonwebtoken": "8.3.5",
     "@types/node": "12.12.8",
+    "@types/uuid": "3.4.3",
     "@types/validator": "10.11.2",
     "@types/ws": "6.0.2",
     "jest": "24.9.0",
