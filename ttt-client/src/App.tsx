@@ -7,7 +7,7 @@ import {
   usePingQuery,
   useWhoamiQuery
 } from "./generated/graphql";
-import { useAuthentication } from "./hooks/useRefreshToken";
+import { useAuthentication } from "./hooks/use-authentication";
 
 export const App: FC = () => {
   const isAuthenticated = useAuthentication();

@@ -3,6 +3,7 @@ import "reflect-metadata";
 import { createConnection } from "typeorm";
 import { mkServer } from "./server";
 import { User } from "./entity/user";
+import { Game } from "entity/game";
 
 main();
 
@@ -12,6 +13,7 @@ async function main() {
 
   const connection = await createConnection(process.env.CONNECTION!);
   User.useConnection(connection);
+  Game.useConnection(connection);
 
   const server = await mkServer(origin);
 

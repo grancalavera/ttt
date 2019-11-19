@@ -1,6 +1,6 @@
+import { User } from "entity/user";
 import { Request, Response } from "express";
 import { sign, verify } from "jsonwebtoken";
-import { User } from "./entity/user";
 
 export const REFRESH_TOKEN_COOKIE = "et3";
 
@@ -51,17 +51,6 @@ export const createRefreshToken = (user: User) => {
 
 export const sendRefreshToken = (res: Response, token: string): void => {
   res.cookie("et3", token, { httpOnly: true, path: "/refresh_token" });
-};
-
-export const registerUser = async (res: Response) => {
-  const user = new User();
-  await user.save();
-  await user.reload();
-  sendRefreshToken(res, createRefreshToken(user));
-  return {
-    user,
-    accessToken: createAccessToken(user)
-  };
 };
 
 const decodeToken = (token: string) => {

@@ -1,12 +1,14 @@
 import { ApolloServer, makeExecutableSchema } from "apollo-server-express";
+import { mkSecureResolver } from "auth";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import { readFileSync } from "fs";
 import { join } from "path";
-import { mkSecureResolver } from "../auth";
-import { resolvers } from "../resolvers";
-import { router } from "./router";
+import { resolvers } from "resolvers";
+import { router } from "server/router";
+import { UsersDataSource } from "data-sources/users";
+import { GamesDataSource } from "data-sources/games";
 
 export const mkServer = async (origin: string) => {
   const typeDefs = readFileSync(
@@ -34,7 +36,10 @@ export const mkServer = async (origin: string) => {
 
       return { req, res, secure: mkSecureResolver(req) };
     },
-    dataSources: () => ({}),
+    dataSources: () => ({
+      users: new UsersDataSource(),
+      games: new GamesDataSource()
+    }),
     schema
   });
 
