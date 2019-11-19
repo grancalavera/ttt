@@ -1,3 +1,7 @@
 mutation Join {
-  join
+  join {
+    gameId
+    token
+    next
+  }
 }

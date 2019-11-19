@@ -1,6 +1,7 @@
 import { User } from "../entity/user";
-import { QueryResolvers, MutationResolvers } from "../generated/graphql";
+import { QueryResolvers, MutationResolvers, Token } from "../generated/graphql";
 import { registerUser } from "../auth";
+import uuid from "uuid";
 
 const Query: QueryResolvers = {
   users: async () => User.find(),
@@ -9,7 +10,8 @@ const Query: QueryResolvers = {
 };
 
 const Mutation: MutationResolvers = {
-  join: (_, __, { secure }) => secure(() => true),
+  join: (_, __, { secure }) =>
+    secure(() => ({ gameId: uuid(), token: Token.O, next: Token.O })),
   register: (_, __, { res }) => registerUser(res)
 };
 

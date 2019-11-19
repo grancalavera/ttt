@@ -3,8 +3,8 @@ type Game {
 }
 
 type Mutation {
-  join: Boolean!
-  register: RegisterResponse!
+  join: JoinResult!
+  register: RegisterResult!
 }
 
 type Query {
@@ -13,7 +13,7 @@ type Query {
   ping: String!
 }
 
-type RegisterResponse {
+type RegisterResult {
   accessToken: String!
   user: User!
 }
@@ -21,4 +21,31 @@ type RegisterResponse {
 type User {
   id: Int!
   tokenVersion: Int!
+}
+
+type JoinResult {
+  gameId: ID!
+  token: Token!
+  next: Token!
+}
+
+enum Token {
+  O
+  X
+}
+
+union GameState = GamePlaying | GameDraw | GameWon
+
+type GamePlaying {
+  id: ID!
+  next: Token!
+}
+
+type GameDraw {
+  id: ID!
+}
+
+type GameWon {
+  id: ID!
+  winner: Token!
 }
