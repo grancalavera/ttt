@@ -10,7 +10,8 @@
     "skipLibCheck": true,
     "sourceMap": false,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "baseUrl": "./src"
   },
   "include": ["src"],
   "exclude": ["test-server/**/*.ts"]
