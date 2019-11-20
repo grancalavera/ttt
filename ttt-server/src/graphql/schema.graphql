@@ -5,6 +5,7 @@ type Game {
 type Mutation {
   join: JoinResult!
   register: RegisterResult!
+  play(input: PlayInput!): Boolean!
 }
 
 type Query {
@@ -29,9 +30,27 @@ type JoinResult {
   next: Token!
 }
 
+input PlayInput {
+  gameId: ID!
+  token: Token!
+  position: Position!
+}
+
 enum Token {
   O
   X
+}
+
+enum Position {
+  A
+  B
+  C
+  D
+  E
+  F
+  G
+  H
+  I
 }
 
 union GameState = GamePlaying | GameDraw | GameWon
