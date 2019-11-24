@@ -1,43 +1,18 @@
-import {
-  MutationResolvers,
-  QueryResolvers,
-  Token,
-  PlayInput
-} from "../generated/graphql";
-import { TTTDataSources } from "context";
-import { User } from "entity/user";
+import { MutationResolvers, QueryResolvers } from "../generated/graphql";
+import * as game from "resolvers/game";
+import * as users from "resolvers/users";
+import * as util from "resolvers/util";
 
 const Query: QueryResolvers = {
-  users: (_, __, { dataSources }) => dataSources.users.find(),
-  whoami: (_, __, { secure }) => secure(user => `your user id is ${user.id}`),
-  ping: () => "pong"
+  users: (_, __, ctx) => users.list(ctx),
+  whoami: (_, __, ctx) => ctx.secure(util.whoami),
+  ping: util.ping,
 };
 
 const Mutation: MutationResolvers = {
-  register: (_, __, { dataSources }) => registerHandler(dataSources),
-
-  join: async (_, __, { secure, dataSources }) =>
-    secure(user => joinHandler(user, dataSources)),
-
-  play: (_, { input }, { secure, dataSources }) =>
-    secure(user => playHandler(input, user, dataSources))
-};
-
-const registerHandler = (dataSources: TTTDataSources) =>
-  dataSources.users.register();
-
-const joinHandler = async (user: User, dataSources: TTTDataSources) => {
-  const game = await dataSources.games.create(user);
-  return { gameId: game.id, token: Token.O, next: Token.O };
-};
-
-const playHandler = async (
-  input: PlayInput,
-  user: User,
-  dataSources: TTTDataSources
-) => {
-  const { gameId, position, token } = input;
-  throw "";
+  register: (_, __, ctx) => users.register(ctx),
+  join: async (_, __, ctx) => ctx.secure(game.join(ctx)),
+  play: (_, { input }, ctx) => ctx.secure(game.play(ctx, input)),
 };
 
 export const resolvers = { Query, Mutation };

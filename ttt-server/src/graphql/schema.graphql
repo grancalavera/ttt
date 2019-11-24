@@ -1,7 +1,3 @@
-type Game {
-  id: String!
-}
-
 type Mutation {
   join: JoinResult!
   register: RegisterResult!
@@ -12,6 +8,7 @@ type Query {
   users: [User!]!
   whoami: String
   ping: String!
+  game(id: ID!): Game
 }
 
 type RegisterResult {
@@ -20,7 +17,7 @@ type RegisterResult {
 }
 
 type User {
-  id: Int!
+  id: ID!
   tokenVersion: Int!
 }
 
@@ -51,6 +48,10 @@ enum Position {
   G
   H
   I
+}
+
+type Game {
+  id: String!
 }
 
 union GameState = GamePlaying | GameDraw | GameWon
