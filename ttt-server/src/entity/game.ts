@@ -6,8 +6,11 @@ export class Game extends BaseEntity {
   id!: string;
 
   @Column({ nullable: true })
-  oId?: number;
+  O?: string;
 
   @Column({ nullable: true })
-  xId?: number;
+  X?: string;
+
+  @Column({ nullable: true })
+  next?: string;
 }

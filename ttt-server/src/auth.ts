@@ -7,6 +7,7 @@ export const REFRESH_TOKEN_COOKIE = "et3";
 export type SecureResolver = <T = void>(
   runEffect: (user: User) => T
 ) => Promise<T>;
+
 type MakeSecureResolver = (req: Request) => SecureResolver;
 
 export const mkSecureResolver: MakeSecureResolver = req => async runEffect => {
@@ -35,7 +36,7 @@ export const mkSecureResolver: MakeSecureResolver = req => async runEffect => {
 
 export const createAccessToken = (user: User) => {
   return sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET!, {
-    expiresIn: "15m"
+    expiresIn: "15m",
   });
 };
 
@@ -44,7 +45,7 @@ export const createRefreshToken = (user: User) => {
     { userId: user.id, tokenVersion: user.tokenVersion },
     process.env.REFRESH_TOKEN_SECRET!,
     {
-      expiresIn: "7d"
+      expiresIn: "7d",
     }
   );
 };

@@ -17,7 +17,13 @@
       "name": "server",
       "args": ["${workspaceFolder}/ttt-server/src/index.ts"],
       "cwd": "${workspaceFolder}/ttt-server",
-      "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
       "protocol": "inspector",
       "sourceMaps": true
     },

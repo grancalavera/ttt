@@ -1,9 +1,15 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  PrimaryColumn,
+} from "typeorm";
 
 @Entity("users")
 export class User extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryColumn()
+  id!: string;
 
   @Column("int", { default: 0 })
   tokenVersion!: number;

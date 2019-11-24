@@ -1,27 +1,34 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
-import { TTTContext } from "context";
-import { User } from "entity/user";
+import { DataSourceContext } from "context";
 import { Game } from "entity/game";
+import { User } from "entity/user";
 import uuid = require("uuid");
+import { Token } from "generated/graphql";
+import { Not } from "typeorm";
 
 export class GamesDataSource extends DataSource {
-  private context!: TTTContext;
+  private context!: DataSourceContext;
 
-  initialize(config: DataSourceConfig<TTTContext>) {
+  initialize(config: DataSourceConfig<DataSourceContext>) {
     this.context = config.context;
   }
 
-  async create(user: User) {
+  async findOpenGameForUser(user: User): Promise<Game | undefined> {
+    const game = await Game.findOne({ where: { X: null, O: Not(user.id) } });
+    return game;
+  }
+
+  async joinNewGame(user: User, token: Token) {
     const game = new Game();
     game.id = uuid();
-    game.oId = user.id;
+    game[token] = user.id;
+    game.next = token;
     await game.save();
     return game;
   }
 
-  async join(gameId: string, user: User) {
-    const game = await Game.findOneOrFail({ where: { id: gameId } });
-    game.xId = user.id;
+  async joinExistingGame(game: Game, user: User, token: Token) {
+    game[token] = user.id;
     await game.save();
     return game;
   }

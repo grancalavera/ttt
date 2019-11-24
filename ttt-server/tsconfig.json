@@ -11,7 +11,7 @@
     "sourceMap": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "baseUrl": "./src"
+    "baseUrl": "src"
   },
   "include": ["src"],
   "exclude": ["test-server/**/*.ts"]

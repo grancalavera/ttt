@@ -30,7 +30,7 @@ config:
   useIndexSignature: true
   # see: https://graphql-code-generator.com/docs/generated-config/typescript-resolvers#noschemastitching-boolean-default-value-false
   noSchemaStitching: true
-  contextType: ../context#TTTContext
+  contextType: ../context#Context
 
   withHOC: false
   withComponent: false
