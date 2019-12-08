@@ -17,7 +17,7 @@
     "@types/node": "12.12.8",
     "nodemon": "1.19.1",
     "ts-node": "8.3.0",
-    "typescript": "3.5.3"
+    "typescript": "3.7.3"
   },
   "dependencies": {
     "@grancalavera/ttt-api": "^0.0.0"
