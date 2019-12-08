@@ -1,20 +1,20 @@
-import { Button } from "@blueprintjs/core";
+import { Button, Spinner, Intent } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
-import React, { FC } from "react";
+import React from "react";
 import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
 import {
   useJoinMutation,
   usePingQuery,
-  useWhoamiQuery
+  useWhoamiQuery,
 } from "./generated/graphql";
 import { useAuthentication } from "./hooks/use-authentication";
 
-export const App: FC = () => {
+export const App: React.FC = () => {
   const isAuthenticated = useAuthentication();
   return isAuthenticated ? <Routes /> : <Loading />;
 };
 
-const Routes: FC = () => (
+const Routes: React.FC = () => (
   <BrowserRouter>
     <Switch>
       <Route path="/" exact>
@@ -32,7 +32,7 @@ const Routes: FC = () => (
   </BrowserRouter>
 );
 
-const TTT: FC = () => {
+const TTT: React.FC = () => {
   const [join, { data }] = useJoinMutation();
 
   // look into `data`
@@ -42,7 +42,6 @@ const TTT: FC = () => {
 
   return (
     <div>
-      <p>All good, you can play now.</p>
       {data ? (
         <>
           <p>This is the game:</p>
@@ -50,16 +49,16 @@ const TTT: FC = () => {
         </>
       ) : (
         <p>
-          <Button text="Play" onClick={() => join()} />
+          <Button icon="play" onClick={() => join()} />
         </p>
       )}
     </div>
   );
 };
 
-const Whoami: FC = () => {
+const Whoami: React.FC = () => {
   const { data, loading, error } = useWhoamiQuery({
-    fetchPolicy: "network-only"
+    fetchPolicy: "network-only",
   });
 
   if (error) throw error;
@@ -76,9 +75,9 @@ const Whoami: FC = () => {
   throw new Error("undefined query state");
 };
 
-const Ping: FC = () => {
+const Ping: React.FC = () => {
   const { data, loading, error } = usePingQuery({
-    fetchPolicy: "network-only"
+    fetchPolicy: "network-only",
   });
 
   if (error) throw error;
@@ -95,5 +94,7 @@ const Ping: FC = () => {
   throw new Error("undefined query state");
 };
 
-const Loading: FC = () => <div>Loading...</div>;
-const LinkHome: FC = () => <Link to="/">OK</Link>;
+const Loading: React.FC = () => (
+  <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_SMALL} />
+);
+const LinkHome: React.FC = () => <Link to="/">OK</Link>;

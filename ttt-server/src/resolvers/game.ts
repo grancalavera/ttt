@@ -1,7 +1,6 @@
 import { Context } from "context";
 import { User } from "entity/user";
-import { PlayInput, Token, JoinResult } from "generated/graphql";
-import { Game } from "entity/game";
+import { JoinResult, PlayInput, Token } from "generated/graphql";
 
 export const join = (ctx: Context) => async (
   user: User
