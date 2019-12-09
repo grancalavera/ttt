@@ -2,29 +2,41 @@ import {
   ApolloClient,
   ApolloProvider,
   from as linkFrom,
-  InMemoryCache
+  InMemoryCache,
 } from "@apollo/client";
+import "@blueprintjs/core/lib/css/blueprint.css";
 import React from "react";
 import ReactDOM from "react-dom";
+import { createGlobalStyle } from "styled-components/macro";
 import { App } from "./App";
+import "./index.scss";
 import {
   authLinkMiddleware,
   httpLinkMiddleware,
-  refreshJWTMiddleware
+  refreshJWTMiddleware,
 } from "./middleware";
-
 const client = new ApolloClient({
   link: linkFrom([
     refreshJWTMiddleware,
     authLinkMiddleware,
-    httpLinkMiddleware
+    httpLinkMiddleware,
   ]),
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
 });
 
+const GlobalStyle = createGlobalStyle`
+  body, html, #root {
+    display:grid;
+    height:100%;
+  }
+`;
+
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>,
+  <>
+    <GlobalStyle />
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
+  </>,
   document.getElementById("root")
 );
