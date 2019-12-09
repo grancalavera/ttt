@@ -1,7 +1,7 @@
-import { Button, Spinner, Intent } from "@blueprintjs/core";
-import "@blueprintjs/core/lib/css/blueprint.css";
+import { Button, Intent, Spinner, Card } from "@blueprintjs/core";
 import React from "react";
 import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
+import styled from "styled-components/macro";
 import {
   useJoinMutation,
   usePingQuery,
@@ -11,7 +11,7 @@ import { useAuthentication } from "./hooks/use-authentication";
 
 export const App: React.FC = () => {
   const isAuthenticated = useAuthentication();
-  return isAuthenticated ? <Routes /> : <Loading />;
+  return <CardLayout>{isAuthenticated ? <Routes /> : <Loading />}</CardLayout>;
 };
 
 const Routes: React.FC = () => (
@@ -33,26 +33,18 @@ const Routes: React.FC = () => (
 );
 
 const TTT: React.FC = () => {
-  const [join, { data }] = useJoinMutation();
+  const [join, { data, loading }] = useJoinMutation();
 
   // look into `data`
   // if `token` is equal to `next`
   // then we move to TURN
   // otherwise we move to WAIT
-
-  return (
-    <div>
-      {data ? (
-        <>
-          <p>This is the game:</p>
-          <pre>{JSON.stringify(data, null, 2)}</pre>
-        </>
-      ) : (
-        <p>
-          <Button icon="play" onClick={() => join()} />
-        </p>
-      )}
-    </div>
+  return data ? (
+    <pre>{JSON.stringify(data, null, 2)}</pre>
+  ) : (
+    <Centered>
+      {loading ? <Loading /> : <Button icon="play" onClick={() => join()} />}
+    </Centered>
   );
 };
 
@@ -97,4 +89,17 @@ const Ping: React.FC = () => {
 const Loading: React.FC = () => (
   <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_SMALL} />
 );
+
 const LinkHome: React.FC = () => <Link to="/">OK</Link>;
+
+const Centered = styled.div`
+  margin: auto;
+`;
+
+const CardLayout = styled(Card)`
+  width: 300px;
+  height: 300px;
+  display: grid;
+  margin: auto;
+  overflow: hidden;
+`;
