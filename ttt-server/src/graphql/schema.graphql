@@ -9,6 +9,7 @@ type Query {
   whoami: String
   ping: String!
   game(id: ID!): Game
+  myGames: [Game!]!
 }
 
 type RegisterResult {

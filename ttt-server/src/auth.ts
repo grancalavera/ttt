@@ -36,14 +36,14 @@ export const mkSecureResolver: MakeSecureResolver = req => async runEffect => {
 
 export const createAccessToken = (user: User) => {
   return sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET!, {
-    expiresIn: "15m",
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || "15m",
   });
 };
 
 export const createRefreshToken = (user: User) => {
   return sign(
     { userId: user.id, tokenVersion: user.tokenVersion },
-    process.env.REFRESH_TOKEN_SECRET!,
+    process.env.ACCESS_TOKEN_EXPIRES_IN || "7d",
     {
       expiresIn: "7d",
     }
