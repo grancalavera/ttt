@@ -6,7 +6,7 @@ import * as util from "resolvers/util";
 const Query: QueryResolvers = {
   users: (_, __, ctx) => users.list(ctx),
   whoami: (_, __, ctx) => ctx.secure(util.whoami),
-  myGames: () => [],
+  myGames: (_, ___, ctx) => ctx.secure(() => []),
   ping: util.ping,
 };
 
