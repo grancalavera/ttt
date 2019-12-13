@@ -5,12 +5,6 @@ import { mkServer } from "server";
 
 main();
 
-interface SomeProps {
-  foo?: { bar?: { name: string } };
-}
-
-declare const x: SomeProps;
-
 async function main() {
   const port = process.env.PORT!;
   const origin = process.env.ORIGIN!;

@@ -2,11 +2,14 @@ import { MutationResolvers, QueryResolvers } from "../generated/graphql";
 import * as game from "resolvers/game";
 import * as users from "resolvers/users";
 import * as util from "resolvers/util";
+import { Context } from "context";
+
+const myGames = (a: any, b: any, ctx: any) => ctx.secure(game.myGames(ctx));
 
 const Query: QueryResolvers = {
   users: (_, __, ctx) => users.list(ctx),
   whoami: (_, __, ctx) => ctx.secure(util.whoami),
-  myGames: (_, ___, ctx) => ctx.secure(() => []),
+  myGames: myGames,
   ping: util.ping,
 };
 

@@ -1,5 +1,5 @@
 import { ApolloServer, makeExecutableSchema } from "apollo-server-express";
-import { mkSecureResolver } from "auth";
+import { mkSecureResolver, findCurrentUser } from "auth";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
@@ -19,7 +19,7 @@ export const mkServer = async (origin: string) => {
   const schema = makeExecutableSchema({
     resolverValidationOptions: { requireResolversForResolveType: false },
     typeDefs,
-    resolvers
+    resolvers,
   });
 
   const expressServer = express();
@@ -29,21 +29,20 @@ export const mkServer = async (origin: string) => {
   expressServer.use(router);
 
   const apolloServer = new ApolloServer({
-    context: ({ req, res, connection }) => {
+    context: async ({ req, res, connection }) => {
       if (connection) {
         return connection;
       }
-
-      return { req, res, secure: mkSecureResolver(req) };
+      const user = await findCurrentUser(req);
+      return Promise.resolve({ req, res, secure: mkSecureResolver(user) });
     },
     dataSources: () => ({
       users: new UsersDataSource(),
-      games: new GamesDataSource()
+      games: new GamesDataSource(),
     }),
-    schema
+    schema,
   });
 
   apolloServer.applyMiddleware({ app: expressServer, cors: false });
-
   return expressServer;
 };
