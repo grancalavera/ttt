@@ -5,32 +5,31 @@ import { sign, verify } from "jsonwebtoken";
 export const REFRESH_TOKEN_COOKIE = "et3";
 
 export type SecureResolver = <T = void>(
-  runEffect: (user: User) => T
-) => Promise<T>;
+  runEffect: (user: User) => T | Promise<T>
+) => T | Promise<T>;
 
-type MakeSecureResolver = (req: Request) => SecureResolver;
+type MakeSecureResolver = (user?: User) => SecureResolver;
 
-export const mkSecureResolver: MakeSecureResolver = req => async runEffect => {
+export const mkSecureResolver: MakeSecureResolver = user => runEffect => {
+  if (user) {
+    return runEffect(user);
+  } else {
+    throw new Error("not authorized");
+  }
+};
+
+export const findCurrentUser = async (
+  req: Request
+): Promise<User | undefined> => {
   try {
     const authorization = req.headers["authorization"]!;
     const tokenString = authorization.split(" ")[1];
     const token: any = decodeToken(tokenString);
     const user = await User.findOne({ where: { id: token.userId } });
-    if (user) {
-      return runEffect(user);
-    } else {
-      throw new Error(`user ${token.id} does not exist`);
-    }
+    return user;
   } catch (e) {
-    console.error("`isAuth: either:");
-    console.error('`isAuth: 1. there is no "authorization" header, or');
-    console.error('`isAuth: 2. the "authorization" header invalid, or');
-    console.error("`isAuth: 3. the token verification failed, or");
-    console.error("`isAuth: 4. the token payload is invalid.");
-    console.error(JSON.stringify(req.headers, null, 2));
-    console.error(e.message);
-    console.error(e.stack);
-    throw new Error("not authorized");
+    console.info(`findCurrentUser: failed to find current user`);
+    console.info(e.message || e);
   }
 };
 

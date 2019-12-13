@@ -18,6 +18,11 @@ export class GamesDataSource extends DataSource {
     return game;
   }
 
+  async findGamesForUser(user: User) {
+    const games = await Game.find({ where: [{ O: user.id }, { X: user.id }] });
+    return games;
+  }
+
   async joinNewGame(user: User, token: Token) {
     const game = new Game();
     game.id = uuid();
