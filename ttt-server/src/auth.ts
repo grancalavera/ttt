@@ -1,14 +1,14 @@
-import { User } from "entity/user";
+import { UserEntity } from "entity/user-entity";
 import { Request, Response } from "express";
 import { sign, verify } from "jsonwebtoken";
 
 export const REFRESH_TOKEN_COOKIE = "et3";
 
 export type SecureResolver = <T = void>(
-  runEffect: (user: User) => T | Promise<T>
+  runEffect: (user: UserEntity) => T | Promise<T>
 ) => T | Promise<T>;
 
-type MakeSecureResolver = (user?: User) => SecureResolver;
+type MakeSecureResolver = (user?: UserEntity) => SecureResolver;
 
 export const mkSecureResolver: MakeSecureResolver = user => runEffect => {
   if (user) {
@@ -20,12 +20,12 @@ export const mkSecureResolver: MakeSecureResolver = user => runEffect => {
 
 export const findCurrentUser = async (
   req: Request
-): Promise<User | undefined> => {
+): Promise<UserEntity | undefined> => {
   try {
     const authorization = req.headers["authorization"]!;
     const tokenString = authorization.split(" ")[1];
     const token: any = decodeToken(tokenString);
-    const user = await User.findOne({ where: { id: token.userId } });
+    const user = await UserEntity.findOne({ where: { id: token.userId } });
     return user;
   } catch (e) {
     console.info(`findCurrentUser: failed to find current user`);
@@ -33,13 +33,13 @@ export const findCurrentUser = async (
   }
 };
 
-export const createAccessToken = (user: User) => {
+export const createAccessToken = (user: UserEntity) => {
   return sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET!, {
     expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || "15m",
   });
 };
 
-export const createRefreshToken = (user: User) => {
+export const createRefreshToken = (user: UserEntity) => {
   return sign(
     { userId: user.id, tokenVersion: user.tokenVersion },
     process.env.ACCESS_TOKEN_EXPIRES_IN || "7d",

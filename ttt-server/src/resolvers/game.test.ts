@@ -1,6 +1,6 @@
 import { createUser } from "data-sources/users";
 import "dotenv/config";
-import { User } from "entity/user";
+import { UserEntity } from "entity/user-entity";
 import { JoinResult, Token } from "generated/graphql";
 import * as gameResolvers from "resolvers/game";
 import { mockContext } from "test/mocks";
@@ -70,7 +70,7 @@ describe("game resolvers", () => {
       let result: JoinResult;
 
       beforeAll(async () => {
-        const user = await User.findOne({ where: { id: userId } });
+        const user = await UserEntity.findOne({ where: { id: userId } });
         if (user) {
           const context = mockContext(user);
           result = await gameResolvers.join(context)(user);

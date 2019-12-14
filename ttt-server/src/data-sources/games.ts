@@ -1,7 +1,7 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
 import { DataSourceContext } from "context";
-import { Game } from "entity/game";
-import { User } from "entity/user";
+import { GameEntity } from "entity/game-entity";
+import { UserEntity } from "entity/user-entity";
 import uuid = require("uuid");
 import { Token } from "generated/graphql";
 import { Not } from "typeorm";
@@ -13,18 +13,22 @@ export class GamesDataSource extends DataSource {
     this.context = config.context;
   }
 
-  async findOpenGameForUser(user: User): Promise<Game | undefined> {
-    const game = await Game.findOne({ where: { X: null, O: Not(user.id) } });
+  async findOpenGameForUser(user: UserEntity): Promise<GameEntity | undefined> {
+    const game = await GameEntity.findOne({
+      where: { X: null, O: Not(user.id) },
+    });
     return game;
   }
 
-  async findGamesForUser(user: User) {
-    const games = await Game.find({ where: [{ O: user.id }, { X: user.id }] });
+  async findGamesForUser(user: UserEntity) {
+    const games = await GameEntity.find({
+      where: [{ O: user.id }, { X: user.id }],
+    });
     return games;
   }
 
-  async joinNewGame(user: User, token: Token) {
-    const game = new Game();
+  async joinNewGame(user: UserEntity, token: Token) {
+    const game = new GameEntity();
     game.id = uuid();
     game[token] = user.id;
     game.next = token;
@@ -32,7 +36,7 @@ export class GamesDataSource extends DataSource {
     return game;
   }
 
-  async joinExistingGame(game: Game, user: User, token: Token) {
+  async joinExistingGame(game: GameEntity, user: UserEntity, token: Token) {
     game[token] = user.id;
     await game.save();
     return game;
