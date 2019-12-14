@@ -1,6 +1,13 @@
 import { Context } from "context";
 import { UserEntity } from "entity/user-entity";
-import { JoinResult, PlayInput, Token, Game } from "generated/graphql";
+import {
+  JoinResult,
+  PlayInput,
+  Token,
+  Game,
+  GameState,
+} from "generated/graphql";
+import { GameEntity } from "entity/game-entity";
 
 export const join = (ctx: Context) => async (
   user: UserEntity
@@ -28,5 +35,11 @@ export const myGames = (ctx: Context) => async (
   user: UserEntity
 ): Promise<Game[]> => {
   const games = await ctx.dataSources.games.findGamesForUser(user);
-  return games.map(({ id }) => ({ id }));
+  return games.map(gameFromEntity);
+};
+
+const gameFromEntity = ({ id }: GameEntity): Game => {
+  const state: GameState = { __typename: "GamePlaying", next: Token.O };
+  const game = { id, state };
+  return game;
 };
