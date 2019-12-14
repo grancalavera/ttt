@@ -2,10 +2,10 @@ import { SecureResolver } from "auth";
 import { Context, DataSourceContext, DataSources } from "context";
 import { GamesDataSource } from "data-sources/games";
 import { UsersDataSource } from "data-sources/users";
-import { User } from "entity/user";
+import { UserEntity } from "entity/user-entity";
 import { Request, Response } from "express";
 
-export const mockContext = (user?: User): Context => {
+export const mockContext = (user?: UserEntity): Context => {
   const req = mockReq();
   const res = mockRes();
   const secure = mockSecureResolver(user);
@@ -24,7 +24,7 @@ const mockRes = () => {
 };
 
 const mockSecureResolver: (
-  user?: User
+  user?: UserEntity
 ) => SecureResolver = user => async runEffect => {
   if (user) {
     return runEffect(user);

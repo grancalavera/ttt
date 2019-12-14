@@ -4,9 +4,9 @@ import {
   createAccessToken,
   createRefreshToken,
   REFRESH_TOKEN_COOKIE,
-  sendRefreshToken
+  sendRefreshToken,
 } from "../auth";
-import { User } from "../entity/user";
+import { UserEntity } from "../entity/user-entity";
 
 export const router = Router();
 
@@ -22,7 +22,7 @@ router.post("/refresh_token", async (req, res) => {
     }
 
     const payload: any = verify(token, process.env.REFRESH_TOKEN_SECRET!);
-    const user = await User.findOne({ id: payload.userId });
+    const user = await UserEntity.findOne({ id: payload.userId });
 
     if (!user) {
       throw new Error(`user ${payload.userId} does not exist`);

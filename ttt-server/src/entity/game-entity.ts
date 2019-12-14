@@ -1,7 +1,7 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity("games")
-export class Game extends BaseEntity {
+export class GameEntity extends BaseEntity {
   @PrimaryColumn()
   id!: string;
 
