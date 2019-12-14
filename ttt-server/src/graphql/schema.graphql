@@ -53,20 +53,21 @@ enum Position {
 
 type Game {
   id: String!
+  state: GameState!
 }
 
 union GameState = GamePlaying | GameDraw | GameWon
 
 type GamePlaying {
-  id: ID!
   next: Token!
 }
 
 type GameDraw {
-  id: ID!
+  # hack to allow an empty type in an union with
+  # an optional value that'll be never be sent
+  empty: Boolean
 }
 
 type GameWon {
-  id: ID!
   winner: Token!
 }
