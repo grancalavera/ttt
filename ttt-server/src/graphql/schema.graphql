@@ -8,8 +8,8 @@ type Query {
   users: [User!]!
   whoami: String
   ping: String!
-  game(id: ID!): Game
-  myGames: [Game!]!
+  game(id: ID!): GameResult
+  myGames: [GameResult!]!
 }
 
 type RegisterResult {
@@ -51,23 +51,22 @@ enum Position {
   I
 }
 
-type Game {
-  id: String!
-  state: GameState!
+interface Game {
+  id: ID!
 }
 
-union GameState = GamePlaying | GameDraw | GameWon
+union GameResult = GamePlaying | GameDraw | GameWon
 
-type GamePlaying {
+type GamePlaying implements Game {
+  id: ID!
   next: Token!
 }
 
-type GameDraw {
-  # hack to allow an empty type in an union with
-  # an optional value that'll be never be sent
-  empty: Boolean
+type GameDraw implements Game {
+  id: ID!
 }
 
-type GameWon {
+type GameWon implements Game {
+  id: ID!
   winner: Token!
 }

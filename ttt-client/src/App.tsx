@@ -42,9 +42,9 @@ const TTT: React.FC = () => {
   return data ? (
     <pre>{JSON.stringify(data, null, 2)}</pre>
   ) : (
-    <Centered>
+    <GridCentered>
       {loading ? <Loading /> : <Button icon="play" onClick={() => join()} />}
-    </Centered>
+    </GridCentered>
   );
 };
 
@@ -92,7 +92,7 @@ const Loading: React.FC = () => (
 
 const LinkHome: React.FC = () => <Link to="/">OK</Link>;
 
-const Centered = styled.div`
+const GridCentered = styled.div`
   margin: auto;
 `;
 

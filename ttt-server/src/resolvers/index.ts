@@ -2,9 +2,10 @@ import * as game from "resolvers/game";
 import * as users from "resolvers/users";
 import * as util from "resolvers/util";
 import {
+  GameResultResolvers,
   MutationResolvers,
   QueryResolvers,
-  GameStateResolvers,
+  Resolvers,
 } from "../generated/graphql";
 
 const Query: QueryResolvers = {
@@ -14,8 +15,8 @@ const Query: QueryResolvers = {
   ping: util.ping,
 };
 
-const GameState: GameStateResolvers = {
-  __resolveType: ({ __typename }) => enforceTypename(__typename),
+const GameResult: GameResultResolvers = {
+  __resolveType: ({ __typename }) => enforceTypename("GameResult", __typename),
 };
 
 const Mutation: MutationResolvers = {
@@ -24,11 +25,16 @@ const Mutation: MutationResolvers = {
   play: (_, { input }, ctx) => ctx.secure(game.play(ctx, input)),
 };
 
-export const resolvers = { Query, Mutation, GameState };
+export const resolvers: Resolvers = { Query, Mutation, GameResult };
 
-const enforceTypename = <T extends string>(typename?: T): T => {
+const enforceTypename = <T extends string>(
+  unionType: string,
+  typename?: T
+): T => {
   if (typename) {
     return typename;
   }
-  throw new Error("missing required `__typename`");
+  throw new Error(
+    `missing required "__typename" for union type "${unionType}"`
+  );
 };

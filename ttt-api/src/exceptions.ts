@@ -45,33 +45,36 @@ export interface WrongTurn {
   wrongPlayer: CorePlayer;
 }
 
-export const invalidRequest = (message: string, errors: any[] = []): InvalidRequest => ({
+export const invalidRequest = (
+  message: string,
+  errors: any[] = []
+): InvalidRequest => ({
   kind: "InvalidRequest",
   message,
-  errors
+  errors,
 });
 
 export const invalidPlayer = (player: any): InvalidPlayer => ({
   kind: "InvalidPlayer",
   message: `Invalid player "${player}, valid players are "O" and "X" only`,
-  invalidPlayer: player
+  invalidPlayer: player,
 });
 
 export const invalidPosition = (position: any): InvalidPosition => ({
   kind: "InvalidPosition",
   message: `Invalid position "${position}", valid moves are integer values from 0 inclusive to 8 inclusive`,
-  invalidPosition: position
+  invalidPosition: position,
 });
 
 export const missingGameId = (): MissingGameId => ({
   kind: "MissingGameId",
-  message: "Missing required game id"
+  message: "Missing required game id",
 });
 
 export const gameNotFound = (gameId: string): GameNotFound => ({
   kind: "GameNotFound",
   message: `Game "${gameId}" not found`,
-  gameId
+  gameId,
 });
 
 const POSITION_PLAYED_ERROR = "PositionPlayedError";
@@ -102,8 +105,10 @@ export class WrongTurnError extends Error {
   }
 }
 
-const isGameOverError = (e: Error): e is GameOverError => e.name === GAME_OVER_ERROR;
-const isWrongTurnError = (e: Error): e is WrongTurnError => e.name === WRONG_TURN_ERROR;
+const isGameOverError = (e: Error): e is GameOverError =>
+  e.name === GAME_OVER_ERROR;
+const isWrongTurnError = (e: Error): e is WrongTurnError =>
+  e.name === WRONG_TURN_ERROR;
 const isPositionPlayedError = (e: Error): e is PositionPlayedError =>
   e.name === POSITION_PLAYED_ERROR;
 

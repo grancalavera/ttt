@@ -1,5 +1,5 @@
 import { ApolloServer, makeExecutableSchema } from "apollo-server-express";
-import { mkSecureResolver, findCurrentUser } from "auth";
+import { mkSecureResolver, findAuthenticatedUser } from "auth";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
@@ -9,6 +9,7 @@ import { resolvers } from "resolvers";
 import { router } from "server/router";
 import { UsersDataSource } from "data-sources/users";
 import { GamesDataSource } from "data-sources/games";
+import { TTTAPIDataSource } from "data-sources/ttt-api";
 
 export const mkServer = async (origin: string) => {
   const typeDefs = readFileSync(
@@ -33,12 +34,13 @@ export const mkServer = async (origin: string) => {
       if (connection) {
         return connection;
       }
-      const user = await findCurrentUser(req);
+      const user = await findAuthenticatedUser(req);
       return Promise.resolve({ req, res, secure: mkSecureResolver(user) });
     },
     dataSources: () => ({
       users: new UsersDataSource(),
       games: new GamesDataSource(),
+      api: new TTTAPIDataSource(),
     }),
     schema,
   });

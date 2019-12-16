@@ -18,7 +18,7 @@ export const mkSecureResolver: MakeSecureResolver = user => runEffect => {
   }
 };
 
-export const findCurrentUser = async (
+export const findAuthenticatedUser = async (
   req: Request
 ): Promise<UserEntity | undefined> => {
   try {
@@ -28,8 +28,7 @@ export const findCurrentUser = async (
     const user = await UserEntity.findOne({ where: { id: token.userId } });
     return user;
   } catch (e) {
-    console.info(`findCurrentUser: failed to find current user`);
-    console.info(e.message || e);
+    console.info(`auth.findAuthenticatedUser: not authenticated`);
   }
 };
 

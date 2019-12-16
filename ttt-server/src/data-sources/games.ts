@@ -2,9 +2,9 @@ import { DataSource, DataSourceConfig } from "apollo-datasource";
 import { DataSourceContext } from "context";
 import { GameEntity } from "entity/game-entity";
 import { UserEntity } from "entity/user-entity";
-import uuid = require("uuid");
 import { Token } from "generated/graphql";
 import { Not } from "typeorm";
+import uuid = require("uuid");
 
 export class GamesDataSource extends DataSource {
   private context!: DataSourceContext;
@@ -31,7 +31,6 @@ export class GamesDataSource extends DataSource {
     const game = new GameEntity();
     game.id = uuid();
     game[token] = user.id;
-    game.next = token;
     await game.save();
     return game;
   }

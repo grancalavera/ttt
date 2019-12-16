@@ -6,7 +6,8 @@ import {
   PositionPlayedError,
   WrongTurn,
   GameOver,
-  InvalidRequest
+  InvalidRequest,
+  PositionPlayed,
 } from "./exceptions";
 
 export interface Move {
@@ -27,7 +28,7 @@ export type ErrorResponse =
   | GameNotFound
   | InvalidPosition
   | InvalidPosition
-  | PositionPlayedError
+  | PositionPlayed
   | GameOver
   | WrongTurn
   | InvalidRequest;
