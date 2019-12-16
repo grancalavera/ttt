@@ -10,7 +10,4 @@ export class GameEntity extends BaseEntity {
 
   @Column({ nullable: true })
   X?: string;
-
-  @Column({ nullable: true })
-  next?: string;
 }
