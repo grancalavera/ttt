@@ -8,7 +8,7 @@ export class GameEntity extends BaseEntity {
   id!: string;
 
   @Column()
-  state!: Typename<GameResult>;
+  status!: Typename<GameResult>;
 
   @Column({ nullable: true })
   O?: string;
@@ -18,4 +18,7 @@ export class GameEntity extends BaseEntity {
 
   @Column({ nullable: true })
   next?: "O" | "X";
+
+  @Column({ nullable: true })
+  winner?: "O" | "X";
 }
