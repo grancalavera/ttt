@@ -30,7 +30,9 @@ export class GamesDataSource extends DataSource {
   async joinNewGame(user: UserEntity, token: Token) {
     const game = new GameEntity();
     game.id = uuid();
+    game.status = "GamePlaying";
     game[token] = user.id;
+    game.next = token;
     await game.save();
     return game;
   }
