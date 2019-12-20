@@ -1,0 +1,15 @@
+query MyGames {
+  myGames {
+    ... on GamePlaying {
+      id
+      next
+    }
+    ... on GameWon {
+      id
+      winner
+    }
+    ... on GameDraw {
+      id
+    }
+  }
+}

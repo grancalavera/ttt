@@ -5,6 +5,12 @@
 		}
 	],
 	"settings": {
-		"typescript.tsdk": "node_modules/typescript/lib"
+		"typescript.tsdk": "node_modules/typescript/lib",
+		"files.exclude": {
+			"**/build": true,
+			"**/coverage": true,
+			"**/dist": true,
+			"**/node_modules": true
+		}
 	}
 }
