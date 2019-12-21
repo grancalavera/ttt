@@ -3,13 +3,12 @@ import { Context } from "context";
 import { GameEntity } from "entity/game-entity";
 import { UserEntity } from "entity/user-entity";
 import {
+  GamePlaying,
   GameResult,
+  GameWon,
   JoinResult,
   PlayInput,
   Token,
-  GamePlaying,
-  GameWon,
-  GameDraw,
 } from "generated/graphql";
 import { isNil } from "lodash/fp";
 

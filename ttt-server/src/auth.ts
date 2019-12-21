@@ -28,7 +28,7 @@ export const findAuthenticatedUser = async (
     const user = await UserEntity.findOne({ where: { id: token.userId } });
     return user;
   } catch (e) {
-    console.info(`auth.findAuthenticatedUser: not authenticated`);
+    console.info(`auth.findAuthenticatedUser: not authorized`);
   }
 };
 
@@ -41,9 +41,9 @@ export const createAccessToken = (user: UserEntity) => {
 export const createRefreshToken = (user: UserEntity) => {
   return sign(
     { userId: user.id, tokenVersion: user.tokenVersion },
-    process.env.ACCESS_TOKEN_EXPIRES_IN || "7d",
+    process.env.REFRESH_TOKEN_SECRET!,
     {
-      expiresIn: "7d",
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || "7d",
     }
   );
 };
