@@ -15,6 +15,7 @@ import {
   httpLinkMiddleware,
   refreshJWTMiddleware,
 } from "./middleware";
+
 const client = new ApolloClient({
   link: linkFrom([
     refreshJWTMiddleware,

@@ -3,11 +3,11 @@ import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import styled from "styled-components";
 import { Loading } from "./common/loading";
+import { Game } from "./game";
 import { useAuthentication } from "./hooks/use-authentication";
 import { Ping } from "./ping";
 import { Splash } from "./splash";
 import { Whoami } from "./whoami";
-import { Game } from "./game";
 
 export const App: React.FC = () => {
   const isAuthenticated = useAuthentication();
@@ -18,11 +18,10 @@ const Routes: React.FC = () => (
   <BrowserRouter>
     <Switch>
       <Route path="/" exact>
-        <Splash />
-      </Route>
-
-      <Route path="/whoami" exact>
-        <Whoami />
+        <>
+          <Whoami />
+          <Splash />
+        </>
       </Route>
 
       <Route path="/ping" exact>

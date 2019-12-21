@@ -12,8 +12,8 @@ export const authLinkMiddleware = new ApolloLink((operation, forward) => {
     operation.setContext({
       headers: {
         ...headers,
-        authorization: `bearer ${accessToken}`
-      }
+        authorization: `bearer ${accessToken}`,
+      },
     });
   }
 
@@ -27,7 +27,7 @@ export const pauseMiddleware = new ApolloLink(
         forward(operation).subscribe({
           next: v => observer.next(v),
           complete: () => observer.complete(),
-          error: e => observer.error(e)
+          error: e => observer.error(e),
         });
       }, 1000);
     })
@@ -45,14 +45,14 @@ export const refreshJWTMiddleware = new ApolloLink((operation, forward) => {
     return new Observable<FetchResult>(observer => {
       fetch("http://localhost:4000/refresh_token", {
         method: "POST",
-        credentials: "include"
+        credentials: "include",
       }).then(async response => {
         const { accessToken } = await response.json();
         setAccessToken(accessToken);
         forward(operation).subscribe({
           next: observer.next.bind(observer),
           complete: observer.complete.bind(observer),
-          error: observer.error.bind(observer)
+          error: observer.error.bind(observer),
         });
       });
     });
@@ -64,5 +64,5 @@ export const refreshJWTMiddleware = new ApolloLink((operation, forward) => {
 export const httpLinkMiddleware = new HttpLink({
   uri: "http://localhost:4000/graphql",
   // https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials
-  credentials: "include"
+  credentials: "include",
 });

@@ -4,7 +4,7 @@ import {
   body,
   check,
   ValidationError,
-  validationResult
+  validationResult,
 } from "express-validator";
 import {
   extractException,
@@ -13,7 +13,7 @@ import {
   invalidPosition,
   InvalidRequest,
   invalidRequest,
-  missingGameId
+  missingGameId,
 } from "./exceptions";
 import { findAllGames, findGameById } from "./services/game";
 import { playMove } from "./services/move";
@@ -33,7 +33,7 @@ const validateMoveRequest: RequestHandler[] = [
   body("position")
     .matches(/^[012345678]{1}$/)
     .withMessage(INVALID_POSITION),
-  validateGameId
+  validateGameId,
 ];
 
 const handleGetGameByIdRequest: RequestHandler = async (req, res, next) => {
@@ -67,7 +67,7 @@ const handleMoveRequest: RequestHandler = async (req, res, next) => {
 
     return next({
       status: 400,
-      body
+      body,
     });
   }
 
@@ -90,7 +90,7 @@ const validationErrorsToInvalidRequest = (
 ): InvalidRequest => {
   const seed: { message: string[]; errors: any[] } = {
     message: [],
-    errors: []
+    errors: [],
   };
   const { message, errors } = validationErrors.reduce((result, error) => {
     const [err, msg] = toResponseError(player, position, error);

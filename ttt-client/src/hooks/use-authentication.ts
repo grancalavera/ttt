@@ -10,7 +10,7 @@ export const useAuthentication = () => {
     (async () => {
       const response = await fetch("http://localhost:4000/refresh_token", {
         method: "POST",
-        credentials: "include"
+        credentials: "include",
       });
 
       if (response.ok) {
