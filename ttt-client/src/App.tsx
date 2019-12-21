@@ -3,7 +3,7 @@ import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import styled from "styled-components";
 import { Loading } from "./common/loading";
-import { Game } from "./game";
+import { GameRoute } from "./game";
 import { useAuthentication } from "./hooks/use-authentication";
 import { Ping } from "./ping";
 import { Splash } from "./splash";
@@ -25,7 +25,7 @@ const Routes: React.FC = () => (
       </Route>
 
       <Route path="/game/:gameId">
-        <Game />
+        <GameRoute />
       </Route>
     </Switch>
   </BrowserRouter>
