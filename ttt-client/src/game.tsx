@@ -1,9 +1,16 @@
 import React from "react";
-import { LinkHome } from "./common/link-home";
+import { Redirect, useParams } from "react-router-dom";
 
-export const Game: React.FC = () => (
-  <>
-    <p>Game: Nothing</p>
-    <LinkHome />
-  </>
-);
+interface GameRouteParams {
+  gameId?: string;
+}
+
+export const GameRoute: React.FC = () => {
+  const { gameId } = useParams<GameRouteParams>();
+
+  if (!gameId) {
+    return <Redirect to="/" />;
+  } else {
+    return <pre>{gameId}</pre>;
+  }
+};
