@@ -7,7 +7,6 @@ import { Game } from "./game";
 import { useAuthentication } from "./hooks/use-authentication";
 import { Ping } from "./ping";
 import { Splash } from "./splash";
-import { Whoami } from "./whoami";
 
 export const App: React.FC = () => {
   const isAuthenticated = useAuthentication();
@@ -18,10 +17,7 @@ const Routes: React.FC = () => (
   <BrowserRouter>
     <Switch>
       <Route path="/" exact>
-        <>
-          <Whoami />
-          <Splash />
-        </>
+        <Splash />
       </Route>
 
       <Route path="/ping" exact>

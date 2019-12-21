@@ -1,9 +1,9 @@
 import { Button } from "@blueprintjs/core";
 import React from "react";
+import { Redirect, Link } from "react-router-dom";
 import { Centered } from "./common/centered";
 import { Loading } from "./common/loading";
-import { useJoinMutation, useMyGamesQuery } from "./generated/graphql";
-import { Redirect } from "react-router-dom";
+import { useJoinMutation, useMyGamesQuery, Game } from "./generated/graphql";
 
 export const Splash: React.FC = () => (
   <Centered>
@@ -13,7 +13,13 @@ export const Splash: React.FC = () => (
 );
 
 const MyGames: React.FC = () => {
-  const { loading, data } = useMyGamesQuery();
+  const { loading, data, error } = useMyGamesQuery({
+    fetchPolicy: "no-cache",
+  });
+
+  if (error) {
+    throw error;
+  }
 
   if (loading) {
     return <Loading />;
@@ -21,15 +27,23 @@ const MyGames: React.FC = () => {
 
   if (data) {
     return (
-      <ul>
-        {data.myGames.map(g => (
-          <li>Nothing</li>
+      <>
+        {data.myGames.map(game => (
+          <GameButton game={game} key={game.id} />
         ))}
-      </ul>
+      </>
     );
   }
 
-  throw new Error("invalid state");
+  throw new Error("undefined query state");
+};
+
+const GameButton: React.FC<{ game: Game }> = ({ game }) => {
+  return (
+    <Link to={`/game/${game.id}`}>
+      <Button>{game.id}</Button>
+    </Link>
+  );
 };
 
 const NewGame: React.FC = () => {

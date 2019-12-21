@@ -8,9 +8,15 @@ export const Whoami: React.FC = () => {
     fetchPolicy: "network-only",
   });
 
-  if (error) throw error;
-  if (loading) return <Loading />;
-  if (data)
+  if (error) {
+    throw error;
+  }
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (data) {
     return (
       <>
         <div>{data.whoami}</div>
@@ -19,5 +25,7 @@ export const Whoami: React.FC = () => {
         </div>
       </>
     );
+  }
+
   throw new Error("undefined query state");
 };
