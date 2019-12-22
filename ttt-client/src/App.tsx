@@ -1,13 +1,12 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { Board } from "./common/board";
+import { AppContext, TTTApp } from "./app-context";
+import { Background } from "./common/background";
 import { Layout } from "./common/layout";
 import { Loading } from "./common/loading";
-import { GameRoute } from "./game";
+import { GameRoute } from "./route-game";
 import { useAuthentication } from "./hooks/use-authentication";
-import { Ping } from "./ping";
-import { Splash } from "./splash";
-import { AppContext, TTTApp } from "./app-context";
+import { SplashRoute } from "./route-splash";
 
 export const App: React.FC = () => (
   <TTTApp>
@@ -18,34 +17,25 @@ export const App: React.FC = () => (
 const TTT: React.FC = () => {
   const isAuthenticated = useAuthentication();
   const { isLoading, setIsLoading } = useContext(AppContext);
-
-  useEffect(() => {
-    setIsLoading(!isAuthenticated);
-  }, [isAuthenticated, setIsLoading]);
+  setIsLoading(!isAuthenticated);
 
   return (
     <Layout>
-      <Board />
-      {isAuthenticated && <Routes />}
+      <Background />
+      {isAuthenticated && (
+        <BrowserRouter>
+          <Switch>
+            <Route path="/" exact>
+              <SplashRoute />
+            </Route>
+
+            <Route path="/game/:gameId">
+              <GameRoute />
+            </Route>
+          </Switch>
+        </BrowserRouter>
+      )}
       <Loading isLoading={isLoading} />
     </Layout>
   );
 };
-
-const Routes: React.FC = () => (
-  <BrowserRouter>
-    <Switch>
-      <Route path="/" exact>
-        <Splash />
-      </Route>
-
-      <Route path="/ping" exact>
-        <Ping />
-      </Route>
-
-      <Route path="/game/:gameId">
-        <GameRoute />
-      </Route>
-    </Switch>
-  </BrowserRouter>
-);
