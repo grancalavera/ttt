@@ -1,5 +1,4 @@
 import React from "react";
-import { Loading } from "./common/loading";
 import { LinkHome } from "./common/link-home";
 import { useWhoamiQuery } from "./generated/graphql";
 
@@ -13,7 +12,7 @@ export const Whoami: React.FC = () => {
   }
 
   if (loading) {
-    return <Loading />;
+    return null;
   }
 
   if (data) {

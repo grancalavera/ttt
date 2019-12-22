@@ -1,9 +1,8 @@
 import { Button } from "@blueprintjs/core";
 import React from "react";
-import { Redirect, Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { Centered } from "./common/centered";
-import { Loading } from "./common/loading";
-import { useJoinMutation, useMyGamesQuery, Game } from "./generated/graphql";
+import { Game, useJoinMutation, useMyGamesQuery } from "./generated/graphql";
 
 export const Splash: React.FC = () => (
   <Centered>
@@ -22,7 +21,7 @@ const MyGames: React.FC = () => {
   }
 
   if (loading) {
-    return <Loading />;
+    return null;
   }
 
   if (data) {
@@ -50,7 +49,7 @@ const NewGame: React.FC = () => {
   const [join, { data, loading }] = useJoinMutation();
 
   if (loading) {
-    return <Loading />;
+    return null;
   }
 
   if (data) {
