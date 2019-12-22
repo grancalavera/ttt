@@ -1,17 +1,14 @@
 import { Button } from "@blueprintjs/core";
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { Redirect } from "react-router-dom";
 import { AppContext } from "./app-context";
 import { Content } from "./common/layout";
 import { useJoinMutation } from "./generated/graphql";
 
-export const Splash: React.FC = () => {
+export const SplashRoute: React.FC = () => {
   const [join, { data, loading }] = useJoinMutation();
   const { setIsLoading } = useContext(AppContext);
-
-  useEffect(() => {
-    setIsLoading(loading);
-  }, [loading, setIsLoading]);
+  setIsLoading(loading);
 
   if (data) {
     const { gameId } = data.join;
