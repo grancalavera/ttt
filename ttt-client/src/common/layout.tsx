@@ -1,5 +1,5 @@
-import styled from "styled-components/macro";
 import { Card } from "@blueprintjs/core";
+import styled from "styled-components/macro";
 
 export const PADDING = 20;
 export const CONTENT_WIDTH = 300;
@@ -21,4 +21,7 @@ export const Layout = styled(Card)`
 
 export const Content = styled(Cover)`
   display: grid;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
 `;

@@ -1,7 +1,7 @@
-import { Intent, Spinner, Colors } from "@blueprintjs/core";
+import { Colors, Intent, Spinner } from "@blueprintjs/core";
 import React from "react";
-import { Content } from "./layout";
 import styled from "styled-components/macro";
+import { Content } from "./layout";
 
 interface LoadingProps {
   isLoading: boolean;
@@ -9,11 +9,11 @@ interface LoadingProps {
 
 export const Loading: React.FC<LoadingProps> = ({ isLoading }) =>
   isLoading ? (
-    <Layout>
+    <ContentOverlay>
       <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_SMALL} />
-    </Layout>
+    </ContentOverlay>
   ) : null;
 
-const Layout = styled(Content)`
+const ContentOverlay = styled(Content)`
   background-color: ${Colors.DARK_GRAY2}AA;
 `;
