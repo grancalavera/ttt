@@ -1,7 +1,6 @@
 import React from "react";
-import { usePingQuery } from "./generated/graphql";
-import { Loading } from "./common/loading";
 import { LinkHome } from "./common/link-home";
+import { usePingQuery } from "./generated/graphql";
 
 export const Ping: React.FC = () => {
   const { data, loading, error } = usePingQuery({
@@ -9,7 +8,7 @@ export const Ping: React.FC = () => {
   });
 
   if (error) throw error;
-  if (loading) return <Loading />;
+  if (loading) return null;
   if (data)
     return (
       <>

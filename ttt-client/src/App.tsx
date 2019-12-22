@@ -1,7 +1,7 @@
-import { Card } from "@blueprintjs/core";
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import styled from "styled-components";
+import { Board } from "./common/board";
+import { Content, Layout } from "./common/layout";
 import { Loading } from "./common/loading";
 import { GameRoute } from "./game";
 import { useAuthentication } from "./hooks/use-authentication";
@@ -10,7 +10,17 @@ import { Splash } from "./splash";
 
 export const App: React.FC = () => {
   const isAuthenticated = useAuthentication();
-  return <Layout>{isAuthenticated ? <Routes /> : <Loading />}</Layout>;
+
+  // add a context to show/hide loading spinner
+  return (
+    <>
+      <Layout>
+        <Board />
+        <Content />
+        <Loading isLoading={!isAuthenticated} />
+      </Layout>
+    </>
+  );
 };
 
 const Routes: React.FC = () => (
@@ -30,11 +40,3 @@ const Routes: React.FC = () => (
     </Switch>
   </BrowserRouter>
 );
-
-const Layout = styled(Card)`
-  width: 300px;
-  height: 300px;
-  display: grid;
-  margin: auto;
-  overflow: hidden;
-`;
