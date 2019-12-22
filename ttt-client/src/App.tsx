@@ -1,25 +1,34 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Board } from "./common/board";
-import { Content, Layout } from "./common/layout";
+import { Layout } from "./common/layout";
 import { Loading } from "./common/loading";
 import { GameRoute } from "./game";
 import { useAuthentication } from "./hooks/use-authentication";
 import { Ping } from "./ping";
 import { Splash } from "./splash";
+import { AppContext, TTTApp } from "./app-context";
 
-export const App: React.FC = () => {
+export const App: React.FC = () => (
+  <TTTApp>
+    <TTT />
+  </TTTApp>
+);
+
+const TTT: React.FC = () => {
   const isAuthenticated = useAuthentication();
+  const { isLoading, setIsLoading } = useContext(AppContext);
 
-  // add a context to show/hide loading spinner
+  useEffect(() => {
+    setIsLoading(!isAuthenticated);
+  }, [isAuthenticated, setIsLoading]);
+
   return (
-    <>
-      <Layout>
-        <Board />
-        <Content />
-        <Loading isLoading={!isAuthenticated} />
-      </Layout>
-    </>
+    <Layout>
+      <Board />
+      {isAuthenticated && <Routes />}
+      <Loading isLoading={isLoading} />
+    </Layout>
   );
 };
 
