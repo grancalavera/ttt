@@ -1,25 +1,22 @@
 import React from "react";
 import { Redirect, useParams } from "react-router-dom";
-import { LinkHome } from "./common/link-home";
 import { Content } from "./common/layout";
 
 interface GameRouteParams {
-  gameId?: string;
+  gameId: string;
 }
 
 export const GameRoute: React.FC = () => {
   const { gameId } = useParams<GameRouteParams>();
 
   if (!gameId) {
+    console.error("missing required `gameId`");
     return <Redirect to="/" />;
-  } else {
-    return (
-      <Content>
-        <div>
-          <pre>{gameId}</pre>
-          <LinkHome />
-        </div>
-      </Content>
-    );
   }
+
+  return (
+    <Content className="bp3-text-small">
+      <code>{gameId}</code>
+    </Content>
+  );
 };

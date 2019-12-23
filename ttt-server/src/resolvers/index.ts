@@ -11,7 +11,6 @@ import {
 const Query: QueryResolvers = {
   users: (_, __, ctx) => users.list(ctx),
   whoami: (_, __, ctx) => ctx.secure(util.whoami),
-  myGames: (_, __, ctx) => ctx.secure(game.myGames(ctx)),
   ping: util.ping,
 };
 

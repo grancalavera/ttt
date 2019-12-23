@@ -1,4 +1,4 @@
 import { UserEntity } from "entity/user-entity";
 
 export const ping = () => "pong";
-export const whoami = (user: UserEntity) => `your user id is ${user.id}`;
+export const whoami = (user: UserEntity) => user.id;
