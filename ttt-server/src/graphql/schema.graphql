@@ -1,15 +1,15 @@
 type Mutation {
-  join: JoinResult!
+  join: ID!
   register: RegisterResult!
   play(input: PlayInput!): Boolean!
 }
 
 type Query {
   users: [User!]!
-  whoami: String
+  whoami: ID
   ping: String!
   game(id: ID!): GameResult
-  myGames: [GameResult!]!
+  myToken(gameId: ID!): ID!
 }
 
 type RegisterResult {
@@ -20,12 +20,6 @@ type RegisterResult {
 type User {
   id: ID!
   tokenVersion: Int!
-}
-
-type JoinResult {
-  gameId: ID!
-  token: Token!
-  next: Token!
 }
 
 input PlayInput {

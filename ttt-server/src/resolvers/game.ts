@@ -6,7 +6,6 @@ import {
   GamePlaying,
   GameResult,
   GameWon,
-  JoinResult,
   PlayInput,
   Token,
 } from "generated/graphql";
@@ -14,7 +13,7 @@ import { isNil } from "lodash/fp";
 
 export const join = (ctx: Context) => async (
   user: UserEntity
-): Promise<JoinResult> => {
+): Promise<string> => {
   const { dataSources } = ctx;
   let gameEntity = await dataSources.games.findOpenGameForUser(user);
   let token;
@@ -31,11 +30,7 @@ export const join = (ctx: Context) => async (
     gameEntity = await dataSources.games.joinNewGame(user, token);
   }
 
-  if (gameEntity.next) {
-    return { gameId: gameEntity.id, token, next: Token[gameEntity.next] };
-  }
-
-  throw new Error("missing `next` in `GameEntity`");
+  return gameEntity.id;
 };
 
 export const play = (ctx: Context, input: PlayInput) => async (
@@ -44,16 +39,16 @@ export const play = (ctx: Context, input: PlayInput) => async (
   throw new Error("`play` mutation not implemented");
 };
 
-export const myGames = (ctx: Context) => async (
-  user: UserEntity
-): Promise<GameResult[]> => {
-  const { findGamesForUser } = ctx.dataSources.games;
+// export const myGames = (ctx: Context) => async (
+//   user: UserEntity
+// ): Promise<GameResult[]> => {
+//   const { findGamesForUser } = ctx.dataSources.games;
 
-  const gameEntities = await findGamesForUser(user);
-  const gameResults = gameEntities.map(toGameResult);
+//   const gameEntities = await findGamesForUser(user);
+//   const gameResults = gameEntities.map(toGameResult);
 
-  return gameResults;
-};
+//   return gameResults;
+// };
 
 const toGameResult = (entity: GameEntity): GameResult => {
   const getToken = tokenFromGameEntity(entity);
