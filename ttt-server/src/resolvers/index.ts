@@ -2,7 +2,7 @@ import * as game from "resolvers/game";
 import * as users from "resolvers/users";
 import * as util from "resolvers/util";
 import {
-  GameResultResolvers,
+  GameStatusResolvers,
   MutationResolvers,
   QueryResolvers,
   Resolvers,
@@ -11,11 +11,12 @@ import {
 const Query: QueryResolvers = {
   users: (_, __, ctx) => users.list(ctx),
   whoami: (_, __, ctx) => ctx.secure(util.whoami),
+  gameStatus: (_, { gameId }, ctx) => ctx.secure(game.status(ctx, gameId)),
   ping: util.ping,
 };
 
-const GameResult: GameResultResolvers = {
-  __resolveType: ({ __typename }) => enforceTypename("GameResult", __typename),
+const GameStatus: GameStatusResolvers = {
+  __resolveType: ({ __typename }) => enforceTypename("GameStatus", __typename),
 };
 
 const Mutation: MutationResolvers = {
@@ -24,7 +25,7 @@ const Mutation: MutationResolvers = {
   play: (_, { input }, ctx) => ctx.secure(game.play(ctx, input)),
 };
 
-export const resolvers: Resolvers = { Query, Mutation, GameResult };
+export const resolvers: Resolvers = { Query, Mutation, GameStatus };
 
 const enforceTypename = <T extends string>(
   unionType: string,

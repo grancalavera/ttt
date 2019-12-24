@@ -8,8 +8,7 @@ type Query {
   users: [User!]!
   whoami: ID
   ping: String!
-  game(id: ID!): GameResult
-  myToken(gameId: ID!): ID!
+  gameStatus(gameId: ID!): GameStatus
 }
 
 type RegisterResult {
@@ -49,7 +48,7 @@ interface Game {
   id: ID!
 }
 
-union GameResult = GamePlaying | GameDraw | GameWon
+union GameStatus = GamePlaying | GameDraw | GameWon
 
 type GamePlaying implements Game {
   id: ID!
