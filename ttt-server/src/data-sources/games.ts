@@ -13,6 +13,11 @@ export class GamesDataSource extends DataSource {
     this.context = config.context;
   }
 
+  async findById(gameId: string) {
+    const game = await GameEntity.findOne({ where: { id: gameId } });
+    return game;
+  }
+
   async findOpenGameForUser(user: UserEntity): Promise<GameEntity | undefined> {
     const game = await GameEntity.findOne({
       where: { X: null, O: Not(user.id) },
