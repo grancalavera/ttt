@@ -1,17 +1,20 @@
 import { UserEntity } from "entity/user-entity";
 import { Context } from "context";
-import { ensureUserOwnsGame, toGameStatus } from "./game-common";
+import { toGameStatus } from "./game-common";
 
 export const status = (ctx: Context, gameId: string) => async (
   user: UserEntity
 ) => {
-  const gameEntity = await ctx.dataSources.games.findById(gameId);
+  const gameEntity = await ctx.dataSources.games.findGameOwnedByUser(
+    gameId,
+    user
+  );
 
   if (!gameEntity) {
-    throw new Error(`game ${gameId} does not exist`);
+    throw new Error(`
+Invalid query:
+either game ${gameId} does not exist or user ${user.id} is not authorized to see it.`);
   }
-
-  ensureUserOwnsGame(user, gameEntity);
 
   return toGameStatus(gameEntity);
 };
