@@ -2,7 +2,6 @@ import { assertNever } from "@grancalavera/ttt-core";
 import { GameEntity } from "entity/game-entity";
 import { GamePlaying, GameStatus, GameWon, Token } from "generated/graphql";
 import { isNil } from "lodash/fp";
-import { UserEntity } from "entity/user-entity";
 
 export const toGameStatus = (entity: GameEntity): GameStatus => {
   const getToken = tokenFromGameEntity(entity);
@@ -33,14 +32,6 @@ export const toGameStatus = (entity: GameEntity): GameStatus => {
     default: {
       return assertNever(entity.status);
     }
-  }
-};
-
-export const ensureUserOwnsGame = (user: UserEntity, game: GameEntity) => {
-  const ownedByO = user.id === game.O;
-  const ownedByX = user.id === game.X;
-  if (!ownedByO && !ownedByX) {
-    throw new Error(`user ${user.id} not authorized to see game ${game.id}`);
   }
 };
 

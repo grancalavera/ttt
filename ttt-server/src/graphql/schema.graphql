@@ -9,6 +9,7 @@ type Query {
   whoami: ID
   ping: String!
   gameStatus(gameId: ID!): GameStatus
+  myToken(gameId: ID!): Token
 }
 
 type RegisterResult {

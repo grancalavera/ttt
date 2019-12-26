@@ -1,6 +1,7 @@
 export * from "./game-join";
 export * from "./game-play";
 export * from "./game-status";
+export * from "./game-my-token";
 
 // export const myGames = (ctx: Context) => async (
 //   user: UserEntity

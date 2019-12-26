@@ -13,16 +13,22 @@ export class GamesDataSource extends DataSource {
     this.context = config.context;
   }
 
-  async findById(gameId: string) {
-    const game = await GameEntity.findOne({ where: { id: gameId } });
-    return game;
-  }
-
   async findOpenGameForUser(user: UserEntity): Promise<GameEntity | undefined> {
     const game = await GameEntity.findOne({
       where: { X: null, O: Not(user.id) },
     });
     return game;
+  }
+
+  async findGameOwnedByUser(gameId: string, userEntity: UserEntity) {
+    const gameEntity = await GameEntity.findOne({
+      where: [
+        { O: userEntity.id, id: gameId },
+        { X: userEntity.id, id: gameId },
+      ],
+    });
+
+    return gameEntity;
   }
 
   async findGamesForUser(user: UserEntity) {
