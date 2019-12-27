@@ -9,7 +9,6 @@ type Query {
   whoami: ID
   ping: String!
   gameStatus(gameId: ID!): GameStatus!
-  myToken(gameId: ID!): Token!
 }
 
 type RegisterResult {
@@ -47,20 +46,24 @@ enum Position {
 
 interface Game {
   id: ID!
+  me: Token!
 }
 
 union GameStatus = GamePlaying | GameDraw | GameWon
 
 type GamePlaying implements Game {
   id: ID!
+  me: Token!
   next: Token!
 }
 
 type GameDraw implements Game {
   id: ID!
+  me: Token!
 }
 
 type GameWon implements Game {
   id: ID!
+  me: Token!
   winner: Token!
 }

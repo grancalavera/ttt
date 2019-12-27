@@ -1,9 +1,0 @@
-query GameInfo($gameId: ID!) {
-  myToken(gameId: $gameId)
-  gameStatus(gameId: $gameId) {
-    __typename
-    ... on GamePlaying {
-      next
-    }
-  }
-}
