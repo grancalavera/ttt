@@ -12,7 +12,6 @@ const Query: QueryResolvers = {
   users: (_, __, ctx) => users.list(ctx),
   whoami: (_, __, ctx) => ctx.secure(util.whoami),
   gameStatus: (_, { gameId }, ctx) => ctx.secure(game.status(ctx, gameId)),
-  myToken: (_, { gameId }, ctx) => ctx.secure(game.myToken(ctx, gameId)),
   ping: util.ping,
 };
 
