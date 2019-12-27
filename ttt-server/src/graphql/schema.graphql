@@ -8,8 +8,8 @@ type Query {
   users: [User!]!
   whoami: ID
   ping: String!
-  gameStatus(gameId: ID!): GameStatus
-  myToken(gameId: ID!): Token
+  gameStatus(gameId: ID!): GameStatus!
+  myToken(gameId: ID!): Token!
 }
 
 type RegisterResult {

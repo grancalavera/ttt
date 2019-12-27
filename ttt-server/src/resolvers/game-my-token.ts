@@ -10,6 +10,12 @@ export const myToken = (ctx: Context, gameId: string) => async (
     user
   );
 
+  if (!gameEntity) {
+    throw new Error(`
+Invalid query:
+either game ${gameId} does not exist or user ${user.id} is not authorized to see it.`);
+  }
+
   if (gameEntity.O === user.id) {
     return Token.O;
   }
@@ -19,7 +25,5 @@ export const myToken = (ctx: Context, gameId: string) => async (
   }
 
   throw new Error(`
-Invalid query:
-unable to find token for user ${user.id} in game ${gameId}.
-`);
+Fatal error: unable to find token for user ${user.id} in game ${gameEntity.id}`);
 };
