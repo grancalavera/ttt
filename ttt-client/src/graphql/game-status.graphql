@@ -1,0 +1,19 @@
+query GameStatus($gameId: ID!) {
+  gameStatus(gameId: $gameId) {
+    __typename
+
+    ... on GamePlaying {
+      me
+      next
+    }
+
+    ... on GameWon {
+      me
+      winner
+    }
+
+    ... on GameDraw {
+      me
+    }
+  }
+}
