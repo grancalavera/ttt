@@ -3,16 +3,19 @@ query GameStatus($gameId: ID!) {
     __typename
 
     ... on GamePlaying {
+      id
       me
       next
     }
 
     ... on GameWon {
+      id
       me
       winner
     }
 
     ... on GameDraw {
+      id
       me
     }
   }
