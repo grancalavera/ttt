@@ -1,13 +1,12 @@
-import { CoreMove, CorePlayer, CorePosition } from "@grancalavera/ttt-core";
+import { CoreMove, CorePlayer, CorePosition, assertNever } from "@grancalavera/ttt-core";
 import {
-  MissingGameId,
   GameNotFound,
-  InvalidPosition,
-  PositionPlayedError,
-  WrongTurn,
   GameOver,
+  InvalidPosition,
   InvalidRequest,
+  MissingGameId,
   PositionPlayed,
+  WrongTurn,
 } from "./exceptions";
 
 export interface Move {
@@ -46,6 +45,22 @@ export const isGameResponse = (x: any): x is GameResponse => {
   return mustHave.every(key => actualKeys.includes(key));
 };
 
-export const isErrorResponse = (x: any): x is ErrorResponse => {
-  return !!x.errors && x.errors.length;
+export const isErrorResponse = (candidate?: any): candidate is ErrorResponse => {
+  try {
+    const c = candidate! as ErrorResponse;
+    switch (c.kind) {
+      case "GameNotFound":
+      case "GameOver":
+      case "InvalidPosition":
+      case "InvalidRequest":
+      case "MissingGameId":
+      case "PositionPlayed":
+      case "WrongTurn":
+        return true;
+      default:
+        return assertNever(c);
+    }
+  } catch (e) {
+    return false;
+  }
 };

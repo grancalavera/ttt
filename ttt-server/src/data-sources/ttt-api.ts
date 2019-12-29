@@ -1,7 +1,5 @@
+import { ErrorResponse, GameResponse, isErrorResponse, Move } from "@grancalavera/ttt-api";
 import { RESTDataSource } from "apollo-datasource-rest";
-import { GameResponse, ErrorResponse, Move } from "@grancalavera/ttt-api";
-import { DataSourceContext } from "context";
-import { DataSourceConfig } from "apollo-datasource";
 
 export type GameAPIResponse = GameResponse | ErrorResponse;
 
@@ -11,23 +9,34 @@ export interface ITTTAPIDataSource {
   postMove: (move: Move) => Promise<GameAPIResponse>;
 }
 
-export class TTTAPIDataSource extends RESTDataSource
-  implements ITTTAPIDataSource {
-  context!: DataSourceContext;
-
-  initialize(config: DataSourceConfig<DataSourceContext>) {
-    this.context = config.context;
+export class TTTAPIDataSource extends RESTDataSource implements ITTTAPIDataSource {
+  constructor(readonly baseURL: string) {
+    super();
   }
 
   getAllGames(): Promise<GameResponse[]> {
-    throw new Error("not implemented");
+    throw new Error("TTTAPIDataSource.getAllGames not implemented");
   }
 
-  getGameById(id: string): Promise<GameAPIResponse> {
-    throw new Error("not implemented");
+  async getGameById(id: string) {
+    const result = await captureError(() => this.get<GameResponse>(`ttt/${id}`));
+    return result;
   }
 
   postMove(move: Move): Promise<GameAPIResponse> {
-    throw new Error("not implemented");
+    throw new Error("TTTAPIDataSource.postMove not implemented");
   }
 }
+
+const captureError = async <T>(effect: () => Promise<T>): Promise<T | ErrorResponse> => {
+  try {
+    return await effect();
+  } catch (e) {
+    const errorResponse: ErrorResponse = e?.extensions?.response?.body;
+    if (isErrorResponse(errorResponse)) {
+      return errorResponse;
+    } else {
+      throw e;
+    }
+  }
+};
