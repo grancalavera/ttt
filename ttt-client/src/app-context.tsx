@@ -10,10 +10,12 @@ export interface Context {
 export const AppContext = React.createContext<Context>({
   loading: false,
   authenticated: false,
-  setLoading: () => {},
+  setLoading: () => {
+    throw new Error("setLoading is not implemented");
+  },
 });
 
-export const TTTApp: React.FC = ({ children }) => {
+export const AppContextProvider: React.FC = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const authenticated = useAuthentication();
 

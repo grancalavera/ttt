@@ -15,6 +15,7 @@ import {
   httpLinkMiddleware,
   refreshJWTMiddleware,
 } from "./middleware";
+import { AppContextProvider } from "./app-context";
 
 const client = new ApolloClient({
   link: linkFrom([
@@ -36,7 +37,9 @@ ReactDOM.render(
   <>
     <GlobalStyle />
     <ApolloProvider client={client}>
-      <App />
+      <AppContextProvider>
+        <App />
+      </AppContextProvider>
     </ApolloProvider>
   </>,
   document.getElementById("root")
