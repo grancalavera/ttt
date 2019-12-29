@@ -4,11 +4,11 @@ import styled from "styled-components/macro";
 import { Content } from "./layout";
 
 interface LoadingProps {
-  isLoading: boolean;
+  loading: boolean;
 }
 
-export const Loading: React.FC<LoadingProps> = ({ isLoading }) =>
-  isLoading ? (
+export const Loading: React.FC<LoadingProps> = ({ loading }) =>
+  loading ? (
     <ContentOverlay>
       <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_SMALL} />
     </ContentOverlay>

@@ -18,8 +18,8 @@ export const App: React.FC = () => (
 
 const TTT: React.FC = () => {
   const isAuthenticated = useAuthentication();
-  const { isLoading, setIsLoading } = useContext(AppContext);
-  setIsLoading(!isAuthenticated);
+  const { loading, setLoading } = useContext(AppContext);
+  setLoading(!isAuthenticated);
 
   return (
     <>
@@ -38,7 +38,7 @@ const TTT: React.FC = () => {
             </Switch>
           </BrowserRouter>
         )}
-        <Loading isLoading={isLoading} />
+        <Loading loading={loading} />
       </Layout>
     </>
   );
