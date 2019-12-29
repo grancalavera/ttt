@@ -12,6 +12,12 @@ import { GamesDataSource } from "data-sources/games";
 import { TTTAPIDataSource } from "data-sources/ttt-api";
 
 export const mkServer = async (origin: string) => {
+  const apiBaseUrl = process.env.TTT_API;
+
+  if (!apiBaseUrl) {
+    throw new Error("missing required environment variable TTT_API");
+  }
+
   const typeDefs = readFileSync(
     join(__dirname, "../graphql/schema.graphql"),
     "utf8"
@@ -40,7 +46,7 @@ export const mkServer = async (origin: string) => {
     dataSources: () => ({
       users: new UsersDataSource(),
       games: new GamesDataSource(),
-      api: new TTTAPIDataSource(),
+      api: new TTTAPIDataSource(apiBaseUrl),
     }),
     schema,
   });

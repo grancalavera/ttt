@@ -27,14 +27,9 @@ const Mutation: MutationResolvers = {
 
 export const resolvers: Resolvers = { Query, Mutation, GameStatus };
 
-const enforceTypename = <T extends string>(
-  unionType: string,
-  typename?: T
-): T => {
+const enforceTypename = <T extends string>(unionType: string, typename?: T): T => {
   if (typename) {
     return typename;
   }
-  throw new Error(
-    `missing required "__typename" for union type "${unionType}"`
-  );
+  throw new Error(`missing required "__typename" for union type "${unionType}"`);
 };

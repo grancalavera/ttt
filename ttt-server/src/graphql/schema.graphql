@@ -44,9 +44,15 @@ enum Position {
   I
 }
 
+type Move {
+  token: Token!
+  position: Position!
+}
+
 interface Game {
   id: ID!
   me: Token!
+  moves: [Move!]!
 }
 
 union GameStatus = GamePlaying | GameDraw | GameWon
@@ -55,15 +61,25 @@ type GamePlaying implements Game {
   id: ID!
   me: Token!
   next: Token!
+  moves: [Move!]!
 }
 
 type GameDraw implements Game {
   id: ID!
   me: Token!
+  moves: [Move!]!
 }
 
 type GameWon implements Game {
   id: ID!
   me: Token!
   winner: Token!
+  moves: [Move!]!
+}
+
+fragment playingFields on GamePlaying {
+  id
+  me
+  next
+  moves
 }

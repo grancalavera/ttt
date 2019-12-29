@@ -25,8 +25,7 @@ export const GameRoute: React.FC = () => {
   }
 
   if (error) {
-    console.error(error);
-    return <Redirect to="/" />;
+    throw new Error(error.message);
   }
 
   if (data) {
