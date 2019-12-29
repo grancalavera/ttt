@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import { Content } from "./common/layout";
 import { useGameStatusQuery } from "./generated/graphql";
+import { AppContext } from "./app-context";
 
 interface GameRouteParams {
   gameId: string;
@@ -9,10 +10,14 @@ interface GameRouteParams {
 
 export const GameRoute: React.FC = () => {
   const { gameId } = useParams<GameRouteParams>();
+  const { setIsLoading } = useContext(AppContext);
+
   const { loading, data, error } = useGameStatusQuery({
     variables: { gameId },
-    fetchPolicy: "network-only",
+    fetchPolicy: "no-cache",
   });
+
+  setIsLoading(loading);
 
   if (!gameId) {
     console.error("missing required `gameId`");
@@ -24,9 +29,17 @@ export const GameRoute: React.FC = () => {
     return <Redirect to="/" />;
   }
 
-  return (
-    <Content className="bp3-text-small">
-      <code>{gameId}</code>
-    </Content>
-  );
+  if (data) {
+    return (
+      <Content className="bp3-text-small">
+        <pre>{JSON.stringify(data.gameStatus, null, 2)}</pre>
+      </Content>
+    );
+  }
+
+  if (loading) {
+    return null;
+  }
+
+  throw new Error("Invalid data state for GameRoute");
 };
