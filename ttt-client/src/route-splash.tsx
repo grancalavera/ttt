@@ -8,7 +8,7 @@ import { useJoinMutation } from "./generated/graphql";
 export const SplashRoute: React.FC = () => {
   const [join, { data, loading }] = useJoinMutation();
   const history = useHistory();
-  const { setIsLoading } = useContext(AppContext);
+  const { setLoading: setIsLoading } = useContext(AppContext);
 
   setIsLoading(loading);
 

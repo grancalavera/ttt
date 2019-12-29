@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 
 export interface Context {
-  isLoading: boolean;
-  setIsLoading: (value: boolean) => void;
+  loading: boolean;
+  setLoading: (value: boolean) => void;
 }
 
 export const AppContext = React.createContext<Context>({
-  isLoading: false,
-  setIsLoading: () => {},
+  loading: false,
+  setLoading: () => {},
 });
 
 export const TTTApp: React.FC = ({ children }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   return (
-    <AppContext.Provider value={{ isLoading, setIsLoading }}>
+    <AppContext.Provider value={{ loading, setLoading }}>
       {children}
     </AppContext.Provider>
   );

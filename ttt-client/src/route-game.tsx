@@ -10,14 +10,14 @@ interface GameRouteParams {
 
 export const GameRoute: React.FC = () => {
   const { gameId } = useParams<GameRouteParams>();
-  const { setIsLoading } = useContext(AppContext);
+  const { setLoading } = useContext(AppContext);
 
   const { loading, data, error } = useGameStatusQuery({
     variables: { gameId },
     fetchPolicy: "no-cache",
   });
 
-  setIsLoading(loading);
+  setLoading(loading);
 
   if (!gameId) {
     console.error("missing required `gameId`");
