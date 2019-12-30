@@ -9,9 +9,9 @@ import { GameRoute } from "./route-game";
 import { SplashRoute } from "./route-splash";
 
 export const App: React.FC = () => {
-  const { loading, setLoading, authenticated } = useContext(AppContext);
+  const { authenticated } = useContext(AppContext);
 
-  setLoading(!authenticated);
+  // setLoading(!authenticated);
 
   return (
     <>
@@ -30,7 +30,7 @@ export const App: React.FC = () => {
             </Switch>
           </BrowserRouter>
         )}
-        <Loading loading={loading} />
+        <Loading />
       </Layout>
     </>
   );
