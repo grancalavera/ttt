@@ -2,15 +2,14 @@ import { assertNever } from "@grancalavera/ttt-core";
 import React, { useContext } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import { AppContext } from "./app-context";
-import { Content } from "./common/layout";
 import {
   activityState,
   ACTIVITY_FAILED,
   ACTIVITY_IDLE,
   ACTIVITY_LOADING,
   ACTIVITY_SUCCESS,
-  isLoading,
 } from "./common/activity-state";
+import { Content } from "./common/layout";
 import { useGameStatusQuery } from "./generated/graphql";
 
 interface GameRouteParams {
@@ -19,7 +18,7 @@ interface GameRouteParams {
 
 export const GameRoute: React.FC = () => {
   const { gameId } = useParams<GameRouteParams>();
-  const { setLoading } = useContext(AppContext);
+  const { setLoadingFromActivity } = useContext(AppContext);
   const qResult = useGameStatusQuery({
     variables: { gameId },
     fetchPolicy: "no-cache",
@@ -32,7 +31,7 @@ export const GameRoute: React.FC = () => {
 
   const qState = activityState(qResult);
 
-  setLoading(isLoading(qState));
+  setLoadingFromActivity(qState);
 
   switch (qState.kind) {
     case ACTIVITY_IDLE:
