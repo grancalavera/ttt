@@ -9,8 +9,9 @@ import {
   ACTIVITY_LOADING,
   ACTIVITY_SUCCESS,
 } from "./common/activity-state";
-import { Content } from "./common/layout";
+import { Board, Cell } from "./common/layout";
 import { useGameStatusQuery } from "./generated/graphql";
+import { Button, Intent } from "@blueprintjs/core";
 
 interface GameRouteParams {
   gameId: string;
@@ -41,10 +42,43 @@ export const GameRoute: React.FC = () => {
       console.error(qState.error);
       return <Redirect to="/" />;
     case ACTIVITY_SUCCESS:
+      console.log(JSON.stringify(qState.data.gameStatus, null, 2));
       return (
-        <Content className="bp3-text-small">
-          <pre>{JSON.stringify(qState.data.gameStatus, null, 2)}</pre>
-        </Content>
+        <Board>
+          <Cell>
+            <Button
+              intent={Intent.PRIMARY}
+              minimal
+              onClick={(e: React.MouseEvent<HTMLElement>) => {
+                e.preventDefault();
+              }}
+            ></Button>
+          </Cell>
+          <Cell>
+            <Button intent={Intent.PRIMARY} minimal></Button>
+          </Cell>
+          <Cell>
+            <Button intent={Intent.PRIMARY} minimal></Button>
+          </Cell>
+          <Cell>
+            <Button intent={Intent.PRIMARY} minimal></Button>
+          </Cell>
+          <Cell>
+            <Button intent={Intent.PRIMARY} minimal></Button>
+          </Cell>
+          <Cell>
+            <Button intent={Intent.PRIMARY} minimal></Button>
+          </Cell>
+          <Cell>
+            <Button intent={Intent.PRIMARY} minimal></Button>
+          </Cell>
+          <Cell>
+            <Button intent={Intent.PRIMARY} minimal></Button>
+          </Cell>
+          <Cell>
+            <Button intent={Intent.PRIMARY} minimal></Button>
+          </Cell>
+        </Board>
       );
     default:
       return assertNever(qState);

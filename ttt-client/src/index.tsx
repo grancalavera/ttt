@@ -17,12 +17,11 @@ import {
 } from "./middleware";
 import { AppContextProvider } from "./app-context";
 
+import { FocusStyleManager } from "@blueprintjs/core";
+FocusStyleManager.onlyShowFocusOnTabs();
+
 const client = new ApolloClient({
-  link: linkFrom([
-    refreshJWTMiddleware,
-    authLinkMiddleware,
-    httpLinkMiddleware,
-  ]),
+  link: linkFrom([refreshJWTMiddleware, authLinkMiddleware, httpLinkMiddleware]),
   cache: new InMemoryCache(),
 });
 

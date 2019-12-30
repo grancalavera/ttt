@@ -1,9 +1,10 @@
-import { Card } from "@blueprintjs/core";
+import { Card, Colors } from "@blueprintjs/core";
 import styled from "styled-components/macro";
 
 export const PADDING = 20;
 export const CONTENT_WIDTH = 300;
 export const FULL_WIDTH = PADDING * 2 + CONTENT_WIDTH;
+const CELL_WIDTH = CONTENT_WIDTH / 3 - PADDING;
 
 export const Cover = styled.div`
   width: calc(100% - ${PADDING * 2}px);
@@ -24,4 +25,24 @@ export const Content = styled(Cover)`
   align-items: center;
   justify-content: center;
   vertical-align: middle;
+`;
+
+export const Board = styled(Cover)`
+  display: grid;
+  grid-template-areas:
+    "cell cell cell"
+    "cell cell cell"
+    "cell cell cell";
+`;
+
+export const Cell = styled.div`
+  justify-self: center;
+  align-self: center;
+  user-select: none;
+  width: ${CELL_WIDTH}px;
+  height: ${CELL_WIDTH}px;
+  & > button {
+    width: ${CELL_WIDTH}px;
+    height: ${CELL_WIDTH}px;
+  }
 `;
