@@ -3,7 +3,14 @@ import React, { useContext } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import { AppContext } from "./app-context";
 import { Content } from "./common/layout";
-import { queryState } from "./common/query-state";
+import {
+  activityState,
+  ACTIVITY_FAILED,
+  ACTIVITY_IDLE,
+  ACTIVITY_LOADING,
+  ACTIVITY_SUCCESS,
+  isLoading,
+} from "./common/activity-state";
 import { useGameStatusQuery } from "./generated/graphql";
 
 interface GameRouteParams {
@@ -23,19 +30,18 @@ export const GameRoute: React.FC = () => {
     return <Redirect to="/" />;
   }
 
-  const qState = queryState(qResult);
+  const qState = activityState(qResult);
 
-  setLoading(qState.kind === "QueryLoading");
+  setLoading(isLoading(qState));
 
   switch (qState.kind) {
-    case "QueryIdle":
+    case ACTIVITY_IDLE:
+    case ACTIVITY_LOADING:
       return null;
-    case "QueryLoading":
-      return null;
-    case "QueryFailed":
+    case ACTIVITY_FAILED:
       console.error(qState.error);
       return <Redirect to="/" />;
-    case "QuerySuccess":
+    case ACTIVITY_SUCCESS:
       return (
         <Content className="bp3-text-small">
           <pre>{JSON.stringify(qState.data.gameStatus, null, 2)}</pre>
