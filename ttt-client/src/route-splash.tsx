@@ -1,30 +1,40 @@
 import { Button } from "@blueprintjs/core";
-import React, { useContext, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { assertNever } from "@grancalavera/ttt-core";
+import React, { useContext } from "react";
+import { Redirect } from "react-router-dom";
 import { AppContext } from "./app-context";
+import {
+  activityState,
+  ACTIVITY_FAILED,
+  ACTIVITY_IDLE,
+  ACTIVITY_LOADING,
+  ACTIVITY_SUCCESS,
+  isLoading,
+} from "./common/activity-state";
 import { Content } from "./common/layout";
 import { useJoinMutation } from "./generated/graphql";
 
 export const SplashRoute: React.FC = () => {
-  const [join, { data, loading }] = useJoinMutation();
-  const history = useHistory();
-  const { setLoading: setIsLoading } = useContext(AppContext);
+  const { setLoading } = useContext(AppContext);
+  const [join, mResult] = useJoinMutation();
 
-  setIsLoading(loading);
+  const mState = activityState(mResult);
+  setLoading(isLoading(mState));
 
-  useEffect(() => {
-    if (data) {
-      history.push(`/game/${data.join}`);
-    }
-  }, [data, history]);
-
-  if (!data && !loading) {
-    return (
-      <Content>
-        <Button icon="play" onClick={() => join()} />
-      </Content>
-    );
+  switch (mState.kind) {
+    case ACTIVITY_IDLE:
+      return (
+        <Content>
+          <Button icon="play" onClick={() => join()} />
+        </Content>
+      );
+    case ACTIVITY_LOADING:
+      return null;
+    case ACTIVITY_FAILED:
+      throw mState.error;
+    case ACTIVITY_SUCCESS:
+      return <Redirect to={`/game/${mState.data.join}`} push />;
+    default:
+      return assertNever(mState);
   }
-
-  return null;
 };
