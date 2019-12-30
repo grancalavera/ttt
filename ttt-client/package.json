@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@apollo/client": "3.0.0-beta.6",
+    "@apollo/client": "3.0.0-beta.16",
     "@blueprintjs/core": "3.19.1",
     "@grancalavera/ttt-core": "^0.0.0",
     "graphql": "14.5.8",
