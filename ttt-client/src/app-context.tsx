@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuthentication } from "./hooks/use-authentication";
 import { ActivityState, isLoading } from "./common/activity-state";
 import { useCallback } from "react";
+import { flow } from "lodash/fp";
 
 export interface Context {
   loading: boolean;
@@ -25,12 +26,7 @@ export const AppContextProvider: React.FC = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const authenticated = useAuthentication();
 
-  const setLoadingFromActivity = useCallback(
-    (a: ActivityState<any>) => {
-      setLoading(isLoading(a));
-    },
-    [setLoading]
-  );
+  const setLoadingFromActivity = useCallback(flow([isLoading, setLoading]), [setLoading]);
 
   return (
     <AppContext.Provider
