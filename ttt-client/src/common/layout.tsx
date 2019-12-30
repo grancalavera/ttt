@@ -1,4 +1,4 @@
-import { Card, Colors } from "@blueprintjs/core";
+import { Card } from "@blueprintjs/core";
 import styled from "styled-components/macro";
 
 export const PADDING = 20;

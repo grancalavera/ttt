@@ -1,7 +1,7 @@
+import { Button, Intent } from "@blueprintjs/core";
 import { assertNever } from "@grancalavera/ttt-core";
-import React, { useContext } from "react";
+import React from "react";
 import { Redirect, useParams } from "react-router-dom";
-import { AppContext } from "./app-context";
 import {
   activityState,
   ACTIVITY_FAILED,
@@ -10,8 +10,10 @@ import {
   ACTIVITY_SUCCESS,
 } from "./common/activity-state";
 import { Board, Cell } from "./common/layout";
-import { useGameStatusQuery } from "./generated/graphql";
-import { Button, Intent } from "@blueprintjs/core";
+import { Token, useGameStatusQuery, Move, Position } from "./generated/graphql";
+import { useCallback } from "react";
+import { useContext } from "react";
+import { AppContext } from "./app-context";
 
 interface GameRouteParams {
   gameId: string;
@@ -20,17 +22,18 @@ interface GameRouteParams {
 export const GameRoute: React.FC = () => {
   const { gameId } = useParams<GameRouteParams>();
   const { setLoadingFromActivity } = useContext(AppContext);
+
   const qResult = useGameStatusQuery({
     variables: { gameId },
     fetchPolicy: "no-cache",
   });
 
+  const qState = activityState(qResult);
+
   if (!gameId) {
     console.error("missing required `gameId`");
     return <Redirect to="/" />;
   }
-
-  const qState = activityState(qResult);
 
   setLoadingFromActivity(qState);
 
@@ -45,42 +48,35 @@ export const GameRoute: React.FC = () => {
       console.log(JSON.stringify(qState.data.gameStatus, null, 2));
       return (
         <Board>
-          <Cell>
-            <Button
-              intent={Intent.PRIMARY}
-              minimal
-              onClick={(e: React.MouseEvent<HTMLElement>) => {
-                e.preventDefault();
-              }}
-            ></Button>
-          </Cell>
-          <Cell>
-            <Button intent={Intent.PRIMARY} minimal></Button>
-          </Cell>
-          <Cell>
-            <Button intent={Intent.PRIMARY} minimal></Button>
-          </Cell>
-          <Cell>
-            <Button intent={Intent.PRIMARY} minimal></Button>
-          </Cell>
-          <Cell>
-            <Button intent={Intent.PRIMARY} minimal></Button>
-          </Cell>
-          <Cell>
-            <Button intent={Intent.PRIMARY} minimal></Button>
-          </Cell>
-          <Cell>
-            <Button intent={Intent.PRIMARY} minimal></Button>
-          </Cell>
-          <Cell>
-            <Button intent={Intent.PRIMARY} minimal></Button>
-          </Cell>
-          <Cell>
-            <Button intent={Intent.PRIMARY} minimal></Button>
-          </Cell>
+          {defaultState(qState.data.gameStatus.me).map(move => (
+            <PlayButton
+              key={keyFromMove(move)}
+              onPlay={m => console.log(m)}
+              move={move}
+            />
+          ))}
         </Board>
       );
     default:
       return assertNever(qState);
   }
 };
+
+const PlayButton: React.FC<{ move: Move; onPlay(move: Move): void }> = ({
+  move,
+  onPlay,
+}) => {
+  const handleOnClick = useCallback(() => onPlay(move), [move, onPlay]);
+  return (
+    <Cell>
+      <Button intent={Intent.PRIMARY} minimal onClick={handleOnClick} />
+    </Cell>
+  );
+};
+
+const defaultState = (token: Token): Move[] =>
+  [...Array(9)].map((_, i) => ({ position: indexToPosition(i), token }));
+
+const indexToPosition = (i: number): Position => String.fromCharCode(65 + i) as Position;
+
+const keyFromMove = ({ position, token }: Move) => `${position}-${token}`;
