@@ -14,7 +14,7 @@ export const movesToGameResponse = (moves: Move[]): GameResponse => {
     currentPlayer: currentPlayerFromMoves(moves),
     isGameOver: isGameOver(moves),
     winner: winnerFromMoves(moves),
-    moves: movesToCoreMoves(moves)
+    moves: movesToCoreMoves(moves),
   };
 };
 
@@ -31,7 +31,7 @@ const movesToCoreMoves = (moves: Move[]): CoreMove[] => moves.map(m => m.coreMov
 
 export const moveModelToMove = ({ gameId, player, position }: MoveModel): Move => ({
   gameId,
-  coreMove: coerceToMove([player, position])
+  coreMove: coerceToMove([player, position]),
 });
 
 export const currentTurn = (moves: Move[]): Turn => {

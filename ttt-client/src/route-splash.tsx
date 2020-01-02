@@ -1,7 +1,8 @@
 import { Button } from "@blueprintjs/core";
 import { assertNever } from "@grancalavera/ttt-core";
-import React from "react";
+import React, { useContext } from "react";
 import { Redirect } from "react-router-dom";
+import { AppContext } from "./app-context";
 import {
   activityState,
   ACTIVITY_FAILED,
@@ -14,9 +15,10 @@ import { useJoinMutation } from "./generated/graphql";
 
 export const SplashRoute: React.FC = () => {
   const [join, mResult] = useJoinMutation();
+  const { setLoadingFromActivity } = useContext(AppContext);
 
   const mState = activityState(mResult);
-  // setLoadingFromActivity(mState);
+  setLoadingFromActivity(mState);
 
   switch (mState.kind) {
     case ACTIVITY_IDLE:

@@ -27,7 +27,7 @@ export const Content = styled(Cover)`
   vertical-align: middle;
 `;
 
-export const Board = styled(Cover)`
+export const BoardLayout = styled(Cover)`
   display: grid;
   grid-template-areas:
     "cell cell cell"
@@ -35,7 +35,7 @@ export const Board = styled(Cover)`
     "cell cell cell";
 `;
 
-export const Cell = styled.div`
+export const CellLayout = styled.div`
   justify-self: center;
   align-self: center;
   user-select: none;
