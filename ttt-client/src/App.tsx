@@ -9,9 +9,9 @@ import { GameRoute } from "./route-game";
 import { SplashRoute } from "./route-splash";
 
 export const App: React.FC = () => {
-  const { authenticated } = useContext(AppContext);
+  const { authenticated, setLoading } = useContext(AppContext);
 
-  // setLoading(!authenticated);
+  setLoading(!authenticated);
 
   return (
     <>

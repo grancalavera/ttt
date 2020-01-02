@@ -1,6 +1,6 @@
 import { Button, Intent } from "@blueprintjs/core";
 import { assertNever } from "@grancalavera/ttt-core";
-import React from "react";
+import React, { useCallback } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import {
   activityState,
@@ -9,9 +9,8 @@ import {
   ACTIVITY_LOADING,
   ACTIVITY_SUCCESS,
 } from "./common/activity-state";
-import { Board, Cell } from "./common/layout";
-import { Token, useGameStatusQuery, Move, Position } from "./generated/graphql";
-import { useCallback } from "react";
+import { BoardLayout, CellLayout } from "./common/layout";
+import { Move, Position, Token, useGameStatusQuery } from "./generated/graphql";
 import { useContext } from "react";
 import { AppContext } from "./app-context";
 
@@ -47,15 +46,15 @@ export const GameRoute: React.FC = () => {
     case ACTIVITY_SUCCESS:
       console.log(JSON.stringify(qState.data.gameStatus, null, 2));
       return (
-        <Board>
-          {defaultState(qState.data.gameStatus.me).map(move => (
+        <BoardLayout>
+          {defaultState(qState.data.gameStatus.me).map(cellState => (
             <PlayButton
-              key={keyFromMove(move)}
+              key={keyFromCell(cellState)}
               onPlay={m => console.log(m)}
-              move={move}
+              move={cellState.move}
             />
           ))}
-        </Board>
+        </BoardLayout>
       );
     default:
       return assertNever(qState);
@@ -68,15 +67,23 @@ const PlayButton: React.FC<{ move: Move; onPlay(move: Move): void }> = ({
 }) => {
   const handleOnClick = useCallback(() => onPlay(move), [move, onPlay]);
   return (
-    <Cell>
+    <CellLayout>
       <Button intent={Intent.PRIMARY} minimal onClick={handleOnClick} />
-    </Cell>
+    </CellLayout>
   );
 };
 
-const defaultState = (token: Token): Move[] =>
-  [...Array(9)].map((_, i) => ({ position: indexToPosition(i), token }));
+interface CellState {
+  move: Move;
+  isFree: boolean;
+}
+
+const defaultState = (token: Token): CellState[] =>
+  [...Array(9)].map((_, i) => ({
+    isFree: true,
+    move: { position: indexToPosition(i), token },
+  }));
 
 const indexToPosition = (i: number): Position => String.fromCharCode(65 + i) as Position;
 
-const keyFromMove = ({ position, token }: Move) => `${position}-${token}`;
+const keyFromCell = ({ move: { position, token } }: CellState) => `${position}-${token}`;
