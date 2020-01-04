@@ -19,8 +19,8 @@ export const SplashRoute: React.FC = () => {
   const { setLoading } = useContext(AppContext);
 
   const mState = activityState(mResult);
-  const loading = isLoading(mState);
-  setLoading(loading);
+  // const loading = isLoading(mState);
+  // setLoading(loading);
 
   switch (mState.kind) {
     case ACTIVITY_IDLE:
