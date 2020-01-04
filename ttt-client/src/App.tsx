@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, memo } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { AppContext } from "./app-context";
+import { AppContext, RouteContext } from "./app-context";
 import { Background } from "./common/background";
 import { Layout } from "./common/layout";
 import { Loading } from "./common/loading";
@@ -11,27 +11,35 @@ import { SplashRoute } from "./route-splash";
 export const App: React.FC = () => {
   const { authenticated, setLoading } = useContext(AppContext);
 
-  setLoading(!authenticated);
+  // setLoading(!authenticated);
 
   return (
     <>
       <WhoAmI />
       <Layout>
         <Background />
-        {authenticated && (
-          <BrowserRouter>
-            <Switch>
-              <Route path="/" exact>
-                <SplashRoute />
-              </Route>
-              <Route path="/game/:gameId">
-                <GameRoute />
-              </Route>
-            </Switch>
-          </BrowserRouter>
-        )}
+        {authenticated && <ApplicationRouter {...{ setLoading }} />}
         <Loading />
       </Layout>
     </>
   );
 };
+
+const ApplicationRouter: React.FC<{ setLoading: (value: boolean) => void }> = memo(
+  ({ setLoading }) => {
+    return (
+      <BrowserRouter>
+        <Switch>
+          <RouteContext.Provider value={{ setLoading }}>
+            <Route path="/" exact>
+              <SplashRoute />
+            </Route>
+            <Route path="/game/:gameId">
+              <GameRoute />
+            </Route>
+          </RouteContext.Provider>
+        </Switch>
+      </BrowserRouter>
+    );
+  }
+);
