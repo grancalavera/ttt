@@ -28,18 +28,18 @@ export const App: React.FC = () => {
 const ApplicationRouter: React.FC<{ setLoading: (value: boolean) => void }> = memo(
   ({ setLoading }) => {
     return (
-      <BrowserRouter>
-        <Switch>
-          <RouteContext.Provider value={{ setLoading }}>
+      <RouteContext.Provider value={{ setLoading }}>
+        <BrowserRouter>
+          <Switch>
             <Route path="/" exact>
               <SplashRoute />
             </Route>
             <Route path="/game/:gameId">
               <GameRoute />
             </Route>
-          </RouteContext.Provider>
-        </Switch>
-      </BrowserRouter>
+          </Switch>
+        </BrowserRouter>
+      </RouteContext.Provider>
     );
   }
 );
