@@ -1,22 +1,11 @@
-import React, { useCallback, useState } from "react";
-import { ActivityState, isLoading } from "./common/activity-state";
+import React, { useState } from "react";
 import { useAuthentication } from "./hooks/use-authentication";
 
-export interface Context {
-  loading: boolean;
-  authenticated: boolean;
-  setLoading: (value: boolean) => void;
-  setLoadingFromActivity: (activity: ActivityState<any>) => void;
-}
-
-export const AppContext = React.createContext<Context>({
+export const AppContext = React.createContext({
   loading: false,
   authenticated: false,
-  setLoading: () => {
+  setLoading: (value: boolean): void => {
     throw new Error("setLoading is not implemented");
-  },
-  setLoadingFromActivity: () => {
-    throw new Error("setLoadingFromActivity is not implemented");
   },
 });
 
@@ -24,15 +13,8 @@ export const AppContextProvider: React.FC = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const authenticated = useAuthentication();
 
-  const setLoadingFromActivity = useCallback(
-    activity => setLoading(isLoading(activity)),
-    [setLoading]
-  );
-
   return (
-    <AppContext.Provider
-      value={{ loading, setLoading, authenticated, setLoadingFromActivity }}
-    >
+    <AppContext.Provider value={{ loading, setLoading, authenticated }}>
       {children}
     </AppContext.Provider>
   );

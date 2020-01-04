@@ -1,18 +1,18 @@
 import { Button, Intent } from "@blueprintjs/core";
 import { assertNever } from "@grancalavera/ttt-core";
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { Redirect, useParams } from "react-router-dom";
+import { AppContext } from "./app-context";
 import {
   activityState,
   ACTIVITY_FAILED,
   ACTIVITY_IDLE,
   ACTIVITY_LOADING,
   ACTIVITY_SUCCESS,
+  isLoading,
 } from "./common/activity-state";
 import { BoardLayout, CellLayout } from "./common/layout";
 import { Move, Position, Token, useGameStatusQuery } from "./generated/graphql";
-import { useContext } from "react";
-import { AppContext } from "./app-context";
 
 interface GameRouteParams {
   gameId: string;
@@ -20,7 +20,7 @@ interface GameRouteParams {
 
 export const GameRoute: React.FC = () => {
   const { gameId } = useParams<GameRouteParams>();
-  const { setLoadingFromActivity } = useContext(AppContext);
+  const { setLoading } = useContext(AppContext);
 
   const qResult = useGameStatusQuery({
     variables: { gameId },
@@ -28,13 +28,13 @@ export const GameRoute: React.FC = () => {
   });
 
   const qState = activityState(qResult);
+  const loading = isLoading(qState);
+  setLoading(loading);
 
   if (!gameId) {
     console.error("missing required `gameId`");
     return <Redirect to="/" />;
   }
-
-  setLoadingFromActivity(qState);
 
   switch (qState.kind) {
     case ACTIVITY_IDLE:
