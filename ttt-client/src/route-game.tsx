@@ -13,6 +13,7 @@ import {
 } from "./common/activity-state";
 import { BoardLayout, CellLayout } from "./common/layout";
 import { Move, Position, Token, useGameStatusQuery } from "./generated/graphql";
+import { useEffect } from "react";
 
 interface GameRouteParams {
   gameId: string;
@@ -29,7 +30,12 @@ export const GameRoute: React.FC = () => {
 
   const qState = activityState(qResult);
   const loading = isLoading(qState);
-  setLoading(loading);
+  useEffect(() => {
+    console.log("wait 3 seconds...");
+    setTimeout(() => {
+      setLoading(loading);
+    }, 3000);
+  }, [loading, setLoading]);
 
   if (!gameId) {
     console.error("missing required `gameId`");
