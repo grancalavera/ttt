@@ -11,7 +11,7 @@ import { SplashRoute } from "./route-splash";
 export const App: React.FC = () => {
   const { authenticated, setLoading } = useContext(AppContext);
 
-  // setLoading(!authenticated);
+  setLoading(!authenticated);
 
   return (
     <>
