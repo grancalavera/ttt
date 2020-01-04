@@ -9,16 +9,18 @@ import {
   ACTIVITY_IDLE,
   ACTIVITY_LOADING,
   ACTIVITY_SUCCESS,
+  isLoading,
 } from "./common/activity-state";
 import { Content } from "./common/layout";
 import { useJoinMutation } from "./generated/graphql";
 
 export const SplashRoute: React.FC = () => {
   const [join, mResult] = useJoinMutation();
-  const { setLoadingFromActivity } = useContext(AppContext);
+  const { setLoading } = useContext(AppContext);
 
   const mState = activityState(mResult);
-  setLoadingFromActivity(mState);
+  const loading = isLoading(mState);
+  setLoading(loading);
 
   switch (mState.kind) {
     case ACTIVITY_IDLE:
