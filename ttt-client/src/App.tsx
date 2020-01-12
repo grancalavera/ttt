@@ -4,6 +4,7 @@ import { AppContext } from "./app-context";
 import { Background } from "./common/background";
 import { Layout } from "./common/layout";
 import { Loading } from "./common/loading";
+import { CopyAuthHeader } from "./common/copy-auth-header";
 import { WhoAmI } from "./common/who-am-i";
 import { GameRoute } from "./route-game";
 import { SplashRoute } from "./route-splash";
@@ -15,29 +16,28 @@ export const App: React.FC = () => {
 
   return (
     <>
-      <WhoAmI />
+      <div style={{ position: "absolute" }}>
+        <CopyAuthHeader />
+        <WhoAmI />
+      </div>
       <Layout>
         <Background />
-        {authenticated && <AppRouter {...{ setLoading }} />}
+        {authenticated && <AppRouter />}
         <Loading />
       </Layout>
     </>
   );
 };
 
-const AppRouter: React.FC<{ setLoading: (value: boolean) => void }> = ({
-  setLoading,
-}) => {
-  return (
-    <BrowserRouter>
-      <Switch>
-        <Route path="/" exact>
-          <SplashRoute />
-        </Route>
-        <Route path="/game/:gameId">
-          <GameRoute />
-        </Route>
-      </Switch>
-    </BrowserRouter>
-  );
-};
+const AppRouter: React.FC = () => (
+  <BrowserRouter>
+    <Switch>
+      <Route path="/" exact>
+        <SplashRoute />
+      </Route>
+      <Route path="/game/:gameId">
+        <GameRoute />
+      </Route>
+    </Switch>
+  </BrowserRouter>
+);

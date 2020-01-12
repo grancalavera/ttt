@@ -22,13 +22,13 @@ export const GameRoute: React.FC = () => {
   const { gameId } = useParams<GameRouteParams>();
   const { setLoading } = useContext(AppContext);
 
-  const qResult = useGameStatusQuery({
+  const queryResult = useGameStatusQuery({
     variables: { gameId },
     fetchPolicy: "no-cache",
   });
 
-  const qState = activityState(qResult);
-  const loading = isLoading(qState);
+  const queryState = activityState(queryResult);
+  const loading = isLoading(queryState);
   setLoading(loading);
 
   if (!gameId) {
@@ -36,17 +36,17 @@ export const GameRoute: React.FC = () => {
     return <Redirect to="/" />;
   }
 
-  switch (qState.kind) {
+  switch (queryState.kind) {
     case ACTIVITY_IDLE:
     case ACTIVITY_LOADING:
       return null;
     case ACTIVITY_FAILED:
-      console.error(qState.error);
+      console.error(queryState.error);
       return <Redirect to="/" />;
     case ACTIVITY_SUCCESS:
       return (
         <BoardLayout>
-          {defaultState(qState.data.gameStatus.me).map(cellState => (
+          {initialState(queryState.data.gameStatus.me).map(cellState => (
             <PlayButton
               key={keyFromCell(cellState)}
               onPlay={m => console.log(m)}
@@ -56,7 +56,7 @@ export const GameRoute: React.FC = () => {
         </BoardLayout>
       );
     default:
-      return assertNever(qState);
+      return assertNever(queryState);
   }
 };
 
@@ -77,7 +77,7 @@ interface CellState {
   isFree: boolean;
 }
 
-const defaultState = (token: Token): CellState[] =>
+const initialState = (token: Token): CellState[] =>
   [...Array(9)].map((_, i) => ({
     isFree: true,
     move: { position: indexToPosition(i), token },
