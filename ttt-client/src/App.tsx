@@ -4,7 +4,7 @@ import { AppContext } from "./app-context";
 import { Background } from "./common/background";
 import { Layout } from "./common/layout";
 import { Loading } from "./common/loading";
-import { CopyAuthHeader } from "./common/copy-auth-header";
+import { ActionBar } from "./common/action-bar";
 import { WhoAmI } from "./common/who-am-i";
 import { GameRoute } from "./route-game";
 import { SplashRoute } from "./route-splash";
@@ -17,7 +17,7 @@ export const App: React.FC = () => {
   return (
     <>
       <div style={{ position: "absolute" }}>
-        <CopyAuthHeader />
+        <ActionBar />
         <WhoAmI />
       </div>
       <Layout>
