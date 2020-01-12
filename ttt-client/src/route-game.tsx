@@ -1,6 +1,6 @@
 import { Button, Intent } from "@blueprintjs/core";
 import { assertNever } from "@grancalavera/ttt-core";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import { AppContext } from "./app-context";
 import {
@@ -9,6 +9,7 @@ import {
   ACTIVITY_IDLE,
   ACTIVITY_LOADING,
   ACTIVITY_SUCCESS,
+  didSucceed,
   isLoading,
 } from "./common/activity-state";
 import { BoardLayout, CellLayout } from "./common/layout";
@@ -20,7 +21,7 @@ interface GameRouteParams {
 
 export const GameRoute: React.FC = () => {
   const { gameId } = useParams<GameRouteParams>();
-  const { setLoading } = useContext(AppContext);
+  const { setLoading, setToken, setGameId } = useContext(AppContext);
 
   const queryResult = useGameStatusQuery({
     variables: { gameId },
@@ -29,7 +30,14 @@ export const GameRoute: React.FC = () => {
 
   const queryState = activityState(queryResult);
   const loading = isLoading(queryState);
-  setLoading(loading);
+
+  useEffect(() => {
+    setLoading(loading);
+    if (didSucceed(queryState)) {
+      setToken(queryState.data.gameStatus.me);
+      setGameId(gameId);
+    }
+  }, [setLoading, loading, queryState, gameId, setGameId, setToken]);
 
   if (!gameId) {
     console.error("missing required `gameId`");
@@ -43,7 +51,7 @@ export const GameRoute: React.FC = () => {
     case ACTIVITY_FAILED:
       console.error(queryState.error);
       return <Redirect to="/" />;
-    case ACTIVITY_SUCCESS:
+    case ACTIVITY_SUCCESS: {
       return (
         <BoardLayout>
           {initialState(queryState.data.gameStatus.me).map(cellState => (
@@ -55,6 +63,7 @@ export const GameRoute: React.FC = () => {
           ))}
         </BoardLayout>
       );
+    }
     default:
       return assertNever(queryState);
   }
