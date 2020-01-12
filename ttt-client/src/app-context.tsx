@@ -19,9 +19,3 @@ export const AppContextProvider: React.FC = ({ children }) => {
     </AppContext.Provider>
   );
 };
-
-export const RouteContext = React.createContext({
-  setLoading: (value: boolean): void => {
-    throw new Error("ApplicationRouterContext.setLoading not implemented");
-  },
-});

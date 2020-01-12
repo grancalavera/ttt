@@ -2,7 +2,7 @@ import { Button, Intent } from "@blueprintjs/core";
 import { assertNever } from "@grancalavera/ttt-core";
 import React, { useCallback, useContext } from "react";
 import { Redirect, useParams } from "react-router-dom";
-import { RouteContext } from "./app-context";
+import { AppContext } from "./app-context";
 import {
   activityState,
   ACTIVITY_FAILED,
@@ -13,7 +13,6 @@ import {
 } from "./common/activity-state";
 import { BoardLayout, CellLayout } from "./common/layout";
 import { Move, Position, Token, useGameStatusQuery } from "./generated/graphql";
-import { useEffect } from "react";
 
 interface GameRouteParams {
   gameId: string;
@@ -21,7 +20,7 @@ interface GameRouteParams {
 
 export const GameRoute: React.FC = () => {
   const { gameId } = useParams<GameRouteParams>();
-  const { setLoading } = useContext(RouteContext);
+  const { setLoading } = useContext(AppContext);
 
   const qResult = useGameStatusQuery({
     variables: { gameId },
@@ -30,12 +29,7 @@ export const GameRoute: React.FC = () => {
 
   const qState = activityState(qResult);
   const loading = isLoading(qState);
-  useEffect(() => {
-    console.log("wait 3 seconds...");
-    setTimeout(() => {
-      setLoading(loading);
-    }, 3000);
-  }, [loading, setLoading]);
+  setLoading(loading);
 
   if (!gameId) {
     console.error("missing required `gameId`");
@@ -50,7 +44,6 @@ export const GameRoute: React.FC = () => {
       console.error(qState.error);
       return <Redirect to="/" />;
     case ACTIVITY_SUCCESS:
-      console.log(JSON.stringify(qState.data.gameStatus, null, 2));
       return (
         <BoardLayout>
           {defaultState(qState.data.gameStatus.me).map(cellState => (
