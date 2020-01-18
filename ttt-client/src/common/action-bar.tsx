@@ -45,7 +45,6 @@ export const ActionBar: React.FC = () => {
         <Button minimal={true} onClick={copyPlayParams}>
           Copy Play Variables
         </Button>
-        <Navbar.Divider />
       </Navbar.Group>
     </Navbar>
   );

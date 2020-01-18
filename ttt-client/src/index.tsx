@@ -27,8 +27,12 @@ const client = new ApolloClient({
 
 const GlobalStyle = createGlobalStyle`
   body, html, #root {
-    display:grid;
-    height:100%;
+    height: 100vh;
+    max-width: 100vw;
+    overflow: hidden;
+  }
+   #root {
+    display: grid;
   }
 `;
 
