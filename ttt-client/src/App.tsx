@@ -1,11 +1,10 @@
 import React, { useContext } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { AppContext } from "./app-context";
+import { ActionBar } from "./common/action-bar";
 import { Background } from "./common/background";
 import { Layout } from "./common/layout";
 import { Loading } from "./common/loading";
-import { ActionBar } from "./common/action-bar";
-import { WhoAmI } from "./common/who-am-i";
 import { GameRoute } from "./route-game";
 import { SplashRoute } from "./route-splash";
 
@@ -16,10 +15,7 @@ export const App: React.FC = () => {
 
   return (
     <>
-      <div style={{ position: "absolute" }}>
-        <ActionBar />
-        <WhoAmI />
-      </div>
+      <ActionBar />
       <Layout>
         <Background />
         {authenticated && <AppRouter />}
