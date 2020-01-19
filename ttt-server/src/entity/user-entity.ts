@@ -1,9 +1,10 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
+import { UserId } from "./types";
 
 @Entity("users")
 export class UserEntity extends BaseEntity {
   @PrimaryColumn()
-  id!: string;
+  id!: UserId;
 
   @Column("int", { default: 0 })
   tokenVersion!: number;
