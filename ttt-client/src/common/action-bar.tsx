@@ -41,31 +41,38 @@ export const ActionBar: React.FC = () => {
   }, [authenticated, setAuthHeader, gameId, setGameStatusVars, token, setPlayVars]);
 
   return (
-    <Navbar fixedToTop>
+    <Navbar fixedToTop className="bp3-text-small">
       <Navbar.Group align={Alignment.LEFT}>
         <Button
           minimal={true}
           disabled={!authHeader}
           onClick={copyToClipboard(authHeader)}
         >
-          Copy Authorization Header
+          <code>authorization</code>
         </Button>
 
         <Button
           minimal={true}
           disabled={!gameStatusVars}
           onClick={copyToClipboard(gameStatusVars)}
+          className="bp3-text-small"
         >
-          Copy GameStatus Variables
+          <code>GameStatus</code>
         </Button>
 
         <Button minimal={true} disabled={!playVars} onClick={copyToClipboard(playVars)}>
-          Copy Play Variables
+          <code>Play</code>
         </Button>
 
         <Navbar.Divider />
-
         <WhoAmI />
+
+        {gameId && (
+          <>
+            <Navbar.Divider />
+            <code>{gameId}</code>
+          </>
+        )}
       </Navbar.Group>
     </Navbar>
   );

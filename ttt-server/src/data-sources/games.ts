@@ -28,6 +28,12 @@ export class GamesDataSource extends DataSource {
       ],
     });
 
+    if (!gameEntity) {
+      throw new Error(`
+Invalid query:
+either game ${gameId} does not exist or user ${userEntity.id} is not authorized to see it.`);
+    }
+
     return gameEntity;
   }
 
