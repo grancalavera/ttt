@@ -6,17 +6,29 @@ query GameStatus($gameId: ID!) {
       id
       me
       next
+      moves {
+        token
+        position
+      }
     }
 
     ... on GameWon {
       id
       me
       winner
+      moves {
+        token
+        position
+      }
     }
 
     ... on GameDraw {
       id
       me
+      moves {
+        token
+        position
+      }
     }
   }
 }

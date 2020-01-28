@@ -7,6 +7,5 @@ export const status = (ctx: Context, gameId: string) => async (
 ) => {
   const gameEntity = await ctx.dataSources.games.findGameOwnedByUser(gameId, userEntity);
   const apiResponse = await ctx.dataSources.api.getGameById(gameId);
-  const result = toGameStatus(gameEntity, userEntity, apiResponse);
-  return result;
+  return toGameStatus(userEntity, gameEntity, apiResponse);
 };
