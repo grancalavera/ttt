@@ -1,4 +1,9 @@
-import { ErrorResponse, GameResponse, isErrorResponse, Move } from "@grancalavera/ttt-api";
+import {
+  ErrorResponse,
+  GameResponse,
+  isErrorResponse,
+  Move,
+} from "@grancalavera/ttt-api";
 import { RESTDataSource } from "apollo-datasource-rest";
 
 export type GameAPIResponse = GameResponse | ErrorResponse;

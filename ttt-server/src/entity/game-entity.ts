@@ -1,7 +1,6 @@
 import { GameStatus } from "generated/graphql";
-import { Typename } from "model";
+import { Typename, UserId } from "model";
 import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
-import { UserId } from "./types";
 
 @Entity("games")
 export class GameEntity extends BaseEntity {

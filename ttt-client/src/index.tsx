@@ -4,20 +4,20 @@ import {
   from as linkFrom,
   InMemoryCache,
 } from "@apollo/client";
+import { FocusStyleManager } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import React from "react";
 import ReactDOM from "react-dom";
 import { createGlobalStyle } from "styled-components/macro";
 import { App } from "./App";
+import { AppContextProvider } from "./app-context";
 import "./index.scss";
 import {
   authLinkMiddleware,
   httpLinkMiddleware,
   refreshJWTMiddleware,
 } from "./middleware";
-import { AppContextProvider } from "./app-context";
 
-import { FocusStyleManager } from "@blueprintjs/core";
 FocusStyleManager.onlyShowFocusOnTabs();
 
 const client = new ApolloClient({
