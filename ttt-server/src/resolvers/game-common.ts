@@ -16,8 +16,8 @@ import { isNil } from "lodash/fp";
 import { UserId } from "model";
 
 export const toGameStatus = (
-  gameEntity: GameEntity,
   userEntity: UserEntity,
+  gameEntity: GameEntity,
   apiResponse: GameAPIResponse
 ): GameStatus => {
   const getToken = tokenFromGameEntity(gameEntity);
