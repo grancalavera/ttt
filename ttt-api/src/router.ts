@@ -1,11 +1,6 @@
 import { coerceToPlayer, coerceToPosition } from "@grancalavera/ttt-core";
 import { RequestHandler, Router } from "express";
-import {
-  body,
-  check,
-  ValidationError,
-  validationResult,
-} from "express-validator";
+import { body, check, ValidationError, validationResult } from "express-validator";
 import {
   extractException,
   gameNotFound,

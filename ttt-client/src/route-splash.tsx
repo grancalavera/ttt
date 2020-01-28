@@ -15,14 +15,14 @@ import { Content } from "./common/layout";
 import { useJoinMutation } from "./generated/graphql";
 
 export const SplashRoute: React.FC = () => {
-  const [join, mResult] = useJoinMutation();
+  const [join, joinResult] = useJoinMutation();
   const { setLoading } = useContext(AppContext);
 
-  const mState = activityState(mResult);
-  const loading = isLoading(mState);
+  const joinState = activityState(joinResult);
+  const loading = isLoading(joinState);
   setLoading(loading);
 
-  switch (mState.kind) {
+  switch (joinState.kind) {
     case ACTIVITY_IDLE:
       return (
         <Content>
@@ -32,10 +32,10 @@ export const SplashRoute: React.FC = () => {
     case ACTIVITY_LOADING:
       return null;
     case ACTIVITY_FAILED:
-      throw mState.error;
+      throw joinState.error;
     case ACTIVITY_SUCCESS:
-      return <Redirect to={`/game/${mState.data.join}`} push />;
+      return <Redirect to={`/game/${joinState.data.join}`} push />;
     default:
-      return assertNever(mState);
+      return assertNever(joinState);
   }
 };

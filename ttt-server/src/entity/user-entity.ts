@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
-import { UserId } from "./types";
+import { UserId } from "model";
 
 @Entity("users")
 export class UserEntity extends BaseEntity {
