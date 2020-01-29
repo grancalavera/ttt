@@ -1,7 +1,8 @@
 import { Button, Intent } from "@blueprintjs/core";
 import React, { useState } from "react";
 import { BoardLayout, CellLayout } from "./common/layout";
-import { GameStatus, Move, Position, Token } from "./generated/graphql";
+import { CellState, initialBoard } from "./game-board";
+import { GamePlaying, GameStatus, Move } from "./generated/graphql";
 
 interface Props {
   status: GameStatus;
@@ -12,7 +13,7 @@ export const GameView: React.FC<Props> = ({ status }) => {
 
   return (
     <BoardLayout>
-      {initialState(state.me).map(cellState => (
+      {initialBoard(state.me).map(cellState => (
         <PlayButton
           key={keyFromCell(cellState)}
           onPlay={m => console.log(m)}
@@ -35,17 +36,8 @@ const PlayButton: React.FC<{ move: Move; onPlay(move: Move): void }> = ({
   );
 };
 
-interface CellState {
-  move: Move;
-  isFree: boolean;
-}
-
-const initialState = (token: Token): CellState[] =>
-  [...Array(9)].map((_, i) => ({
-    isFree: true,
-    move: { position: indexToPosition(i), token },
-  }));
-
-const indexToPosition = (i: number): Position => String.fromCharCode(65 + i) as Position;
-
 const keyFromCell = ({ move: { position, token } }: CellState) => `${position}-${token}`;
+
+// take the moves and fill them with an empty array
+// maybe write some tests...?
+const isMyTurn = (game: GamePlaying) => game.me === game.next;
