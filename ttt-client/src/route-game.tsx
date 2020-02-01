@@ -51,7 +51,7 @@ export const GameRoute: React.FC = () => {
       console.error(gameStatusQueryState.error);
       return <Redirect to="/" />;
     case ACTIVITY_SUCCESS:
-      return <GameView status={gameStatusQueryState.data.gameStatus} />;
+      return <GameView gameState={gameStatusQueryState.data.gameStatus} />;
     default:
       return assertNever(gameStatusQueryState);
   }

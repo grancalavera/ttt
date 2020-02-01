@@ -17,21 +17,23 @@ type DisabledCell = {
   kind: "disabled";
 };
 
-export const updateBoard = (game: GameStatus): CellState[] => {
-  if (!game.__typename) {
+export const updateBoard = (gameState: GameStatus): CellState[] => {
+  if (!gameState.__typename) {
     throw new Error("__typename is required");
   }
 
-  const select = selectCell(getPlayedCellByIndex(game.moves));
+  const select = selectCell(getPlayedCellByIndex(gameState.moves));
 
-  switch (game.__typename) {
+  switch (gameState.__typename) {
     case "GamePlaying":
-      return amINext(game) ? freeBoard(game.me).map(select) : EMPTY_BOARD.map(select);
+      return amINext(gameState)
+        ? freeBoard(gameState.me).map(select)
+        : EMPTY_BOARD.map(select);
     case "GameDraw":
     case "GameWon":
       return EMPTY_BOARD.map(select);
     default:
-      return assertNever(game.__typename);
+      return assertNever(gameState.__typename);
   }
 };
 
