@@ -1,13 +1,11 @@
-import { assertNever } from "@grancalavera/ttt-core";
 import { CellState, updateBoard } from "./game-board";
 import {
+  GameDraw,
+  GamePlaying,
   GameStatus,
-  Move,
+  GameWon,
   Position,
   Token,
-  GamePlaying,
-  GameWon,
-  GameDraw,
 } from "./generated/graphql";
 
 interface Scenario {
@@ -16,7 +14,7 @@ interface Scenario {
   expected: CellState[];
 }
 
-const PLAYING_NEXT_O_ME_O: GamePlaying = {
+const PLAYING_ME_O_NEXT_O: GamePlaying = {
   __typename: "GamePlaying",
   id: "0",
   me: Token.O,
@@ -24,7 +22,7 @@ const PLAYING_NEXT_O_ME_O: GamePlaying = {
   next: Token.O,
 };
 
-const PLAYING_NEXT_X_ME_O: GamePlaying = {
+const PLAYING_ME_O_NEXT_X: GamePlaying = {
   __typename: "GamePlaying",
   id: "0",
   me: Token.O,
@@ -48,7 +46,36 @@ const DRAW: GameDraw = {
 };
 
 const scenarios: Scenario[] = [
-  mkScenario("empty moves", PLAYING_NEXT_O_ME_O, [
+  mkScenario("empty moves, somebody else's turn", PLAYING_ME_O_NEXT_X, [
+    { kind: "disabled" },
+    { kind: "disabled" },
+    { kind: "disabled" },
+    { kind: "disabled" },
+    { kind: "disabled" },
+    { kind: "disabled" },
+    { kind: "disabled" },
+    { kind: "disabled" },
+    { kind: "disabled" },
+  ]),
+  mkScenario(
+    "first cell taken, somebody else's turn",
+    {
+      ...PLAYING_ME_O_NEXT_X,
+      moves: [{ position: Position.A, token: Token.O }],
+    },
+    [
+      { kind: "played", move: { position: Position.A, token: Token.O } },
+      { kind: "disabled" },
+      { kind: "disabled" },
+      { kind: "disabled" },
+      { kind: "disabled" },
+      { kind: "disabled" },
+      { kind: "disabled" },
+      { kind: "disabled" },
+      { kind: "disabled" },
+    ]
+  ),
+  mkScenario("disabled moves", PLAYING_ME_O_NEXT_O, [
     { kind: "free", move: { position: Position.A, token: Token.O } },
     { kind: "free", move: { position: Position.B, token: Token.O } },
     { kind: "free", move: { position: Position.C, token: Token.O } },
@@ -61,7 +88,7 @@ const scenarios: Scenario[] = [
   ]),
   mkScenario(
     "first cell taken",
-    { ...PLAYING_NEXT_O_ME_O, moves: [{ position: Position.A, token: Token.O }] },
+    { ...PLAYING_ME_O_NEXT_O, moves: [{ position: Position.A, token: Token.O }] },
     [
       { kind: "played", move: { position: Position.A, token: Token.O } },
       { kind: "free", move: { position: Position.B, token: Token.O } },
@@ -77,7 +104,7 @@ const scenarios: Scenario[] = [
   mkScenario(
     "two non consecutive ordered cells taken",
     {
-      ...PLAYING_NEXT_O_ME_O,
+      ...PLAYING_ME_O_NEXT_O,
       moves: [
         { position: Position.A, token: Token.O },
         { position: Position.C, token: Token.O },
@@ -98,7 +125,7 @@ const scenarios: Scenario[] = [
   mkScenario(
     "two non consecutive non ordered cells taken",
     {
-      ...PLAYING_NEXT_O_ME_O,
+      ...PLAYING_ME_O_NEXT_O,
       moves: [
         { position: Position.C, token: Token.O },
         { position: Position.A, token: Token.O },
@@ -119,7 +146,7 @@ const scenarios: Scenario[] = [
   mkScenario(
     "three consecutive ordered cells taken",
     {
-      ...PLAYING_NEXT_O_ME_O,
+      ...PLAYING_ME_O_NEXT_O,
       moves: [
         { position: Position.A, token: Token.O },
         { position: Position.B, token: Token.O },
@@ -141,7 +168,7 @@ const scenarios: Scenario[] = [
   mkScenario(
     "three non consecutive non ordered cells taken",
     {
-      ...PLAYING_NEXT_O_ME_O,
+      ...PLAYING_ME_O_NEXT_O,
       moves: [
         { position: Position.C, token: Token.O },
         { position: Position.A, token: Token.O },
@@ -163,7 +190,7 @@ const scenarios: Scenario[] = [
   mkScenario(
     "all cells taken",
     {
-      ...PLAYING_NEXT_O_ME_O,
+      ...PLAYING_ME_O_NEXT_O,
       moves: [
         { position: Position.A, token: Token.O },
         { position: Position.B, token: Token.O },
@@ -202,12 +229,12 @@ const scenarios: Scenario[] = [
       { kind: "played", move: { position: Position.A, token: Token.O } },
       { kind: "played", move: { position: Position.B, token: Token.O } },
       { kind: "played", move: { position: Position.C, token: Token.O } },
-      { kind: "empty" },
-      { kind: "empty" },
-      { kind: "empty" },
-      { kind: "empty" },
-      { kind: "empty" },
-      { kind: "empty" },
+      { kind: "disabled" },
+      { kind: "disabled" },
+      { kind: "disabled" },
+      { kind: "disabled" },
+      { kind: "disabled" },
+      { kind: "disabled" },
     ]
   ),
   mkScenario(
@@ -224,12 +251,12 @@ const scenarios: Scenario[] = [
       { kind: "played", move: { position: Position.A, token: Token.O } },
       { kind: "played", move: { position: Position.B, token: Token.O } },
       { kind: "played", move: { position: Position.C, token: Token.O } },
-      { kind: "empty" },
-      { kind: "empty" },
-      { kind: "empty" },
-      { kind: "empty" },
-      { kind: "empty" },
-      { kind: "empty" },
+      { kind: "disabled" },
+      { kind: "disabled" },
+      { kind: "disabled" },
+      { kind: "disabled" },
+      { kind: "disabled" },
+      { kind: "disabled" },
     ]
   ),
 ];

@@ -28,7 +28,7 @@ const Cell: React.FC<{ cellState: CellState }> = ({ cellState }) => {
       return <PlayButton move={cellState.move} onPlay={() => {}} />;
     case "played":
       return <PlayedCell move={cellState.move} />;
-    case "empty":
+    case "disabled":
       return <EmptyCell />;
     default:
       return assertNever(cellState);
