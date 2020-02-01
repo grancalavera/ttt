@@ -3,6 +3,7 @@ import React from "react";
 import { BoardLayout, CellLayout } from "./common/layout";
 import { CellState, updateBoard } from "./game-board";
 import { GameStatus, Move } from "./generated/graphql";
+import { assertNever } from "@grancalavera/ttt-core";
 
 interface Props {
   status: GameStatus;
@@ -21,12 +22,18 @@ export const GameView: React.FC<Props> = ({ status }) => {
   );
 };
 
-const Cell: React.FC<{ cellState: CellState }> = ({ cellState }) => <>nothing</>;
-// cellState.isFree ? (
-//   <PlayButton onPlay={m => console.log(m)} move={cellState.move} />
-// ) : (
-//   <PlayedCell move={cellState.move} />
-// );
+const Cell: React.FC<{ cellState: CellState }> = ({ cellState }) => {
+  switch (cellState.kind) {
+    case "free":
+      return <PlayButton move={cellState.move} onPlay={() => {}} />;
+    case "played":
+      return <PlayedCell move={cellState.move} />;
+    case "empty":
+      return <EmptyCell />;
+    default:
+      return assertNever(cellState);
+  }
+};
 
 const PlayButton: React.FC<{ move: Move; onPlay(move: Move): void }> = ({
   move,
