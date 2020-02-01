@@ -1,7 +1,7 @@
 import { assertNever } from "@grancalavera/ttt-core";
-import { GameStatus, Move, Position, Token } from "./generated/graphql";
+import { GamePlaying, GameStatus, Move, Position, Token } from "./generated/graphql";
 
-export type CellState = FreeCell | PlayedCell | EmptyCell;
+export type CellState = FreeCell | PlayedCell | DisabledCell;
 
 type FreeCell = {
   kind: "free";
@@ -13,8 +13,8 @@ type PlayedCell = {
   move: Move;
 };
 
-type EmptyCell = {
-  kind: "empty";
+type DisabledCell = {
+  kind: "disabled";
 };
 
 export const updateBoard = (game: GameStatus): CellState[] => {
@@ -26,7 +26,7 @@ export const updateBoard = (game: GameStatus): CellState[] => {
 
   switch (game.__typename) {
     case "GamePlaying":
-      return freeBoard(game.me).map(select);
+      return amINext(game) ? freeBoard(game.me).map(select) : EMPTY_BOARD.map(select);
     case "GameDraw":
     case "GameWon":
       return EMPTY_BOARD.map(select);
@@ -36,7 +36,7 @@ export const updateBoard = (game: GameStatus): CellState[] => {
 };
 
 type FindPlayedCell = (i: Index) => Maybe<PlayedCell>;
-type SelectCell = <T extends FreeCell | EmptyCell>(
+type SelectCell = <T extends FreeCell | DisabledCell>(
   findCell: FindPlayedCell
 ) => (cell: T, i: Index) => CellState;
 type Index = number;
@@ -46,7 +46,7 @@ const selectCell: SelectCell = findCell => (cell, i) => findCell(i) ?? cell;
 
 const BOARD = [...Array(9)].map((_, i) => i);
 
-const EMPTY_BOARD = BOARD.map(() => ({ kind: "empty" as const }));
+const EMPTY_BOARD = BOARD.map(() => ({ kind: "disabled" as const }));
 
 const freeBoard = (token: Token): FreeCell[] =>
   BOARD.map(i => ({
@@ -62,3 +62,4 @@ const getPlayedCellByIndex = (moves: readonly Move[]) => (
 };
 
 const indexToPosition = (i: number): Position => String.fromCharCode(65 + i) as Position;
+const amINext = (game: GamePlaying) => game.next === game.me;
