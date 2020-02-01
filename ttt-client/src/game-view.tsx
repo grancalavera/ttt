@@ -1,28 +1,32 @@
 import { Button, Intent } from "@blueprintjs/core";
-import React, { useState } from "react";
+import React from "react";
 import { BoardLayout, CellLayout } from "./common/layout";
-import { CellState, initialBoard } from "./game-board";
-import { GamePlaying, GameStatus, Move } from "./generated/graphql";
+import { CellState, updateBoard } from "./game-board";
+import { GameStatus, Move } from "./generated/graphql";
 
 interface Props {
   status: GameStatus;
 }
 
 export const GameView: React.FC<Props> = ({ status }) => {
-  const [state, setState] = useState(status);
-
   return (
     <BoardLayout>
-      {initialBoard(state.me).map(cellState => (
-        <PlayButton
-          key={keyFromCell(cellState)}
-          onPlay={m => console.log(m)}
-          move={cellState.move}
-        />
+      {updateBoard(status).map((cellState, i) => (
+        // we know cell are always sorted by position
+        // and position is isomorphic to iteration index,
+        // so is fine to use `i` as `key`, leave us alone!
+        <Cell key={i} cellState={cellState} />
       ))}
     </BoardLayout>
   );
 };
+
+const Cell: React.FC<{ cellState: CellState }> = ({ cellState }) => <>nothing</>;
+// cellState.isFree ? (
+//   <PlayButton onPlay={m => console.log(m)} move={cellState.move} />
+// ) : (
+//   <PlayedCell move={cellState.move} />
+// );
 
 const PlayButton: React.FC<{ move: Move; onPlay(move: Move): void }> = ({
   move,
@@ -36,8 +40,8 @@ const PlayButton: React.FC<{ move: Move; onPlay(move: Move): void }> = ({
   );
 };
 
-const keyFromCell = ({ move: { position, token } }: CellState) => `${position}-${token}`;
+const PlayedCell: React.FC<{ move: Move }> = ({ move }) => (
+  <CellLayout>Played</CellLayout>
+);
 
-// take the moves and fill them with an empty array
-// maybe write some tests...?
-const isMyTurn = (game: GamePlaying) => game.me === game.next;
+const EmptyCell: React.FC = () => <CellLayout>Empty</CellLayout>;
