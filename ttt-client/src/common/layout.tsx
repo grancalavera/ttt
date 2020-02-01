@@ -41,7 +41,7 @@ export const CellLayout = styled.div`
   user-select: none;
   width: ${CELL_WIDTH}px;
   height: ${CELL_WIDTH}px;
-  & > button {
+  & > * {
     width: ${CELL_WIDTH}px;
     height: ${CELL_WIDTH}px;
   }
