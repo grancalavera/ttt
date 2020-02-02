@@ -33,7 +33,7 @@ const Cell: React.FC<{ cellState: CellState }> = ({ cellState }) => {
       case "played":
         return <PlayedCell move={cellState.move} />;
       case "disabled":
-        return <DisabledCell />;
+        return null;
       default:
         return assertNever(cellState);
     }
@@ -55,5 +55,3 @@ const FreeCell: React.FC<{
 };
 
 const PlayedCell: React.FC<{ move: Move }> = ({ move }) => <>Played</>;
-
-const DisabledCell: React.FC = () => <Button minimal disabled intent={Intent.PRIMARY} />;
