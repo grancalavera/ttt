@@ -7,11 +7,12 @@ import { Layout } from "./common/layout";
 import { Loading } from "./common/loading";
 import { GameRoute } from "./route-game";
 import { SplashRoute } from "./route-splash";
+import { useLoader } from "./hooks/use-loader";
 
 export const App: React.FC = () => {
-  const { authenticated, setLoading } = useContext(AppContext);
+  const { authenticated } = useContext(AppContext);
 
-  setLoading(!authenticated);
+  useLoader(!authenticated);
 
   return (
     <>

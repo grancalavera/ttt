@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "nodemon --watch 'src/**/*.ts' --exec ts-node -r dotenv/config -r tsconfig-paths/register src/index.ts",
-    "start:clean": "rm -f store.sqlite && yarn start",
+    "start:clean": "rm -f ../*.sqlite && yarn start",
     "build": "tsc",
     "build:test-client": "tsc --project tsconfig-test-client.json",
     "typecheck": "tsc --watch --noEmit",

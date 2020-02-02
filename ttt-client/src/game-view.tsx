@@ -1,15 +1,18 @@
 import { Button, Intent } from "@blueprintjs/core";
+import { assertNever } from "@grancalavera/ttt-core";
 import React from "react";
 import { BoardLayout, CellLayout } from "./common/layout";
-import { CellState, updateBoard } from "./game-board";
+import { amIWaiting, CellState, updateBoard } from "./game-board";
 import { GameStatus, Move } from "./generated/graphql";
-import { assertNever } from "@grancalavera/ttt-core";
+import { useLoader } from "./hooks/use-loader";
 
 interface Props {
   gameState: GameStatus;
 }
 
 export const GameView: React.FC<Props> = ({ gameState }) => {
+  useLoader(amIWaiting(gameState));
+
   return (
     <BoardLayout>
       {updateBoard(gameState).map((cellState, i) => (

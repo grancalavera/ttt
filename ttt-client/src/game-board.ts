@@ -64,4 +64,7 @@ const getPlayedCellByIndex = (moves: readonly Move[]) => (
 };
 
 const indexToPosition = (i: number): Position => String.fromCharCode(65 + i) as Position;
+
 const amINext = (game: GamePlaying) => game.next === game.me;
+export const amIWaiting = (game: GameStatus) =>
+  game.__typename === "GamePlaying" && !amINext(game);
