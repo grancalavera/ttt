@@ -7,6 +7,8 @@ import { Content } from "./layout";
 export const Loading: React.FC = () => {
   const { loading } = useContext(AppContext);
 
+  console.log(`Loading   -> ${loading}`);
+
   return loading ? (
     <ContentOverlay>
       <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_SMALL} />

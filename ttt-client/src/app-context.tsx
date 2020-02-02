@@ -15,7 +15,7 @@ export const AppContext = React.createContext({
   },
 
   token: undefined as Token | undefined,
-  setToken: (value: string): void => {
+  setToken: (value: Token): void => {
     throw new Error("setToken is not implemented");
   },
 });
@@ -23,7 +23,7 @@ export const AppContext = React.createContext({
 export const AppContextProvider: React.FC = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [gameId, setGameId] = useState("");
-  const [token, setToken] = useState();
+  const [token, setToken] = useState<Token | undefined>();
   const authenticated = useAuthentication();
 
   return (
