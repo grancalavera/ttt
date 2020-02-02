@@ -1,27 +1,21 @@
 import { useContext, useMemo } from "react";
 import { AppContext } from "../app-context";
 
-type LoadingMap = Map<symbol, true>;
-const loading: LoadingMap = new Map();
-
 export const useLoader = (show: boolean) => {
   const { setLoading } = useContext(AppContext);
   const id = useIdentity();
+  const isKnown = loadingMap.get(id) ?? false;
 
-  const isKnown = loading.get(id) ?? false;
-  const isUnknown = !isKnown;
-  const hide = !show;
-
-  if (show && isUnknown) {
-    loading.set(id, true);
+  if (show && !isKnown) {
+    loadingMap.set(id, true);
     setLoading(true);
-  } else if (hide && isKnown) {
-    loading.delete(id);
-    if (allLoaded(loading)) {
+  } else if (!show && isKnown) {
+    loadingMap.delete(id);
+    if (loadingMap.size === 0) {
       setLoading(false);
     }
   }
 };
 
+const loadingMap = new Map<symbol, true>();
 const useIdentity = () => useMemo(() => Symbol(), []);
-const allLoaded = (map: LoadingMap) => map.size === 0;

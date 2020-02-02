@@ -3,7 +3,6 @@ import { assertNever } from "@grancalavera/ttt-core";
 import React from "react";
 import { Redirect } from "react-router-dom";
 import {
-  activityState,
   ACTIVITY_FAILED,
   ACTIVITY_IDLE,
   ACTIVITY_LOADING,
@@ -12,12 +11,12 @@ import {
 } from "./common/activity-state";
 import { Content } from "./common/layout";
 import { useJoinMutation } from "./generated/graphql";
+import { useActivityState } from "./hooks/use-activity-state";
 import { useLoader } from "./hooks/use-loader";
 
 export const SplashRoute: React.FC = () => {
   const [join, joinResult] = useJoinMutation();
-
-  const joinState = activityState(joinResult);
+  const joinState = useActivityState(joinResult);
 
   useLoader(isLoading(joinState));
 

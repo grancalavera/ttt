@@ -45,8 +45,6 @@ export const GameRoute: React.FC = () => {
     return <Redirect to="/" />;
   }
 
-  console.log("GameRoute -> render");
-
   switch (gameStatusQueryState.kind) {
     case ACTIVITY_IDLE:
     case ACTIVITY_LOADING:
