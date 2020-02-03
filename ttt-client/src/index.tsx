@@ -17,6 +17,7 @@ import {
   httpLinkMiddleware,
   refreshJWTMiddleware,
 } from "./middleware";
+import { LoaderContextProvider } from "./hooks/use-loader";
 
 FocusStyleManager.onlyShowFocusOnTabs();
 
@@ -41,7 +42,9 @@ ReactDOM.render(
     <GlobalStyle />
     <ApolloProvider client={client}>
       <AppContextProvider>
-        <App />
+        <LoaderContextProvider>
+          <App />
+        </LoaderContextProvider>
       </AppContextProvider>
     </ApolloProvider>
   </>,

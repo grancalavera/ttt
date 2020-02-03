@@ -5,8 +5,6 @@ import { BoardLayout, CellLayout } from "./common/layout";
 import { amIWaiting, CellState, updateBoard } from "./game-board";
 import { GameStatus, Move } from "./generated/graphql";
 import { useLoader } from "./hooks/use-loader";
-import { useHistory } from "react-router-dom";
-import { useEffect } from "react";
 
 interface Props {
   gameState: GameStatus;
@@ -14,11 +12,6 @@ interface Props {
 
 export const GameView: React.FC<Props> = ({ gameState }) => {
   useLoader(amIWaiting(gameState));
-  const h = useHistory();
-
-  useEffect(() => {
-    setTimeout(() => h.goBack(), 2000);
-  }, [h]);
 
   return (
     <BoardLayout>

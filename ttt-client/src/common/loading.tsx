@@ -1,13 +1,13 @@
 import { Colors, Intent, Spinner } from "@blueprintjs/core";
-import React, { useContext } from "react";
+import React from "react";
 import styled from "styled-components/macro";
-import { AppContext } from "../app-context";
+import { useIsLoading } from "../hooks/use-loader";
 import { Content } from "./layout";
 
 export const Loading: React.FC = () => {
-  const { loading } = useContext(AppContext);
+  const isLoading = useIsLoading();
 
-  return loading ? (
+  return isLoading ? (
     <ContentOverlay>
       <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_SMALL} />
     </ContentOverlay>
