@@ -27,8 +27,7 @@ export const useLoader = (show: boolean) => {
     }
   }, [id, setLoading]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => hideLoader, []);
+  useEffect(() => hideLoader, [hideLoader]);
 
   const isKnown = loadingMap.get(id) ?? false;
 
