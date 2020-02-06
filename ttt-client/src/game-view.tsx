@@ -11,7 +11,8 @@ interface Props {
 }
 
 export const GameView: React.FC<Props> = ({ gameState }) => {
-  useLoader(amIWaiting(gameState));
+  const { toggleLoader } = useLoader();
+  toggleLoader(amIWaiting(gameState));
 
   return (
     <BoardLayout>

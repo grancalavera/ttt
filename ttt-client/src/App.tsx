@@ -5,14 +5,15 @@ import { ActionBar } from "./common/action-bar";
 import { Background } from "./common/background";
 import { Layout } from "./common/layout";
 import { Loading } from "./common/loading";
+import { useLoader } from "./hooks/use-loader";
 import { GameRoute } from "./route-game";
 import { SplashRoute } from "./route-splash";
-import { useLoader } from "./hooks/use-loader";
 
 export const App: React.FC = () => {
   const { authenticated } = useContext(AppContext);
+  const { toggleLoader } = useLoader();
 
-  useLoader(!authenticated);
+  toggleLoader(!authenticated);
 
   return (
     <>

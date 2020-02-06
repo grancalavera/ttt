@@ -17,8 +17,9 @@ import { useLoader } from "./hooks/use-loader";
 export const SplashRoute: React.FC = () => {
   const [join, joinResult] = useJoinMutation();
   const joinState = useActivityState(joinResult);
+  const { toggleLoader } = useLoader();
 
-  useLoader(isLoading(joinState));
+  toggleLoader(isLoading(joinState));
 
   switch (joinState.kind) {
     case ACTIVITY_IDLE:

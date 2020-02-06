@@ -30,7 +30,8 @@ export const GameRoute: React.FC = () => {
 
   const gameStatusQueryState = useActivityState(gameStatusQueryResult);
 
-  useLoader(isLoading(gameStatusQueryState));
+  const { toggleLoader } = useLoader();
+  toggleLoader(isLoading(gameStatusQueryState));
 
   useEffect(() => setGameId(gameId));
 
