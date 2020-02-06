@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 const LoaderContext = React.createContext({
-  loading: false,
+  isLoading: false,
   setLoading: (value: boolean): void => {
     throw new Error("LoaderContext.setLoading is not implemented");
   },
@@ -10,15 +10,20 @@ const LoaderContext = React.createContext({
 export const LoaderContextProvider: React.FC = ({ children }) => {
   const [loading, setLoading] = useState(false);
   return (
-    <LoaderContext.Provider value={{ loading, setLoading }}>
+    <LoaderContext.Provider value={{ isLoading: loading, setLoading }}>
       {children}
     </LoaderContext.Provider>
   );
 };
 
-export const useLoader = (show: boolean) => {
-  const { setLoading } = useContext(LoaderContext);
+export const useLoader = () => {
+  const { isLoading, setLoading } = useContext(LoaderContext);
   const id = useIdentity();
+
+  const showLoader = useCallback(() => {
+    loadingMap.set(id, true);
+    setLoading(true);
+  }, [id, setLoading]);
 
   const hideLoader = useCallback(() => {
     loadingMap.delete(id);
@@ -29,19 +34,20 @@ export const useLoader = (show: boolean) => {
 
   useEffect(() => hideLoader, [hideLoader]);
 
-  const isKnown = loadingMap.get(id) ?? false;
+  const toggleLoader = useCallback(
+    (show: boolean) => {
+      const isKnown = loadingMap.get(id) ?? false;
 
-  if (show && !isKnown) {
-    loadingMap.set(id, true);
-    setLoading(true);
-  } else if (!show && isKnown) {
-    hideLoader();
-  }
-};
+      if (show && !isKnown) {
+        showLoader();
+      } else if (!show && isKnown) {
+        hideLoader();
+      }
+    },
+    [hideLoader, id, showLoader]
+  );
 
-export const useIsLoading = () => {
-  const { loading } = useContext(LoaderContext);
-  return loading;
+  return { isLoading, toggleLoader };
 };
 
 const loadingMap = new Map<symbol, true>();
