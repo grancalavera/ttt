@@ -8,9 +8,9 @@ const LoaderContext = React.createContext({
 });
 
 export const LoaderContextProvider: React.FC = ({ children }) => {
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   return (
-    <LoaderContext.Provider value={{ isLoading: loading, setLoading }}>
+    <LoaderContext.Provider value={{ isLoading, setLoading }}>
       {children}
     </LoaderContext.Provider>
   );
