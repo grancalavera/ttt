@@ -1,53 +1,137 @@
-import { renderHook, act } from "@testing-library/react-hooks";
-import { LoaderContextProvider, useIsLoading, useLoader } from "./use-loader";
+import { renderHook } from "@testing-library/react-hooks";
+import React from "react";
+// see https://github.com/testing-library/react-hooks-testing-library/issues/173#issuecomment-531605122
+import { act } from "react-test-renderer";
+import { LoaderContextProvider, LoadingState, useLoader } from "./use-loader";
 
-type Id = number;
-type Toggle = [Id, boolean];
-
-interface Scenario {
-  name: string;
-  sequence: Toggle[];
+export interface Scenario {
+  scenarioName: string;
+  initialState: LoadingState;
+  toggleSequence: boolean[];
+  shouldForceHideBefore?: boolean;
+  shouldForceHideAfter?: boolean;
   expected: boolean;
 }
 
+const LOADING = true;
+const NOT_LOADING = !LOADING;
+const SHOW = true;
+const HIDE = !SHOW;
+
 const scenarios: Scenario[] = [
-  { name: "default", sequence: [], expected: true },
-  { name: "trivially true", sequence: [[1, true]], expected: true },
-  { name: "trivially false", sequence: [[1, false]], expected: false },
   {
-    name: "one component, full cycle",
-    sequence: [
-      [1, true],
-      [1, false],
-    ],
-    expected: false,
+    scenarioName: "default: empty initial state and empty toggle sequence",
+    initialState: [],
+    toggleSequence: [],
+    expected: NOT_LOADING,
   },
   {
-    name: "two components, one full cycle, one half cycle, interleaved",
-    sequence: [
-      [1, true],
-      [2, true],
-      [1, false],
-    ],
-    expected: true,
+    scenarioName: "trivially loading",
+    initialState: [],
+    toggleSequence: [SHOW],
+    expected: LOADING,
   },
   {
-    name: "two components, two full cycles, interleaved",
-    sequence: [
-      [1, true],
-      [2, true],
-      [1, false],
-      [2, false],
-    ],
-    expected: false,
+    scenarioName: "trivially not loading",
+    initialState: [],
+    toggleSequence: [HIDE],
+    expected: NOT_LOADING,
   },
   {
-    name: "one component, unbalanced, full cycle",
-    sequence: [
-      [1, true],
-      [1, true],
-      [1, false],
-    ],
-    expected: false,
+    scenarioName: "one component full cycle",
+    initialState: [],
+    toggleSequence: [SHOW, HIDE],
+    expected: NOT_LOADING,
+  },
+  {
+    scenarioName: "two components: one loading, one full cycle",
+    initialState: [simulateSomethingIsLoading()],
+    toggleSequence: [SHOW, HIDE],
+    expected: LOADING,
+  },
+  {
+    scenarioName: "one component, unbalanced, full cycle",
+    initialState: [],
+    toggleSequence: [SHOW, SHOW, HIDE],
+    expected: NOT_LOADING,
+  },
+  {
+    scenarioName: "force loading on startup",
+    initialState: [simulateSomethingIsLoading()],
+    toggleSequence: [],
+    expected: LOADING,
+  },
+  {
+    scenarioName: "force hide: one loading from state and one loading from hook",
+    initialState: [simulateSomethingIsLoading()],
+    toggleSequence: [SHOW],
+    shouldForceHideAfter: true,
+    expected: NOT_LOADING,
+  },
+  {
+    scenarioName: "force hide: one loading from hook",
+    initialState: [],
+    toggleSequence: [SHOW],
+    shouldForceHideAfter: true,
+    expected: NOT_LOADING,
+  },
+  {
+    scenarioName: "force hide: one loading from state",
+    initialState: [simulateSomethingIsLoading()],
+    toggleSequence: [],
+    shouldForceHideAfter: true,
+    expected: NOT_LOADING,
+  },
+  {
+    scenarioName: "should clear all loading states on force hide",
+    initialState: [simulateSomethingIsLoading()],
+    toggleSequence: [true, false],
+    shouldForceHideBefore: true,
+    expected: NOT_LOADING,
   },
 ];
+
+describe.each(scenarios)("useLoader hook", scenario => {
+  const {
+    scenarioName,
+    initialState,
+    toggleSequence,
+    shouldForceHideAfter,
+    shouldForceHideBefore,
+    expected,
+  } = scenario;
+
+  const { result } = renderHook(() => useLoader(), {
+    wrapper: ({ children }) => (
+      <LoaderContextProvider loadingState={initialState}>
+        {children}
+      </LoaderContextProvider>
+    ),
+  });
+
+  if (shouldForceHideBefore) {
+    act(() => {
+      result.current.forceHide();
+    });
+  }
+
+  toggleSequence.forEach(toggleTo => {
+    act(() => {
+      result.current.toggleLoader(toggleTo);
+    });
+  });
+
+  if (shouldForceHideAfter) {
+    act(() => {
+      result.current.forceHide();
+    });
+  }
+
+  it(scenarioName, () => {
+    expect(result.current.isLoading).toBe(expected);
+  });
+});
+
+function simulateSomethingIsLoading() {
+  return Symbol();
+}
