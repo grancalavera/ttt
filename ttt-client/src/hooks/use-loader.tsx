@@ -1,21 +1,33 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useRef } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+export type LoadingState = readonly symbol[];
+type LoadingMap = Map<symbol, true>;
 
 const LoaderContext = React.createContext({
   isLoading: false,
   setLoading: (value: boolean): void => {
     throw new Error("LoaderContext.setLoading is not implemented");
   },
-  loadingMap: new Map() as Map<symbol, true>,
+  loadingMap: new Map() as LoadingMap,
 });
 
-type Props = { loadingMap?: Map<symbol, true> };
+interface LoaderContextProviderProps {
+  loadingState?: LoadingState;
+}
 
-export const LoaderContextProvider: React.FC<Props> = ({
+export const LoaderContextProvider: React.FC<LoaderContextProviderProps> = ({
   children,
-  loadingMap = new Map(),
+  loadingState = [],
 }) => {
   const [isLoading, setLoading] = useState(false);
+  const loadingMap: LoadingMap = new Map(loadingState.map(s => [s, true]));
   return (
     <LoaderContext.Provider value={{ isLoading, setLoading, loadingMap }}>
       {children}
@@ -40,11 +52,9 @@ export const useLoader = () => {
     }
   }, [id, setLoading]);
 
-  useEffect(() => hideLoader, [hideLoader]);
-
   const toggleLoader = useCallback(
     (show: boolean) => {
-      const isKnown = mapRef.current.get(id) ?? false;
+      const isKnown = mapRef.current.has(id);
 
       if (show && !isKnown) {
         showLoader();
@@ -55,7 +65,20 @@ export const useLoader = () => {
     [hideLoader, id, showLoader]
   );
 
-  return { isLoading, toggleLoader };
+  const forceHide = useCallback(() => {
+    mapRef.current.clear();
+    setLoading(false);
+  }, [setLoading]);
+
+  useEffect(() => {
+    if (!isEmpty(mapRef.current)) {
+      setLoading(true);
+    }
+    return hideLoader;
+  }, [hideLoader, setLoading]);
+
+  return { isLoading, toggleLoader, forceHide };
 };
 
 const useIdentity = () => useMemo(() => Symbol(), []);
+const isEmpty = (m: Map<any, any>) => m.size === 0;
