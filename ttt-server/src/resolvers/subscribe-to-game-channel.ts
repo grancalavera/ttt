@@ -1,15 +1,17 @@
 import { FilterFn, ResolverFn, withFilter } from "apollo-server";
-import { GameChannelMessage, SubscriptionGameChannelArgs } from "../generated/graphql";
-import { PUBSUB_GAME_CHANNEL, pubSub } from "./pub-sub";
+import { Subscription, SubscriptionGameChannelArgs } from "../generated/graphql";
+import { pubSub, PUBSUB_GAME_CHANNEL } from "./pub-sub";
+
+type SubscriptionGameChannel = Pick<Subscription, "gameChannel">;
 
 const resolveGameChannelSubscription: ResolverFn = () =>
   pubSub.asyncIterator([PUBSUB_GAME_CHANNEL]);
 
 const filterGameChannelSubscription: FilterFn = (
-  message: GameChannelMessage,
-  args: SubscriptionGameChannelArgs
+  { gameChannel }: SubscriptionGameChannel,
+  { channelId }: SubscriptionGameChannelArgs
 ) => {
-  const result = message.channelId === args.channelId;
+  const result = gameChannel.channelId === channelId;
   return result;
 };
 
