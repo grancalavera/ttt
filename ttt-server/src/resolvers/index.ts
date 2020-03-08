@@ -6,7 +6,9 @@ import {
   MutationResolvers,
   QueryResolvers,
   Resolvers,
+  SubscriptionResolvers,
 } from "../generated/graphql";
+import { subscribeToGameChannel } from "./subscribe-to-game-channel";
 
 const Query: QueryResolvers = {
   users: (_, __, ctx) => users.list(ctx),
@@ -25,7 +27,11 @@ const Mutation: MutationResolvers = {
   play: (_, { input }, ctx) => ctx.secure(game.play(ctx, input)),
 };
 
-export const resolvers: Resolvers = { Query, Mutation, GameStatus };
+const Subscription: SubscriptionResolvers = {
+  gameChannel: subscribeToGameChannel,
+};
+
+export const resolvers: Resolvers = { Query, Mutation, GameStatus, Subscription };
 
 const enforceTypename = <T extends string>(unionType: string, typename?: T): T => {
   if (typename) {
