@@ -1,15 +1,27 @@
 import { ApolloServer, makeExecutableSchema } from "apollo-server-express";
-import { mkSecureResolver, findAuthenticatedUser } from "auth";
+import { findAuthenticatedUser, mkSecureResolver } from "auth";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { GamesDataSource } from "data-sources/games";
+import { TTTAPIDataSource } from "data-sources/ttt-api";
+import { UsersDataSource } from "data-sources/users";
 import express from "express";
 import { readFileSync } from "fs";
+import { execute, subscribe } from "graphql";
 import { join } from "path";
 import { resolvers } from "resolvers";
 import { router } from "server/router";
-import { UsersDataSource } from "data-sources/users";
-import { GamesDataSource } from "data-sources/games";
-import { TTTAPIDataSource } from "data-sources/ttt-api";
+import { SubscriptionServer } from "subscriptions-transport-ws";
+import { Server as HTTP_Server } from "http";
+import { Server as HTTPS_Server } from "https";
+
+const typeDefs = readFileSync(join(__dirname, "../graphql/schema.graphql"), "utf8");
+
+const schema = makeExecutableSchema({
+  resolverValidationOptions: { requireResolversForResolveType: false },
+  typeDefs,
+  resolvers,
+});
 
 export const mkServer = async (origin: string) => {
   const apiBaseUrl = process.env.TTT_API;
@@ -17,17 +29,6 @@ export const mkServer = async (origin: string) => {
   if (!apiBaseUrl) {
     throw new Error("missing required environment variable TTT_API");
   }
-
-  const typeDefs = readFileSync(
-    join(__dirname, "../graphql/schema.graphql"),
-    "utf8"
-  );
-
-  const schema = makeExecutableSchema({
-    resolverValidationOptions: { requireResolversForResolveType: false },
-    typeDefs,
-    resolvers,
-  });
 
   const expressServer = express();
   expressServer.use(express.json());
@@ -37,11 +38,12 @@ export const mkServer = async (origin: string) => {
 
   const apolloServer = new ApolloServer({
     context: async ({ req, res, connection }) => {
+      console.log(connection);
       if (connection) {
-        return connection;
+        return connection.context;
       }
       const user = await findAuthenticatedUser(req);
-      return Promise.resolve({ req, res, secure: mkSecureResolver(user) });
+      return { req, res, secure: mkSecureResolver(user) };
     },
     dataSources: () => ({
       users: new UsersDataSource(),
@@ -53,4 +55,8 @@ export const mkServer = async (origin: string) => {
 
   apolloServer.applyMiddleware({ app: expressServer, cors: false });
   return expressServer;
+};
+
+export const mkSubscriptionServer = (server: HTTP_Server | HTTPS_Server) => {
+  new SubscriptionServer({ execute, subscribe, schema }, { server });
 };
