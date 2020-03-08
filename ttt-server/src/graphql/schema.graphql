@@ -11,6 +11,15 @@ type Query {
   gameStatus(gameId: ID!): GameStatus!
 }
 
+type Subscription {
+  gameChannel(channelId: ID!): GameChannelMessage!
+}
+
+type GameChannelMessage {
+  channelId: ID!
+  game: String!
+}
+
 type RegisterResult {
   accessToken: String!
   user: User!
