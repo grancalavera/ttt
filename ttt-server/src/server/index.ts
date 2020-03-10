@@ -38,11 +38,10 @@ export const mkServer = async (origin: string) => {
 
   const apolloServer = new ApolloServer({
     context: async ({ req, res, connection }) => {
-      console.log(connection);
       if (connection) {
         return connection.context;
       }
-      const user = await findAuthenticatedUser(req);
+      const user = await findAuthenticatedUser(req.headers["authorization"]);
       return { req, res, secure: mkSecureResolver(user) };
     },
     dataSources: () => ({
@@ -58,5 +57,21 @@ export const mkServer = async (origin: string) => {
 };
 
 export const mkSubscriptionServer = (server: HTTP_Server | HTTPS_Server) => {
-  new SubscriptionServer({ execute, subscribe, schema }, { server });
+  new SubscriptionServer(
+    {
+      execute,
+      subscribe,
+      schema,
+      onConnect: async (connectionParams: any, webSocket: any) => {
+        const user = await findAuthenticatedUser(connectionParams.authorization);
+        const secure = mkSecureResolver(user);
+        return { secure };
+      },
+      // also
+      // onDisconnect
+      // onOperation
+      // onOperationComplete
+    },
+    { server }
+  );
 };

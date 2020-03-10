@@ -10,10 +10,19 @@ export interface DataSources {
   api: ITTTAPIDataSource;
 }
 
-export interface DataSourceContext {
+export type DataSourceContext = WithRequestResponse & WithSecureResolver;
+export type Context = WithDataSources & WithRequestResponse & WithSecureResolver;
+export type WebSocketContext = WithSecureResolver;
+
+interface WithRequestResponse {
   req: Request;
   res: Response;
+}
+
+interface WithSecureResolver {
   secure: SecureResolver;
 }
 
-export type Context = DataSourceContext & { dataSources: DataSources };
+interface WithDataSources {
+  dataSources: DataSources;
+}

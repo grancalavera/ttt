@@ -19,15 +19,23 @@ export const mkSecureResolver: MakeSecureResolver = user => runEffect => {
 };
 
 export const findAuthenticatedUser = async (
-  req: Request
+  authorization?: string
 ): Promise<UserEntity | undefined> => {
+  if (!authorization) {
+    notAuthorized();
+    return;
+  }
   try {
-    const authorization = req.headers["authorization"]!;
     const tokenString = authorization.split(" ")[1];
     const token: any = decodeToken(tokenString);
     const user = await UserEntity.findOne({ where: { id: token.userId } });
     return user;
   } catch (e) {
+    notAuthorized();
+    return;
+  }
+
+  function notAuthorized() {
     console.info(`auth.findAuthenticatedUser: not authorized`);
   }
 };
