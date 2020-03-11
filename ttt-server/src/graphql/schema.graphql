@@ -1,7 +1,8 @@
 type Mutation {
-  join: ID!
   register: RegisterResult!
-  play(input: PlayInput!): Boolean!
+  channelPlayMove(input: PlayInput!): Boolean!
+  channelJoinGame(input: JoinInput!): Boolean!
+  channelRejoinGame(input: RejoinInput!): Boolean!
 }
 
 type Query {
@@ -30,7 +31,17 @@ type User {
   tokenVersion: Int!
 }
 
+input JoinInput {
+  channelId: ID!
+}
+
+input RejoinInput {
+  channelId: ID!
+  gameId: ID!
+}
+
 input PlayInput {
+  channelId: ID!
   gameId: ID!
   token: Token!
   position: Position!
