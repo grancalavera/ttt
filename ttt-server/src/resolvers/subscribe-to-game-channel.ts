@@ -27,5 +27,5 @@ export const subscribeToGameChannel = {
 
 // here we need to make sure the user owns the channel
 const ensureChannelBelongsToUser = (channelId: string, user: UserEntity) => {
-  throw new Error(`user ${user.id} does not own channel ${channelId}`);
+  throw new Error(`user "${user.id}" does not own channel "${channelId}"`);
 };

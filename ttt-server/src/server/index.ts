@@ -64,6 +64,12 @@ export const mkSubscriptionServer = (server: HTTP_Server | HTTPS_Server) => {
       schema,
       onConnect: async (connectionParams: any, webSocket: any) => {
         const user = await findAuthenticatedUser(connectionParams.authorization);
+        if (!user) {
+          // roughly 401
+          // here we throw because we want to prevent users from
+          // creating a connection
+          throw new Error("SubscriptionServer.onConnect: not authenticated");
+        }
         const secure = mkSecureResolver(user);
         return { secure };
       },
