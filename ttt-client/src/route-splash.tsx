@@ -10,12 +10,12 @@ import {
   isLoading,
 } from "./common/activity-state";
 import { Content } from "./common/layout";
-import { useJoinMutation } from "./generated/graphql";
+import { useChannelJoinGameMutation } from "./generated/graphql";
 import { useActivityState } from "./hooks/use-activity-state";
 import { useLoader } from "./hooks/use-loader";
 
 export const SplashRoute: React.FC = () => {
-  const [join, joinResult] = useJoinMutation();
+  const [join, joinResult] = useChannelJoinGameMutation();
   const joinState = useActivityState(joinResult);
   const { toggleLoader } = useLoader();
 
@@ -33,7 +33,7 @@ export const SplashRoute: React.FC = () => {
     case ACTIVITY_FAILED:
       throw joinState.error;
     case ACTIVITY_SUCCESS:
-      return <Redirect to={`/game/${joinState.data.join}`} push />;
+      return <Redirect to={`/game/${joinState.data.channelJoinGame}`} push />;
     default:
       return assertNever(joinState);
   }

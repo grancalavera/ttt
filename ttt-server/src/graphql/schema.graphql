@@ -1,7 +1,7 @@
 type Mutation {
   register: RegisterResult!
   channelPlayMove(input: PlayInput!): Boolean!
-  channelJoinGame(input: JoinInput!): Boolean!
+  channelJoinGame(input: JoinInput!): ID!
   channelRejoinGame(input: RejoinInput!): Boolean!
 }
 

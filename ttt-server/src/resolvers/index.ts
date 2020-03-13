@@ -23,8 +23,10 @@ const GameStatus: GameStatusResolvers = {
 
 const Mutation: MutationResolvers = {
   register: (_, __, ctx) => users.register(ctx),
-  join: async (_, __, ctx) => ctx.secure(game.join(ctx)),
-  play: (_, { input }, ctx) => ctx.secure(game.play(ctx, input)),
+  // join: async (_, __, ctx) => ctx.secure(game.join(ctx)),
+  // play: (_, { input }, ctx) => ctx.secure(game.play(ctx, input)),
+  channelPlayMove: (_, { input }, ctx) => ctx.secure(game.play(ctx, input)),
+  channelJoinGame: (_, __, ctx) => ctx.secure(game.join(ctx)),
 };
 
 const Subscription: SubscriptionResolvers = {
