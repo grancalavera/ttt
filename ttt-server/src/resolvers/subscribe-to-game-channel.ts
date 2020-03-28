@@ -2,7 +2,7 @@ import { FilterFn, ResolverFn, withFilter } from "apollo-server";
 import { UserEntity } from "entity/user-entity";
 import { WebSocketContext } from "../context";
 import { Subscription, SubscriptionGameChannelArgs } from "../generated/graphql";
-import { pubSub, PUBSUB_GAME_CHANNEL } from "./pub-sub";
+import { pubSub, PUBSUB_GAME_CHANNEL } from "../pub-sub";
 
 type SubscriptionGameChannel = Pick<Subscription, "gameChannel">;
 
@@ -15,7 +15,7 @@ const filterGameChannelSubscription: FilterFn = (
   context: WebSocketContext
 ) => {
   return context.secure(user => {
-    ensureChannelBelongsToUser(gameChannel.channelId, user);
+    // ensureChannelBelongsToUser(gameChannel.channelId, user);
     const result = gameChannel.channelId === channelId;
     return result;
   });

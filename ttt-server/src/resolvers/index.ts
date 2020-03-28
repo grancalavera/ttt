@@ -1,3 +1,4 @@
+import * as channel from "resolvers/channel";
 import * as game from "resolvers/game";
 import * as users from "resolvers/users";
 import * as util from "resolvers/util";
@@ -23,6 +24,7 @@ const GameStatus: GameStatusResolvers = {
 
 const Mutation: MutationResolvers = {
   register: (_, __, ctx) => users.register(ctx),
+  openChannel: (_, __, ctx) => ctx.secure(channel.open()),
   // join: async (_, __, ctx) => ctx.secure(game.join(ctx)),
   // play: (_, { input }, ctx) => ctx.secure(game.play(ctx, input)),
   channelPlayMove: (_, { input }, ctx) => ctx.secure(game.play(ctx, input)),

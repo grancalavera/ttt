@@ -1,5 +1,5 @@
 import { UserEntity } from "entity/user-entity";
-import { pubSub, PUBSUB_GAME_CHANNEL } from "./pub-sub";
+import { pubSub, PUBSUB_GAME_CHANNEL } from "../pub-sub";
 import { GameChannelMessage } from "generated/graphql";
 
 export const ping = () => {

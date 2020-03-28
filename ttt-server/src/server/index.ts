@@ -14,6 +14,7 @@ import { router } from "server/router";
 import { SubscriptionServer } from "subscriptions-transport-ws";
 import { Server as HTTP_Server } from "http";
 import { Server as HTTPS_Server } from "https";
+import { pubSub, PUBSUB_OPEN_CHANNEL } from "pub-sub";
 
 const typeDefs = readFileSync(join(__dirname, "../graphql/schema.graphql"), "utf8");
 
@@ -57,12 +58,13 @@ export const mkServer = async (origin: string) => {
 };
 
 export const mkSubscriptionServer = (server: HTTP_Server | HTTPS_Server) => {
+  // https://www.apollographql.com/docs/graphql-subscriptions/
   new SubscriptionServer(
     {
       execute,
       subscribe,
       schema,
-      onConnect: async (connectionParams: any, webSocket: any) => {
+      onConnect: async (connectionParams: any, webSocket: any, third: any) => {
         const user = await findAuthenticatedUser(connectionParams.authorization);
         if (!user) {
           // roughly 401
@@ -70,12 +72,15 @@ export const mkSubscriptionServer = (server: HTTP_Server | HTTPS_Server) => {
           // creating a connection
           throw new Error("SubscriptionServer.onConnect: not authenticated");
         }
+        pubSub.publish(PUBSUB_OPEN_CHANNEL, { owner: user });
         const secure = mkSecureResolver(user);
         return { secure };
       },
+      onOperation: async (message: any, params: any, webSocket: any) => {
+        return params;
+      },
       // also
       // onDisconnect
-      // onOperation
       // onOperationComplete
     },
     { server }
