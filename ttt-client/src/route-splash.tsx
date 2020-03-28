@@ -15,17 +15,26 @@ import { useActivityState } from "./hooks/use-activity-state";
 import { useLoader } from "./hooks/use-loader";
 
 export const SplashRoute: React.FC = () => {
-  const [join, joinResult] = useChannelJoinGameMutation();
-  const joinState = useActivityState(joinResult);
+  const [channelJoinGame, channelJoinGameResult] = useChannelJoinGameMutation();
   const { toggleLoader } = useLoader();
 
+  const joinState = useActivityState(channelJoinGameResult);
   toggleLoader(isLoading(joinState));
 
+  // if we have not joined a game, we join a game
+  // and wait for the first message on the channel
+  // something like "game changed" with a game payload
+  // probable on "play", which is just "channelJoinGame"
+  // we can just navigate to the game route, if we don't have
+  // a game id... no it doesn't work
   switch (joinState.kind) {
     case ACTIVITY_IDLE:
       return (
         <Content>
-          <Button icon="play" onClick={() => join()} />
+          <Button
+            icon="play"
+            onClick={() => channelJoinGame({ variables: { channelId: "some channel" } })}
+          />
         </Content>
       );
     case ACTIVITY_LOADING:
