@@ -1,6 +1,6 @@
 type Mutation {
   register: RegisterResult!
-  openChannel: ID!
+  openGame(input: OpenGameByIdInput): ID!
   channelPlayMove(input: PlayInput!): Boolean!
   channelJoinGame(input: JoinInput!): ID!
   channelRejoinGame(input: RejoinInput!): Boolean!
@@ -32,8 +32,8 @@ type User {
   tokenVersion: Int!
 }
 
-input OpenChannelInput {
-  channelId: ID!
+input OpenGameByIdInput {
+  gameId: ID!
 }
 
 input JoinInput {

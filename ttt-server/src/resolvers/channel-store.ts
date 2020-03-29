@@ -13,8 +13,5 @@ const channels: Map<ChannelId, UserId> = new Map();
 export const openChannel = (userId: UserId) => {
   const channelId = uuid();
   channels.set(channelId, userId);
-
-  console.log(channels);
-
   return channelId;
 };
