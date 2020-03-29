@@ -1,5 +1,8 @@
 overwrite: true
 
+# It also supports graphql-import syntax, so you can point
+# to a single schema.graphql file that imports other files.
+# https://github.com/ardatan/graphql-import
 schema: "ttt-server/src/graphql/schema.graphql"
 documents: "ttt-client/src/graphql/*.graphql"
 

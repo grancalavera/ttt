@@ -1,4 +1,4 @@
-import { GameStatus } from "generated/graphql";
+import { GameState } from "generated/graphql";
 import { Typename, UserId } from "model";
 import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
 
@@ -8,7 +8,7 @@ export class GameEntity extends BaseEntity {
   id!: string;
 
   @Column()
-  status!: Typename<GameStatus>;
+  status!: Typename<GameState>;
 
   @Column({ nullable: true })
   O?: UserId;
