@@ -38,18 +38,26 @@ export interface CoreGameOverWin {
   winningMove: CoreWin;
 }
 
-export type Maybe<T> = T | null;
+export type Maybe<T> = T | null | undefined;
 
-const gameOverWin = (
-  result: Omit<CoreGameOverWin, "kind">
-): CoreGameOverWin => ({
+export const just = <T>(value: T): Maybe<T> => value;
+
+export const nothing = <T>(): Maybe<T> => null;
+
+export const isJust = <T>(maybe: Maybe<T>): maybe is T => {
+  return !isNothing(maybe);
+};
+
+export const isNothing = <T>(maybe: Maybe<T>): maybe is null | undefined => {
+  return maybe === undefined || maybe === null;
+};
+
+const gameOverWin = (result: Omit<CoreGameOverWin, "kind">): CoreGameOverWin => ({
   kind: CORE_GAME_OVER_WIN,
   ...result,
 });
 
-const gameOverTie = (
-  result: Omit<CoreGameOverTie, "kind">
-): CoreGameOverTie => ({
+const gameOverTie = (result: Omit<CoreGameOverTie, "kind">): CoreGameOverTie => ({
   kind: CORE_GAME_OVER_TIE,
   ...result,
 });
@@ -72,8 +80,7 @@ const winningMoves: CoreWin[] = [
 
 export const coerce = <T, U extends T>(
   isCoercible: (value: T) => value is U,
-  discard: (discarded: T) => string = discarded =>
-    `type coercion for ${discarded} failed`
+  discard: (discarded: T) => string = discarded => `type coercion for ${discarded} failed`
 ) => (candidate: T): U => {
   if (isCoercible(candidate)) {
     return candidate;
@@ -133,10 +140,7 @@ export const createGame = (): CoreGamePlaying => ({
   currentPlayer: nextPlayer([]),
 });
 
-export const findWin = (
-  player: CorePlayer,
-  game: CoreMove[]
-): CoreWin | undefined => {
+export const findWin = (player: CorePlayer, game: CoreMove[]): CoreWin | undefined => {
   const playerMoves = game
     .filter(([candidate]) => player === candidate)
     .map(([_, pos]) => pos);

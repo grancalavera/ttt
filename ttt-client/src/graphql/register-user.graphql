@@ -1,5 +1,5 @@
-mutation Register {
-  register {
+mutation RegisterUser {
+  registerUser {
     user {
       id
       tokenVersion

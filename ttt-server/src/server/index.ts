@@ -15,8 +15,9 @@ import { SubscriptionServer } from "subscriptions-transport-ws";
 import { Server as HTTP_Server } from "http";
 import { Server as HTTPS_Server } from "https";
 import { pubSub, PUBSUB_OPEN_CHANNEL } from "pub-sub";
+import { importSchema } from "graphql-import";
 
-const typeDefs = readFileSync(join(__dirname, "../graphql/schema.graphql"), "utf8");
+const typeDefs = importSchema(join(__dirname, "../graphql/schema.graphql"));
 
 const schema = makeExecutableSchema({
   resolverValidationOptions: { requireResolversForResolveType: false },

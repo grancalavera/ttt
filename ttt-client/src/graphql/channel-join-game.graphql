@@ -1,3 +1,0 @@
-mutation ChannelJoinGame($channelId: ID!) {
-  channelJoinGame(input: { channelId: $channelId })
-}

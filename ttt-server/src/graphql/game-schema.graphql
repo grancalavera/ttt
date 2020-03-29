@@ -1,0 +1,124 @@
+# -----------------------------------------------------------------------------
+#
+# Mutations
+#
+# -----------------------------------------------------------------------------
+
+# -------------------------------------
+#
+# GameOpenMutation
+#
+# -------------------------------------
+
+type GameOpenMutationResult {
+  channelId: ID!
+}
+
+# -------------------------------------
+#
+# StarGameStartMutationt
+#
+# -------------------------------------
+
+input GameStartMutationInput {
+  channelId: ID!
+  gameId: ID
+}
+
+type GameStartMutationResult {
+  ok: Boolean!
+}
+
+# -------------------------------------
+#
+# GamePlayMoveMutation
+#
+# -------------------------------------
+
+input GamePlayMoveMutationInput {
+  gameId: ID!
+  channelId: ID!
+  token: Token!
+  position: Position!
+}
+
+type GamePlayMoveMutationResult {
+  ok: Boolean!
+}
+
+# -----------------------------------------------------------------------------
+#
+# Subscriptions
+#
+# -----------------------------------------------------------------------------
+
+# -------------------------------------
+#
+# GameChangedSubscription
+
+input GameChangedSubscriptionInput {
+  channelId: ID!
+}
+
+type GameChangedSubscriptionResult {
+  state: GameState!
+}
+
+# -----------------------------------------------------------------------------
+#
+# Model
+#
+# -----------------------------------------------------------------------------
+
+union GameState = GamePlayingState | GameOverDrawState | GameOverWonState
+
+interface SharedGameState {
+  id: ID!
+  me: Token!
+  moves: [Move!]!
+}
+
+type GamePlayingState implements SharedGameState {
+  id: ID!
+  me: Token!
+  moves: [Move!]!
+  # GamePlayingState
+  next: Token!
+}
+
+type GameOverDrawState implements SharedGameState {
+  id: ID!
+  me: Token!
+  moves: [Move!]!
+  # GameOverDrawState
+}
+
+type GameOverWonState implements SharedGameState {
+  id: ID!
+  me: Token!
+  moves: [Move!]!
+  # GameOverWonState
+  winner: Token!
+}
+
+type Move {
+  token: Token!
+  position: Position!
+}
+
+enum Token {
+  O
+  X
+}
+
+enum Position {
+  A
+  B
+  C
+  D
+  E
+  F
+  G
+  H
+  I
+}

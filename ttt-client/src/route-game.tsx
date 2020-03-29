@@ -11,7 +11,7 @@ import {
   isLoading,
 } from "./common/activity-state";
 import { GameView } from "./game-view";
-import { useGameStatusQuery } from "./generated/graphql";
+// import { useGameStatusQuery } from "./generated/graphql";
 import { useActivityState } from "./hooks/use-activity-state";
 import { useLoader } from "./hooks/use-loader";
 
@@ -20,42 +20,43 @@ interface GameRouteParams {
 }
 
 export const GameRoute: React.FC = () => {
-  const { gameId } = useParams<GameRouteParams>();
-  const { setToken, setGameId } = useContext(AppContext);
+  // const { gameId } = useParams<GameRouteParams>();
+  // const { setToken, setGameId } = useContext(AppContext);
 
-  const gameStatusQueryResult = useGameStatusQuery({
-    variables: { gameId },
-    fetchPolicy: "no-cache",
-  });
+  // const gameStatusQueryResult = useGameStatusQuery({
+  //   variables: { gameId },
+  //   fetchPolicy: "no-cache",
+  // });
 
-  const gameStatusQueryState = useActivityState(gameStatusQueryResult);
+  // const gameStatusQueryState = useActivityState(gameStatusQueryResult);
 
-  const { toggleLoader } = useLoader();
-  toggleLoader(isLoading(gameStatusQueryState));
+  // const { toggleLoader } = useLoader();
+  // toggleLoader(isLoading(gameStatusQueryState));
 
-  useEffect(() => setGameId(gameId));
+  // useEffect(() => setGameId(gameId));
 
-  useEffect(() => {
-    if (didSucceed(gameStatusQueryState)) {
-      setToken(gameStatusQueryState.data.gameStatus.me);
-    }
-  }, [gameStatusQueryState, gameId, setGameId, setToken]);
+  // useEffect(() => {
+  //   if (didSucceed(gameStatusQueryState)) {
+  //     setToken(gameStatusQueryState.data.gameStatus.me);
+  //   }
+  // }, [gameStatusQueryState, gameId, setGameId, setToken]);
 
-  if (!gameId) {
-    console.error("missing required `gameId`");
-    return <Redirect to="/" />;
-  }
+  // if (!gameId) {
+  //   console.error("missing required `gameId`");
+  //   return <Redirect to="/" />;
+  // }
 
-  switch (gameStatusQueryState.kind) {
-    case ACTIVITY_IDLE:
-    case ACTIVITY_LOADING:
-      return null;
-    case ACTIVITY_FAILED:
-      console.error(gameStatusQueryState.error);
-      return <Redirect to="/" />;
-    case ACTIVITY_SUCCESS:
-      return <GameView gameState={gameStatusQueryState.data.gameStatus} />;
-    default:
-      return assertNever(gameStatusQueryState);
-  }
+  // switch (gameStatusQueryState.kind) {
+  //   case ACTIVITY_IDLE:
+  //   case ACTIVITY_LOADING:
+  //     return null;
+  //   case ACTIVITY_FAILED:
+  //     console.error(gameStatusQueryState.error);
+  //     return <Redirect to="/" />;
+  //   case ACTIVITY_SUCCESS:
+  //     return <GameView gameState={gameStatusQueryState.data.gameStatus} />;
+  //   default:
+  //     return assertNever(gameStatusQueryState);
+  // }
+  return null;
 };

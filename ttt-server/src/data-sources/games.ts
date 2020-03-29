@@ -47,7 +47,7 @@ either game ${gameId} does not exist or user ${userEntity.id} is not authorized 
   async joinNewGame(user: UserEntity, token: Token) {
     const game = new GameEntity();
     game.id = uuid();
-    game.status = "GamePlaying";
+    game.status = "GamePlayingState";
     game[token] = user.id;
     game.next = token;
     await game.save();

@@ -1,110 +1,17 @@
+# import * from 'game-schema.graphql'
+# import * from 'user-schema.graphql'
+
 type Mutation {
-  register: RegisterResult!
-  openGame(input: OpenGameByIdInput): ID!
-  channelPlayMove(input: PlayInput!): Boolean!
-  channelJoinGame(input: JoinInput!): ID!
-  channelRejoinGame(input: RejoinInput!): Boolean!
+  registerUser: UserRegisterMutationResult!
+  openGame: GameOpenMutationResult!
+  startGame(input: GameStartMutationInput!): GameStartMutationResult!
 }
 
 type Query {
-  users: [User!]!
-  whoami: ID
+  whoami: User!
   ping: String!
-  gameStatus(gameId: ID!): GameStatus!
 }
 
 type Subscription {
-  gameChannel(channelId: ID!): GameChannelMessage!
-}
-
-type GameChannelMessage {
-  channelId: ID!
-  game: String!
-}
-
-type RegisterResult {
-  accessToken: String!
-  user: User!
-}
-
-type User {
-  id: ID!
-  tokenVersion: Int!
-}
-
-input OpenGameByIdInput {
-  gameId: ID!
-}
-
-input JoinInput {
-  channelId: ID!
-}
-
-input RejoinInput {
-  channelId: ID!
-  gameId: ID!
-}
-
-input PlayInput {
-  channelId: ID!
-  gameId: ID!
-  token: Token!
-  position: Position!
-}
-
-enum Token {
-  O
-  X
-}
-
-enum Position {
-  A
-  B
-  C
-  D
-  E
-  F
-  G
-  H
-  I
-}
-
-type Move {
-  token: Token!
-  position: Position!
-}
-
-interface Game {
-  id: ID!
-  me: Token!
-  moves: [Move!]!
-}
-
-union GameStatus = GamePlaying | GameDraw | GameWon
-
-type GamePlaying implements Game {
-  id: ID!
-  me: Token!
-  next: Token!
-  moves: [Move!]!
-}
-
-type GameDraw implements Game {
-  id: ID!
-  me: Token!
-  moves: [Move!]!
-}
-
-type GameWon implements Game {
-  id: ID!
-  me: Token!
-  winner: Token!
-  moves: [Move!]!
-}
-
-fragment playingFields on GamePlaying {
-  id
-  me
-  next
-  moves
+  gameChanged(channelId: ID!): GameState!
 }
