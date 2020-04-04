@@ -1,5 +1,8 @@
-# import * from 'game-schema.graphql'
-# import * from 'user-schema.graphql'
+# -----------------------------------------------------------------------------
+#
+# Root
+#
+# -----------------------------------------------------------------------------
 
 type Mutation {
   registerUser: UserRegisterMutationResult!
@@ -14,5 +17,154 @@ type Query {
 }
 
 type Subscription {
-  gameChanged(channelId: ID!): GameState!
+  gameChanged(input: GameChangedInput!): GameChangedResult!
+}
+
+# -----------------------------------------------------------------------------
+#
+# User
+#
+# -----------------------------------------------------------------------------
+
+type UserRegisterMutationResult {
+  accessToken: String!
+  user: User!
+}
+
+type User {
+  id: ID!
+  tokenVersion: Int!
+}
+
+# -----------------------------------------------------------------------------
+#
+# Game Operations
+#
+# -----------------------------------------------------------------------------
+
+# -------------------------------------
+#
+# Mutation.openGame
+#
+# -------------------------------------
+
+type GameOpenMutationResult {
+  channelId: ID!
+}
+
+# -------------------------------------
+#
+# Mutation.beginGame
+#
+# -------------------------------------
+
+input GameBeginMutationInput {
+  channelId: ID!
+}
+
+type GameBeginMutationResult {
+  ok: Boolean!
+}
+
+# -------------------------------------
+#
+# Mutation.resumeGame
+#
+# -------------------------------------
+
+input GameResumeMutationInput {
+  channelId: ID!
+  gameId: ID!
+}
+
+type GameResumeMutationResult {
+  ok: Boolean!
+}
+
+# -------------------------------------
+#
+# mutation.playMove
+#
+# -------------------------------------
+
+input GamePlayMoveMutationInput {
+  gameId: ID!
+  channelId: ID!
+  token: Token!
+  position: Position!
+}
+
+type GamePlayMoveMutationResult {
+  ok: Boolean!
+}
+
+# -------------------------------------
+#
+# GameChangedSubscription
+
+input GameChangedInput {
+  channelId: ID!
+}
+
+type GameChangedResult {
+  state: GameState!
+}
+
+# -----------------------------------------------------------------------------
+#
+# Game Model
+#
+# -----------------------------------------------------------------------------
+
+union GameState = GamePlayingState | GameOverDrawState | GameOverWonState
+
+interface SharedGameState {
+  id: ID!
+  me: Token!
+  moves: [Move!]!
+}
+
+type GamePlayingState implements SharedGameState {
+  id: ID!
+  me: Token!
+  moves: [Move!]!
+  # GamePlayingState
+  next: Token!
+}
+
+type GameOverDrawState implements SharedGameState {
+  id: ID!
+  me: Token!
+  moves: [Move!]!
+  # GameOverDrawState
+}
+
+type GameOverWonState implements SharedGameState {
+  id: ID!
+  me: Token!
+  moves: [Move!]!
+  # GameOverWonState
+  winner: Token!
+}
+
+type Move {
+  token: Token!
+  position: Position!
+}
+
+enum Token {
+  O
+  X
+}
+
+enum Position {
+  A
+  B
+  C
+  D
+  E
+  F
+  G
+  H
+  I
 }

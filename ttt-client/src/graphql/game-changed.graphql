@@ -1,0 +1,33 @@
+subscription GameChanged($input: GameChangedInput!) {
+  gameChanged(input: $input) {
+    state {
+      __typename
+      ... on GamePlayingState {
+        id
+        me
+        moves {
+          token
+          position
+        }
+        next
+      }
+      ... on GameOverDrawState {
+        id
+        me
+        moves {
+          token
+          position
+        }
+      }
+      ... on GameOverWonState {
+        id
+        me
+        moves {
+          token
+          position
+        }
+        winner
+      }
+    }
+  }
+}

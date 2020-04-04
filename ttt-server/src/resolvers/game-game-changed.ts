@@ -11,13 +11,13 @@ const resolveGameChannelSubscription: ResolverFn = () =>
   pubSub.asyncIterator([PUBSUB_GAME_CHANNEL]);
 
 const filterGameChangedSubscription: FilterFn = (
-  { gameChanged }: SubscriptionGameChanged,
-  { channelId }: SubscriptionGameChangedArgs,
+  { gameChanged: { state } }: SubscriptionGameChanged,
+  { input: { channelId } }: SubscriptionGameChangedArgs,
   context: WebSocketContext
 ) => {
-  return context.secure(user => {
+  return context.secure((user) => {
     ensureUserBelongsToChannel(channelId, user);
-    return doesGameBelongsToChannel(channelId, gameChanged.id);
+    return doesGameBelongsToChannel(channelId, state.id);
   });
 };
 

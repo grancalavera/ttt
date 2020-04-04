@@ -8,16 +8,15 @@ import { UsersDataSource } from "data-sources/users";
 import express from "express";
 import { readFileSync } from "fs";
 import { execute, subscribe } from "graphql";
+import { Server as HTTP_Server } from "http";
+import { Server as HTTPS_Server } from "https";
 import { join } from "path";
+import { pubSub, PUBSUB_OPEN_CHANNEL } from "pub-sub";
 import { resolvers } from "resolvers";
 import { router } from "server/router";
 import { SubscriptionServer } from "subscriptions-transport-ws";
-import { Server as HTTP_Server } from "http";
-import { Server as HTTPS_Server } from "https";
-import { pubSub, PUBSUB_OPEN_CHANNEL } from "pub-sub";
-import { importSchema } from "graphql-import";
 
-const typeDefs = importSchema(join(__dirname, "../graphql/schema.graphql"));
+const typeDefs = readFileSync(join(__dirname, "../graphql/schema.graphql"), "utf8");
 
 const schema = makeExecutableSchema({
   resolverValidationOptions: { requireResolversForResolveType: false },
