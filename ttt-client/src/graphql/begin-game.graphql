@@ -1,0 +1,5 @@
+mutation BeginGame($input: GameBeginMutationInput!) {
+  beginGame(input: $input) {
+    ok
+  }
+}
