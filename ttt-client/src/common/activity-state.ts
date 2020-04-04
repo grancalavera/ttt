@@ -42,7 +42,7 @@ export const isIdle = (a: ActivityState<any>): a is ActivityIdle =>
 export const isLoading = (a: ActivityState<any>): a is ActivityLoading =>
   a.kind === ACTIVITY_LOADING;
 
-export const didFailed = (a: ActivityState<any>): a is ActivityFailed =>
+export const didFail = (a: ActivityState<any>): a is ActivityFailed =>
   a.kind === ACTIVITY_FAILED;
 
 export const didSucceed = (a: ActivityState<any>): a is ActivitySuccess<any> =>

@@ -1,9 +1,0 @@
-type UserRegisterMutationResult {
-  accessToken: String!
-  user: User!
-}
-
-type User {
-  id: ID!
-  tokenVersion: Int!
-}
