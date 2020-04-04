@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { setAccessToken } from "../access-token";
-import { useRegisterMutation } from "../generated/graphql";
+import { useRegisterUserMutation } from "../generated/graphql";
 
 export const useAuthentication = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [register] = useRegisterMutation();
+  const [registerUser] = useRegisterUserMutation();
 
   useEffect(() => {
     (async () => {
@@ -18,16 +18,16 @@ export const useAuthentication = () => {
         setAccessToken(accessToken);
         setIsAuthenticated(true);
       } else {
-        const registerResponse = await register();
-        if (registerResponse.data && registerResponse.data.register) {
-          setAccessToken(registerResponse.data.register.accessToken);
+        const registerResponse = await registerUser();
+        if (registerResponse.data && registerResponse.data.registerUser) {
+          setAccessToken(registerResponse.data.registerUser.accessToken);
           setIsAuthenticated(true);
         } else {
           throw new Error("failed to register anonymous user");
         }
       }
     })();
-  }, [register]);
+  }, [registerUser]);
 
   return isAuthenticated;
 };

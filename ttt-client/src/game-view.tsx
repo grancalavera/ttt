@@ -3,11 +3,11 @@ import { assertNever } from "@grancalavera/ttt-core";
 import React from "react";
 import { BoardLayout, CellLayout } from "./common/layout";
 import { amIWaiting, CellState, updateBoard } from "./game-board";
-import { GameStatus, Move } from "./generated/graphql";
+import { GameState, Move } from "./generated/graphql";
 import { useLoader } from "./hooks/use-loader";
 
 interface Props {
-  gameState: GameStatus;
+  gameState: GameState;
 }
 
 export const GameView: React.FC<Props> = ({ gameState }) => {

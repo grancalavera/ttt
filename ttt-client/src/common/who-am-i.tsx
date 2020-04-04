@@ -14,5 +14,5 @@ export const WhoAmI: React.FC = () => {
     }
   }, [whoAmI, authenticated]);
 
-  return data ? <code>{data.whoami}</code> : null;
+  return data ? <code>{data.whoami.id} </code> : null;
 };

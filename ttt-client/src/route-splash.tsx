@@ -10,16 +10,16 @@ import {
   isLoading,
 } from "./common/activity-state";
 import { Content } from "./common/layout";
-import { useChannelJoinGameMutation } from "./generated/graphql";
+import { useOpenGameMutation } from "./generated/graphql";
 import { useActivityState } from "./hooks/use-activity-state";
 import { useLoader } from "./hooks/use-loader";
 
 export const SplashRoute: React.FC = () => {
-  const [channelJoinGame, channelJoinGameResult] = useChannelJoinGameMutation();
+  const [openGame, openGameResult] = useOpenGameMutation();
   const { toggleLoader } = useLoader();
 
-  const joinState = useActivityState(channelJoinGameResult);
-  toggleLoader(isLoading(joinState));
+  const openGameState = useActivityState(openGameResult);
+  toggleLoader(isLoading(openGameState));
 
   // if we have not joined a game, we join a game
   // and wait for the first message on the channel
@@ -27,23 +27,24 @@ export const SplashRoute: React.FC = () => {
   // probable on "play", which is just "channelJoinGame"
   // we can just navigate to the game route, if we don't have
   // a game id... no it doesn't work
-  switch (joinState.kind) {
+  switch (openGameState.kind) {
     case ACTIVITY_IDLE:
       return (
         <Content>
           <Button
             icon="play"
-            onClick={() => channelJoinGame({ variables: { channelId: "some channel" } })}
+            onClick={() => openGame({ variables: { channelId: "some channel" } })}
           />
         </Content>
       );
     case ACTIVITY_LOADING:
       return null;
     case ACTIVITY_FAILED:
-      throw joinState.error;
+      throw openGameState.error;
     case ACTIVITY_SUCCESS:
-      return <Redirect to={`/game/${joinState.data.channelJoinGame}`} push />;
+      // return <Redirect to={`/game/${openGameState.data.channelJoinGame}`} push />;
+      return <div>Now we have a channel but no game yet</div>;
     default:
-      return assertNever(joinState);
+      return assertNever(openGameState);
   }
 };
