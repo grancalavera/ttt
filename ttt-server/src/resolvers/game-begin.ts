@@ -7,5 +7,5 @@ export const begin = (input: GameBeginMutationInput, ctx: Context) => (
 ): GameBeginMutationResult => {
   const { channelId } = input;
   console.log(`create or join new game on channel ${channelId}`);
-  return { ok: false };
+  return { ok: true };
 };
