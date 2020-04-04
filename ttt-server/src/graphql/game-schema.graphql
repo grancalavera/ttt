@@ -6,7 +6,7 @@
 
 # -------------------------------------
 #
-# GameOpenMutation
+# Mutation.openGame
 #
 # -------------------------------------
 
@@ -16,22 +16,36 @@ type GameOpenMutationResult {
 
 # -------------------------------------
 #
-# StarGameStartMutationt
+# Mutation.beginGame
 #
 # -------------------------------------
 
-input GameStartMutationInput {
+input GameBeginMutationInput {
   channelId: ID!
-  gameId: ID
 }
 
-type GameStartMutationResult {
+type GameBeginMutationResult {
   ok: Boolean!
 }
 
 # -------------------------------------
 #
-# GamePlayMoveMutation
+# Mutation.resumeGame
+#
+# -------------------------------------
+
+input GameResumeMutationInput {
+  channelId: ID!
+  gameId: ID!
+}
+
+type GameResumeMutationResult {
+  ok: Boolean!
+}
+
+# -------------------------------------
+#
+# mutation.playMove
 #
 # -------------------------------------
 

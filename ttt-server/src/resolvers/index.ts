@@ -16,7 +16,7 @@ const Query: QueryResolvers = {
 const Mutation: MutationResolvers = {
   registerUser: (_, __, ctx) => users.register(ctx),
   openGame: (_, __, ctx) => ctx.secure(game.open()),
-  startGame: (_, { input }, ctx) => ctx.secure(game.start(input, ctx)),
+  beginGame: (_, { input }, ctx) => ctx.secure(game.begin(input, ctx)),
 };
 
 const Subscription: SubscriptionResolvers = {

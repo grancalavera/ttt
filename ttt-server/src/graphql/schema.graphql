@@ -4,7 +4,8 @@
 type Mutation {
   registerUser: UserRegisterMutationResult!
   openGame: GameOpenMutationResult!
-  startGame(input: GameStartMutationInput!): GameStartMutationResult!
+  beginGame(input: GameBeginMutationInput!): GameBeginMutationResult!
+  resumeGame(input: GameResumeMutationInput!): GameResumeMutationResult!
 }
 
 type Query {
