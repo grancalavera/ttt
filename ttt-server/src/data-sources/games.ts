@@ -4,7 +4,7 @@ import { GameEntity } from "entity/game-entity";
 import { UserEntity } from "entity/user-entity";
 import { Token } from "generated/graphql";
 import { Not } from "typeorm";
-import uuid = require("uuid");
+import { v4 as uuid } from "uuid";
 
 export class GamesDataSource extends DataSource {
   private context!: DataSourceContext;

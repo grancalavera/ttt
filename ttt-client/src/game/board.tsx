@@ -1,16 +1,19 @@
 import { Button, Intent } from "@blueprintjs/core";
 import { assertNever } from "@grancalavera/ttt-core";
 import React from "react";
-import { BoardLayout, CellLayout } from "./common/layout";
-import { amIWaiting, CellState, updateBoard } from "./game-board";
-import { GameState, Move } from "./generated/graphql";
-import { useLoader } from "./hooks/use-loader";
+import { BoardLayout, CellLayout } from "../common/layout";
+import { WithTypename } from "../common/with-typename";
+import { GameState, Move } from "../generated/graphql";
+import { useLoader } from "../hooks/use-loader";
+import { amIWaiting } from "./turn";
+import { CellState } from "./types";
+import { updateBoard } from "./update-board";
 
-interface Props {
-  gameState: GameState;
+interface BoardProps {
+  gameState: WithTypename<GameState>;
 }
 
-export const GameView: React.FC<Props> = ({ gameState }) => {
+export const Board: React.FC<BoardProps> = ({ gameState }) => {
   const { toggleLoader } = useLoader();
   toggleLoader(amIWaiting(gameState));
 

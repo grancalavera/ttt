@@ -2,7 +2,7 @@ import { DataSource, DataSourceConfig } from "apollo-datasource";
 import { createAccessToken, createRefreshToken, sendRefreshToken } from "auth";
 import { Context, DataSourceContext } from "context";
 import { UserEntity } from "entity/user-entity";
-import uuid = require("uuid");
+import { v4 as uuid } from "uuid";
 
 export class UsersDataSource extends DataSource<Context> {
   private context!: DataSourceContext;
@@ -22,7 +22,7 @@ export class UsersDataSource extends DataSource<Context> {
 
 export const createUser = async (id?: string) => {
   const user = new UserEntity();
-  user.id = id || uuid();
+  user.id = id ?? uuid();
   await user.save();
   await user.reload();
   return user;

@@ -27,7 +27,9 @@
     "react-test-renderer": "16.12.0",
     "react": "16.12.0",
     "styled-components": "4.4.1",
-    "typescript": "3.7.3"
+    "typescript": "3.7.3",
+    "uuid": "7.0.3",
+    "@types/uuid": "7.0.2"
   },
   "scripts": {
     "start": "BROWSER=none react-scripts start",

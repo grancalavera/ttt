@@ -1,3 +1,7 @@
+# try to split with this
+# https://graphql-code-generator.com/docs/integrations/federation
+# https://www.apollographql.com/docs/apollo-server/federation/introduction/
+
 # -----------------------------------------------------------------------------
 #
 # Root
@@ -124,7 +128,12 @@ interface SharedGameState {
   moves: [Move!]!
 }
 
+interface GameOver {
+  finished: Boolean!
+}
+
 type GamePlayingState implements SharedGameState {
+  # SharedGameState
   id: ID!
   me: Token!
   moves: [Move!]!
@@ -132,17 +141,23 @@ type GamePlayingState implements SharedGameState {
   next: Token!
 }
 
-type GameOverDrawState implements SharedGameState {
+type GameOverDrawState implements SharedGameState & GameOver {
+  # SharedGameState
   id: ID!
   me: Token!
   moves: [Move!]!
+  # GameOver
+  finished: Boolean!
   # GameOverDrawState
 }
 
-type GameOverWonState implements SharedGameState {
+type GameOverWonState implements SharedGameState & GameOver {
+  # SharedGameState
   id: ID!
   me: Token!
   moves: [Move!]!
+  # GameOver
+  finished: Boolean!
   # GameOverWonState
   winner: Token!
 }

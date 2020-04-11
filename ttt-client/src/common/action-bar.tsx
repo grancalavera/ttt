@@ -3,8 +3,9 @@ import React, { useContext, useEffect, useState } from "react";
 import { getAccessToken } from "../access-token";
 import { AppContext } from "../app-context";
 import { WhoAmI } from "./who-am-i";
+import { Maybe } from "@grancalavera/ttt-core";
 
-const copyToClipboard = (o: Object | undefined) => () => {
+const copyToClipboard = (o: Maybe<object>) => () => {
   if (o === undefined) {
     return;
   }
@@ -16,9 +17,9 @@ const copyToClipboard = (o: Object | undefined) => () => {
 
 export const ActionBar: React.FC = () => {
   const { token, gameId, authenticated } = useContext(AppContext);
-  const [authHeader, setAuthHeader] = useState<Object | undefined>();
-  const [gameStatusVars, setGameStatusVars] = useState<Object | undefined>("");
-  const [playVars, setPlayVars] = useState<Object | undefined>();
+  const [authHeader, setAuthHeader] = useState<Maybe<object>>();
+  const [gameStatusVars, setGameStatusVars] = useState<object>();
+  const [playVars, setPlayVars] = useState<Maybe<object>>();
 
   useEffect(() => {
     if (authenticated) {
