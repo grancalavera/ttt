@@ -18,6 +18,7 @@ subscription GameChanged($input: GameChangedInput!) {
           token
           position
         }
+        finished
       }
       ... on GameOverWonState {
         id
@@ -27,6 +28,7 @@ subscription GameChanged($input: GameChangedInput!) {
           position
         }
         winner
+        finished
       }
     }
   }

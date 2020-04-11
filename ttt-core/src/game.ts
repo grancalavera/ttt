@@ -38,19 +38,26 @@ export interface CoreGameOverWin {
   winningMove: CoreWin;
 }
 
-export type Maybe<T> = T | null | undefined;
+type FMap = <T, U>(x: T) => U;
+
+export type Maybe<T> = Just<T> | Nothing;
+export type Just<T> = T;
+export type Nothing = null | undefined;
 
 export const just = <T>(value: T): Maybe<T> => value;
 
 export const nothing = <T>(): Maybe<T> => null;
 
-export const isJust = <T>(maybe: Maybe<T>): maybe is T => {
-  return !isNothing(maybe);
+export const isJust = <T>(candidate: Maybe<T>): candidate is Just<T> => {
+  return candidate !== undefined || candidate !== null;
 };
 
-export const isNothing = <T>(maybe: Maybe<T>): maybe is null | undefined => {
-  return maybe === undefined || maybe === null;
+export const isNothing = <T>(candidate: Maybe<T>): candidate is Nothing => {
+  return candidate === undefined || candidate === null;
 };
+
+export const maybe = <T, U>(defaultValue: U) => (map: FMap) => (value: Maybe<T>): U =>
+  isJust(value) ? map(value) : defaultValue;
 
 const gameOverWin = (result: Omit<CoreGameOverWin, "kind">): CoreGameOverWin => ({
   kind: CORE_GAME_OVER_WIN,
@@ -80,7 +87,8 @@ const winningMoves: CoreWin[] = [
 
 export const coerce = <T, U extends T>(
   isCoercible: (value: T) => value is U,
-  discard: (discarded: T) => string = discarded => `type coercion for ${discarded} failed`
+  discard: (discarded: T) => string = (discarded) =>
+    `type coercion for ${discarded} failed`
 ) => (candidate: T): U => {
   if (isCoercible(candidate)) {
     return candidate;
@@ -104,17 +112,17 @@ export const isMove = (x: [string, number]): x is CoreMove => {
 
 export const coerceToPlayer = coerce(
   isPlayer,
-  discarded => `coercion failed: ${discarded} is not a valid Player`
+  (discarded) => `coercion failed: ${discarded} is not a valid Player`
 );
 
 export const coerceToPosition = coerce(
   isPos,
-  discarded => `coercion failed: ${discarded} is not a valid Position`
+  (discarded) => `coercion failed: ${discarded} is not a valid Position`
 );
 
 export const coerceToGameState = coerce(
   isGameState,
-  discarded => `coercion failed: ${discarded} is not a valid GameState`
+  (discarded) => `coercion failed: ${discarded} is not a valid GameState`
 );
 
 export const coerceToMove = coerce(
@@ -146,7 +154,7 @@ export const findWin = (player: CorePlayer, game: CoreMove[]): CoreWin | undefin
     .map(([_, pos]) => pos);
 
   return winningMoves.find(
-    win => playerMoves.filter(move => win.includes(move)).length === win.length
+    (win) => playerMoves.filter((move) => win.includes(move)).length === win.length
   );
 };
 
@@ -197,7 +205,7 @@ export const shuffle = <T extends any>(list: T[]): T[] => {
 };
 
 const gameToBoardView = (board: CoreBoard, moves: CoreMove[]): string[] =>
-  board.map(i => {
+  board.map((i) => {
     const maybeMove = moves.find(([_, x]) => x === i);
     if (maybeMove) {
       return maybeMove[0];

@@ -5,9 +5,9 @@ import { ActionBar } from "./common/action-bar";
 import { Background } from "./common/background";
 import { Layout } from "./common/layout";
 import { Loading } from "./common/loading";
+import { GameRoute } from "./game/route";
 import { useLoader } from "./hooks/use-loader";
-import { GameRoute } from "./route-game";
-import { SplashRoute } from "./route-splash";
+import { MenuRoute } from "./menu/route";
 
 export const App: React.FC = () => {
   const { authenticated } = useContext(AppContext);
@@ -31,9 +31,9 @@ const AppRouter: React.FC = () => (
   <BrowserRouter>
     <Switch>
       <Route path="/" exact>
-        <SplashRoute />
+        <MenuRoute />
       </Route>
-      <Route path="/game/:gameId">
+      <Route path="/game">
         <GameRoute />
       </Route>
     </Switch>
