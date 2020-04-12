@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { assertNever } from "@grancalavera/ttt-core";
 import { Alert, H5 } from "@blueprintjs/core";
+import { assertNever } from "@grancalavera/ttt-core";
+import React, { ErrorInfo } from "react";
 
-interface FatalErrorHandlerProps {}
+interface FatalErrorHandlerProps {
+  title: string;
+}
 
 interface FatalErrorHandlerState {
   errorResult: DoesNotHaveError | HasError;
@@ -41,6 +43,12 @@ export class FatalErrorHandler extends React.Component<
     return createError(error);
   }
 
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error(error.message ?? error.toString());
+    console.error(error.stack ? error.stack : "");
+    console.error(errorInfo.componentStack);
+  }
+
   render() {
     switch (this.state.errorResult.kind) {
       case "DoesNotHaveError":
@@ -56,7 +64,7 @@ export class FatalErrorHandler extends React.Component<
             onConfirm={() => this.setState({ showError: false })}
           >
             <>
-              <H5>Fatal Error</H5>
+              <H5>{this.props.title}</H5>
               <p>{error.message ?? error.toString()}</p>
             </>
           </Alert>
