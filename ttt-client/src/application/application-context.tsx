@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import { useAuthentication } from "./security/use-authentication";
-import { Token } from "./generated/graphql";
 import { Maybe } from "@grancalavera/ttt-core";
+import React, { useState } from "react";
+import { GlobalStyle } from "../common/global-style";
+import { Token } from "../generated/graphql";
+import { LoaderProvider } from "../loader/use-loader";
+import { useAuthentication } from "../security/use-authentication";
 
 type GameId = string;
 
@@ -35,14 +37,21 @@ export const AppContext = React.createContext({
   }
 });
 
-export const AppContextProvider: React.FC = ({ children }) => {
+export const ApplicationProvider: React.FC = ({ children }) => {
   const [gameId, setGameId] = useState("");
   const [token, setToken] = useState<Maybe<Token>>();
   const authenticated = useAuthentication();
 
   return (
-    <AppContext.Provider value={{ authenticated, gameId, setGameId, token, setToken }}>
-      {children}
-    </AppContext.Provider>
+    <>
+      <GlobalStyle />
+      <LoaderProvider>
+        <AppContext.Provider
+          value={{ authenticated, gameId, setGameId, token, setToken }}
+        >
+          {children}
+        </AppContext.Provider>
+      </LoaderProvider>
+    </>
   );
 };

@@ -1,15 +1,15 @@
 import React, { useContext } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { AppContext } from "./app-context";
-import { ActionBar } from "./common/action-bar";
-import { Background } from "./common/background";
-import { Layout } from "./common/layout";
-import { Loading } from "./loader/loading";
-import { GameRoute } from "./game/route";
-import { useLoader } from "./loader/use-loader";
-import { MenuRoute } from "./menu/route";
+import { AppContext } from "./application-context";
+import { ActionBar } from "../common/action-bar";
+import { Background } from "../common/background";
+import { Layout } from "../common/layout";
+import { GameRoute } from "../game/route";
+import { Loading } from "../loader/loading";
+import { useLoader } from "../loader/use-loader";
+import { MenuRoute } from "../menu/route";
 
-export const App: React.FC = () => {
+export const Application: React.FC = () => {
   const { authenticated } = useContext(AppContext);
   const { toggleLoader } = useLoader();
 

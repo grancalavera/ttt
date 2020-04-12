@@ -1,11 +1,11 @@
 import React, { useContext, useEffect } from "react";
 import { useWhoamiLazyQuery } from "../generated/graphql";
-import { AppContext } from "../app-context";
+import { AppContext } from "../application/application-context";
 
 export const WhoAmI: React.FC = () => {
   const { authenticated } = useContext(AppContext);
   const [whoAmI, { data }] = useWhoamiLazyQuery({
-    fetchPolicy: "network-only",
+    fetchPolicy: "network-only"
   });
 
   useEffect(() => {
