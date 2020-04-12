@@ -9,6 +9,7 @@ import "./index.scss";
 import { LoaderContextProvider } from "./loader/use-loader";
 import { client } from "./network/client";
 import { ConfigurationProvider } from "./configuration/configuration-context";
+import { FatalErrorHandler } from "./error/fatal-error-handler";
 
 ReactDOM.render(
   <ConfigurationProvider
