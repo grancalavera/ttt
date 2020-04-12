@@ -22,7 +22,7 @@ interface LoaderContextProviderProps {
   loadingState?: LoadingState;
 }
 
-export const LoaderContextProvider: React.FC<LoaderContextProviderProps> = ({
+export const LoaderProvider: React.FC<LoaderContextProviderProps> = ({
   children,
   loadingState = []
 }) => {

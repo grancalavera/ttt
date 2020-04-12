@@ -1,9 +1,9 @@
 import { Alignment, Button, Navbar } from "@blueprintjs/core";
-import React, { useContext, useEffect, useState } from "react";
-import { getAccessToken } from "../security/access-token";
-import { AppContext } from "../app-context";
-import { WhoAmI } from "./who-am-i";
 import { Maybe } from "@grancalavera/ttt-core";
+import React, { useContext, useEffect, useState, useRef } from "react";
+import { AppContext } from "../application/application-context";
+import { useAccessToken } from "../security/security-context";
+import { WhoAmI } from "./who-am-i";
 
 const copyToClipboard = (o: Maybe<object>) => () => {
   if (o === undefined) {
@@ -20,10 +20,12 @@ export const ActionBar: React.FC = () => {
   const [authHeader, setAuthHeader] = useState<Maybe<object>>();
   const [gameStatusVars, setGameStatusVars] = useState<object>();
   const [playVars, setPlayVars] = useState<Maybe<object>>();
+  const accessToken = useAccessToken();
+  const readAccessToken = useRef(accessToken.readAccessToken);
 
   useEffect(() => {
     if (authenticated) {
-      setAuthHeader({ authorization: `bearer ${getAccessToken()}` });
+      setAuthHeader({ authorization: `bearer ${readAccessToken.current()}` });
     }
 
     if (gameId) {

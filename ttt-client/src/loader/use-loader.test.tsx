@@ -2,7 +2,7 @@ import { renderHook } from "@testing-library/react-hooks";
 import React from "react";
 // see https://github.com/testing-library/react-hooks-testing-library/issues/173#issuecomment-531605122
 import { act } from "react-test-renderer";
-import { LoaderContextProvider, LoadingState, useLoader } from "./use-loader";
+import { LoaderProvider, LoadingState, useLoader } from "./use-loader";
 
 export interface Scenario {
   scenarioName: string;
@@ -103,9 +103,7 @@ describe.each(scenarios)("useLoader hook", scenario => {
 
   const { result } = renderHook(() => useLoader(), {
     wrapper: ({ children }) => (
-      <LoaderContextProvider loadingState={initialState}>
-        {children}
-      </LoaderContextProvider>
+      <LoaderProvider loadingState={initialState}>{children}</LoaderProvider>
     )
   });
 

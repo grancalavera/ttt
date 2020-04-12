@@ -1,6 +1,6 @@
 import { ApolloLink, FetchResult, Observable } from "@apollo/client";
 
-export const pauseMiddleware = (wait: number = 1000) =>
+export const pause = (wait: number = 1000) =>
   new ApolloLink(
     (operation, forward) =>
       new Observable<FetchResult>(observer => {
