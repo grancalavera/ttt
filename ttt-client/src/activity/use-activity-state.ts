@@ -5,8 +5,8 @@ import {
   ACTIVITY_FAILED,
   ACTIVITY_IDLE,
   ACTIVITY_LOADING,
-  ACTIVITY_SUCCESS,
-} from "../common/activity-state";
+  ACTIVITY_SUCCESS
+} from "./activity-state";
 
 export const useActivityState = <T>(activityResult: ActivityResult<T>) =>
   useMemo(() => activityState(activityResult), [activityResult]);

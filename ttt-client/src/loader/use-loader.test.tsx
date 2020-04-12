@@ -23,72 +23,72 @@ const scenarios: Scenario[] = [
     scenarioName: "default: empty initial state and empty toggle sequence",
     initialState: [],
     toggleSequence: [],
-    expected: NOT_LOADING,
+    expected: NOT_LOADING
   },
   {
     scenarioName: "trivially loading",
     initialState: [],
     toggleSequence: [SHOW],
-    expected: LOADING,
+    expected: LOADING
   },
   {
     scenarioName: "trivially not loading",
     initialState: [],
     toggleSequence: [HIDE],
-    expected: NOT_LOADING,
+    expected: NOT_LOADING
   },
   {
     scenarioName: "one component full cycle",
     initialState: [],
     toggleSequence: [SHOW, HIDE],
-    expected: NOT_LOADING,
+    expected: NOT_LOADING
   },
   {
     scenarioName: "two components: one loading, one full cycle",
     initialState: [simulateSomethingIsLoading()],
     toggleSequence: [SHOW, HIDE],
-    expected: LOADING,
+    expected: LOADING
   },
   {
     scenarioName: "one component, unbalanced, full cycle",
     initialState: [],
     toggleSequence: [SHOW, SHOW, HIDE],
-    expected: NOT_LOADING,
+    expected: NOT_LOADING
   },
   {
     scenarioName: "force loading on startup",
     initialState: [simulateSomethingIsLoading()],
     toggleSequence: [],
-    expected: LOADING,
+    expected: LOADING
   },
   {
     scenarioName: "force hide: one loading from state and one loading from hook",
     initialState: [simulateSomethingIsLoading()],
     toggleSequence: [SHOW],
     shouldForceHideAfter: true,
-    expected: NOT_LOADING,
+    expected: NOT_LOADING
   },
   {
     scenarioName: "force hide: one loading from hook",
     initialState: [],
     toggleSequence: [SHOW],
     shouldForceHideAfter: true,
-    expected: NOT_LOADING,
+    expected: NOT_LOADING
   },
   {
     scenarioName: "force hide: one loading from state",
     initialState: [simulateSomethingIsLoading()],
     toggleSequence: [],
     shouldForceHideAfter: true,
-    expected: NOT_LOADING,
+    expected: NOT_LOADING
   },
   {
     scenarioName: "should clear all loading states on force hide",
     initialState: [simulateSomethingIsLoading()],
     toggleSequence: [true, false],
     shouldForceHideBefore: true,
-    expected: NOT_LOADING,
-  },
+    expected: NOT_LOADING
+  }
 ];
 
 describe.each(scenarios)("useLoader hook", scenario => {
@@ -98,7 +98,7 @@ describe.each(scenarios)("useLoader hook", scenario => {
     toggleSequence,
     shouldForceHideAfter,
     shouldForceHideBefore,
-    expected,
+    expected
   } = scenario;
 
   const { result } = renderHook(() => useLoader(), {
@@ -106,7 +106,7 @@ describe.each(scenarios)("useLoader hook", scenario => {
       <LoaderContextProvider loadingState={initialState}>
         {children}
       </LoaderContextProvider>
-    ),
+    )
   });
 
   if (shouldForceHideBefore) {

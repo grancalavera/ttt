@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
+  useState
 } from "react";
 
 export type LoadingState = readonly symbol[];
@@ -15,7 +15,7 @@ const LoaderContext = React.createContext({
   setLoading: (value: boolean): void => {
     throw new Error("LoaderContext.setLoading is not implemented");
   },
-  loadingMap: new Map() as LoadingMap,
+  loadingMap: new Map() as LoadingMap
 });
 
 interface LoaderContextProviderProps {
@@ -24,7 +24,7 @@ interface LoaderContextProviderProps {
 
 export const LoaderContextProvider: React.FC<LoaderContextProviderProps> = ({
   children,
-  loadingState = [],
+  loadingState = []
 }) => {
   const [isLoading, setLoading] = useState(false);
   const loadingMap: LoadingMap = new Map(loadingState.map(s => [s, true]));

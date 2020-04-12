@@ -1,10 +1,10 @@
 import { assertNever } from "@grancalavera/ttt-core";
 import React, { useEffect } from "react";
 import { Redirect } from "react-router-dom";
-import { isLoading } from "../common/activity-state";
+import { isLoading } from "../activity/activity-state";
 import { useOpenGameMutation } from "../generated/graphql";
-import { useActivityState } from "../hooks/use-activity-state";
-import { useLoader } from "../hooks/use-loader";
+import { useActivityState } from "../activity/use-activity-state";
+import { useLoader } from "../loader/use-loader";
 import { GameView } from "./view";
 
 export const GameRoute: React.FC = () => {

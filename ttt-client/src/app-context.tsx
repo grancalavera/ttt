@@ -1,7 +1,25 @@
 import React, { useState } from "react";
-import { useAuthentication } from "./hooks/use-authentication";
+import { useAuthentication } from "./security/use-authentication";
 import { Token } from "./generated/graphql";
 import { Maybe } from "@grancalavera/ttt-core";
+
+type GameId = string;
+
+interface SetGameIdAction {
+  kind: "SetGameIdAction";
+  payload: GameId;
+}
+
+interface SetAuthenticatedAction {
+  kind: "SetAuthenticatedAction";
+  payload: boolean;
+}
+
+interface AppStore {
+  gameId: Maybe<GameId>;
+  authenticated: boolean;
+  myToken: Maybe<Token>;
+}
 
 export const AppContext = React.createContext({
   authenticated: false,
@@ -14,7 +32,7 @@ export const AppContext = React.createContext({
   token: undefined as Maybe<Token>,
   setToken: (value: Token): void => {
     throw new Error("setToken is not implemented");
-  },
+  }
 });
 
 export const AppContextProvider: React.FC = ({ children }) => {
