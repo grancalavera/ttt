@@ -4,7 +4,7 @@ import React from "react";
 import { BoardLayout, CellLayout } from "../common/layout";
 import { WithTypename } from "../common/with-typename";
 import { GameState, Move } from "../generated/graphql";
-import { useLoader } from "../hooks/use-loader";
+import { useLoader } from "../loader/use-loader";
 import { amIWaiting } from "./turn";
 import { CellState } from "./types";
 import { updateBoard } from "./update-board";
@@ -33,7 +33,7 @@ const Cell: React.FC<{ cellState: CellState }> = ({ cellState }) => {
   const CellBody = () => {
     switch (cellState.kind) {
       case "free":
-        return <FreeCell move={cellState.move} onPlay={() => {}} />;
+        return <FreeCell move={cellState.move} />;
       case "played":
         return <PlayedCell move={cellState.move} />;
       case "disabled":
@@ -52,9 +52,8 @@ const Cell: React.FC<{ cellState: CellState }> = ({ cellState }) => {
 
 const FreeCell: React.FC<{
   move: Move;
-  onPlay: (move: Move) => void;
-}> = ({ move, onPlay }) => {
-  const handleOnClick = () => onPlay(move);
+}> = ({ move }) => {
+  const handleOnClick = () => {};
   return <Button minimal intent={Intent.PRIMARY} onClick={handleOnClick} />;
 };
 

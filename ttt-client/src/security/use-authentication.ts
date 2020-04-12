@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
-import { setAccessToken } from "../access-token";
+import { useConfiguration } from "../configuration/configuration-context";
 import { useRegisterUserMutation } from "../generated/graphql";
+import { setAccessToken } from "./access-token";
 
 export const useAuthentication = () => {
+  const { refreshJWTEndpoint } = useConfiguration();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [registerUser] = useRegisterUserMutation();
 
   useEffect(() => {
     (async () => {
-      const response = await fetch("http://localhost:4000/refresh_token", {
+      const response = await fetch(refreshJWTEndpoint.toString(), {
         method: "POST",
-        credentials: "include",
+        credentials: "include"
       });
 
       if (response.ok) {
@@ -27,7 +29,7 @@ export const useAuthentication = () => {
         }
       }
     })();
-  }, [registerUser]);
+  }, [registerUser, refreshJWTEndpoint]);
 
   return isAuthenticated;
 };

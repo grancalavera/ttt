@@ -1,6 +1,6 @@
 import { Alignment, Button, Navbar } from "@blueprintjs/core";
 import React, { useContext, useEffect, useState } from "react";
-import { getAccessToken } from "../access-token";
+import { getAccessToken } from "../security/access-token";
 import { AppContext } from "../app-context";
 import { WhoAmI } from "./who-am-i";
 import { Maybe } from "@grancalavera/ttt-core";
@@ -35,8 +35,8 @@ export const ActionBar: React.FC = () => {
         input: {
           gameId,
           token,
-          position: "A",
-        },
+          position: "A"
+        }
       });
     }
   }, [authenticated, setAuthHeader, gameId, setGameStatusVars, token, setPlayVars]);

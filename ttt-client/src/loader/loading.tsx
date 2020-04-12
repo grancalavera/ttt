@@ -1,8 +1,8 @@
 import { Colors, Intent, Spinner } from "@blueprintjs/core";
 import React from "react";
 import styled from "styled-components/macro";
-import { useLoader } from "../hooks/use-loader";
-import { Content } from "./layout";
+import { useLoader } from "./use-loader";
+import { Content } from "../common/layout";
 
 export const Loading: React.FC = () => {
   const { isLoading } = useLoader();
