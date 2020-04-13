@@ -1,19 +1,24 @@
 import { failProxy } from "common";
-import React, { useContext, useRef } from "react";
+import React, { useContext, useMemo, useState } from "react";
 
-export type AccessTokenRef = React.MutableRefObject<string>;
+export type SetAccessToken = React.Dispatch<React.SetStateAction<string>>;
 
 interface Security {
-  accessTokenRef: AccessTokenRef;
+  isAuthenticated: boolean;
+  accessToken: string;
+  setAccessToken: SetAccessToken;
 }
 
 const SecurityContext = React.createContext<Security>(failProxy("SecurityContext"));
 
 export const SecurityProvider: React.FC = ({ children }) => {
-  const accessTokenRef = useRef("");
+  const [accessToken, setAccessToken] = useState("");
+  const isAuthenticated = useMemo(() => {
+    return accessToken !== "";
+  }, [accessToken]);
 
   return (
-    <SecurityContext.Provider value={{ accessTokenRef }}>
+    <SecurityContext.Provider value={{ isAuthenticated, accessToken, setAccessToken }}>
       {children}
     </SecurityContext.Provider>
   );

@@ -16,22 +16,25 @@ const copyToClipboard = (o: Maybe<object>) => () => {
 };
 
 export const ActionBar: React.FC = () => {
-  const authenticated = useSecurity();
+  const { isAuthenticated, accessToken } = useSecurity();
   const { token, gameId } = useApplication();
   const [authHeader, setAuthHeader] = useState<Maybe<object>>();
   const [gameStatusVars, setGameStatusVars] = useState<object>();
   const [playVars, setPlayVars] = useState<Maybe<object>>();
-  const { accessTokenRef } = useSecurity();
 
   useEffect(() => {
-    if (authenticated) {
-      setAuthHeader({ authorization: `bearer ${accessTokenRef.current}` });
+    if (isAuthenticated) {
+      setAuthHeader({ authorization: `bearer ${accessToken}` });
     }
+  }, [isAuthenticated, accessToken, setAuthHeader]);
 
+  useEffect(() => {
     if (gameId) {
       setGameStatusVars({ gameId });
     }
+  }, [gameId, setGameStatusVars]);
 
+  useEffect(() => {
     if (gameId && token) {
       setPlayVars({
         input: {
@@ -41,15 +44,7 @@ export const ActionBar: React.FC = () => {
         }
       });
     }
-  }, [
-    authenticated,
-    setAuthHeader,
-    gameId,
-    setGameStatusVars,
-    token,
-    setPlayVars,
-    accessTokenRef
-  ]);
+  }, [gameId, token, setPlayVars]);
 
   return (
     <Navbar fixedToTop className="bp3-text-small">

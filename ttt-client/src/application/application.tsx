@@ -4,20 +4,21 @@ import { Loading, useLoading } from "loader";
 import { MenuRoute } from "menu";
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { useAuthentication } from "security";
+import { useAuthentication, useSecurity } from "security";
 
 export const Application: React.FC = () => {
-  const authenticated = useAuthentication();
+  useAuthentication();
+  const { isAuthenticated } = useSecurity();
 
   const { toggleLoading: toggleLoader } = useLoading();
-  toggleLoader(!authenticated);
+  toggleLoader(!isAuthenticated);
 
   return (
     <>
       <ActionBar />
       <Layout>
         <Background />
-        {authenticated && <AppRouter />}
+        {isAuthenticated && <AppRouter />}
         <Loading />
       </Layout>
     </>
