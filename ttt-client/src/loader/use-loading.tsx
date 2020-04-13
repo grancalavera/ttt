@@ -1,26 +1,25 @@
 import { useLoader } from "loader/loader-context";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 export const useLoading = () => {
-  const { isLoading, setLoading, loadingMap } = useLoader();
+  const { isLoading, setLoading, loadingMapRef } = useLoader();
   const id = useIdentity();
-  const mapRef = useRef(loadingMap);
 
   const showLoader = useCallback(() => {
-    mapRef.current.set(id, true);
+    loadingMapRef.current.set(id, true);
     setLoading(true);
-  }, [id, setLoading]);
+  }, [id, setLoading, loadingMapRef]);
 
   const hideLoader = useCallback(() => {
-    mapRef.current.delete(id);
-    if (mapRef.current.size === 0) {
+    loadingMapRef.current.delete(id);
+    if (loadingMapRef.current.size === 0) {
       setLoading(false);
     }
-  }, [id, setLoading]);
+  }, [id, setLoading, loadingMapRef]);
 
   const toggleLoading = useCallback(
     (show: boolean) => {
-      const isKnown = mapRef.current.has(id);
+      const isKnown = loadingMapRef.current.has(id);
 
       if (show && !isKnown) {
         showLoader();
@@ -28,20 +27,20 @@ export const useLoading = () => {
         hideLoader();
       }
     },
-    [hideLoader, id, showLoader]
+    [hideLoader, id, showLoader, loadingMapRef]
   );
 
   const forceHideLoading = useCallback(() => {
-    mapRef.current.clear();
+    loadingMapRef.current.clear();
     setLoading(false);
-  }, [setLoading]);
+  }, [setLoading, loadingMapRef]);
 
   useEffect(() => {
-    if (!isEmpty(mapRef.current)) {
+    if (!isEmpty(loadingMapRef.current)) {
       setLoading(true);
     }
     return hideLoader;
-  }, [hideLoader, setLoading]);
+  }, [hideLoader, setLoading, loadingMapRef]);
 
   return { isLoading, toggleLoading, forceHideLoading };
 };

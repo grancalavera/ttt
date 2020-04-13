@@ -1,5 +1,6 @@
 import { failProxy } from "common";
 import React, { useContext, useState } from "react";
+import { useRef } from "react";
 
 export type LoadingState = readonly symbol[];
 export type LoadingMap = Map<symbol, true>;
@@ -7,7 +8,7 @@ export type LoadingMap = Map<symbol, true>;
 interface Loader {
   isLoading: boolean;
   setLoading: (x: boolean) => void;
-  loadingMap: LoadingMap;
+  loadingMapRef: React.MutableRefObject<LoadingMap>;
 }
 
 const LoaderContext = React.createContext<Loader>(failProxy("LoaderContext"));
@@ -21,9 +22,9 @@ export const LoaderProvider: React.FC<LoaderContextProviderProps> = ({
   loadingState = []
 }) => {
   const [isLoading, setLoading] = useState(false);
-  const loadingMap: LoadingMap = new Map(loadingState.map(s => [s, true]));
+  const loadingMapRef = useRef<LoadingMap>(new Map(loadingState.map(s => [s, true])));
   return (
-    <LoaderContext.Provider value={{ isLoading, setLoading, loadingMap }}>
+    <LoaderContext.Provider value={{ isLoading, setLoading, loadingMapRef }}>
       {children}
     </LoaderContext.Provider>
   );
