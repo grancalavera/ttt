@@ -1,18 +1,15 @@
-import React, { useContext } from "react";
+import { ActionBar, Background, Layout } from "common";
+import { GameRoute } from "game";
+import { Loading, useLoader } from "loader";
+import { MenuRoute } from "menu";
+import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { AppContext } from "./application-context";
-import { ActionBar } from "../common/action-bar";
-import { Background } from "../common/background";
-import { Layout } from "../common/layout";
-import { GameRoute } from "../game/route";
-import { Loading } from "../loader/loading";
-import { useLoader } from "../loader/use-loader";
-import { MenuRoute } from "../menu/route";
+import { useAuthentication } from "security";
 
 export const Application: React.FC = () => {
-  const { authenticated } = useContext(AppContext);
-  const { toggleLoader } = useLoader();
+  const authenticated = useAuthentication();
 
+  const { toggleLoader } = useLoader();
   toggleLoader(!authenticated);
 
   return (

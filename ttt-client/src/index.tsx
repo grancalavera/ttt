@@ -5,7 +5,7 @@ import { Application } from "./application/application";
 import { ApplicationProvider } from "./application/application-context";
 import { ConfigurationProvider } from "./configuration/configuration-context";
 import "./index.scss";
-import { NetworkProvider } from "./network/network-context";
+import { NetworkProvider } from "network";
 import { SecurityProvider } from "./security/security-context";
 
 ReactDOM.render(

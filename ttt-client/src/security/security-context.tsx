@@ -1,6 +1,5 @@
-import React, { useContext } from "react";
-import { failProxy } from "../common/fail-proxy";
-import { useRef } from "react";
+import { failProxy } from "common";
+import React, { useContext, useRef } from "react";
 
 export type AccessTokenRef = React.MutableRefObject<string>;
 

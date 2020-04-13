@@ -1,7 +1,7 @@
+import { useConfiguration } from "configuration/configuration-context";
+import { useRegisterUserMutation } from "generated/graphql";
 import { useEffect, useState } from "react";
-import { useConfiguration } from "../configuration/configuration-context";
-import { useRegisterUserMutation } from "../generated/graphql";
-import { useSecurity } from "./security-context";
+import { useSecurity } from "security";
 
 export const useAuthentication = () => {
   const { refreshJWTEndpoint } = useConfiguration();
@@ -10,7 +10,7 @@ export const useAuthentication = () => {
   const { accessTokenRef } = useSecurity();
 
   useEffect(() => {
-    (async () => {
+    const runEffect = async () => {
       const response = await fetch(refreshJWTEndpoint.toString(), {
         method: "POST",
         credentials: "include"
@@ -29,7 +29,9 @@ export const useAuthentication = () => {
           throw new Error("failed to register anonymous user");
         }
       }
-    })();
+    };
+
+    runEffect();
   }, [registerUser, refreshJWTEndpoint, accessTokenRef]);
 
   return isAuthenticated;

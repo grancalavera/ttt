@@ -3,6 +3,12 @@ import { decode } from "jsonwebtoken";
 import { useConfiguration } from "../../configuration/configuration-context";
 import { useSecurity, AccessTokenRef } from "../../security/security-context";
 
+export const useRefreshJWT = () => {
+  const { refreshJWTEndpoint } = useConfiguration();
+  const { accessTokenRef } = useSecurity();
+  return refreshJWT(refreshJWTEndpoint, accessTokenRef);
+};
+
 const refreshJWT = (endpoint: URL, accessTokenRef: AccessTokenRef) =>
   new ApolloLink((operation, forward) => {
     // we may not have a token yet, but we want to allow public areas
@@ -31,9 +37,3 @@ const refreshJWT = (endpoint: URL, accessTokenRef: AccessTokenRef) =>
       return forward(operation);
     }
   });
-
-export const useRefreshJWT = () => {
-  const { refreshJWTEndpoint } = useConfiguration();
-  const { accessTokenRef } = useSecurity();
-  return refreshJWT(refreshJWTEndpoint, accessTokenRef);
-};
