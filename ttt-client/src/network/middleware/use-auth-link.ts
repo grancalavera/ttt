@@ -1,15 +1,14 @@
 import { ApolloLink } from "@apollo/client";
-import { AccessTokenRef, useSecurity } from "../../security/security-context";
+import { useSecurity } from "../../security/security-context";
 
 export const useAuthLink = () => {
-  const { accessTokenRef } = useSecurity();
-  return authLink(accessTokenRef);
+  const { accessToken } = useSecurity();
+  return authLink(accessToken);
 };
 
-const authLink = (accessTokenRef: AccessTokenRef) =>
+const authLink = (accessToken: string) =>
   new ApolloLink((operation, forward) => {
-    const accessToken = accessTokenRef.current;
-    if (accessToken) {
+    if (accessToken !== "") {
       const ctx = operation.getContext();
       const headers = ctx.headers || {};
       operation.setContext({
