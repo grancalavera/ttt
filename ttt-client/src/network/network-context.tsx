@@ -5,9 +5,7 @@ import {
   InMemoryCache
 } from "@apollo/client";
 import React, { useMemo } from "react";
-import { useAuthLink } from "./middleware/auth-link";
-import { useHttpLink } from "./middleware/http-link";
-import { useRefreshJWT } from "./middleware/refresh-jwt";
+import { useRefreshJWT, useAuthLink, useHttpLink } from "network/middleware";
 
 export const NetworkProvider: React.FC = ({ children }) => {
   const refreshJWT = useRefreshJWT();

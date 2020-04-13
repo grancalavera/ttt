@@ -1,3 +1,5 @@
+import { failProxy } from "common";
+import { LoadingMap, LoadingState } from "loader/types";
 import React, {
   useCallback,
   useContext,
@@ -7,16 +9,13 @@ import React, {
   useState
 } from "react";
 
-export type LoadingState = readonly symbol[];
-type LoadingMap = Map<symbol, true>;
+interface Loader {
+  isLoading: boolean;
+  setLoading: (x: boolean) => void;
+  loadingMap: LoadingMap;
+}
 
-const LoaderContext = React.createContext({
-  isLoading: false,
-  setLoading: (value: boolean): void => {
-    throw new Error("LoaderContext.setLoading is not implemented");
-  },
-  loadingMap: new Map() as LoadingMap
-});
+const LoaderContext = React.createContext<Loader>(failProxy("LoaderContext"));
 
 interface LoaderContextProviderProps {
   loadingState?: LoadingState;

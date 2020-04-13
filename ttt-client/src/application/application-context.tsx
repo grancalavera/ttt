@@ -1,57 +1,35 @@
 import { Maybe } from "@grancalavera/ttt-core";
-import React, { useState } from "react";
+import { failProxy } from "common/fail-proxy";
+import React, { useContext, useState } from "react";
 import { GlobalStyle } from "../common/global-style";
-import { Token } from "../generated/graphql";
-import { LoaderProvider } from "../loader/use-loader";
-import { useAuthentication } from "../security/use-authentication";
+import { Token } from "generated/graphql";
+import { LoaderProvider } from "loader";
 
-type GameId = string;
-
-interface SetGameIdAction {
-  kind: "SetGameIdAction";
-  payload: GameId;
+interface Application {
+  gameId: string;
+  setGameId: (x: string) => void;
+  token: Maybe<Token>;
+  setToken: (x: Maybe<Token>) => void;
 }
 
-interface SetAuthenticatedAction {
-  kind: "SetAuthenticatedAction";
-  payload: boolean;
-}
-
-interface AppStore {
-  gameId: Maybe<GameId>;
-  authenticated: boolean;
-  myToken: Maybe<Token>;
-}
-
-export const AppContext = React.createContext({
-  authenticated: false,
-
-  gameId: "",
-  setGameId: (value: string): void => {
-    throw new Error("setGameId is not implemented");
-  },
-
-  token: undefined as Maybe<Token>,
-  setToken: (value: Token): void => {
-    throw new Error("setToken is not implemented");
-  }
-});
+const ApplicationContext = React.createContext<Application>(
+  failProxy("ApplicationContext")
+);
 
 export const ApplicationProvider: React.FC = ({ children }) => {
   const [gameId, setGameId] = useState("");
   const [token, setToken] = useState<Maybe<Token>>();
-  const authenticated = useAuthentication();
 
   return (
     <>
       <GlobalStyle />
       <LoaderProvider>
-        <AppContext.Provider
-          value={{ authenticated, gameId, setGameId, token, setToken }}
-        >
+        <ApplicationContext.Provider value={{ gameId, setGameId, token, setToken }}>
           {children}
-        </AppContext.Provider>
+        </ApplicationContext.Provider>
       </LoaderProvider>
     </>
   );
 };
+
+export const useApplication = () => useContext(ApplicationContext);
