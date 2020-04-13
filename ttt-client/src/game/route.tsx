@@ -1,34 +1,29 @@
-import { assertNever } from "@grancalavera/ttt-core";
 import React, { useEffect } from "react";
 import { Redirect } from "react-router-dom";
-import { isLoading } from "../activity/activity-state";
-import { useOpenGameMutation } from "../generated/graphql";
-import { useActivityState } from "../activity/use-activity-state";
-import { useLoading } from "../loader/use-loading";
-import { GameView } from "./view";
+import * as task from "task";
+import { useApolloTask } from "task";
+import { useOpenGameMutation } from "generated/graphql";
+import { useLoading } from "loader";
+import { GameView } from "game/view";
 
 export const GameRoute: React.FC = () => {
   const [openGame, openGameResult] = useOpenGameMutation();
-  const { toggleLoading: toggleLoader } = useLoading();
+  const { toggleLoading } = useLoading();
 
-  const openGameState = useActivityState(openGameResult);
-  toggleLoader(isLoading(openGameState));
+  const openGameTask = useApolloTask(openGameResult);
+  toggleLoading(task.isLoading(openGameTask));
 
   useEffect(() => {
     openGame();
   }, [openGame]);
 
-  switch (openGameState.kind) {
-    case "ACTIVITY_IDLE":
-    case "ACTIVITY_LOADING":
-      return null;
-    case "ACTIVITY_FAILED":
-      return <Redirect to="/" />;
-    case "ACTIVITY_SUCCESS": {
-      const { channelId } = openGameState.data.openGame;
-      return <GameView channelId={channelId} />;
-    }
-    default:
-      assertNever(openGameState);
+  if (task.didFail(openGameTask)) {
+    return <Redirect to="/" />;
   }
+
+  if (task.didSucceed(openGameTask)) {
+    return <GameView channelId={openGameTask.data.openGame.channelId} />;
+  }
+
+  return null;
 };
