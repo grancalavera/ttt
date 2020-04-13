@@ -21,17 +21,6 @@ export const ConfigurationProvider: React.FC<ConfigurationContextProps> = ({
   ...configuration
 }) => {
   return (
-    <FatalErrorHandler title="Fatal Error: ConfigurationProvider">
-      <ParseConfiguration {...configuration}>{children}</ParseConfiguration>
-    </FatalErrorHandler>
-  );
-};
-
-const ParseConfiguration: React.FC<ConfigurationContextProps> = ({
-  children,
-  ...configuration
-}) => {
-  return (
     <ConfigurationContext.Provider value={parseConfiguration(configuration)}>
       {children}
     </ConfigurationContext.Provider>
@@ -58,7 +47,7 @@ const parseConfiguration = (props: ConfigurationContextProps): Configuration => 
 
   if (errors.length > 0) {
     const message = errors.map(({ message }, i) => `[ ${i + 1} ] ${message}`).join(" ");
-    throw new Error(message);
+    throw new Error(`ConfigurationProvider: ${message}`);
   } else {
     return { graphqlEndpoint, refreshJWTEndpoint };
   }
