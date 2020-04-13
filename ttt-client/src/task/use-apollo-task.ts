@@ -29,6 +29,5 @@ export const useApolloTask = <TData>(result: ApolloResult<TData>) =>
     if (!loading && !error && data) {
       return task.succeed(data);
     }
-
     throw new Error("Unknown result state");
   }, [result]);

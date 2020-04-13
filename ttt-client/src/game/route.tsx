@@ -11,11 +11,12 @@ export const GameRoute: React.FC = () => {
   const { toggleLoading } = useLoading();
 
   const openGameTask = useApolloTask(openGameResult);
-  toggleLoading(task.isLoading(openGameTask));
 
   useEffect(() => {
     openGame();
   }, [openGame]);
+
+  toggleLoading(task.isLoading(openGameTask));
 
   if (task.didFail(openGameTask)) {
     return <Redirect to="/" />;
