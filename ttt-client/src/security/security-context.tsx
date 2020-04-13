@@ -1,37 +1,23 @@
 import React, { useContext } from "react";
 import { failProxy } from "../common/fail-proxy";
+import { useRef } from "react";
 
-export type ReadAccessToken = () => string;
-export type WriteAccessToken = (value: string) => void;
-
-export interface AccessToken {
-  value: string;
-}
+export type AccessTokenRef = React.MutableRefObject<string>;
 
 interface Security {
-  accessToken: AccessToken;
+  accessTokenRef: AccessTokenRef;
 }
 
 const SecurityContext = React.createContext<Security>(failProxy("SecurityContext"));
 
 export const SecurityProvider: React.FC = ({ children }) => {
-  const accessToken = { value: "" };
+  const accessTokenRef = useRef("");
 
   return (
-    <SecurityContext.Provider value={{ accessToken }}>
+    <SecurityContext.Provider value={{ accessTokenRef }}>
       {children}
     </SecurityContext.Provider>
   );
 };
 
-export const useAccessToken = () => {
-  const { accessToken } = useContext(SecurityContext);
-
-  const readAccessToken = (): string => accessToken.value;
-
-  const writeAccessToken = (value: string): void => {
-    accessToken.value = value;
-  };
-
-  return { readAccessToken, writeAccessToken };
-};
+export const useSecurity = () => useContext(SecurityContext);

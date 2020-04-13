@@ -1,8 +1,8 @@
 import { Alignment, Button, Navbar } from "@blueprintjs/core";
 import { Maybe } from "@grancalavera/ttt-core";
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../application/application-context";
-import { useAccessToken } from "../security/security-context";
+import { useSecurity } from "../security/security-context";
 import { WhoAmI } from "./who-am-i";
 
 const copyToClipboard = (o: Maybe<object>) => () => {
@@ -20,12 +20,11 @@ export const ActionBar: React.FC = () => {
   const [authHeader, setAuthHeader] = useState<Maybe<object>>();
   const [gameStatusVars, setGameStatusVars] = useState<object>();
   const [playVars, setPlayVars] = useState<Maybe<object>>();
-  const accessToken = useAccessToken();
-  const readAccessToken = useRef(accessToken.readAccessToken);
+  const { accessTokenRef } = useSecurity();
 
   useEffect(() => {
     if (authenticated) {
-      setAuthHeader({ authorization: `bearer ${readAccessToken.current()}` });
+      setAuthHeader({ authorization: `bearer ${accessTokenRef.current}` });
     }
 
     if (gameId) {
@@ -41,7 +40,15 @@ export const ActionBar: React.FC = () => {
         }
       });
     }
-  }, [authenticated, setAuthHeader, gameId, setGameStatusVars, token, setPlayVars]);
+  }, [
+    authenticated,
+    setAuthHeader,
+    gameId,
+    setGameStatusVars,
+    token,
+    setPlayVars,
+    accessTokenRef
+  ]);
 
   return (
     <Navbar fixedToTop className="bp3-text-small">
