@@ -1,12 +1,10 @@
-import { failProxy } from "common";
+import { failProxy, SetState } from "common";
 import React, { useContext, useMemo, useState } from "react";
-
-export type SetAccessToken = React.Dispatch<React.SetStateAction<string>>;
 
 interface Security {
   isAuthenticated: boolean;
   accessToken: string;
-  setAccessToken: SetAccessToken;
+  setAccessToken: SetState<string>;
 }
 
 const SecurityContext = React.createContext<Security>(failProxy("SecurityContext"));

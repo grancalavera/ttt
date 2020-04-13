@@ -1,15 +1,16 @@
 import { Maybe } from "@grancalavera/ttt-core";
+import { SetState } from "common";
 import { failProxy } from "common/fail-proxy";
-import React, { useContext, useState } from "react";
-import { GlobalStyle } from "../common/global-style";
 import { Token } from "generated/graphql";
 import { LoaderProvider } from "loader";
+import React, { useContext, useState } from "react";
+import { GlobalStyle } from "../common/global-style";
 
 interface Application {
   gameId: string;
-  setGameId: (x: string) => void;
+  setGameId: SetState<string>;
   token: Maybe<Token>;
-  setToken: (x: Maybe<Token>) => void;
+  setToken: SetState<Maybe<Token>>;
 }
 
 const ApplicationContext = React.createContext<Application>(
