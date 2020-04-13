@@ -19,7 +19,6 @@ export const ActionBar: React.FC = () => {
   const { isAuthenticated, accessToken } = useSecurity();
   const { token, gameId } = useApplication();
   const [authHeader, setAuthHeader] = useState<Maybe<object>>();
-  const [gameStatusVars, setGameStatusVars] = useState<object>();
   const [playVars, setPlayVars] = useState<Maybe<object>>();
 
   useEffect(() => {
@@ -27,12 +26,6 @@ export const ActionBar: React.FC = () => {
       setAuthHeader({ authorization: `bearer ${accessToken}` });
     }
   }, [isAuthenticated, accessToken, setAuthHeader]);
-
-  useEffect(() => {
-    if (gameId) {
-      setGameStatusVars({ gameId });
-    }
-  }, [gameId, setGameStatusVars]);
 
   useEffect(() => {
     if (gameId && token) {
@@ -57,17 +50,8 @@ export const ActionBar: React.FC = () => {
           <code>authorization</code>
         </Button>
 
-        <Button
-          minimal={true}
-          disabled={!gameStatusVars}
-          onClick={copyToClipboard(gameStatusVars)}
-          className="bp3-text-small"
-        >
-          <code>GameStatus</code>
-        </Button>
-
         <Button minimal={true} disabled={!playVars} onClick={copyToClipboard(playVars)}>
-          <code>Play</code>
+          <code>play</code>
         </Button>
 
         <Navbar.Divider />

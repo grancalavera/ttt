@@ -1,7 +1,8 @@
-import { ApolloLink, Observable, FetchResult } from "@apollo/client";
-import { decode } from "jsonwebtoken";
+import { ApolloLink, FetchResult, Observable } from "@apollo/client";
+import { SetState } from "common";
 import { useConfiguration } from "configuration";
-import { useSecurity, SetAccessToken } from "security/security-context";
+import { decode } from "jsonwebtoken";
+import { useSecurity } from "security/security-context";
 
 export const useRefreshJWT = () => {
   const { refreshJWTEndpoint } = useConfiguration();
@@ -9,7 +10,11 @@ export const useRefreshJWT = () => {
   return refreshJWT(refreshJWTEndpoint, accessToken, setAccessToken);
 };
 
-const refreshJWT = (endpoint: URL, accessToken: string, setAccessToken: SetAccessToken) =>
+const refreshJWT = (
+  endpoint: URL,
+  accessToken: string,
+  setAccessToken: SetState<string>
+) =>
   new ApolloLink((operation, forward) => {
     // we may not have a token yet, but we want to allow public areas
     // the application to be accessible
