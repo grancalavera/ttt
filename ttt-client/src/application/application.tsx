@@ -1,6 +1,6 @@
 import { ActionBar, Background, Layout } from "common";
 import { GameRoute } from "game";
-import { Loading, useLoader } from "loader";
+import { Loading, useLoading } from "loader";
 import { MenuRoute } from "menu";
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
@@ -9,7 +9,7 @@ import { useAuthentication } from "security";
 export const Application: React.FC = () => {
   const authenticated = useAuthentication();
 
-  const { toggleLoader } = useLoader();
+  const { toggleLoading: toggleLoader } = useLoading();
   toggleLoader(!authenticated);
 
   return (

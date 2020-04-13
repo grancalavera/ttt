@@ -4,7 +4,7 @@ import React from "react";
 import { BoardLayout, CellLayout } from "../common/layout";
 import { WithTypename } from "../common/with-typename";
 import { GameState, Move } from "../generated/graphql";
-import { useLoader } from "../loader/use-loader";
+import { useLoading } from "../loader/use-loading";
 import { amIWaiting } from "./turn";
 import { CellState } from "./types";
 import { updateBoard } from "./update-board";
@@ -14,7 +14,7 @@ interface BoardProps {
 }
 
 export const Board: React.FC<BoardProps> = ({ gameState }) => {
-  const { toggleLoader } = useLoader();
+  const { toggleLoading: toggleLoader } = useLoading();
   toggleLoader(amIWaiting(gameState));
 
   return (
