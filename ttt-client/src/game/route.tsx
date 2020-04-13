@@ -4,12 +4,12 @@ import { Redirect } from "react-router-dom";
 import { isLoading } from "../activity/activity-state";
 import { useOpenGameMutation } from "../generated/graphql";
 import { useActivityState } from "../activity/use-activity-state";
-import { useLoader } from "../loader/use-loader";
+import { useLoading } from "../loader/use-loading";
 import { GameView } from "./view";
 
 export const GameRoute: React.FC = () => {
   const [openGame, openGameResult] = useOpenGameMutation();
-  const { toggleLoader } = useLoader();
+  const { toggleLoading: toggleLoader } = useLoading();
 
   const openGameState = useActivityState(openGameResult);
   toggleLoader(isLoading(openGameState));

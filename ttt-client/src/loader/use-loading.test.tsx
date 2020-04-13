@@ -1,8 +1,10 @@
 import { renderHook } from "@testing-library/react-hooks";
+import { LoaderProvider } from "loader/loader-context";
+import { LoadingState } from "loader/types";
+import { useLoading } from "loader/use-loading";
 import React from "react";
 // see https://github.com/testing-library/react-hooks-testing-library/issues/173#issuecomment-531605122
 import { act } from "react-test-renderer";
-import { LoaderProvider, LoadingState, useLoader } from "./use-loader";
 
 export interface Scenario {
   scenarioName: string;
@@ -101,7 +103,7 @@ describe.each(scenarios)("useLoader hook", scenario => {
     expected
   } = scenario;
 
-  const { result } = renderHook(() => useLoader(), {
+  const { result } = renderHook(() => useLoading(), {
     wrapper: ({ children }) => (
       <LoaderProvider loadingState={initialState}>{children}</LoaderProvider>
     )
@@ -109,19 +111,19 @@ describe.each(scenarios)("useLoader hook", scenario => {
 
   if (shouldForceHideBefore) {
     act(() => {
-      result.current.forceHide();
+      result.current.forceHideLoading();
     });
   }
 
   toggleSequence.forEach(toggleTo => {
     act(() => {
-      result.current.toggleLoader(toggleTo);
+      result.current.toggleLoading(toggleTo);
     });
   });
 
   if (shouldForceHideAfter) {
     act(() => {
-      result.current.forceHide();
+      result.current.forceHideLoading();
     });
   }
 
