@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { failProxy } from "../common/fail-proxy";
-import { FatalErrorHandler } from "../error/fatal-error-handler";
 
 interface Configuration {
   readonly graphqlEndpoint: URL;

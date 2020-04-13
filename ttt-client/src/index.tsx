@@ -1,13 +1,12 @@
 import "@blueprintjs/core/lib/css/blueprint.css";
+import { Application, ApplicationProvider } from "application";
+import { ConfigurationProvider } from "configuration";
 import { FatalErrorHandler } from "error/fatal-error-handler";
 import { NetworkProvider } from "network";
 import React from "react";
 import ReactDOM from "react-dom";
-import { Application } from "./application/application";
-import { ApplicationProvider } from "./application/application-context";
-import { ConfigurationProvider } from "./configuration/configuration-context";
+import { SecurityProvider } from "security";
 import "./index.scss";
-import { SecurityProvider } from "./security/security-context";
 
 ReactDOM.render(
   <FatalErrorHandler title="Fatal Error">
