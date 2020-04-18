@@ -1,9 +1,6 @@
-import { Player, Players } from "../model";
-import { should } from "../test/should";
-import { validPlayers } from "./valid-players";
-
-const alice: Player = "alice";
-const bob: Player = "bob";
+import { alice, bob, shouldLabel } from "test";
+import { validPlayers } from "validation/valid-players";
+import { Players } from "../model";
 
 interface Scenario {
   players: Players;
@@ -17,7 +14,7 @@ const scenarios: Scenario[] = [
 
 describe.each(scenarios)("validate players in game", (scenario) => {
   const { players, expected } = scenario;
-  it(`${players} ${should(expected)} be valid`, () => {
+  it(`${players} ${shouldLabel(expected)} be valid`, () => {
     const actual = validPlayers(players);
     expect(actual).toEqual(expected);
   });

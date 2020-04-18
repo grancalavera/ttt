@@ -1,10 +1,7 @@
-import { Move, Player } from "../model";
-import { should } from "../test/should";
+import { alice, bob, narrowScenarios, shouldLabel } from "test";
+import { Move } from "../model";
 import { validMoves } from "./valid-moves";
-import { narrow } from "test/scenario";
-
-const alice: Player = "alice";
-const bob: Player = "bob";
+import { chris } from "test/players";
 
 interface Scenario {
   name: string;
@@ -15,7 +12,7 @@ interface Scenario {
 
 const size = 3;
 
-const scenarios = narrow<Scenario>([
+const scenarios = narrowScenarios<Scenario>([
   { name: "empty moves", moves: [], size, expected: true },
   {
     name: "consecutive moves",
@@ -76,6 +73,16 @@ const scenarios = narrow<Scenario>([
     expected: true,
   },
   {
+    name: "more than two players",
+    moves: [
+      [alice, 0],
+      [bob, 1],
+      [chris, 2],
+    ],
+    size,
+    expected: false,
+  },
+  {
     name: "multiple winners",
     moves: [
       [alice, 0],
@@ -90,9 +97,9 @@ const scenarios = narrow<Scenario>([
   },
 ]);
 
-describe.each(scenarios(7))("validate moves in game", (scenario) => {
+describe.each(scenarios(7, 8))("validate moves in game", (scenario) => {
   const { name, moves, size, expected } = scenario;
-  it(`${name} ${should(expected)} be valid`, () => {
+  it(`${name} ${shouldLabel(expected)} be valid`, () => {
     const actual = validMoves(size, moves);
     expect(actual).toEqual(expected);
   });
