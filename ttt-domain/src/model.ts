@@ -3,7 +3,7 @@ export interface Game {
   moves: Move[];
 }
 
-export type GameStatus = OpenGame | DrawGame | WonGame;
+export type GameState = OpenGame | DrawGame | WonGame;
 
 interface OpenGame {
   kind: "OpenGame";
@@ -21,7 +21,7 @@ interface DrawGame {
 
 export type Players = [Player, Player];
 export type Move = [Player, Position];
-export type Winner = [Player, Move[]];
+export type Winner = [Player, Position[]];
 
 export type Player = string;
 export type Position = number;

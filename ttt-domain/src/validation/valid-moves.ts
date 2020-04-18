@@ -7,7 +7,8 @@ export const validMoves = (size: number, ms: Move[]): boolean => {
     validContinuity(ms) &&
     validUniqueness(ms) &&
     validSingleWinner(ms) &&
-    validRanges(size, ms)
+    validRanges(size, ms) &&
+    validPlayerCount(ms)
   );
 };
 
@@ -53,5 +54,11 @@ const validSingleWinner = (ms: Move[]): boolean => {
 const validRanges = (size: number, ms: Move[]): boolean => {
   const valid = ms.every(validRange(size));
   console.log("invalid ranges");
+  return valid;
+};
+
+const validPlayerCount = (ms: Move[]): boolean => {
+  const unique = uniqBy<Move>(([player]) => player, ms);
+  const valid = unique.length < 3;
   return valid;
 };
