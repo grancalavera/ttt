@@ -1,3 +1,3 @@
-export { shouldLabel } from "test/should-label";
+export { validationLabel } from "test/validation-label";
 export { narrowScenarios } from "test/scenario";
-export { alice, bob } from "test/players";
+export { alice, bob, chris } from "test/players";
