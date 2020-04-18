@@ -1,12 +1,13 @@
 import { uniqBy } from "lodash/fp";
 import { Move, Player } from "model";
 import { validRange } from "validation/valid-move";
+import { winners } from "game/winners";
 
 export const validMoves = (size: number, ms: Move[]): boolean => {
   return (
     validContinuity(ms) &&
     validUniqueness(ms) &&
-    validSingleWinner(ms) &&
+    validSingleWinner(size, ms) &&
     validRanges(size, ms) &&
     validPlayerCount(ms)
   );
@@ -26,34 +27,23 @@ const validContinuity = (ms: Move[]): boolean => {
     return nextStep;
   }, seed);
 
-  if (!valid) {
-    console.log("invalid continuity");
-  }
-
   return valid;
 };
 
 const validUniqueness = (ms: Move[]): boolean => {
   const unique = uniqBy<Move>(([_, position]) => position, ms);
   const valid = unique.length === ms.length;
-  if (!valid) {
-    console.log("invalid uniqueness");
-  }
   return valid;
 };
 
-const validSingleWinner = (ms: Move[]): boolean => {
-  // now show there is only 1 winner
-  // for example:
-  // filter candidates by winner
-  // then count the winners
-  // assert winners = 1
-  return true;
+const validSingleWinner = (size: number, ms: Move[]): boolean => {
+  const ws = winners(size, ms);
+  const valid = ws.length < 2;
+  return valid;
 };
 
 const validRanges = (size: number, ms: Move[]): boolean => {
   const valid = ms.every(validRange(size));
-  console.log("invalid ranges");
   return valid;
 };
 

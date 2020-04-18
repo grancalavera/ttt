@@ -97,7 +97,7 @@ const scenarios = narrowScenarios<Scenario>([
   },
 ]);
 
-describe.each(scenarios(7, 8))("validate moves in game", (scenario) => {
+describe.each(scenarios())("validate moves in game", (scenario) => {
   const { name, moves, size, expected } = scenario;
   it(`${name} ${shouldLabel(expected)} be valid`, () => {
     const actual = validMoves(size, moves);
