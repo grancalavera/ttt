@@ -1,5 +1,5 @@
 import { Player, Players } from "../model";
-import { should } from "./should";
+import { should } from "../test/should";
 import { validPlayers } from "./valid-players";
 
 const alice: Player = "alice";
@@ -12,10 +12,10 @@ interface Scenario {
 
 const scenarios: Scenario[] = [
   { players: [alice, bob], expected: true },
-  { players: [alice, alice], expected: false }
+  { players: [alice, alice], expected: false },
 ];
 
-describe.each(scenarios)("validate players in game", scenario => {
+describe.each(scenarios)("validate players in game", (scenario) => {
   const { players, expected } = scenario;
   it(`${players} ${should(expected)} be valid`, () => {
     const actual = validPlayers(players);

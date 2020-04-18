@@ -1,8 +1,14 @@
-import { Move, Player } from "../model";
 import { uniqBy } from "lodash/fp";
+import { Move, Player } from "model";
+import { validRange } from "validation/valid-move";
 
-export const validMoves = (ms: Move[]): boolean => {
-  return validContinuity(ms) && validUniqueness(ms) && validSingleWinner(ms);
+export const validMoves = (size: number, ms: Move[]): boolean => {
+  return (
+    validContinuity(ms) &&
+    validUniqueness(ms) &&
+    validSingleWinner(ms) &&
+    validRanges(size, ms)
+  );
 };
 
 const validContinuity = (ms: Move[]): boolean => {
@@ -19,16 +25,23 @@ const validContinuity = (ms: Move[]): boolean => {
     return nextStep;
   }, seed);
 
+  if (!valid) {
+    console.log("invalid continuity");
+  }
+
   return valid;
 };
 
 const validUniqueness = (ms: Move[]): boolean => {
   const unique = uniqBy<Move>(([_, position]) => position, ms);
-  return unique.length === ms.length;
+  const valid = unique.length === ms.length;
+  if (!valid) {
+    console.log("invalid uniqueness");
+  }
+  return valid;
 };
 
 const validSingleWinner = (ms: Move[]): boolean => {
-  const candidates = lengths(ms).filter(candidate => candidate.length > 4);
   // now show there is only 1 winner
   // for example:
   // filter candidates by winner
@@ -37,12 +50,8 @@ const validSingleWinner = (ms: Move[]): boolean => {
   return true;
 };
 
-const lengths = <T>(xs: T[]): T[][] => {
-  const seed: T[][] = [[]];
-  return xs
-    .reduce((acc, x) => {
-      const [last] = acc;
-      return [[...last, x], ...acc];
-    }, seed)
-    .reverse();
+const validRanges = (size: number, ms: Move[]): boolean => {
+  const valid = ms.every(validRange(size));
+  console.log("invalid ranges");
+  return valid;
 };
