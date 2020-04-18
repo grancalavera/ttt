@@ -1,4 +1,5 @@
 export type Matrix = number[][];
+export type Diagonals = [number[], number[]];
 
 export const rows = (side: number): Matrix =>
   board(side)
@@ -14,12 +15,15 @@ export const rows = (side: number): Matrix =>
 
 export const columns = (side: number): Matrix => transpose(rows(side));
 
-export const diagonals = (side: number): Matrix => {
-  const rs = rows(side);
-  const tl_br = rs.map((row, i) => row[i]);
-  const tr_bl = rs.map((row, i) => row[side - i - 1]);
-  return [tl_br, tr_bl];
-};
+export const diagonals = (side: number): Diagonals =>
+  rows(side).reduce(
+    (diagonals, row, i) =>
+      [
+        [...diagonals[0], row[i]],
+        [...diagonals[1], row[side - i - 1]],
+      ] as Diagonals,
+    [[], []] as Diagonals
+  );
 
 const transpose = (xs: Matrix): Matrix =>
   xs.length === 0
