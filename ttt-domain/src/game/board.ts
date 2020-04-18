@@ -1,10 +1,10 @@
 export type Matrix = number[][];
 export type Diagonals = [number[], number[]];
 
-export const rows = (side: number): Matrix =>
-  board(side)
+export const rows = (size: number): Matrix =>
+  board(size)
     .reduce((rows, cell) => {
-      if (cell % side === 0) {
+      if (cell % size === 0) {
         return [[cell], ...rows];
       } else {
         const [row, ...rest] = rows;
@@ -13,36 +13,28 @@ export const rows = (side: number): Matrix =>
     }, [] as Matrix)
     .reverse();
 
-export const columns = (side: number): Matrix => transpose(rows(side));
+export const columns = (size: number): Matrix => transpose(rows(size));
 
-export const diagonals = (side: number): Diagonals =>
-  rows(side).reduce(
-    (diagonals, row, i) =>
-      [
+export const diagonals = (size: number): Diagonals =>
+  rows(size).reduce(
+    (diagonals, row, i) => {
+      return [
         [...diagonals[0], row[i]],
-        [...diagonals[1], row[side - i - 1]],
-      ] as Diagonals,
+        [...diagonals[1], row[size - i - 1]],
+      ] as Diagonals;
+    },
     [[], []] as Diagonals
   );
 
-const transpose = (xs: Matrix): Matrix =>
-  xs.length === 0
-    ? []
-    : head(xs).length === 0
-    ? transpose(tail(xs))
-    : [xs.map(head), ...transpose(xs.map(tail))];
-
-const board = (side: number) => range(side * side);
-const range = (length: number) => Array.from({ length }, (_, i) => i);
-
-const head = <T extends unknown>(xs: T[]) => {
-  if (xs.length === 0) {
-    throw new Error("head is undefined for empty Array");
-  }
-  return xs[0];
+const transpose = (xs: Matrix): Matrix => {
+  const transposed: Matrix = [];
+  xs.forEach((v, i) => {
+    v.forEach((x, j) => {
+      transposed[j] = transposed[j] ?? [];
+      transposed[j][i] = x;
+    });
+  });
+  return transposed;
 };
 
-const tail = <T extends unknown>(xs: T[]) => {
-  const [_, ...t] = xs;
-  return t ?? [];
-};
+const board = (side: number) => Array.from({ length: side * side }, (_, i) => i);
