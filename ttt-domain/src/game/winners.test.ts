@@ -1,6 +1,7 @@
 import { Move, Winner } from "model";
-import { narrowScenarios, alice } from "test";
+import { narrowScenarios, alice, bob } from "test";
 import { winners } from "./winners";
+import { chris } from "test/players";
 
 const size = 3;
 
@@ -43,9 +44,29 @@ const scenarios = narrowScenarios<Scenario>([
     size: 3,
     expected: [[alice, [0, 1, 2]]],
   },
+  {
+    name: "an illegal case: three winners",
+    moves: [
+      [alice, 0],
+      [alice, 1],
+      [alice, 2],
+      [bob, 3],
+      [bob, 4],
+      [bob, 5],
+      [chris, 6],
+      [chris, 7],
+      [chris, 8],
+    ],
+    size: 3,
+    expected: [
+      [alice, [0, 1, 2]],
+      [bob, [3, 4, 5]],
+      [chris, [6, 7, 8]],
+    ],
+  },
 ]);
 
-describe.each(scenarios(1, 2))("states", (scenario) => {
+describe.each(scenarios())("states", (scenario) => {
   const { name, moves, size, expected } = scenario;
 
   it(name, () => {

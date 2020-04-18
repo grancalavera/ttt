@@ -1,5 +1,5 @@
 import { columns, diagonals, rows } from "game/board";
-import { Move, Winner, Position, Player } from "model";
+import { Move, Position, Winner } from "model";
 
 export const winners = (size: number, ms: Move[]): Winner[] =>
   wins(size)
@@ -16,27 +16,22 @@ const wins = (size: number) => {
 const toMaybeWinner = (ms: Move[]) => (win: Position[]): Winner | undefined => {
   interface Result {
     lastMove?: Move;
-    winner?: Player;
+    winner?: Winner;
   }
 
-  const result = win
+  return win
     .map((wPos) => ms.find(([_, mPos]) => wPos === mPos))
     .reduce(({ lastMove, winner }, thisMove) => {
       if (lastMove === undefined) {
-        return { lastMove: thisMove, winner: thisMove?.[0] };
+        const thisWinner: Winner | undefined = thisMove ? [thisMove[0], win] : undefined;
+        return { lastMove: thisMove, winner: thisWinner };
       } else if (thisMove === undefined) {
         return { lastMove: thisMove };
       } else {
         const [thisPlayer] = thisMove;
-        return {
-          lastMove: thisMove,
-          winner: winner === thisPlayer ? thisPlayer : undefined,
-        };
+        const thisWinner: Winner | undefined =
+          winner !== undefined && winner[0] === thisPlayer ? winner : undefined;
+        return { lastMove: thisMove, winner: thisWinner };
       }
-    }, {} as Result);
-
-  if (result.winner) {
-    const winner: Winner = [result.winner, win];
-    return winner;
-  }
+    }, {} as Result).winner;
 };
