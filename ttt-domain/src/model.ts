@@ -1,21 +1,22 @@
 export interface Game {
   players: Players;
   moves: Move[];
+  size: number;
 }
 
 export type GameState = OpenGame | DrawGame | WonGame;
 
-interface OpenGame {
+export interface OpenGame {
   kind: "OpenGame";
   next: Player;
 }
 
-interface WonGame {
+export interface WonGame {
   kind: "WonGame";
   winner: Winner;
 }
 
-interface DrawGame {
+export interface DrawGame {
   kind: "DrawGame";
 }
 

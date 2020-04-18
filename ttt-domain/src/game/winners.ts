@@ -13,6 +13,9 @@ const wins = (size: number) => {
   return [...rs, ...cs, ...dg];
 };
 
+export const winner = (size: number, ms: Move[]): Winner | undefined =>
+  winners(size, ms)[0];
+
 const toMaybeWinner = (ms: Move[]) => (win: Position[]): Winner | undefined => {
   interface Result {
     lastMove?: Move;

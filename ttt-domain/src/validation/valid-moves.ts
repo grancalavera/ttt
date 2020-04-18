@@ -31,8 +31,7 @@ const validContinuity = (ms: Move[]): boolean => {
 };
 
 const validUniqueness = (ms: Move[]): boolean => {
-  const unique = uniqBy<Move>(([_, position]) => position, ms);
-  const valid = unique.length === ms.length;
+  const valid = uniqByPosition(ms).length === ms.length;
   return valid;
 };
 
@@ -48,7 +47,9 @@ const validRanges = (size: number, ms: Move[]): boolean => {
 };
 
 const validPlayerCount = (ms: Move[]): boolean => {
-  const unique = uniqBy<Move>(([player]) => player, ms);
-  const valid = unique.length < 3;
+  const valid = uniqByPlayer(ms).length <= 2;
   return valid;
 };
+
+const uniqByPosition = uniqBy<Move>(([_, position]) => position);
+const uniqByPlayer = uniqBy<Move>(([player]) => player);

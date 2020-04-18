@@ -1,4 +1,4 @@
-import { alice, bob, narrowScenarios, shouldLabel } from "test";
+import { alice, bob, narrowScenarios, validationLabel } from "test";
 import { Move } from "../model";
 import { validMoves } from "./valid-moves";
 import { chris } from "test/players";
@@ -99,7 +99,7 @@ const scenarios = narrowScenarios<Scenario>([
 
 describe.each(scenarios())("validate moves in game", (scenario) => {
   const { name, moves, size, expected } = scenario;
-  it(`${name} ${shouldLabel(expected)} be valid`, () => {
+  it(validationLabel(name, expected), () => {
     const actual = validMoves(size, moves);
     expect(actual).toEqual(expected);
   });
