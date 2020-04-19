@@ -6,8 +6,7 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "test": "jest",
-    "repl": "nodemon --watch src --exec ts-node -P tsconfig.json"
+    "test": "jest"
   },
   "dependencies": {
     "@types/lodash": "4.14.149",
