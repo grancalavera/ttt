@@ -3,7 +3,6 @@ import { findAuthenticatedUser, mkSecureResolver } from "auth";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { GamesDataSource } from "data-sources/games";
-import { TTTAPIDataSource } from "data-sources/ttt-api";
 import { UsersDataSource } from "data-sources/users";
 import express from "express";
 import { readFileSync } from "fs";
@@ -48,7 +47,6 @@ export const mkServer = async (origin: string) => {
     dataSources: () => ({
       users: new UsersDataSource(),
       games: new GamesDataSource(),
-      api: new TTTAPIDataSource(apiBaseUrl),
     }),
     schema,
   });
