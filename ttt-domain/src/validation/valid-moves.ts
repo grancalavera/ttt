@@ -1,25 +1,31 @@
+import { winners } from "game/winners";
 import { uniqBy } from "lodash/fp";
 import { Move, Player } from "model";
+import * as result from "validation-result";
+import { ValidationResult } from "validation-result";
+import { InvalidMoves } from "validation-result/types";
 import { validRange } from "validation/valid-move";
-import { winners } from "game/winners";
 
-export const validMoves = (size: number, ms: Move[]): boolean => {
-  return (
-    validContinuity(ms) &&
-    validUniqueness(ms) &&
-    validSingleWinner(size, ms) &&
-    validRanges(size, ms) &&
-    validPlayerCount(ms)
+type ValidateMoves = (size: number, moves: Move[]) => ValidationResult<InvalidMoves>;
+
+export const validMoves = (size: number, moves: Move[]): ValidationResult<InvalidMoves> =>
+  result.combine(
+    [
+      validContinuity,
+      validUniqueness,
+      validRanges,
+      validPlayerCount,
+      validSingleWinner,
+    ].map((v: ValidateMoves) => v(size, moves))
   );
-};
 
-const validContinuity = (ms: Move[]): boolean => {
+const validContinuity = (size: number, moves: Move[]): ValidationResult<InvalidMoves> => {
   type Previous = Player | undefined;
   type Valid = boolean;
   type Step = [Previous, Valid];
   const seed: Step = [undefined, true];
 
-  const [_, valid] = ms.reduce((lastStep, move) => {
+  const [_, valid] = moves.reduce((lastStep, move) => {
     const [lastPlayer, lastValid] = lastStep;
     const [thisPlayer] = move;
     const thisValid = lastPlayer !== thisPlayer;
@@ -27,28 +33,34 @@ const validContinuity = (ms: Move[]): boolean => {
     return nextStep;
   }, seed);
 
-  return valid;
+  return valid ? result.valid() : result.invalidContinuity(size, moves);
 };
 
-const validUniqueness = (ms: Move[]): boolean => {
-  const valid = uniqByPosition(ms).length === ms.length;
-  return valid;
+const validUniqueness = (size: number, moves: Move[]): ValidationResult<InvalidMoves> => {
+  const valid = uniqByPosition(moves).length === moves.length;
+  return valid ? result.valid() : result.invalidUniqueness(size, moves);
 };
 
-const validSingleWinner = (size: number, ms: Move[]): boolean => {
-  const ws = winners(size, ms);
+const validRanges = (size: number, moves: Move[]): ValidationResult<InvalidMoves> => {
+  const valid = moves.every(validRange(size));
+  return valid ? result.valid() : result.invalidRanges(size, moves);
+};
+
+const validPlayerCount = (
+  size: number,
+  moves: Move[]
+): ValidationResult<InvalidMoves> => {
+  const valid = uniqByPlayer(moves).length <= 2;
+  return valid ? result.valid() : result.invalidPlayerCount(size, moves);
+};
+
+const validSingleWinner = (
+  size: number,
+  moves: Move[]
+): ValidationResult<InvalidMoves> => {
+  const ws = winners(size, moves);
   const valid = ws.length < 2;
-  return valid;
-};
-
-const validRanges = (size: number, ms: Move[]): boolean => {
-  const valid = ms.every(validRange(size));
-  return valid;
-};
-
-const validPlayerCount = (ms: Move[]): boolean => {
-  const valid = uniqByPlayer(ms).length <= 2;
-  return valid;
+  return valid ? result.valid() : result.invalidSingleWinner(size, moves);
 };
 
 const uniqByPosition = uniqBy<Move>(([_, position]) => position);

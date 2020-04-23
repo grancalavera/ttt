@@ -1,20 +1,34 @@
+import { state } from "game/state";
 import { Game, GameState } from "model";
-import { state, Result, ok, failure } from "game/state";
-import { alice, bob } from "test";
+import { alice, bob, trivialGame as game } from "test";
+import { ValidationError } from "validation-result";
+
+type Throws = ToThrow | NoToThrow;
+
+interface ToThrow {
+  kind: "ToThrow";
+}
+
+interface NoToThrow {
+  kind: "NoToThrow";
+  value: GameState;
+}
+
+const toThrow = (): ToThrow => ({ kind: "ToThrow" });
+const notToThrow = (value: GameState): NoToThrow => ({ kind: "NoToThrow", value });
+const throws = (t: Throws): t is ToThrow => t.kind === "ToThrow";
 
 interface Scenario {
   name: string;
   game: Game;
-  expected: Result<GameState, string>;
+  expected: ToThrow | NoToThrow;
 }
-
-const game: Game = { size: 3, players: [alice, bob], moves: [] };
 
 const scenarios: Scenario[] = [
   {
     name: "open game",
     game,
-    expected: ok({ kind: "OpenGame", next: alice }),
+    expected: notToThrow({ kind: "OpenGame", next: alice }),
   },
   {
     name: "won game",
@@ -28,7 +42,7 @@ const scenarios: Scenario[] = [
         [alice, 6],
       ],
     },
-    expected: ok({ kind: "WonGame", winner: [alice, [0, 3, 6]] }),
+    expected: notToThrow({ kind: "WonGame", winner: [alice, [0, 3, 6]] }),
   },
   {
     name: "draw game",
@@ -46,19 +60,23 @@ const scenarios: Scenario[] = [
         [alice, 8],
       ],
     },
-    expected: ok({ kind: "DrawGame" }),
+    expected: notToThrow({ kind: "DrawGame" }),
   },
   {
     name: "invalid game",
     game: { ...game, players: [alice, alice] },
-    expected: failure("invalid game"),
+    expected: toThrow(),
   },
 ];
 
 describe.each(scenarios)("resolve game state", (scenario) => {
   const { name, game, expected } = scenario;
   it(name, () => {
-    const actual = state(game);
-    expect(actual).toEqual(expected);
+    if (throws(expected)) {
+      expect(() => state(game)).toThrow(ValidationError);
+    } else {
+      const actual = state(game);
+      expect(actual).toEqual(expected.value);
+    }
   });
 });

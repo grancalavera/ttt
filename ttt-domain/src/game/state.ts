@@ -1,26 +1,29 @@
-import { Game, GameState, WonGame, DrawGame, OpenGame, Player } from "model";
+import { Game, GameState, Player } from "model";
 import { validGame } from "validation";
+import { isValid, ValidationError } from "validation-result";
 import { winner } from "./winners";
 
-export const state = (g: Game): Result<GameState, string> => {
-  if (!validGame(g)) {
-    return failure("invalid game");
+export const state = (g: Game): GameState => {
+  const gameValidation = validGame(g);
+
+  if (!isValid(gameValidation)) {
+    throw new ValidationError(
+      "Unable to compute game state from invalid game",
+      gameValidation
+    );
   }
 
   const w = winner(g.size, g.moves);
 
   if (w) {
-    const s: WonGame = { kind: "WonGame", winner: w };
-    return ok(s);
+    return { kind: "WonGame", winner: w };
   }
 
   if (g.moves.length === g.size * g.size) {
-    const s: DrawGame = { kind: "DrawGame" };
-    return ok(s);
+    return { kind: "DrawGame" };
   }
 
-  const s: OpenGame = { kind: "OpenGame", next: next(g) };
-  return ok(s);
+  return { kind: "OpenGame", next: next(g) };
 };
 
 const next = (g: Game): Player => {
@@ -31,22 +34,3 @@ const next = (g: Game): Player => {
   const [[last]] = g.moves.reverse();
   return last === p1 ? p2 : p1;
 };
-
-const OK = "RESULT_OK";
-const FAILURE = "RESULT_FAILURE";
-
-export type Result<Success, Failure> = Ok<Success> | Err<Failure>;
-type Ok<Success> = { kind: typeof OK; value: Success };
-type Err<Failure> = { kind: typeof FAILURE; failure: Failure };
-
-export const ok = <Success, Failure>(result: Success): Result<Success, Failure> => ({
-  kind: OK,
-  value: result,
-});
-
-export const failure = <Success, Failure>(
-  failure: Failure
-): Result<Success, Failure> => ({
-  kind: FAILURE,
-  failure,
-});

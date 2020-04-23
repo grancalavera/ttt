@@ -1,61 +1,21 @@
-import { alice, bob, narrowScenarios, validationLabel } from "test";
+import { alice, bob, chris, narrowScenarios, validationLabel } from "test";
+import * as result from "validation-result";
+import { ValidationResult } from "validation-result";
+import { InvalidMoves } from "validation-result/types";
 import { Move } from "../model";
 import { validMoves } from "./valid-moves";
-import { chris } from "test/players";
 
 interface Scenario {
   name: string;
   moves: Move[];
   size: number;
-  expected: boolean;
+  resolvers: Array<(size: number, moves: Move[]) => ValidationResult<InvalidMoves>>;
 }
 
 const size = 3;
 
 const scenarios = narrowScenarios<Scenario>([
-  { name: "empty moves", moves: [], size, expected: true },
-  {
-    name: "consecutive moves",
-    moves: [
-      [alice, 0],
-      [alice, 1],
-    ],
-    size,
-    expected: false,
-  },
-  {
-    name: "consecutive moves",
-    moves: [
-      [alice, 0],
-      [bob, 1],
-      [alice, 2],
-      [bob, 3],
-      [bob, 4],
-    ],
-    size,
-    expected: false,
-  },
-  {
-    name: "duplicated moves",
-    moves: [
-      [alice, 0],
-      [bob, 0],
-    ],
-    size,
-    expected: false,
-  },
-  {
-    name: "moves below range",
-    moves: [[alice, -1]],
-    size,
-    expected: false,
-  },
-  {
-    name: "moves above range",
-    moves: [[alice, 9]],
-    size,
-    expected: false,
-  },
+  { name: "empty moves", moves: [], size, resolvers: [result.valid] },
   {
     name: "no consecutive moves",
     moves: [
@@ -70,7 +30,49 @@ const scenarios = narrowScenarios<Scenario>([
       [alice, 8],
     ],
     size,
-    expected: true,
+    resolvers: [result.valid],
+  },
+  {
+    name: "consecutive moves",
+    moves: [
+      [alice, 0],
+      [alice, 1],
+    ],
+    size,
+    resolvers: [result.invalidContinuity],
+  },
+  {
+    name: "consecutive moves",
+    moves: [
+      [alice, 0],
+      [bob, 1],
+      [alice, 2],
+      [bob, 3],
+      [bob, 4],
+    ],
+    size,
+    resolvers: [result.invalidContinuity],
+  },
+  {
+    name: "duplicated moves",
+    moves: [
+      [alice, 0],
+      [bob, 0],
+    ],
+    size,
+    resolvers: [result.invalidUniqueness],
+  },
+  {
+    name: "moves below range",
+    moves: [[alice, -1]],
+    size,
+    resolvers: [result.invalidRanges],
+  },
+  {
+    name: "moves above range",
+    moves: [[alice, 9]],
+    size,
+    resolvers: [result.invalidRanges],
   },
   {
     name: "more than two players",
@@ -80,7 +82,7 @@ const scenarios = narrowScenarios<Scenario>([
       [chris, 2],
     ],
     size,
-    expected: false,
+    resolvers: [result.invalidPlayerCount],
   },
   {
     name: "multiple winners",
@@ -93,13 +95,37 @@ const scenarios = narrowScenarios<Scenario>([
       [bob, 7],
     ],
     size,
-    expected: false,
+    resolvers: [result.invalidSingleWinner],
+  },
+  {
+    name: "every invalid result",
+    moves: [
+      [alice, 0],
+      [alice, 2],
+      [alice, 1],
+      [bob, 3],
+      [bob, 4],
+      [bob, 5],
+      [chris, 0],
+      [alice, -1],
+    ],
+    size: 3,
+    resolvers: [
+      result.invalidContinuity,
+      result.invalidUniqueness,
+      result.invalidRanges,
+      result.invalidPlayerCount,
+      result.invalidSingleWinner,
+    ],
   },
 ]);
 
 describe.each(scenarios())("validate moves in game", (scenario) => {
-  const { name, moves, size, expected } = scenario;
-  it(validationLabel(name, expected), () => {
+  const { name, moves, size, resolvers } = scenario;
+
+  const expected = result.combine(resolvers.map((r) => r(size, moves)));
+
+  it(validationLabel(name, result.isValid(expected)), () => {
     const actual = validMoves(size, moves);
     expect(actual).toEqual(expected);
   });
