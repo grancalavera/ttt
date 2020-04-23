@@ -1,21 +1,29 @@
 import { alice, bob, validationLabel } from "test";
+import * as result from "validation-result";
+import { InvalidPlayers, ValidationResult } from "validation-result";
 import { validPlayers } from "validation/valid-players";
 import { Players } from "../model";
 
 interface Scenario {
   name: string;
   players: Players;
-  expected: boolean;
+  resolve: (players: Players) => ValidationResult<InvalidPlayers>;
 }
 
 const scenarios: Scenario[] = [
-  { name: "two unique players", players: [alice, bob], expected: true },
-  { name: "two duplicated players", players: [alice, alice], expected: false },
+  { name: "two unique players", players: [alice, bob], resolve: result.valid },
+  {
+    name: "two duplicated players",
+    players: [alice, alice],
+    resolve: result.invalidPlayers,
+  },
 ];
 
 describe.each(scenarios)("validate players in game", (scenario) => {
-  const { name, players, expected } = scenario;
-  it(validationLabel(name, expected), () => {
+  const { name, players, resolve } = scenario;
+  const expected = resolve(players);
+
+  it(validationLabel(name, result.isValid(expected)), () => {
     const actual = validPlayers(players);
     expect(actual).toEqual(expected);
   });
