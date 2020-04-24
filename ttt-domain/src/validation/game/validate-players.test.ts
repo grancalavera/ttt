@@ -1,8 +1,8 @@
 import { alice, bob, validationLabel } from "test";
 import * as result from "validation-result";
 import { InvalidPlayers, ValidationResult } from "validation-result";
-import { validPlayers } from "validation/validate-players";
-import { Players } from "../model";
+import { validatePlayers } from "validation/game/validate-players";
+import { Players } from "../../model";
 
 interface Scenario {
   name: string;
@@ -24,7 +24,7 @@ describe.each(scenarios)("validate players in game", (scenario) => {
   const expected = resolve(players);
 
   it(validationLabel(name, result.isValid(expected)), () => {
-    const actual = validPlayers(players);
+    const actual = validatePlayers(players);
     expect(actual).toEqual(expected);
   });
 });
