@@ -16,5 +16,6 @@ export {
   InvalidPlayers,
   ValidationResult,
   Invalid,
+  GameValidationResolvers,
 } from "validation-result/types";
 export { ValidationError } from "validation-result/validation-error";

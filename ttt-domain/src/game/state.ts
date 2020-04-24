@@ -1,10 +1,10 @@
 import { Game, GameState, Player } from "model";
-import { validGame } from "validation";
+import { validateGame } from "validation";
 import { isValid, ValidationError } from "validation-result";
 import { winner } from "./winners";
 
 export const state = (g: Game): GameState => {
-  const gameValidation = validGame(g);
+  const gameValidation = validateGame(g);
 
   if (!isValid(gameValidation)) {
     throw new ValidationError(

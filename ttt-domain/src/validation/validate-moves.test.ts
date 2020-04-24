@@ -3,7 +3,7 @@ import * as result from "validation-result";
 import { ValidationResult } from "validation-result";
 import { InvalidMoves } from "validation-result/types";
 import { Move } from "../model";
-import { validMoves } from "./valid-moves";
+import { validateMoves } from "./validate-moves";
 
 interface Scenario {
   name: string;
@@ -126,7 +126,7 @@ describe.each(scenarios())("validate moves in game", (scenario) => {
   const expected = result.combine(resolvers.map((r) => r(size, moves)));
 
   it(validationLabel(name, result.isValid(expected)), () => {
-    const actual = validMoves(size, moves);
+    const actual = validateMoves(size, moves);
     expect(actual).toEqual(expected);
   });
 });

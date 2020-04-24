@@ -22,3 +22,5 @@ export interface InvalidPlayers {
   message: string;
   players: Players;
 }
+
+export type GameValidationResolvers = Array<(g: Game) => ValidationResult<Invalid>>;

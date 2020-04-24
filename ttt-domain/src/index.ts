@@ -1,1 +1,1 @@
-export const hello = () => "hello";
+export { validateGame, validateMove } from "validation";
