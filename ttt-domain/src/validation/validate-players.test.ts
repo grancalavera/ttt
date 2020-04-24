@@ -1,7 +1,7 @@
 import { alice, bob, validationLabel } from "test";
 import * as result from "validation-result";
 import { InvalidPlayers, ValidationResult } from "validation-result";
-import { validPlayers } from "validation/valid-players";
+import { validPlayers } from "validation/validate-players";
 import { Players } from "../model";
 
 interface Scenario {
