@@ -11,11 +11,11 @@ export {
   valid,
 } from "validation-result/results";
 export {
+  Invalid,
   InvalidGame,
+  InvalidMove,
   InvalidMoves,
   InvalidPlayers,
   ValidationResult,
-  Invalid,
-  GameValidationResolvers,
 } from "validation-result/types";
 export { ValidationError } from "validation-result/validation-error";

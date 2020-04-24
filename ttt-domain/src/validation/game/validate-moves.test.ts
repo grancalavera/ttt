@@ -2,7 +2,7 @@ import { alice, bob, chris, narrowScenarios, validationLabel } from "test";
 import * as result from "validation-result";
 import { ValidationResult } from "validation-result";
 import { InvalidMoves } from "validation-result/types";
-import { Move } from "../model";
+import { Move } from "../../model";
 import { validateMoves } from "./validate-moves";
 
 interface Scenario {

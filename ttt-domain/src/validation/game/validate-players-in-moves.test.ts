@@ -3,37 +3,22 @@ import {
   alice,
   bob,
   chris,
-  narrowScenarios,
-  validationLabel,
-  trivialGame as game,
   dave,
+  narrowScenarios,
+  trivialGame as game,
+  validationLabel,
 } from "test";
-import { validateGame } from "validation";
 import * as result from "validation-result";
-import { GameValidationResolvers } from "validation-result";
+import { Invalid, ValidationResult } from "validation-result";
+import { validatePlayersInMoves } from "./validate-players-in-moves";
 
 interface Scenario {
   name: string;
   game: Game;
-  resolvers: GameValidationResolvers;
+  resolvers: Array<(g: Game) => ValidationResult<Invalid>>;
 }
 
 const scenarios = narrowScenarios<Scenario>([
-  {
-    name: "trivially valid game",
-    game,
-    resolvers: [result.valid],
-  },
-  {
-    name: "smallest non-empty valid game",
-    game: { ...game, moves: [[alice, 0]] },
-    resolvers: [result.valid],
-  },
-  {
-    name: "unknown player",
-    game: { ...game, moves: [[chris, 0]] },
-    resolvers: [result.invalidPlayersInMoves],
-  },
   {
     name: "trivially valid players in moves",
     game: {
@@ -76,12 +61,12 @@ const scenarios = narrowScenarios<Scenario>([
   },
 ]);
 
-describe.each(scenarios())("game validation", (scenario) => {
+describe.each(scenarios())("players in moves validation", (scenario) => {
   const { name, game, resolvers } = scenario;
   const expected = result.combine(resolvers.map((r) => r(game)));
 
   it(validationLabel(name, result.isValid(expected)), () => {
-    const actual = validateGame(game);
+    const actual = validatePlayersInMoves(game);
     expect(actual).toEqual(expected);
   });
 });

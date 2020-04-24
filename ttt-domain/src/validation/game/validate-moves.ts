@@ -4,7 +4,7 @@ import { Move, Player } from "model";
 import * as result from "validation-result";
 import { ValidationResult } from "validation-result";
 import { InvalidMoves } from "validation-result/types";
-import { validateRange } from "validation/validate-move";
+import { isMoveInsideRange } from "validation/common";
 
 type ValidateMoves = (size: number, moves: Move[]) => ValidationResult<InvalidMoves>;
 
@@ -51,7 +51,7 @@ const validateUniqueness = (
 };
 
 const validateRanges = (size: number, moves: Move[]): ValidationResult<InvalidMoves> => {
-  const valid = moves.every(validateRange(size));
+  const valid = moves.every(isMoveInsideRange(size));
   return valid ? result.valid() : result.invalidRanges(size, moves);
 };
 
