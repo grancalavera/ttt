@@ -1,10 +1,8 @@
-import { trivialGame as game, alice } from "test";
-import { Move } from "model";
+import { alice, trivialGame as game } from "test";
 import { validateMove } from "./validate-move";
 
 describe("root move validator ", () => {
   it("should never throw", () => {
-    const move: Move = [alice, 0];
-    expect(() => validateMove(game, move)).not.toThrow();
+    expect(() => validateMove(game, [alice, 0])).not.toThrow();
   });
 });
