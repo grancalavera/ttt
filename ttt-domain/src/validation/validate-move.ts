@@ -16,7 +16,7 @@ export const validateMove = (g: Game, m: Move): ValidationResult<Invalid> => {
   }
 
   return result.combine<Invalid>([
-    validatePlayerExistsInGame(g, m[0]),
+    validatePlayerExistsInGame(g.players, m[0]),
     validatePosition(g, m[1]),
     validateGameStateIsOpen(g),
   ]);
