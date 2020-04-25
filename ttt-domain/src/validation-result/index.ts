@@ -1,8 +1,11 @@
 export { combine } from "validation-result/combine";
 export {
   invalidContinuity,
+  invalidPlayedMove,
+  invalidPlayer,
   invalidPlayerCount,
   invalidPlayers,
+  invalidPlayersInGame,
   invalidPlayersInMoves,
   invalidRanges,
   invalidSingleWinner,

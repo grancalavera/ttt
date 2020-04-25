@@ -1,8 +1,13 @@
-import { Game, Move, Players } from "model";
+import { Game, Move, Player, Players } from "model";
 
 export type ValidationResult<T extends Invalid> = T[];
 
-export type Invalid = InvalidGame | InvalidMoves | InvalidMove | InvalidPlayers;
+export type Invalid =
+  | InvalidGame
+  | InvalidMoves
+  | InvalidMove
+  | InvalidPlayers
+  | InvalidPlayer;
 
 export interface InvalidGame {
   kind: "InvalidGame";
@@ -28,4 +33,11 @@ export interface InvalidPlayers {
   kind: "InvalidPlayers";
   message: string;
   players: Players;
+}
+
+export interface InvalidPlayer {
+  kind: "InvalidPlayer";
+  message: string;
+  players: Players;
+  player: Player;
 }

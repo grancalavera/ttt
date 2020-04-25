@@ -1,4 +1,4 @@
-import { Game, Move, Players } from "model";
+import { Game, Move, Players, Player } from "model";
 import {
   InvalidGame,
   InvalidMoves,
@@ -6,6 +6,7 @@ import {
   Invalid,
   InvalidPlayers,
   InvalidMove,
+  InvalidPlayer,
 } from "./types";
 
 export const valid = <T extends Invalid>(): ValidationResult<T> => [];
@@ -49,6 +50,18 @@ export const invalidPlayers = (players: Players): ValidationResult<InvalidPlayer
   {
     kind: "InvalidPlayers",
     message: "Invalid Players",
+    players,
+  },
+];
+
+export const invalidPlayer = (
+  players: Players,
+  player: Player
+): ValidationResult<InvalidPlayer> => [
+  {
+    kind: "InvalidPlayer",
+    message: "A player does not belong to the game",
+    player,
     players,
   },
 ];
