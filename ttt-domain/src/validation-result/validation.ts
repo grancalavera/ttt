@@ -1,4 +1,14 @@
-import { Validation, Valid, Invalid_ } from "./types";
+export interface Valid<T> {
+  kind: "ValidationValid";
+  data: T;
+}
+
+export interface Invalid<T> {
+  kind: "ValidationInvalid";
+  errors: T[];
+}
+
+export type Validation<Data, Error> = Valid<Data> | Invalid<Error>;
 
 export const valid = <T extends unknown>(data: T): Validation<T, never> => {
   return { kind: "ValidationValid", data };
@@ -14,7 +24,7 @@ export const isValid = <T extends unknown, E extends unknown>(
 
 export const isInvalid = <T extends unknown, E extends unknown>(
   result: Validation<T, E>
-): result is Invalid_<E> => result.kind === "ValidationInvalid";
+): result is Invalid<E> => result.kind === "ValidationInvalid";
 
 export const combineWith = <T extends unknown, E extends unknown>(
   merge: (l: T, r: T) => T
@@ -39,7 +49,9 @@ export const combineWith = <T extends unknown, E extends unknown>(
     }
   }, invalid([]));
 
-export const combine = combineWith(pickLatest);
+export const combine = <T extends unknown, E extends unknown>(
+  results: Validation<T, E>[]
+) => combineWith<T, E>(pickLatest)(results);
 
 const isEmpty = <T extends unknown, E extends unknown>(
   result: Validation<T, E>

@@ -1,30 +1,22 @@
-import { alice, bob, validationLabel } from "test";
-import * as result from "validation-result";
-import { InvalidPlayers, ValidationResult } from "validation-result";
-import { validatePlayers } from "validation/game/validate-players";
-import { Players } from "../../model";
+import { alice, GameScenario, trivialGame as game, validationLabel } from "test";
+import * as v from "validation-result/validation";
+import { validatePlayers, invalidPlayers } from "./validate-players";
 
-interface Scenario {
-  name: string;
-  players: Players;
-  resolve: (players: Players) => ValidationResult<InvalidPlayers>;
-}
-
-const scenarios: Scenario[] = [
-  { name: "two unique players", players: [alice, bob], resolve: result.valid },
+const scenarios: GameScenario[] = [
+  { name: "two unique players", game, toValidation: v.valid },
   {
     name: "two duplicated players",
-    players: [alice, alice],
-    resolve: result.invalidPlayers,
+    game: { ...game, players: [alice, alice] },
+    toValidation: invalidPlayers,
   },
 ];
 
 describe.each(scenarios)("validate players in game", (scenario) => {
-  const { name, players, resolve } = scenario;
-  const expected = resolve(players);
+  const { name, game, toValidation } = scenario;
+  const expected = toValidation(game);
 
-  it(validationLabel(name, result.isValid(expected)), () => {
-    const actual = validatePlayers(players);
+  it(validationLabel(name, v.isValid(expected)), () => {
+    const actual = validatePlayers(game);
     expect(actual).toEqual(expected);
   });
 });

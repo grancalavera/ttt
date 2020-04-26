@@ -1,7 +1,7 @@
 import { state } from "game/state";
 import { Game, GameState } from "model";
 import { alice, bob, trivialGame as game } from "test";
-import { ValidationError } from "validation-result";
+import { GameValidationError } from "validation/types";
 
 type Throws = ToThrow | NoToThrow;
 
@@ -73,7 +73,7 @@ describe.each(scenarios)("resolve game state", (scenario) => {
   const { name, game, expected } = scenario;
   it(name, () => {
     if (throws(expected)) {
-      expect(() => state(game)).toThrow(ValidationError);
+      expect(() => state(game)).toThrow(GameValidationError);
     } else {
       const actual = state(game);
       expect(actual).toEqual(expected.value);

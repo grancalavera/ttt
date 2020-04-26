@@ -1,13 +1,14 @@
 import { Game, GameState, Player } from "model";
 import { validateGame } from "validation";
-import { isValid, ValidationError } from "validation-result";
+import * as v from "validation-result/validation";
+import { GameValidationError } from "validation/types";
 import { winner } from "./winners";
 
 export const state = (g: Game): GameState => {
   const gameValidation = validateGame(g);
 
-  if (!isValid(gameValidation)) {
-    throw new ValidationError(
+  if (!v.isValid(gameValidation)) {
+    throw new GameValidationError(
       "Unable to compute game state from invalid game",
       gameValidation
     );

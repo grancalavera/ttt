@@ -33,7 +33,7 @@ const scenarios: Scenario[] = [
   },
 ];
 
-describe.each(scenarios)("validate player in move", (scenario) => {
+xdescribe.each(scenarios)("validate player in move", (scenario) => {
   const { name, player, players, resolve } = scenario;
   const expected = resolve(players, player);
 
