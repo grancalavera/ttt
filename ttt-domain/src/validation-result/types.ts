@@ -41,3 +41,15 @@ export interface InvalidPlayer {
   players: Players;
   player: Player;
 }
+
+export interface Valid<T> {
+  kind: "ValidationValid";
+  data: T;
+}
+
+export interface Invalid_<T> {
+  kind: "ValidationInvalid";
+  errors: T[];
+}
+
+export type Validation<Data, Error> = Valid<Data> | Invalid_<Error>;
