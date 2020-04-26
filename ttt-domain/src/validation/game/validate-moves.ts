@@ -1,37 +1,25 @@
 import { winners } from "game/winners";
 import { uniqBy } from "lodash/fp";
-import { Move, Player } from "model";
-import * as result from "validation-result";
-import { ValidationResult } from "validation-result";
-import { InvalidMoves } from "validation-result/types";
+import { Game, Move, Player } from "model";
+import * as v from "validation-result/validation";
 import { isMoveInsideRange } from "validation/common";
+import { GameValidation, invalidGame, validateMany } from "validation/types";
 
-type ValidateMoves = (size: number, moves: Move[]) => ValidationResult<InvalidMoves>;
+export const invalidContinuity = invalidGame("Some players played consecutive moves");
+export const invalidUniqueness = invalidGame(
+  "Some positions have been played more than once"
+);
+export const invalidRanges = invalidGame("Some moves are out of range");
+export const invalidPlayerCount = invalidGame("There are more than two (2) players");
+export const invalidSingleWinner = invalidGame("There is more than one (1) winner");
 
-export const validateMoves = (
-  size: number,
-  moves: Move[]
-): ValidationResult<InvalidMoves> =>
-  result.combine(
-    [
-      validateContinuity,
-      validateUniqueness,
-      validateRanges,
-      validatePlayerCount,
-      validateSingleWinner,
-    ].map((v: ValidateMoves) => v(size, moves))
-  );
-
-const validateContinuity = (
-  size: number,
-  moves: Move[]
-): ValidationResult<InvalidMoves> => {
+const validateContinuity = (g: Game): GameValidation => {
   type Previous = Player | undefined;
   type Valid = boolean;
   type Step = [Previous, Valid];
   const seed: Step = [undefined, true];
 
-  const [_, valid] = moves.reduce((lastStep, move) => {
+  const [_, valid] = g.moves.reduce((lastStep, move) => {
     const [lastPlayer, lastValid] = lastStep;
     const [thisPlayer] = move;
     const thisValid = lastPlayer !== thisPlayer;
@@ -39,38 +27,38 @@ const validateContinuity = (
     return nextStep;
   }, seed);
 
-  return valid ? result.valid() : result.invalidContinuity(size, moves);
+  return valid ? v.valid(g) : invalidContinuity(g);
 };
 
-const validateUniqueness = (
-  size: number,
-  moves: Move[]
-): ValidationResult<InvalidMoves> => {
+const validateUniqueness = (g: Game): GameValidation => {
+  const { moves } = g;
   const valid = uniqByPosition(moves).length === moves.length;
-  return valid ? result.valid() : result.invalidUniqueness(size, moves);
+  return valid ? v.valid(g) : invalidUniqueness(g);
 };
 
-const validateRanges = (size: number, moves: Move[]): ValidationResult<InvalidMoves> => {
-  const valid = moves.every(isMoveInsideRange(size));
-  return valid ? result.valid() : result.invalidRanges(size, moves);
+const validateRanges = (g: Game): GameValidation => {
+  const valid = g.moves.every(isMoveInsideRange(g.size));
+  return valid ? v.valid(g) : invalidRanges(g);
 };
 
-const validatePlayerCount = (
-  size: number,
-  moves: Move[]
-): ValidationResult<InvalidMoves> => {
-  const valid = uniqByPlayer(moves).length <= 2;
-  return valid ? result.valid() : result.invalidPlayerCount(size, moves);
+const validatePlayerCount = (g: Game): GameValidation => {
+  const valid = uniqByPlayer(g.moves).length <= 2;
+  return valid ? v.valid(g) : invalidPlayerCount(g);
 };
 
-const validateSingleWinner = (
-  size: number,
-  moves: Move[]
-): ValidationResult<InvalidMoves> => {
-  const ws = winners(size, moves);
+const validateSingleWinner = (g: Game): GameValidation => {
+  const ws = winners(g.size, g.moves);
   const valid = ws.length < 2;
-  return valid ? result.valid() : result.invalidSingleWinner(size, moves);
+  return valid ? v.valid(g) : invalidSingleWinner(g);
 };
 
 const uniqByPosition = uniqBy<Move>(([_, position]) => position);
 const uniqByPlayer = uniqBy<Move>(([player]) => player);
+
+export const validateMoves = validateMany([
+  validateContinuity,
+  validateUniqueness,
+  validateRanges,
+  validatePlayerCount,
+  validateSingleWinner,
+]);

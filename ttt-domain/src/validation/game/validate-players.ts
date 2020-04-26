@@ -1,8 +1,10 @@
-import { Players } from "../../model";
-import { InvalidPlayers, ValidationResult } from "validation-result";
-import * as result from "validation-result";
+import * as v from "validation-result/validation";
+import { GameValidation, invalidGame } from "validation/types";
+import { Game } from "../../model";
 
-export const validatePlayers = (ps: Players): ValidationResult<InvalidPlayers> => {
-  const [p1, p2] = ps;
-  return p1 !== p2 ? result.valid() : result.invalidPlayers(ps);
+export const validatePlayers = (g: Game): GameValidation => {
+  const [p1, p2] = g.players;
+  return p1 !== p2 ? v.valid(g) : invalidPlayers(g);
 };
+
+export const invalidPlayers = invalidGame("Games cannot contain duplicated players");

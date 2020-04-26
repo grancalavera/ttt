@@ -1,132 +1,148 @@
-import { alice, bob, chris, narrowScenarios, validationLabel } from "test";
-import * as result from "validation-result";
-import { ValidationResult } from "validation-result";
-import { InvalidMoves } from "validation-result/types";
-import { Move } from "../../model";
-import { validateMoves } from "./validate-moves";
+import {
+  alice,
+  bob,
+  chris,
+  GameScenario,
+  narrowScenarios,
+  trivialGame as game,
+  validationLabel,
+} from "test";
+import * as v from "validation-result/validation";
+import {
+  validateMoves,
+  invalidContinuity,
+  invalidUniqueness,
+  invalidRanges,
+  invalidPlayerCount,
+  invalidSingleWinner,
+} from "./validate-moves";
+import { toCombinedValidation } from "test/game";
 
-interface Scenario {
-  name: string;
-  moves: Move[];
-  size: number;
-  resolvers: Array<(size: number, moves: Move[]) => ValidationResult<InvalidMoves>>;
-}
-
-const size = 3;
-
-const scenarios = narrowScenarios<Scenario>([
-  { name: "empty moves", moves: [], size, resolvers: [result.valid] },
+const scenarios = narrowScenarios<GameScenario>([
+  { name: "empty moves", game, toValidation: v.valid },
   {
     name: "no consecutive moves",
-    moves: [
-      [alice, 0],
-      [bob, 3],
-      [alice, 6],
-      [bob, 4],
-      [alice, 1],
-      [bob, 2],
-      [alice, 5],
-      [bob, 7],
-      [alice, 8],
-    ],
-    size,
-    resolvers: [result.valid],
+    game: {
+      ...game,
+      moves: [
+        [alice, 0],
+        [bob, 3],
+        [alice, 6],
+        [bob, 4],
+        [alice, 1],
+        [bob, 2],
+        [alice, 5],
+        [bob, 7],
+        [alice, 8],
+      ],
+    },
+    toValidation: v.valid,
   },
   {
     name: "consecutive moves",
-    moves: [
-      [alice, 0],
-      [alice, 1],
-    ],
-    size,
-    resolvers: [result.invalidContinuity],
+    game: {
+      ...game,
+      moves: [
+        [alice, 0],
+        [alice, 1],
+      ],
+    },
+    toValidation: invalidContinuity,
   },
   {
     name: "consecutive moves",
-    moves: [
-      [alice, 0],
-      [bob, 1],
-      [alice, 2],
-      [bob, 3],
-      [bob, 4],
-    ],
-    size,
-    resolvers: [result.invalidContinuity],
+    game: {
+      ...game,
+      moves: [
+        [alice, 0],
+        [bob, 1],
+        [alice, 2],
+        [bob, 3],
+        [bob, 4],
+      ],
+    },
+    toValidation: invalidContinuity,
   },
   {
     name: "duplicated moves",
-    moves: [
-      [alice, 0],
-      [bob, 0],
-    ],
-    size,
-    resolvers: [result.invalidUniqueness],
+    game: {
+      ...game,
+      moves: [
+        [alice, 0],
+        [bob, 0],
+      ],
+    },
+    toValidation: invalidUniqueness,
   },
   {
     name: "moves below range",
-    moves: [[alice, -1]],
-    size,
-    resolvers: [result.invalidRanges],
+    game: { ...game, moves: [[alice, -1]] },
+    toValidation: invalidRanges,
   },
   {
     name: "moves above range",
-    moves: [[alice, 9]],
-    size,
-    resolvers: [result.invalidRanges],
+    game: { ...game, moves: [[alice, 9]] },
+    toValidation: invalidRanges,
   },
   {
     name: "more than two players",
-    moves: [
-      [alice, 0],
-      [bob, 1],
-      [chris, 2],
-    ],
-    size,
-    resolvers: [result.invalidPlayerCount],
+    game: {
+      ...game,
+      moves: [
+        [alice, 0],
+        [bob, 1],
+        [chris, 2],
+      ],
+    },
+    toValidation: invalidPlayerCount,
   },
   {
     name: "multiple winners",
-    moves: [
-      [alice, 0],
-      [bob, 1],
-      [alice, 3],
-      [bob, 4],
-      [alice, 6],
-      [bob, 7],
-    ],
-    size,
-    resolvers: [result.invalidSingleWinner],
+    game: {
+      ...game,
+      moves: [
+        [alice, 0],
+        [bob, 1],
+        [alice, 3],
+        [bob, 4],
+        [alice, 6],
+        [bob, 7],
+      ],
+    },
+    toValidation: invalidSingleWinner,
   },
   {
     name: "every invalid result",
-    moves: [
-      [alice, 0],
-      [alice, 2],
-      [alice, 1],
-      [bob, 3],
-      [bob, 4],
-      [bob, 5],
-      [chris, 0],
-      [alice, -1],
-    ],
-    size: 3,
-    resolvers: [
-      result.invalidContinuity,
-      result.invalidUniqueness,
-      result.invalidRanges,
-      result.invalidPlayerCount,
-      result.invalidSingleWinner,
-    ],
+    game: {
+      ...game,
+      moves: [
+        [alice, 0],
+        [alice, 2],
+        [alice, 1],
+        [bob, 3],
+        [bob, 4],
+        [bob, 5],
+        [chris, 0],
+        [alice, -1],
+      ],
+    },
+    toValidation: toCombinedValidation([
+      invalidContinuity,
+      invalidUniqueness,
+      invalidRanges,
+      invalidPlayerCount,
+      invalidSingleWinner,
+    ]),
   },
 ]);
 
 describe.each(scenarios())("validate moves in game", (scenario) => {
-  const { name, moves, size, resolvers } = scenario;
+  const { name, game, toValidation } = scenario;
 
-  const expected = result.combine(resolvers.map((r) => r(size, moves)));
+  const expected = toValidation(game);
 
-  it(validationLabel(name, result.isValid(expected)), () => {
-    const actual = validateMoves(size, moves);
+  it(validationLabel(name, v.isValid(expected)), () => {
+    const actual = validateMoves(game);
     expect(actual).toEqual(expected);
   });
 });

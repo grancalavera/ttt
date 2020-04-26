@@ -21,4 +21,3 @@ export {
   InvalidPlayers,
   ValidationResult,
 } from "validation-result/types";
-export { ValidationError } from "validation-result/validation-error";

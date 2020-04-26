@@ -1,24 +1,20 @@
-import { Game } from "model";
 import {
   alice,
   bob,
   chris,
   dave,
+  GameScenario,
   narrowScenarios,
   trivialGame as game,
   validationLabel,
 } from "test";
-import * as result from "validation-result";
-import { Invalid, ValidationResult } from "validation-result";
-import { validatePlayersInMoves } from "./validate-players-in-moves";
+import * as v from "validation-result/validation";
+import {
+  invalidPlayersInMoves,
+  validatePlayersInMoves,
+} from "./validate-players-in-moves";
 
-interface Scenario {
-  name: string;
-  game: Game;
-  resolvers: Array<(g: Game) => ValidationResult<Invalid>>;
-}
-
-const scenarios = narrowScenarios<Scenario>([
+const scenarios = narrowScenarios<GameScenario>([
   {
     name: "trivially valid players in moves",
     game: {
@@ -28,12 +24,12 @@ const scenarios = narrowScenarios<Scenario>([
         [bob, 1],
       ],
     },
-    resolvers: [result.valid],
+    toValidation: v.valid,
   },
   {
     name: "1 invalid unique player in moves",
     game: { ...game, moves: [[chris, 0]] },
-    resolvers: [result.invalidPlayersInMoves],
+    toValidation: invalidPlayersInMoves,
   },
   {
     name: "2 invalid unique player in moves",
@@ -44,7 +40,7 @@ const scenarios = narrowScenarios<Scenario>([
         [dave, 1],
       ],
     },
-    resolvers: [result.invalidPlayersInMoves],
+    toValidation: invalidPlayersInMoves,
   },
   {
     name: "2 invalid duplicated players in moves",
@@ -57,15 +53,16 @@ const scenarios = narrowScenarios<Scenario>([
         [dave, 3],
       ],
     },
-    resolvers: [result.invalidPlayersInMoves],
+    toValidation: invalidPlayersInMoves,
   },
 ]);
 
 describe.each(scenarios())("players in moves validation", (scenario) => {
-  const { name, game, resolvers } = scenario;
-  const expected = result.combine(resolvers.map((r) => r(game)));
+  const { name, game, toValidation } = scenario;
 
-  it(validationLabel(name, result.isValid(expected)), () => {
+  const expected = toValidation(game);
+
+  it(validationLabel(name, v.isValid(expected)), () => {
     const actual = validatePlayersInMoves(game);
     expect(actual).toEqual(expected);
   });
