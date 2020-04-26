@@ -16,16 +16,9 @@ export const isInvalid = <T extends unknown, E extends unknown>(
   result: Validation<T, E>
 ): result is Invalid_<E> => result.kind === "ValidationInvalid";
 
-/**
- * Combine a list of validation results.
- * When all results are valid the data from the last result is kept.
- * When the first invalid result is found, errors are accumulated from
- * that point onwards and all data on subsequent valid results are dropped.
- */
-export const combine = <T extends unknown, E extends unknown>(
-  results: Validation<T, E>[],
-  merge: (l: T, r: T) => T = pickLatest
-): Validation<T, E> =>
+export const combineWith = <T extends unknown, E extends unknown>(
+  merge: (l: T, r: T) => T
+) => (results: Validation<T, E>[]): Validation<T, E> =>
   results.reduce((combined, result) => {
     if (isEmpty(combined)) {
       return result;
@@ -46,8 +39,12 @@ export const combine = <T extends unknown, E extends unknown>(
     }
   }, invalid([]));
 
-const pickLatest = <T extends unknown>(_: T, latest: T) => latest;
+export const combine = combineWith(pickLatest);
 
 const isEmpty = <T extends unknown, E extends unknown>(
   result: Validation<T, E>
 ): boolean => isInvalid(result) && result.errors.length === 0;
+
+function pickLatest<T extends unknown>(_: T, latest: T) {
+  return latest;
+}
