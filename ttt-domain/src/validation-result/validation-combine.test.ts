@@ -1,4 +1,4 @@
-import { Validation } from "./types";
+import { Validation } from "./validation";
 import { valid, invalid, combine } from "./validation";
 import { narrowScenarios } from "test";
 

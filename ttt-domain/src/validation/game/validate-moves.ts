@@ -3,7 +3,7 @@ import { uniqBy } from "lodash/fp";
 import { Game, Move, Player } from "model";
 import * as v from "validation-result/validation";
 import { isMoveInsideRange } from "validation/common";
-import { GameValidation, invalidGame, validateMany } from "validation/types";
+import { GameValidation, invalidGame, ValidateGame, validations } from "validation/types";
 
 export const invalidContinuity = invalidGame("Some players played consecutive moves");
 export const invalidUniqueness = invalidGame(
@@ -30,23 +30,23 @@ const validateContinuity = (g: Game): GameValidation => {
   return valid ? v.valid(g) : invalidContinuity(g);
 };
 
-const validateUniqueness = (g: Game): GameValidation => {
+const validateUniqueness: ValidateGame = (g) => {
   const { moves } = g;
   const valid = uniqByPosition(moves).length === moves.length;
   return valid ? v.valid(g) : invalidUniqueness(g);
 };
 
-const validateRanges = (g: Game): GameValidation => {
+const validateRanges: ValidateGame = (g) => {
   const valid = g.moves.every(isMoveInsideRange(g.size));
   return valid ? v.valid(g) : invalidRanges(g);
 };
 
-const validatePlayerCount = (g: Game): GameValidation => {
+const validatePlayerCount: ValidateGame = (g) => {
   const valid = uniqByPlayer(g.moves).length <= 2;
   return valid ? v.valid(g) : invalidPlayerCount(g);
 };
 
-const validateSingleWinner = (g: Game): GameValidation => {
+const validateSingleWinner: ValidateGame = (g) => {
   const ws = winners(g.size, g.moves);
   const valid = ws.length < 2;
   return valid ? v.valid(g) : invalidSingleWinner(g);
@@ -55,7 +55,7 @@ const validateSingleWinner = (g: Game): GameValidation => {
 const uniqByPosition = uniqBy<Move>(([_, position]) => position);
 const uniqByPlayer = uniqBy<Move>(([player]) => player);
 
-export const validateMoves = validateMany([
+export const validateMoves = validations([
   validateContinuity,
   validateUniqueness,
   validateRanges,
