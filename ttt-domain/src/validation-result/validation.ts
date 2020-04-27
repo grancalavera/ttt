@@ -60,3 +60,24 @@ const isEmpty = <T extends unknown, E extends unknown>(
 function pickLatest<T extends unknown>(_: T, latest: T) {
   return latest;
 }
+
+export type ValidateInput<Input> = (
+  input: Input
+) => Validation<Input, InvalidInput<Input>>;
+
+export const validations = <Input extends unknown>(
+  validations: ValidateInput<Input>[]
+) => (input: Input): Validation<Input, InvalidInput<Input>> => {
+  return combine(validations.map((v: ValidateInput<Input>) => v(input)));
+};
+
+export interface InvalidInput<T> {
+  message: string;
+  input: T;
+}
+
+export const invalidInput = (message: string) => <Input extends unknown>(
+  input: Input
+): Validation<Input, InvalidInput<Input>> => {
+  return invalid({ message, input });
+};

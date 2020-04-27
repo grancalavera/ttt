@@ -3,6 +3,6 @@ import { validateMove } from "./validate-move";
 
 describe("root move validator ", () => {
   xit("should never throw", () => {
-    expect(() => validateMove(game, [alice, 0])).not.toThrow();
+    expect(() => validateMove({ game, move: [alice, 0] })).not.toThrow();
   });
 });
