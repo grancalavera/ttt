@@ -1,7 +1,7 @@
 import { validateMoves, validatePlayers, validatePlayersInMoves } from "validation/game";
-import { validateMany } from "./types";
+import { validations } from "./types";
 
-export const validateGame = validateMany([
+export const validateGame = validations([
   validatePlayers,
   validatePlayersInMoves,
   validateMoves,
