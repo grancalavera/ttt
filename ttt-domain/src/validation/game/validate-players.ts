@@ -1,4 +1,4 @@
-import { invalidInput, valid } from "validation-result/validation";
+import { invalidInput, valid } from "validation-result";
 import { GameValidation, ValidateGame } from "validation/types";
 import { Game } from "../../model";
 

@@ -1,6 +1,6 @@
 import { Game, GameState, Player } from "model";
 import { validateGame } from "validation";
-import * as v from "validation-result/validation";
+import * as v from "validation-result/core";
 import { GameValidationError } from "validation/types";
 import { winner } from "./winners";
 

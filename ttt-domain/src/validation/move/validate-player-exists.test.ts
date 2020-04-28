@@ -1,15 +1,13 @@
 import { Player, Players } from "model";
 import { alice, bob, chris, validationLabel } from "test";
-import * as result from "validation-result";
-import { ValidationResult } from "validation-result";
-import { InvalidPlayer } from "validation-result/types";
+import { isValid } from "validation-result";
 import { validatePlayerExists } from "./validate-player-exists";
 
 interface Scenario {
   name: string;
   players: Players;
   player: Player;
-  resolve: (players: Players, player: Player) => ValidationResult<InvalidPlayer>;
+  resolve: any;
 }
 
 const scenarios: Scenario[] = [
@@ -17,19 +15,19 @@ const scenarios: Scenario[] = [
     name: "alice",
     players: [alice, bob],
     player: alice,
-    resolve: result.valid,
+    resolve: false,
   },
   {
     name: "bob",
     players: [alice, bob],
     player: bob,
-    resolve: result.valid,
+    resolve: false,
   },
   {
     name: "chris",
     players: [alice, bob],
     player: chris,
-    resolve: result.invalidPlayer,
+    resolve: false,
   },
 ];
 
@@ -37,7 +35,7 @@ xdescribe.each(scenarios)("validate player in move", (scenario) => {
   const { name, player, players, resolve } = scenario;
   const expected = resolve(players, player);
 
-  it(validationLabel(name, result.isValid(expected)), () => {
+  it(validationLabel(name, isValid(expected)), () => {
     const actual = validatePlayerExists(players, player);
     expect(actual).toEqual(expected);
   });

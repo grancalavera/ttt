@@ -1,6 +1,6 @@
 import { filter, flow, map, uniq } from "lodash/fp";
 import { Game, Move, Player } from "model";
-import { invalidInput, valid } from "validation-result/validation";
+import { invalidInput, valid } from "validation-result";
 import { GameValidation, ValidateGame } from "validation/types";
 
 export const validatePlayersInMoves = (g: Game): GameValidation =>

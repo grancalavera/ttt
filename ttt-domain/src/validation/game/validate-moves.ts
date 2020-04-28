@@ -1,7 +1,7 @@
 import { winners } from "game/winners";
 import { uniqBy } from "lodash/fp";
 import { Game, Move, Player } from "model";
-import { invalidInput, validations, valid } from "validation-result/validation";
+import { invalidInput, validations, valid } from "validation-result";
 import { isMoveInsideRange } from "validation/common";
 import { GameValidation, ValidateGame } from "validation/types";
 
