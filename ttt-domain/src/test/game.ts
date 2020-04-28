@@ -1,7 +1,7 @@
 import { Game } from "model";
-import { alice, bob } from "./players";
+import { combine } from "validation-result";
 import { GameValidation } from "validation/types";
-import * as v from "validation-result/validation";
+import { alice, bob } from "./players";
 
 export const trivialGame: Game = {
   size: 3,
@@ -19,4 +19,4 @@ export interface GameScenario {
 }
 
 export const toCombinedValidation: ToCombinedValidation = (toValidations) => (game) =>
-  v.combine(toValidations.map((f) => f(game)));
+  combine(toValidations.map((f) => f(game)));

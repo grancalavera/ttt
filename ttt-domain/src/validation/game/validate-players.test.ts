@@ -1,5 +1,5 @@
 import { alice, GameScenario, trivialGame as game, validationLabel } from "test";
-import * as v from "validation-result/validation";
+import * as v from "validation-result/core";
 import { validatePlayers, invalidPlayers } from "./validate-players";
 
 const scenarios: GameScenario[] = [
