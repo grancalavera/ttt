@@ -1,7 +1,7 @@
 import { state } from "game/state";
 import { Game, GameState } from "model";
 import { alice, bob, trivialGame as game } from "test";
-import { GameValidationError } from "validate-game/types";
+import { GameValidationError } from "game/validation/types";
 
 type Throws = ToThrow | NoToThrow;
 

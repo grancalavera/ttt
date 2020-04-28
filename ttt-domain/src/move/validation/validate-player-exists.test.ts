@@ -1,5 +1,5 @@
 import { Player, Players } from "model";
-import { alice, bob, chris, validationLabel } from "test";
+import { alice, bob, chris, label } from "test";
 import { isValid } from "validation";
 import { validatePlayerExists } from "./validate-player-exists";
 
@@ -35,7 +35,7 @@ xdescribe.each(scenarios)("validate player in move", (scenario) => {
   const { name, player, players, resolve } = scenario;
   const expected = resolve(players, player);
 
-  it(validationLabel(name, isValid(expected)), () => {
+  it(label(name, isValid(expected)), () => {
     const actual = validatePlayerExists(players, player);
     expect(actual).toEqual(expected);
   });

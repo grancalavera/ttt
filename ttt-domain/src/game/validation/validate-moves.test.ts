@@ -5,21 +5,20 @@ import {
   GameScenario,
   narrowScenarios,
   trivialGame as game,
-  validationLabel,
+  label,
 } from "test";
-import * as v from "validation/core";
+import { isValid, valid, validations } from "validation";
 import {
-  validateMoves,
   invalidContinuity,
-  invalidUniqueness,
-  invalidRanges,
   invalidPlayerCount,
+  invalidRanges,
   invalidSingleWinner,
+  invalidUniqueness,
+  validateMoves,
 } from "./validate-moves";
-import { toCombinedValidation } from "test/game";
 
 const scenarios = narrowScenarios<GameScenario>([
-  { name: "empty moves", game, toValidation: v.valid },
+  { name: "empty moves", game, toValidation: valid },
   {
     name: "no consecutive moves",
     game: {
@@ -36,7 +35,7 @@ const scenarios = narrowScenarios<GameScenario>([
         [alice, 8],
       ],
     },
-    toValidation: v.valid,
+    toValidation: valid,
   },
   {
     name: "consecutive moves",
@@ -126,7 +125,7 @@ const scenarios = narrowScenarios<GameScenario>([
         [alice, -1],
       ],
     },
-    toValidation: toCombinedValidation([
+    toValidation: validations([
       invalidContinuity,
       invalidUniqueness,
       invalidRanges,
@@ -141,7 +140,7 @@ describe.each(scenarios())("validate moves in game", (scenario) => {
 
   const expected = toValidation(game);
 
-  it(validationLabel(name, v.isValid(expected)), () => {
+  it(label(name, isValid(expected)), () => {
     const actual = validateMoves(game);
     expect(actual).toEqual(expected);
   });
