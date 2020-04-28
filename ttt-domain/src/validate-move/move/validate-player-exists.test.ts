@@ -1,6 +1,6 @@
 import { Player, Players } from "model";
 import { alice, bob, chris, validationLabel } from "test";
-import { isValid } from "validation-result";
+import { isValid } from "validation";
 import { validatePlayerExists } from "./validate-player-exists";
 
 interface Scenario {

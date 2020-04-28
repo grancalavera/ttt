@@ -1,6 +1,6 @@
 import { Game } from "model";
-import { combine } from "validation-result";
-import { GameValidation } from "validation/types";
+import { combine } from "validation";
+import { GameValidation } from "validate-game/types";
 import { alice, bob } from "./players";
 
 export const trivialGame: Game = {

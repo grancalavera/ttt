@@ -7,7 +7,7 @@ import {
   trivialGame as game,
   validationLabel,
 } from "test";
-import * as v from "validation-result/core";
+import * as v from "validation/core";
 import {
   validateMoves,
   invalidContinuity,

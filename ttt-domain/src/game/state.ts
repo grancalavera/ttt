@@ -1,7 +1,7 @@
 import { Game, GameState, Player } from "model";
-import { validateGame } from "validation";
-import * as v from "validation-result/core";
-import { GameValidationError } from "validation/types";
+import { validateGame } from "validate-game";
+import * as v from "validation/core";
+import { GameValidationError } from "validate-game/types";
 import { winner } from "./winners";
 
 export const state = (g: Game): GameState => {

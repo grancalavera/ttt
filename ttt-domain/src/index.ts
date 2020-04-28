@@ -1,1 +1,1 @@
-export { validateGame, validateMove } from "validation";
+export { validateGame, validateMove } from "validate-game";

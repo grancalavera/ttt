@@ -1,9 +1,9 @@
 import { winners } from "game/winners";
 import { uniqBy } from "lodash/fp";
 import { Game, Move, Player } from "model";
-import { invalidInput, validations, valid } from "validation-result";
-import { isMoveInsideRange } from "validation/common";
-import { GameValidation, ValidateGame } from "validation/types";
+import { invalidInput, validations, valid } from "validation";
+import { isMoveInsideRange } from "validate-game/common";
+import { GameValidation, ValidateGame } from "validate-game/types";
 
 export const invalidContinuity: ValidateGame = invalidInput(
   "Some players played consecutive moves"
