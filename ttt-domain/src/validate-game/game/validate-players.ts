@@ -1,5 +1,5 @@
-import { invalidInput, valid } from "validation-result";
-import { GameValidation, ValidateGame } from "validation/types";
+import { invalidInput, valid } from "validation";
+import { GameValidation, ValidateGame } from "validate-game/types";
 import { Game } from "../../model";
 
 export const validatePlayers = (g: Game): GameValidation => {

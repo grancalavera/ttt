@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "typecheck": "tsc --noEmit --watch"
   },
   "dependencies": {
     "@types/lodash": "4.14.149",

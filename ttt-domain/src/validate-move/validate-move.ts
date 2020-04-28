@@ -1,15 +1,7 @@
-import { invalidInput, isValid } from "validation-result";
+import { invalidInput } from "validation";
 import { ValidateMove } from "./types";
-import { validateGame } from "./validate-game";
 
 export const validateMove: ValidateMove = (input) => {
-  const { game } = input;
-  const gameValidationResult = validateGame(game);
-
-  if (!isValid(gameValidationResult)) {
-    return moveOnInvalidGame(input);
-  }
-
   throw new Error("validateMove: not fully implemented");
 
   // return result.combine<Invalid>([
