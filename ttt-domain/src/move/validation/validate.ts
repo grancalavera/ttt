@@ -1,7 +1,6 @@
-import { invalidInput } from "validation";
 import { ValidateMove } from "./types";
 
-export const validateMove: ValidateMove = (input) => {
+export const validate: ValidateMove = (input) => {
   throw new Error("validateMove: not fully implemented");
 
   // return result.combine<Invalid>([
@@ -10,7 +9,3 @@ export const validateMove: ValidateMove = (input) => {
   //   validateGameStateIsOpen(g),
   // ]);
 };
-
-export const moveOnInvalidGame: ValidateMove = invalidInput(
-  "Move on invalid game: Cannot play a move on an invalid game"
-);

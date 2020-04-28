@@ -2,8 +2,7 @@ import { winners } from "game/winners";
 import { uniqBy } from "lodash/fp";
 import { Game, Move, Player } from "model";
 import { invalidInput, validations, valid } from "validation";
-import { isMoveInsideRange } from "validate-game/common";
-import { GameValidation, ValidateGame } from "validate-game/types";
+import { GameValidation, ValidateGame } from "game/validation/types";
 
 export const invalidContinuity: ValidateGame = invalidInput(
   "Some players played consecutive moves"
@@ -56,6 +55,7 @@ const validateSingleWinner: ValidateGame = (g) => {
 
 const uniqByPosition = uniqBy<Move>(([_, position]) => position);
 const uniqByPlayer = uniqBy<Move>(([player]) => player);
+const isMoveInsideRange = (size: number) => ([_, p]: Move) => 0 <= p && p < size * size;
 
 export const validateMoves = validations([
   validateContinuity,

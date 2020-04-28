@@ -6,7 +6,7 @@ import {
   GameScenario,
   narrowScenarios,
   trivialGame as game,
-  validationLabel,
+  label,
 } from "test";
 import * as v from "validation/core";
 import {
@@ -62,7 +62,7 @@ describe.each(scenarios())("players in moves validation", (scenario) => {
 
   const expected = toValidation(game);
 
-  it(validationLabel(name, v.isValid(expected)), () => {
+  it(label(name, v.isValid(expected)), () => {
     const actual = validatePlayersInMoves(game);
     expect(actual).toEqual(expected);
   });

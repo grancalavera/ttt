@@ -1,4 +1,4 @@
-import { alice, GameScenario, trivialGame as game, validationLabel } from "test";
+import { alice, GameScenario, trivialGame as game, label } from "test";
 import * as v from "validation/core";
 import { validatePlayers, invalidPlayers } from "./validate-players";
 
@@ -15,7 +15,7 @@ describe.each(scenarios)("validate players in game", (scenario) => {
   const { name, game, toValidation } = scenario;
   const expected = toValidation(game);
 
-  it(validationLabel(name, v.isValid(expected)), () => {
+  it(label(name, v.isValid(expected)), () => {
     const actual = validatePlayers(game);
     expect(actual).toEqual(expected);
   });

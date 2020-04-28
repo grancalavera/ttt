@@ -1,8 +1,8 @@
 import { trivialGame as game } from "test";
-import { validateGame } from "./validate-game";
+import { validate } from "./validate";
 
 describe("root game validator ", () => {
   it("should never throw", () => {
-    expect(() => validateGame(game)).not.toThrow();
+    expect(() => validate(game)).not.toThrow();
   });
 });
