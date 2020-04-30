@@ -1,8 +1,8 @@
 import { isOpen } from "game";
 import { invalidInput, valid } from "validation";
-import { MoveInput, ValidateMove } from "./types";
+import { ValidateMove } from "./types";
 
-export const validateGameState = (input: MoveInput): any => {
+export const validateGameState: ValidateMove = (input) => {
   return isOpen(input.game) ? valid(input) : invalidMoveGameOver(input);
 };
 
