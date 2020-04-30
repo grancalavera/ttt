@@ -1,11 +1,10 @@
-import { ValidateMove } from "./types";
+import { validations } from "validation";
+import { validatePlayer } from "./validate-player";
+import { validateGameState } from "./validate-game-state";
+import { validatePosition } from "./validate-position";
 
-export const validate: ValidateMove = (input) => {
-  throw new Error("validateMove: not fully implemented");
-
-  // return result.combine<Invalid>([
-  //   validatePlayerExistsInGame(g.players, m[0]),
-  //   validatePosition(g, m[1]),
-  //   validateGameStateIsOpen(g),
-  // ]);
-};
+export const validate = validations([
+  validateGameState,
+  validatePlayer,
+  validatePosition,
+]);

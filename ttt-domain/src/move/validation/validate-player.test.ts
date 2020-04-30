@@ -3,8 +3,9 @@ import { MoveScenario } from "test/move";
 import { isValid, valid } from "validation";
 import {
   invalidMovePlayerDoesNotExist,
-  validatePlayerExists,
-} from "./validate-player-exists";
+  validatePlayer,
+  invalidMoveWrongPlayerTurn,
+} from "./validate-player";
 
 const scenarios = narrowScenarios<MoveScenario>([
   {
@@ -17,6 +18,11 @@ const scenarios = narrowScenarios<MoveScenario>([
     input: { game, move: [chris, 0] },
     toValidation: invalidMovePlayerDoesNotExist,
   },
+  {
+    name: "wrong turn",
+    input: { game: { ...game, moves: [[alice, 0]] }, move: [alice, 1] },
+    toValidation: invalidMoveWrongPlayerTurn,
+  },
 ]);
 
 describe.each(scenarios())("validate player in move", (scenario) => {
@@ -24,7 +30,7 @@ describe.each(scenarios())("validate player in move", (scenario) => {
   const expected = toValidation(input);
 
   it(label(name, isValid(expected)), () => {
-    const actual = validatePlayerExists(input);
+    const actual = validatePlayer(input);
     expect(actual).toEqual(expected);
   });
 });
