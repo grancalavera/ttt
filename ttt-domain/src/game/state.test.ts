@@ -1,7 +1,8 @@
 import { state } from "game/state";
-import { Game, GameState } from "model";
-import { alice, bob, trivialGame as game } from "test";
 import { GameValidationError } from "game/validation/types";
+import { Game, GameState } from "model";
+import { alice, game } from "test";
+import { aliceWins, draw } from "test/game";
 
 type Throws = ToThrow | NoToThrow;
 
@@ -32,34 +33,12 @@ const scenarios: Scenario[] = [
   },
   {
     name: "won game",
-    game: {
-      ...game,
-      moves: [
-        [alice, 0],
-        [bob, 1],
-        [alice, 3],
-        [bob, 4],
-        [alice, 6],
-      ],
-    },
+    game: aliceWins,
     expected: notToThrow({ kind: "WonGame", winner: [alice, [0, 3, 6]] }),
   },
   {
     name: "draw game",
-    game: {
-      ...game,
-      moves: [
-        [alice, 0],
-        [bob, 3],
-        [alice, 6],
-        [bob, 4],
-        [alice, 1],
-        [bob, 2],
-        [alice, 5],
-        [bob, 7],
-        [alice, 8],
-      ],
-    },
+    game: draw,
     expected: notToThrow({ kind: "DrawGame" }),
   },
   {

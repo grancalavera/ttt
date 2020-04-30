@@ -1,2 +1,2 @@
 export { validate } from "./validation";
-export { state } from "./state";
+export { state, isOpen } from "./state";

@@ -1,12 +1,4 @@
-import {
-  alice,
-  bob,
-  chris,
-  GameScenario,
-  narrowScenarios,
-  trivialGame as game,
-  label,
-} from "test";
+import { alice, bob, chris, GameScenario, narrowScenarios, game, label } from "test";
 import { isValid, valid, validations } from "validation";
 import {
   invalidContinuity,
@@ -18,10 +10,10 @@ import {
 } from "./validate-moves";
 
 const scenarios = narrowScenarios<GameScenario>([
-  { name: "empty moves", game, toValidation: valid },
+  { name: "empty moves", input: game, toValidation: valid },
   {
     name: "no consecutive moves",
-    game: {
+    input: {
       ...game,
       moves: [
         [alice, 0],
@@ -39,7 +31,7 @@ const scenarios = narrowScenarios<GameScenario>([
   },
   {
     name: "consecutive moves",
-    game: {
+    input: {
       ...game,
       moves: [
         [alice, 0],
@@ -50,7 +42,7 @@ const scenarios = narrowScenarios<GameScenario>([
   },
   {
     name: "consecutive moves",
-    game: {
+    input: {
       ...game,
       moves: [
         [alice, 0],
@@ -64,7 +56,7 @@ const scenarios = narrowScenarios<GameScenario>([
   },
   {
     name: "duplicated moves",
-    game: {
+    input: {
       ...game,
       moves: [
         [alice, 0],
@@ -75,17 +67,17 @@ const scenarios = narrowScenarios<GameScenario>([
   },
   {
     name: "moves below range",
-    game: { ...game, moves: [[alice, -1]] },
+    input: { ...game, moves: [[alice, -1]] },
     toValidation: invalidRanges,
   },
   {
     name: "moves above range",
-    game: { ...game, moves: [[alice, 9]] },
+    input: { ...game, moves: [[alice, 9]] },
     toValidation: invalidRanges,
   },
   {
     name: "more than two players",
-    game: {
+    input: {
       ...game,
       moves: [
         [alice, 0],
@@ -97,7 +89,7 @@ const scenarios = narrowScenarios<GameScenario>([
   },
   {
     name: "multiple winners",
-    game: {
+    input: {
       ...game,
       moves: [
         [alice, 0],
@@ -112,7 +104,7 @@ const scenarios = narrowScenarios<GameScenario>([
   },
   {
     name: "every invalid result",
-    game: {
+    input: {
       ...game,
       moves: [
         [alice, 0],
@@ -136,7 +128,7 @@ const scenarios = narrowScenarios<GameScenario>([
 ]);
 
 describe.each(scenarios())("validate moves in game", (scenario) => {
-  const { name, game, toValidation } = scenario;
+  const { name, input: game, toValidation } = scenario;
 
   const expected = toValidation(game);
 
