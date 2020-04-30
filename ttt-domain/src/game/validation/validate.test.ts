@@ -1,4 +1,4 @@
-import { trivialGame as game } from "test";
+import { game } from "test";
 import { validate } from "./validate";
 
 describe("root game validator ", () => {

@@ -5,7 +5,7 @@ import {
   dave,
   GameScenario,
   narrowScenarios,
-  trivialGame as game,
+  game,
   label,
 } from "test";
 import * as v from "validation/core";
@@ -17,7 +17,7 @@ import {
 const scenarios = narrowScenarios<GameScenario>([
   {
     name: "trivially valid players in moves",
-    game: {
+    input: {
       ...game,
       moves: [
         [alice, 0],
@@ -28,12 +28,12 @@ const scenarios = narrowScenarios<GameScenario>([
   },
   {
     name: "1 invalid unique player in moves",
-    game: { ...game, moves: [[chris, 0]] },
+    input: { ...game, moves: [[chris, 0]] },
     toValidation: invalidPlayersInMoves,
   },
   {
     name: "2 invalid unique player in moves",
-    game: {
+    input: {
       ...game,
       moves: [
         [chris, 0],
@@ -44,7 +44,7 @@ const scenarios = narrowScenarios<GameScenario>([
   },
   {
     name: "2 invalid duplicated players in moves",
-    game: {
+    input: {
       ...game,
       moves: [
         [chris, 0],
@@ -58,7 +58,7 @@ const scenarios = narrowScenarios<GameScenario>([
 ]);
 
 describe.each(scenarios())("players in moves validation", (scenario) => {
-  const { name, game, toValidation } = scenario;
+  const { name, input: game, toValidation } = scenario;
 
   const expected = toValidation(game);
 

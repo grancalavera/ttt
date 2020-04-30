@@ -1,18 +1,18 @@
-import { alice, GameScenario, trivialGame as game, label } from "test";
+import { alice, GameScenario, game, label } from "test";
 import * as v from "validation/core";
 import { validatePlayers, invalidPlayers } from "./validate-players";
 
 const scenarios: GameScenario[] = [
-  { name: "two unique players", game, toValidation: v.valid },
+  { name: "two unique players", input: game, toValidation: v.valid },
   {
     name: "two duplicated players",
-    game: { ...game, players: [alice, alice] },
+    input: { ...game, players: [alice, alice] },
     toValidation: invalidPlayers,
   },
 ];
 
 describe.each(scenarios)("validate players in game", (scenario) => {
-  const { name, game, toValidation } = scenario;
+  const { name, input: game, toValidation } = scenario;
   const expected = toValidation(game);
 
   it(label(name, v.isValid(expected)), () => {

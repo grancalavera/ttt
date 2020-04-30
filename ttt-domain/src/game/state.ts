@@ -26,6 +26,11 @@ export const state = (g: Game): GameState => {
   return { kind: "OpenGame", next: next(g) };
 };
 
+export const isOpen = (game: Game): boolean => {
+  const s = state(game);
+  return s.kind === "OpenGame";
+};
+
 const next = (g: Game): Player => {
   const [p1, p2] = g.players;
   if (g.moves.length === 0) {
