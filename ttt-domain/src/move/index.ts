@@ -1,1 +1,1 @@
-export { validate } from "./validation";
+export { validate, ValidateMove } from "./validation";
