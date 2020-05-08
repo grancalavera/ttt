@@ -1,6 +1,12 @@
 // aggregates have a root object and a graph
 // of dependencies
 
+export interface GameChallenge {
+  id: ID;
+  player: Player;
+  position: Position;
+}
+
 export interface Game {
   players: Players;
   moves: Move[];
