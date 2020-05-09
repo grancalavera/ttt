@@ -1,19 +1,18 @@
 import { ApolloLink, FetchResult, Observable } from "@apollo/client";
-import { SetState } from "common";
+import { useApplication } from "application";
 import { useConfiguration } from "configuration";
 import { decode } from "jsonwebtoken";
-import { useSecurity } from "security/security-context";
 
 export const useRefreshJWT = () => {
   const { refreshJWTEndpoint } = useConfiguration();
-  const { accessToken, setAccessToken } = useSecurity();
-  return refreshJWT(refreshJWTEndpoint, accessToken, setAccessToken);
+  const { accessToken, login } = useApplication();
+  return refreshJWT(refreshJWTEndpoint, accessToken, login);
 };
 
 const refreshJWT = (
   endpoint: URL,
   accessToken: string,
-  setAccessToken: SetState<string>
+  login: (accessToken: string) => void
 ) =>
   new ApolloLink((operation, forward) => {
     // we may not have a token yet, but we want to allow public areas
@@ -24,17 +23,17 @@ const refreshJWT = (
     const isExpired = 1000 * payload.exp < Date.now();
 
     if (isExpired) {
-      return new Observable<FetchResult>(observer => {
+      return new Observable<FetchResult>((observer) => {
         fetch(endpoint.toString(), {
           method: "POST",
-          credentials: "include"
-        }).then(async response => {
+          credentials: "include",
+        }).then(async (response) => {
           const { accessToken } = await response.json();
-          setAccessToken(accessToken);
+          login(accessToken);
           forward(operation).subscribe({
             next: observer.next.bind(observer),
             complete: observer.complete.bind(observer),
-            error: observer.error.bind(observer)
+            error: observer.error.bind(observer),
           });
         });
       });

@@ -2,7 +2,6 @@ import { Alignment, Button, Navbar } from "@blueprintjs/core";
 import { Maybe } from "@grancalavera/ttt-core";
 import { useApplication } from "application";
 import React, { useEffect, useState } from "react";
-import { useSecurity } from "../security/security-context";
 import { WhoAmI } from "./who-am-i";
 
 const copyToClipboard = (o: Maybe<object>) => () => {
@@ -16,8 +15,7 @@ const copyToClipboard = (o: Maybe<object>) => () => {
 };
 
 export const ActionBar: React.FC = () => {
-  const { isAuthenticated, accessToken } = useSecurity();
-  const { token, gameId } = useApplication();
+  const { token, gameId, isAuthenticated, accessToken } = useApplication();
   const [authHeader, setAuthHeader] = useState<Maybe<object>>();
   const [playVars, setPlayVars] = useState<Maybe<object>>();
 
@@ -33,8 +31,8 @@ export const ActionBar: React.FC = () => {
         input: {
           gameId,
           token,
-          position: "A"
-        }
+          position: "A",
+        },
       });
     }
   }, [gameId, token, setPlayVars]);

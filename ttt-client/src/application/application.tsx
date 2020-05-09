@@ -4,11 +4,12 @@ import { Loading, useLoading } from "loader";
 import { MenuRoute } from "menu";
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { useAuthentication, useSecurity } from "security";
+import { useAuthentication } from "security";
+import { useApplication } from "./application-context";
 
 export const Application: React.FC = () => {
   useAuthentication();
-  const { isAuthenticated } = useSecurity();
+  const { isAuthenticated } = useApplication();
 
   const { toggleLoading: toggleLoader } = useLoading();
   toggleLoader(!isAuthenticated);

@@ -1,8 +1,8 @@
 import { ApolloLink } from "@apollo/client";
-import { useSecurity } from "../../security/security-context";
+import { useApplication } from "application";
 
 export const useAuthLink = () => {
-  const { accessToken } = useSecurity();
+  const { accessToken } = useApplication();
   return authLink(accessToken);
 };
 
@@ -14,8 +14,8 @@ const authLink = (accessToken: string) =>
       operation.setContext({
         headers: {
           ...headers,
-          authorization: `bearer ${accessToken}`
-        }
+          authorization: `bearer ${accessToken}`,
+        },
       });
     }
 

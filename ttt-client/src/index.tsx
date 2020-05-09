@@ -5,7 +5,6 @@ import { FatalErrorHandler } from "error";
 import { NetworkProvider } from "network";
 import React from "react";
 import ReactDOM from "react-dom";
-import { SecurityProvider } from "security";
 import "./index.scss";
 
 ReactDOM.render(
@@ -14,13 +13,11 @@ ReactDOM.render(
       graphqlEndpoint={process.env.REACT_APP_GRAPHQL_ENDPOINT}
       refreshJWTEndpoint={process.env.REACT_APP_REFRESH_JWT_ENDPOINT}
     >
-      <SecurityProvider>
+      <ApplicationProvider>
         <NetworkProvider>
-          <ApplicationProvider>
-            <Application />
-          </ApplicationProvider>
+          <Application />
         </NetworkProvider>
-      </SecurityProvider>
+      </ApplicationProvider>
     </ConfigurationProvider>
   </FatalErrorHandler>,
   document.getElementById("root")
