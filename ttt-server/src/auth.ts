@@ -1,5 +1,5 @@
 import { UserEntity } from "entity/user-entity";
-import { Request, Response } from "express";
+import { Response } from "express";
 import { sign, verify } from "jsonwebtoken";
 
 export const REFRESH_TOKEN_COOKIE = "et3";
@@ -10,7 +10,7 @@ export type SecureResolver = <T = void>(
 
 type MakeSecureResolver = (user?: UserEntity) => SecureResolver;
 
-export const mkSecureResolver: MakeSecureResolver = user => runEffect => {
+export const mkSecureResolver: MakeSecureResolver = (user) => (runEffect) => {
   if (user) {
     return runEffect(user);
   } else {
@@ -57,7 +57,9 @@ export const createRefreshToken = (user: UserEntity) => {
 };
 
 export const sendRefreshToken = (res: Response, token: string): void => {
-  res.cookie("et3", token, { httpOnly: true, path: "/refresh_token" });
+  // this path is duplicated in ttt-server/src/server/router.ts
+  // the cookie name should come from configuration
+  res.cookie("et3", token, { httpOnly: true, path: "/refresh-token" });
 };
 
 const decodeToken = (token: string) => {

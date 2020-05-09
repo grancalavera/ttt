@@ -20,9 +20,9 @@ export class UsersDataSource extends DataSource<Context> {
   find = () => UserEntity.find();
 }
 
-export const createUser = async (id?: string) => {
+export const createUser = async () => {
   const user = new UserEntity();
-  user.id = id ?? uuid();
+  user.id = uuid();
   await user.save();
   await user.reload();
   return user;

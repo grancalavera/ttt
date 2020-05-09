@@ -2,22 +2,22 @@ import {
   ApolloClient,
   ApolloProvider,
   from as apolloLinkFrom,
-  InMemoryCache
+  InMemoryCache,
 } from "@apollo/client";
+import { useAnonymousUser, useAuthLink, useHttpLink } from "network/middleware";
 import React, { useMemo } from "react";
-import { useRefreshJWT, useAuthLink, useHttpLink } from "network/middleware";
 
 export const NetworkProvider: React.FC = ({ children }) => {
-  const refreshJWT = useRefreshJWT();
+  const anonymousUser = useAnonymousUser();
   const authLink = useAuthLink();
   const httpLink = useHttpLink();
 
   const client = useMemo(() => {
     return new ApolloClient({
-      link: apolloLinkFrom([refreshJWT, authLink, httpLink]),
-      cache: new InMemoryCache()
+      link: apolloLinkFrom([anonymousUser, authLink, httpLink]),
+      cache: new InMemoryCache(),
     });
-  }, [httpLink, refreshJWT, authLink]);
+  }, [httpLink, anonymousUser, authLink]);
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

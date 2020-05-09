@@ -1,20 +1,18 @@
-import { Router } from "express";
+import { createUser } from "data-sources/users";
+import { response, Router, Response } from "express";
 import { verify } from "jsonwebtoken";
-import {
-  createAccessToken,
-  createRefreshToken,
-  REFRESH_TOKEN_COOKIE,
-  sendRefreshToken,
-} from "../auth";
+import * as auth from "../auth";
 import { UserEntity } from "../entity/user-entity";
+import { User } from "generated/graphql";
 
 export const router = Router();
 
 router.get("/", (_, res) => res.redirect("/graphql"));
 
 // see https://github.com/auth0/express-jwt
-router.post("/refresh_token", async (req, res) => {
-  const token = req.cookies[REFRESH_TOKEN_COOKIE];
+// this path is duplicated in ttt-server/src/auth.ts
+router.post("/refresh-token", async (req, res) => {
+  const token = req.cookies[auth.REFRESH_TOKEN_COOKIE];
 
   try {
     if (!token) {
@@ -33,11 +31,22 @@ router.post("/refresh_token", async (req, res) => {
     }
 
     console.log("sending refreshed tokens...");
-    sendRefreshToken(res, createRefreshToken(user));
-    res.json({ accessToken: createAccessToken(user) });
+    sendRefreshToken(res, user);
+    res.json({ accessToken: auth.createAccessToken(user) });
   } catch (e) {
     console.error(e.message || e);
     res.statusCode = 401;
-    res.json({});
+    res.end();
   }
 });
+
+router.post("/anonymous-user", async (req, res) => {
+  const user = await createUser();
+  sendRefreshToken(res, user);
+  response.json(user);
+});
+
+const sendRefreshToken = (res: Response, user: UserEntity): void => {
+  const refreshToken = auth.createAccessToken(user);
+  auth.sendRefreshToken(res, refreshToken);
+};
