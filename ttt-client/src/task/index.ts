@@ -6,7 +6,7 @@ export {
   isIdle,
   isLoading,
   didFail,
-  didSucceed
+  didSucceed,
 } from "task/task-state";
 
-export { useApolloTask } from "task/use-apollo-task";
+export { mutationResultToTask } from "task/mutation-result-to-task";

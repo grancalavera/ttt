@@ -1,7 +1,8 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
-import { createAccessToken, createRefreshToken, sendRefreshToken } from "auth";
+import { createAccessToken } from "auth";
 import { Context, DataSourceContext } from "context";
 import { UserEntity } from "entity/user-entity";
+import { setRefreshTokenCookie } from "server/router";
 import { v4 as uuid } from "uuid";
 
 export class UsersDataSource extends DataSource<Context> {
@@ -12,15 +13,21 @@ export class UsersDataSource extends DataSource<Context> {
   }
 
   async register() {
-    const user = await createUser();
-    sendRefreshToken(this.context.res, createRefreshToken(user));
-    return { user, accessToken: createAccessToken(user) };
+    const { user, accessToken } = await registerUser();
+    setRefreshTokenCookie(this.context.res, user);
+    return { user, accessToken };
   }
 
   find = () => UserEntity.find();
 }
 
-export const createUser = async () => {
+export const registerUser = async () => {
+  const user = await createUser();
+  const accessToken = createAccessToken(user);
+  return { user, accessToken };
+};
+
+const createUser = async () => {
   const user = new UserEntity();
   user.id = uuid();
   await user.save();

@@ -1,5 +1,4 @@
 import { UserEntity } from "entity/user-entity";
-import { Response } from "express";
 import { sign, verify } from "jsonwebtoken";
 
 export const REFRESH_TOKEN_COOKIE = "et3";
@@ -54,12 +53,6 @@ export const createRefreshToken = (user: UserEntity) => {
       expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || "7d",
     }
   );
-};
-
-export const sendRefreshToken = (res: Response, token: string): void => {
-  // this path is duplicated in ttt-server/src/server/router.ts
-  // the cookie name should come from configuration
-  res.cookie("et3", token, { httpOnly: true, path: "/refresh-token" });
 };
 
 const decodeToken = (token: string) => {

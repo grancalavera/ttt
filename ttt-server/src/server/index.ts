@@ -24,12 +24,6 @@ const schema = makeExecutableSchema({
 });
 
 export const mkServer = async (origin: string) => {
-  const apiBaseUrl = process.env.TTT_API;
-
-  if (!apiBaseUrl) {
-    throw new Error("missing required environment variable TTT_API");
-  }
-
   const expressServer = express();
   expressServer.use(express.json());
   expressServer.use(cors({ origin, credentials: true }));

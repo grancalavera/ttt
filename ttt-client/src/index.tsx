@@ -9,10 +9,7 @@ import "./index.scss";
 
 ReactDOM.render(
   <FatalErrorHandler title="Fatal Error">
-    <ConfigurationProvider
-      graphqlEndpoint={process.env.REACT_APP_GRAPHQL_ENDPOINT}
-      refreshJWTEndpoint={process.env.REACT_APP_REFRESH_JWT_ENDPOINT}
-    >
+    <ConfigurationProvider>
       <ApplicationProvider>
         <NetworkProvider>
           <Application />

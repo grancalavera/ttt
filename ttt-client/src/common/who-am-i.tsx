@@ -1,18 +1,10 @@
-import { useApplication } from "application";
-import React, { useEffect } from "react";
-import { useWhoamiLazyQuery } from "../generated/graphql";
+import React from "react";
+import { useWhoamiQuery } from "../generated/graphql";
 
 export const WhoAmI: React.FC = () => {
-  const { isAuthenticated } = useApplication();
-  const [whoAmI, { data }] = useWhoamiLazyQuery({
+  const result = useWhoamiQuery({
     fetchPolicy: "network-only",
   });
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      whoAmI();
-    }
-  }, [whoAmI, isAuthenticated]);
-
-  return data ? <code>{data.whoami.id} </code> : null;
+  const whoami = result.data?.whoami;
+  return whoami ? <code>{whoami.id} </code> : null;
 };

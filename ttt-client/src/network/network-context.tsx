@@ -2,22 +2,30 @@ import {
   ApolloClient,
   ApolloProvider,
   from as apolloLinkFrom,
+  HttpLink,
   InMemoryCache,
 } from "@apollo/client";
-import { useAnonymousUser, useAuthLink, useHttpLink } from "network/middleware";
+import { useConfiguration } from "configuration";
+import { AnonymousUserLink } from "network/middleware";
 import React, { useMemo } from "react";
 
 export const NetworkProvider: React.FC = ({ children }) => {
-  const anonymousUser = useAnonymousUser();
-  const authLink = useAuthLink();
-  const httpLink = useHttpLink();
+  const { anonymousUserEndpoint, graphqlEndpoint } = useConfiguration();
 
-  const client = useMemo(() => {
-    return new ApolloClient({
-      link: apolloLinkFrom([anonymousUser, authLink, httpLink]),
-      cache: new InMemoryCache(),
-    });
-  }, [httpLink, anonymousUser, authLink]);
+  const client = useMemo(
+    () =>
+      new ApolloClient({
+        link: apolloLinkFrom([
+          new AnonymousUserLink(anonymousUserEndpoint.toString()),
+          new HttpLink({
+            uri: graphqlEndpoint.toString(),
+            credentials: "include",
+          }),
+        ]),
+        cache: new InMemoryCache(),
+      }),
+    [anonymousUserEndpoint, graphqlEndpoint]
+  );
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

@@ -1,63 +1,51 @@
 import React, { useContext } from "react";
 import { failProxy } from "../common/fail-proxy";
+import { Either, left, lefts, right, rights } from "./either";
 
-interface Configuration {
-  readonly graphqlEndpoint: URL;
-  readonly refreshJWTEndpoint: URL;
-}
+const configurationMap = {
+  anonymousUserEndpoint: "REACT_APP_ANONYMOUS_USER_ENDPOINT",
+  graphqlEndpoint: "REACT_APP_GRAPHQL_ENDPOINT",
+};
 
-interface ConfigurationContextProps {
-  graphqlEndpoint: any;
-  refreshJWTEndpoint: any;
-}
+type ConfigurationKey = keyof typeof configurationMap;
+
+type Configuration = Record<ConfigurationKey, URL>;
 
 const ConfigurationContext = React.createContext<Configuration>(
   failProxy("Configuration")
 );
 
-export const ConfigurationProvider: React.FC<ConfigurationContextProps> = ({
-  children,
-  ...configuration
-}) => {
+export const ConfigurationProvider: React.FC = ({ children }) => {
   return (
-    <ConfigurationContext.Provider value={parseConfiguration(configuration)}>
+    <ConfigurationContext.Provider value={parseConfiguration()}>
       {children}
     </ConfigurationContext.Provider>
   );
 };
 
-const parseConfiguration = (props: ConfigurationContextProps): Configuration => {
-  const errors: Error[] = [];
-
-  let graphqlEndpoint!: URL;
-  let refreshJWTEndpoint!: URL;
-
-  try {
-    graphqlEndpoint = parseUrl("graphql endpoint", props.graphqlEndpoint);
-  } catch (e) {
-    errors.push(e);
-  }
-
-  try {
-    refreshJWTEndpoint = parseUrl("refresh jwt endpoint", props.refreshJWTEndpoint);
-  } catch (e) {
-    errors.push(e);
-  }
+const parseConfiguration = (): Configuration => {
+  const entries = Object.entries(configurationMap) as [ConfigurationKey, string][];
+  const parsed = entries.map(parseConfigurationEntry);
+  const errors = lefts(parsed);
 
   if (errors.length > 0) {
     const message = errors.map(({ message }, i) => `[ ${i + 1} ] ${message}`).join(" ");
     throw new Error(`ConfigurationProvider: ${message}`);
-  } else {
-    return { graphqlEndpoint, refreshJWTEndpoint };
   }
+
+  return Object.fromEntries(rights(parsed)) as Configuration;
 };
 
-const parseUrl = (name: string, candidate: any): URL => {
+const parseConfigurationEntry = ([key, source]: [ConfigurationKey, string]): Either<
+  Error,
+  [ConfigurationKey, URL]
+> => {
+  const candidate: any = process.env[source];
   try {
-    return new URL(candidate);
-  } catch (e) {
-    throw new Error(
-      `Failed to construct "${name}" URL, "${candidate}" is not a valid URL.`
+    return right([key, new URL(candidate)]);
+  } catch {
+    return left(
+      new Error(`Failed to construct "${key}" URL, "${candidate}" is not a valid URL.`)
     );
   }
 };
