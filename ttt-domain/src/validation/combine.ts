@@ -10,7 +10,7 @@ export const combineWith = <T extends unknown, E extends unknown>(
 
     if (isInvalid(combined)) {
       if (isInvalid(result)) {
-        return invalid([...combined.errors, ...result.errors]);
+        return invalid([...combined.validationResult, ...result.validationResult]);
       } else {
         return combined;
       }
@@ -29,4 +29,4 @@ export const combine = <T extends unknown, E extends unknown>(
 
 const isEmpty = <T extends unknown, E extends unknown>(
   result: Validation<T, E>
-): boolean => isInvalid(result) && result.errors.length === 0;
+): boolean => isInvalid(result) && result.validationResult.length === 0;

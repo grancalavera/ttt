@@ -3,19 +3,19 @@ export interface Valid<T> {
   data: T;
 }
 
-export interface Invalid<T> {
+export interface Invalid<E> {
   kind: "ValidationInvalid";
-  errors: T[];
+  validationResult: E[];
 }
 
-export type Validation<Data, Error> = Valid<Data> | Invalid<Error>;
+export type Validation<T, E> = Valid<T> | Invalid<E>;
 
 export const valid = <T extends unknown>(data: T): Validation<T, never> => {
   return { kind: "ValidationValid", data };
 };
 
 export const invalid = <E extends unknown>(e: E | E[]): Validation<never, E> => {
-  return { kind: "ValidationInvalid", errors: Array.isArray(e) ? e : [e] };
+  return { kind: "ValidationInvalid", validationResult: Array.isArray(e) ? e : [e] };
 };
 
 export const isValid = <T extends unknown, E extends unknown>(

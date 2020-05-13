@@ -1,7 +1,8 @@
 import { Game, Move } from "model";
 import { InvalidInput, ValidateInput, Validation } from "validation";
 
-export type MoveValidation = Validation<MoveInput, InvalidInput<MoveInput>>;
+export type MoveValidation = Validation<MoveInput, InvalidMove>;
+export type InvalidMove = InvalidInput<MoveInput>;
 
 export interface MoveInput {
   game: Game;

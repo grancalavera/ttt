@@ -1,6 +1,8 @@
 import { combine } from "./combine";
 import { invalid, Validation } from "./core";
 
+export type InputValidation<Input, Result> = Validation<Result, InvalidInput<Input>>;
+
 export type ValidateInput<Input> = (
   input: Input
 ) => Validation<Input, InvalidInput<Input>>;

@@ -1,7 +1,8 @@
 import { Game } from "model";
 import { InvalidInput, ValidateInput, Validation } from "validation";
 
-export type GameValidation = Validation<Game, InvalidInput<Game>>;
+export type GameValidation = Validation<Game, InvalidGame>;
+export type InvalidGame = InvalidInput<Game>;
 
 export type ValidateGame = ValidateInput<Game>;
 
