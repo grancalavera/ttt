@@ -17,9 +17,9 @@ export type AcceptChallenge
 
 // prettier-ignore
 export type Play
-  =  (dependencies: {findGame: FindGame, findPlayer:FindPlayer})
-  => (gameId: GameId, playerId:PlayerId, position:Position)
-  => AsyncResult<Game, PlayError>
+  =  (dependencies: {findGame: FindGame; findPlayer: FindPlayer;})
+  => (gameId: GameId, playerId: PlayerId, position: Position)
+  => AsyncResult<Game, PlayError>;
 
 // Model
 
