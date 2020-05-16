@@ -5,20 +5,20 @@ import { InvalidMove } from "move/validation";
 
 //  prettier-ignore
 export type OpenChallenge
-  =  (dependencies: {findPlayer: FindPlayer})
-  => (playerId: PlayerId,  position: Position)
+  =  (dependencies: {findChallenger: FindChallenger})
+  => (input: {challengerId: ChallengerId,  position: Position})
   => AsyncResult<Challenge, OpenChallengeError>;
 
 // prettier-ignore
 export type AcceptChallenge
   =  (dependencies: {findChallenge: FindChallenge, findOpponent: FindOpponent})
-  => (challengeId: ChallengeId, opponentId: OpponentId, position: Position)
+  => (input: {challengeId: ChallengeId, opponentId: OpponentId, position: Position})
   => AsyncResult<Game, AcceptChallengeError>
 
 // prettier-ignore
-export type Play
+export type PlayMove
   =  (dependencies: {findGame: FindGame; findPlayer: FindPlayer;})
-  => (gameId: GameId, playerId: PlayerId, position: Position)
+  => (input: {gameId: GameId, playerId: PlayerId, position: Position})
   => AsyncResult<Game, PlayError>;
 
 // Model
@@ -55,23 +55,28 @@ export type Players = [Player, Player];
 export type Move = [Player, Position];
 export type Winner = [Player, Position[]];
 
-export type Player = Id;
+export type Challenger = Id;
 export type Opponent = Id;
+export type Player = Id;
 export type Position = number;
 
-export type PlayerId = Id;
-export type ChallengeId = Id;
+export type ChallengerId = Id;
 export type OpponentId = Id;
+export type PlayerId = Id;
+
+export type ChallengeId = Id;
 export type GameId = Id;
+
 type Id = string;
 
-type FindPlayer = Find<PlayerId, Player, PlayerNotFoundError>;
+type FindChallenger = Find<ChallengerId, Challenger, ChallengerNotFoundError>;
 type FindOpponent = Find<OpponentId, Opponent, OpponentNotFoundError>;
 type FindChallenge = Find<ChallengeId, Challenge, ChallengeNotFoundError>;
+type FindPlayer = Find<PlayerId, Player, PlayerNotFoundError>;
 type FindGame = Find<GameId, Game, GameNotFoundError>;
 type Find<TRef, T, E> = (ref: TRef) => AsyncResult<T, E>;
 
-type OpenChallengeError = PlayerNotFoundError;
+export type OpenChallengeError = ChallengerNotFoundError;
 
 type AcceptChallengeError =
   | ChallengeNotFoundError
@@ -83,17 +88,22 @@ type PlayError =
   | PlayerNotFoundError
   | ValidationError<PlayValidationResult>;
 
-type PlayerNotFoundError = { kind: "PlayerNotFoundError"; playerId: PlayerId };
-
 type ChallengeNotFoundError = {
   kind: "ChallengeNotFoundError";
   challengeId: ChallengeId;
+};
+
+type ChallengerNotFoundError = {
+  kind: "ChallengerNotFoundError";
+  challengerId: ChallengerId;
 };
 
 type OpponentNotFoundError = {
   kind: "OpponentNotFoundError";
   opponentId: OpponentId;
 };
+
+type PlayerNotFoundError = { kind: "PlayerNotFoundError"; playerId: PlayerId };
 
 type GameNotFoundError = {
   kind: "GameNotFoundError";
@@ -108,8 +118,8 @@ type ValidationError<T> = {
 type AcceptChallengeValidationResult = InvalidGame[];
 type PlayValidationResult = InvalidMove[];
 
-type Result<T, E> = Ok<T> | Fail<E>;
-type AsyncResult<T, E> = Promise<Result<T, E>>;
+export type Result<T, E> = Ok<T> | Fail<E>;
+export type AsyncResult<T, E> = Promise<Result<T, E>>;
 
-type Ok<T> = { kind: "ResultOk"; value: T };
-type Fail<E> = { kind: "ResultFail"; error: E };
+export type Ok<T> = { kind: "ResultOk"; value: T };
+export type Fail<E> = { kind: "ResultFail"; error: E };
