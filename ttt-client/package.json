@@ -6,6 +6,7 @@
     "@apollo/client": "3.0.0-beta.44",
     "@blueprintjs/core": "3.19.1",
     "@grancalavera/ttt-core": "^0.0.0",
+    "@testing-library/dom": "7.5.6",
     "@testing-library/jest-dom": "4.2.4",
     "@testing-library/react": "9.3.2",
     "@testing-library/react-hooks": "3.2.1",
