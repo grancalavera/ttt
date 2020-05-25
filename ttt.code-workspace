@@ -11,6 +11,9 @@
 			"**/coverage": true,
 			"**/dist": true,
 			"**/node_modules": true
-		}
+		},
+		"cSpell.words": [
+			"pipeable"
+		]
 	}
 }

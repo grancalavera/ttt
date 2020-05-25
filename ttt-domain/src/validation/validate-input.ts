@@ -12,14 +12,11 @@ export interface InvalidInput<T> {
   input: T;
 }
 
-export const invalidInput = (message: string) => <Input extends unknown>(
+export const invalidInput = (message: string) => <Input>(
   input: Input
-): Validation<Input, InvalidInput<Input>> => {
-  return invalid({ message, input });
-};
+): Validation<Input, InvalidInput<Input>> => invalid([{ message, input }]);
 
-export const validations = <Input extends unknown>(
-  validations: ValidateInput<Input>[]
-) => (input: Input): Validation<Input, InvalidInput<Input>> => {
-  return combine(validations.map((v: ValidateInput<Input>) => v(input)));
-};
+export const validations = <Input>(validations: ValidateInput<Input>[]) => (
+  input: Input
+): Validation<Input, InvalidInput<Input>> =>
+  combine(validations.map((v: ValidateInput<Input>) => v(input)));
