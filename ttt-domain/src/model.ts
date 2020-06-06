@@ -1,4 +1,3 @@
-import { InvalidMove } from "move/validation";
 import { Async, AsyncResult, Result } from "result";
 import { InvalidInput, Validation } from "validation";
 
@@ -36,31 +35,31 @@ export type AcceptChallenge
   => (input: AcceptChallengeInput)
   => Async<AcceptChallengeResult>;
 
-export type AcceptChallengeDependencies = {
+export interface AcceptChallengeDependencies {
   findChallenge: FindChallenge;
   findOpponent: FindOpponent;
-};
+}
 
 export type FindChallenge = Find<ChallengeId, Challenge, ChallengeNotFoundError>;
 export type FindOpponent = Find<OpponentId, Opponent, OpponentNotFoundError>;
 
-export type AcceptChallengeInput = {
-  challengeId: ChallengeId;
-  opponentId: OpponentId;
-  position: Position;
-};
+export interface AcceptChallengeInput {
+  readonly challengeId: ChallengeId;
+  readonly opponentId: OpponentId;
+  readonly position: Position;
+}
 
 // prettier-ignore
 export type CreateGame
   =  (input: CreateGameInput)
   => Validation<Game, InvalidInput<CreateGameInput>>;
 
-export type CreateGameInput = {
-  gameId: GameId;
-  challenge: Challenge;
-  opponent: Opponent;
-  position: Position;
-};
+export interface CreateGameInput {
+  readonly gameId: GameId;
+  readonly challenge: Challenge;
+  readonly opponent: Opponent;
+  readonly position: Position;
+}
 
 export type AcceptChallengeResult = Result<Game, AcceptChallengeError>;
 
@@ -96,17 +95,36 @@ export type PlayMove
   => (input: PlayMoveInput)
   => Async<PlayMoveResult>;
 
-export type PlayMoveDependencies = { findGame: FindGame; findPlayer: FindPlayer };
+export interface PlayMoveDependencies {
+  findGame: FindGame;
+  findPlayer: FindPlayer;
+}
 export type FindGame = Find<GameId, Game, GameNotFoundError>;
 export type FindPlayer = Find<PlayerId, Player, PlayerNotFoundError>;
 
-export type PlayMoveInput = { gameId: GameId; playerId: PlayerId; position: Position };
+export interface PlayMoveInput {
+  gameId: GameId;
+  playerId: PlayerId;
+  position: Position;
+}
+
+// prettier-ignore
+export type CreateMove
+  =  (input: CreateMoveInput)
+  => Validation<Move, InvalidInput<CreateMoveInput>>;
+
+export interface CreateMoveInput {
+  readonly game: Game;
+  readonly player: Player;
+  readonly position: Position;
+}
+
 export type PlayMoveResult = Result<Game, PlayMoveError>;
 
 export type PlayMoveError =
   | GameNotFoundError
   | PlayerNotFoundError
-  | PlayMoveValidationError;
+  | CreateMoveValidationError;
 
 class GameNotFoundError {
   readonly kind = "GameNotFoundError";
@@ -118,9 +136,9 @@ class PlayerNotFoundError {
   constructor(readonly playerId: PlayerId) {}
 }
 
-class PlayMoveValidationError {
-  readonly kind = "PlayMoveValidationError";
-  constructor(readonly validationResult: InvalidMove[]) {}
+class CreateMoveValidationError {
+  readonly kind = "CreateMoveValidationError";
+  constructor(readonly validationResult: InvalidInput<CreateMoveInput>[]) {}
 }
 
 // ---------------------------------------------------------------------------------------
@@ -130,41 +148,49 @@ class PlayMoveValidationError {
 // ---------------------------------------------------------------------------------------
 
 export interface Challenge {
-  challengeId: ChallengeId;
-  challenger: Challenger;
-  position: Position;
+  readonly challengeId: ChallengeId;
+  readonly challenger: Challenger;
+  readonly position: Position;
 }
 
 export interface Game {
-  gameId: GameId;
-  players: Players;
-  moves: Move[];
-  size: number;
+  readonly gameId: GameId;
+  readonly players: Players;
+  readonly moves: Move[];
+  readonly size: number;
 }
 
 export type GameState = OpenGame | DrawGame | WonGame;
 
 export interface OpenGame {
-  kind: "OpenGame";
-  next: Player;
+  readonly kind: "OpenGame";
+  readonly next: Player;
 }
 
 export interface WonGame {
-  kind: "WonGame";
-  winner: Winner;
+  readonly kind: "WonGame";
+  readonly winner: Winner;
 }
 
 export interface DrawGame {
-  kind: "DrawGame";
+  readonly kind: "DrawGame";
 }
 
 export type Players = [Player, Player];
 export type Move = [Player, Position];
 export type Winner = [Player, Position[]];
 
-export type Challenger = { challengerId: ChallengerId };
-export type Opponent = { opponentId: OpponentId };
-export type Player = { playerId: PlayerId };
+export interface Challenger {
+  readonly challengerId: ChallengerId;
+}
+
+export interface Opponent {
+  readonly opponentId: OpponentId;
+}
+
+export interface Player {
+  readonly playerId: PlayerId;
+}
 
 export type ChallengerId = Id;
 export type OpponentId = Id;

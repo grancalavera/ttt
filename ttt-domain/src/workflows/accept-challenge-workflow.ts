@@ -19,13 +19,10 @@ export const acceptChallenge: AcceptChallenge = (dependencies) => (input) => asy
     return findOpponentResult;
   }
 
-  const challenge = getSuccess(findChallengeResult);
-  const opponent = getSuccess(findOpponentResult);
-
   const createGameResult = createGame({
     gameId: getUniqueId(),
-    challenge,
-    opponent,
+    challenge: getSuccess(findChallengeResult),
+    opponent: getSuccess(findOpponentResult),
     position,
   });
 
