@@ -2,6 +2,7 @@ import { OpenChallengeInput, OpenChallengeResult } from "model";
 import { Async } from "result";
 import { alice, bob, uniqueIdProducerMock } from "test";
 import { openChallenge } from "./open-challenge";
+import { toChallenger } from "test/players";
 
 interface Scenario {
   name: string;
@@ -21,7 +22,7 @@ const failureWorkflow = openChallenge({
 const successWorkflow = openChallenge({
   findChallenger: (challengerId) => async () => ({
     kind: "Success",
-    value: challengerId,
+    value: { challengerId },
   }),
   ...uniqueIdProducerMock,
 });
@@ -30,30 +31,30 @@ const scenarios: Scenario[] = [
   {
     name: `Challenger ${alice} not found`,
     workflow: failureWorkflow,
-    input: { challengerId: alice, position: 0 },
+    input: { challengerId: alice.playerId, position: 0 },
     expected: {
       kind: "Failure",
-      error: { kind: "ChallengerNotFoundError", challengerId: alice },
+      error: { kind: "ChallengerNotFoundError", challengerId: alice.playerId },
     },
   },
   {
     name: `Challenger ${bob} not found`,
     workflow: failureWorkflow,
-    input: { challengerId: bob, position: 0 },
+    input: { challengerId: bob.playerId, position: 0 },
     expected: {
       kind: "Failure",
-      error: { kind: "ChallengerNotFoundError", challengerId: bob },
+      error: { kind: "ChallengerNotFoundError", challengerId: bob.playerId },
     },
   },
   {
     name: `Challenger ${alice} found`,
     workflow: successWorkflow,
-    input: { challengerId: alice, position: 0 },
+    input: { challengerId: alice.playerId, position: 0 },
     expected: {
       kind: "Success",
       value: {
         challengeId: uniqueIdProducerMock.getUniqueId(),
-        challenger: alice,
+        challenger: toChallenger(alice),
         position: 0,
       },
     },
@@ -61,12 +62,12 @@ const scenarios: Scenario[] = [
   {
     name: `Challenger ${bob} found`,
     workflow: successWorkflow,
-    input: { challengerId: bob, position: 0 },
+    input: { challengerId: bob.playerId, position: 0 },
     expected: {
       kind: "Success",
       value: {
         challengeId: uniqueIdProducerMock.getUniqueId(),
-        challenger: bob,
+        challenger: toChallenger(bob),
         position: 0,
       },
     },
