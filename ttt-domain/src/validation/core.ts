@@ -1,8 +1,12 @@
-import { Either, isLeft, isRight, left, right } from "fp-ts/lib/Either";
+import * as r from "result";
 
-export type Validation<T, E> = Either<E[], T>;
-export const valid = right;
-export const invalid = <E>(e: E[]) => left(e);
+export type Validation<T, E> = r.Result<T, E[]>;
+export type Valid<T> = r.Success<T>;
+export type Invalid<E> = r.Failure<E[]>;
 
-export const isValid = isRight;
-export const isInvalid = isLeft;
+export const valid = r.success;
+export const invalid = <E>(errors: E[]) => r.failure(errors);
+export const isValid = r.isSuccess;
+export const isInvalid = r.isFailure;
+export const getValid = r.getSuccess;
+export const getInvalid = r.getFailure;

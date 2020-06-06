@@ -1,8 +1,11 @@
+import { sequenceT } from "fp-ts/lib/Apply";
+import { Either, getValidation } from "fp-ts/lib/Either";
+import { getSemigroup } from "fp-ts/lib/NonEmptyArray";
+import { GameValidation, ValidateGame } from "game/validation/types";
 import { winners } from "game/winners";
 import { uniqBy } from "lodash/fp";
 import { Game, Move, Player } from "model";
-import { invalidInput, validations, valid } from "validation";
-import { GameValidation, ValidateGame } from "game/validation/types";
+import { invalidInput, InvalidInput, valid, validations } from "validation";
 
 export const invalidContinuity: ValidateGame = invalidInput(
   "Some players played consecutive moves"

@@ -3,8 +3,6 @@ import * as move from "move";
 import { ValidateMove } from "move";
 import { invalidInput, isInvalid } from "validation";
 
-export { state as gameState, validate as validateGame } from "game";
-
 export const validateMove: ValidateMove = (input) =>
   isInvalid(game.validate(input.game))
     ? invalidMoveOnInvalidGame(input)

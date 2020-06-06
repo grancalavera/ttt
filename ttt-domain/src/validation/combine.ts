@@ -1,4 +1,4 @@
-import { invalid, isInvalid, valid, Validation } from "./core";
+import { invalid, isInvalid, valid, Validation, getInvalid, getValid } from "./core";
 
 export const combineWith = <T extends unknown, E extends unknown>(
   merge: (l: T, r: T) => T
@@ -10,7 +10,7 @@ export const combineWith = <T extends unknown, E extends unknown>(
 
     if (isInvalid(combined)) {
       if (isInvalid(result)) {
-        return invalid([...combined.left, ...result.left]);
+        return invalid([...getInvalid(combined), ...getInvalid(result)]);
       } else {
         return combined;
       }
@@ -18,7 +18,7 @@ export const combineWith = <T extends unknown, E extends unknown>(
       if (isInvalid(result)) {
         return result;
       } else {
-        return valid(merge(combined.right, result.right));
+        return valid(merge(getValid(combined), getValid(result)));
       }
     }
   }, invalid([]));
@@ -27,6 +27,5 @@ export const combine = <T extends unknown, E extends unknown>(
   results: Validation<T, E>[]
 ) => combineWith<T, E>((_, latest) => latest)(results);
 
-const isEmpty = <T extends unknown, E extends unknown>(
-  result: Validation<T, E>
-): boolean => isInvalid(result) && result.left.length === 0;
+const isEmpty = <T, E>(result: Validation<T, E>): boolean =>
+  isInvalid(result) && getInvalid(result).length === 0;

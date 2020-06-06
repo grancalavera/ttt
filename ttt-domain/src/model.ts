@@ -1,13 +1,19 @@
 import { InvalidGame } from "game/validation";
 import { InvalidMove } from "move/validation";
-
-// Workflows
+import { AsyncResult, Result, Async } from "result";
+import { getInvalid, Invalid } from "validation";
 
 //  prettier-ignore
 export type OpenChallenge
-  =  (dependencies: {findChallenger: FindChallenger})
+  =  (dependencies: OpenChallengeDependencies)
   => (input: {challengerId: ChallengerId,  position: Position})
-  => AsyncResult<Challenge, OpenChallengeError>;
+  => Async<OpenChallengeResult>
+
+export type OpenChallengeDependencies = {
+  findChallenger: FindChallenger;
+} & UniqueIdProducer;
+export type OpenChallengeInput = { challengerId: ChallengerId; position: Position };
+export type OpenChallengeResult = Result<Challenge, OpenChallengeError>;
 
 // prettier-ignore
 export type AcceptChallenge
@@ -24,8 +30,8 @@ export type PlayMove
 // Model
 
 export interface Challenge {
-  id: Id;
-  player: Player;
+  challengeId: ChallengeId;
+  challenger: Challenger;
   position: Position;
 }
 
@@ -69,57 +75,75 @@ export type GameId = Id;
 
 type Id = string;
 
-type FindChallenger = Find<ChallengerId, Challenger, ChallengerNotFoundError>;
-type FindOpponent = Find<OpponentId, Opponent, OpponentNotFoundError>;
-type FindChallenge = Find<ChallengeId, Challenge, ChallengeNotFoundError>;
-type FindPlayer = Find<PlayerId, Player, PlayerNotFoundError>;
-type FindGame = Find<GameId, Game, GameNotFoundError>;
-type Find<TRef, T, E> = (ref: TRef) => AsyncResult<T, E>;
+export type UniqueIdProducer = { getUniqueId: () => string };
+
+export type FindChallenger = Find<ChallengerId, Challenger, ChallengerNotFoundError>;
+export type FindOpponent = Find<OpponentId, Opponent, OpponentNotFoundError>;
+export type FindChallenge = Find<ChallengeId, Challenge, ChallengeNotFoundError>;
+export type FindPlayer = Find<PlayerId, Player, PlayerNotFoundError>;
+export type FindGame = Find<GameId, Game, GameNotFoundError>;
+export type Find<TRef, T, E> = (ref: TRef) => AsyncResult<T, E>;
 
 export type OpenChallengeError = ChallengerNotFoundError;
 
-type AcceptChallengeError =
+export type AcceptChallengeError =
   | ChallengeNotFoundError
   | OpponentNotFoundError
   | ValidationError<AcceptChallengeValidationResult>;
 
-type PlayError =
+export type PlayError =
   | GameNotFoundError
   | PlayerNotFoundError
   | ValidationError<PlayValidationResult>;
 
-type ChallengeNotFoundError = {
-  kind: "ChallengeNotFoundError";
-  challengeId: ChallengeId;
-};
-
-type ChallengerNotFoundError = {
+export type ChallengerNotFoundError = {
   kind: "ChallengerNotFoundError";
   challengerId: ChallengerId;
 };
 
-type OpponentNotFoundError = {
+export const challengerNotFoundError = (
+  challengerId: ChallengerId
+): ChallengerNotFoundError => ({
+  kind: "ChallengerNotFoundError",
+  challengerId,
+});
+
+export type ChallengeNotFoundError = {
+  kind: "ChallengeNotFoundError";
+  challengeId: ChallengeId;
+};
+
+export const challengeNotFoundError = (
+  challengeId: ChallengeId
+): ChallengeNotFoundError => ({
+  kind: "ChallengeNotFoundError",
+  challengeId,
+});
+
+export type OpponentNotFoundError = {
   kind: "OpponentNotFoundError";
   opponentId: OpponentId;
 };
 
-type PlayerNotFoundError = { kind: "PlayerNotFoundError"; playerId: PlayerId };
+export type PlayerNotFoundError = { kind: "PlayerNotFoundError"; playerId: PlayerId };
 
-type GameNotFoundError = {
+export type GameNotFoundError = {
   kind: "GameNotFoundError";
   gameId: GameId;
 };
 
-type ValidationError<T> = {
+export type ValidationError<E> = {
   kind: "ValidationError";
-  validationResult: T[];
+  validationResults: E[];
 };
 
 type AcceptChallengeValidationResult = InvalidGame[];
 type PlayValidationResult = InvalidMove[];
 
-export type Result<T, E> = Ok<T> | Fail<E>;
-export type AsyncResult<T, E> = Promise<Result<T, E>>;
+export const validationError = <E>(validationResults: E[]): ValidationError<E> => ({
+  kind: "ValidationError",
+  validationResults,
+});
 
-export type Ok<T> = { kind: "ResultOk"; value: T };
-export type Fail<E> = { kind: "ResultFail"; error: E };
+export const invalidToValidationError = <E>(validation: Invalid<E>): ValidationError<E> =>
+  validationError(getInvalid(validation));
