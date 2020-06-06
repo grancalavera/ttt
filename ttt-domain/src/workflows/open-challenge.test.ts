@@ -1,9 +1,7 @@
 import { OpenChallengeInput, OpenChallengeResult } from "model";
 import { Async } from "result";
-import { alice, bob, constantUniqueIdProducer } from "test";
+import { alice, bob, uniqueIdProducerMock } from "test";
 import { openChallenge } from "./open-challenge";
-
-const uniqueIdProducer = constantUniqueIdProducer("fake-unique-id");
 
 interface Scenario {
   name: string;
@@ -17,7 +15,7 @@ const failureWorkflow = openChallenge({
     kind: "Failure",
     error: { kind: "ChallengerNotFoundError", challengerId },
   }),
-  ...uniqueIdProducer,
+  ...uniqueIdProducerMock,
 });
 
 const successWorkflow = openChallenge({
@@ -25,7 +23,7 @@ const successWorkflow = openChallenge({
     kind: "Success",
     value: challengerId,
   }),
-  ...uniqueIdProducer,
+  ...uniqueIdProducerMock,
 });
 
 const scenarios: Scenario[] = [
@@ -54,7 +52,7 @@ const scenarios: Scenario[] = [
     expected: {
       kind: "Success",
       value: {
-        challengeId: uniqueIdProducer.getUniqueId(),
+        challengeId: uniqueIdProducerMock.getUniqueId(),
         challenger: alice,
         position: 0,
       },
@@ -67,7 +65,7 @@ const scenarios: Scenario[] = [
     expected: {
       kind: "Success",
       value: {
-        challengeId: uniqueIdProducer.getUniqueId(),
+        challengeId: uniqueIdProducerMock.getUniqueId(),
         challenger: bob,
         position: 0,
       },

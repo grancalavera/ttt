@@ -1,17 +1,20 @@
 import { ValidateGame } from "game/validation";
 import { Game, Players } from "model";
 import { alice, bob } from "./players";
+import { defaultGameId } from "./unique-id";
 
 const size = 3;
 const players: Players = [alice, bob];
 
 export const game: Game = {
+  gameId: defaultGameId,
   size,
   players,
   moves: [],
 };
 
 export const draw: Game = {
+  gameId: defaultGameId,
   size,
   players,
   moves: [
@@ -28,6 +31,7 @@ export const draw: Game = {
 };
 
 export const aliceWins: Game = {
+  gameId: defaultGameId,
   size,
   players,
   moves: [

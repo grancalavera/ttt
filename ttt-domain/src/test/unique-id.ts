@@ -1,5 +1,5 @@
-import { UniqueIdProducer } from "model";
-
-export const constantUniqueIdProducer = (id: string): UniqueIdProducer => ({
-  getUniqueId: () => id,
-});
+import { UniqueIdProducer, GameId } from "model";
+export const defaultGameId: GameId = "default-game-id";
+export const uniqueIdProducerMock: UniqueIdProducer = {
+  getUniqueId: () => defaultGameId,
+};
