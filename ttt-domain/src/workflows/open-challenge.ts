@@ -1,4 +1,4 @@
-import { OpenChallenge, ChallengerNotFoundFailure } from "model";
+import { OpenChallenge, ChallengerNotFoundError } from "model";
 import { failure, isSuccess, success } from "result";
 
 export const openChallenge: OpenChallenge = (dependencies) => (input) => async () => {
@@ -15,6 +15,6 @@ export const openChallenge: OpenChallenge = (dependencies) => (input) => async (
       position,
     });
   } else {
-    return failure(new ChallengerNotFoundFailure(challengerId));
+    return failure(new ChallengerNotFoundError(challengerId));
   }
 };

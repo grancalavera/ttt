@@ -1,6 +1,6 @@
-import { InvalidGame } from "game/validation";
 import { InvalidMove } from "move/validation";
 import { Async, AsyncResult, Result } from "result";
+import { InvalidInput, Validation } from "validation";
 
 // ---------------------------------------------------------------------------------------
 //
@@ -15,12 +15,11 @@ export type OpenChallenge
   => Async<OpenChallengeResult>
 
 export type OpenChallengeDependencies = { findChallenger: FindChallenger };
-export type FindChallenger = Find<ChallengerId, Challenger, ChallengerNotFoundFailure>;
+export type FindChallenger = Find<ChallengerId, Challenger, ChallengerNotFoundError>;
 export type OpenChallengeInput = { challengerId: ChallengerId; position: Position };
-export type OpenChallengeResult = Result<Challenge, OpenChallengeFailure>;
-export type OpenChallengeFailure = ChallengerNotFoundFailure;
+export type OpenChallengeResult = Result<Challenge, ChallengerNotFoundError>;
 
-export class ChallengerNotFoundFailure {
+export class ChallengerNotFoundError {
   readonly kind = "ChallengerNotFoundError";
   constructor(readonly challengerId: ChallengerId) {}
 }
@@ -42,8 +41,8 @@ export type AcceptChallengeDependencies = {
   findOpponent: FindOpponent;
 };
 
-export type FindChallenge = Find<ChallengeId, Challenge, ChallengeNotFoundFailure>;
-export type FindOpponent = Find<OpponentId, Opponent, OpponentNotFoundFailure>;
+export type FindChallenge = Find<ChallengeId, Challenge, ChallengeNotFoundError>;
+export type FindOpponent = Find<OpponentId, Opponent, OpponentNotFoundError>;
 
 export type AcceptChallengeInput = {
   challengeId: ChallengeId;
@@ -51,26 +50,38 @@ export type AcceptChallengeInput = {
   position: Position;
 };
 
-export type AcceptChallengeResult = AsyncResult<Game, AcceptChallengeError>;
+// prettier-ignore
+export type CreateGame
+  =  (input: CreateGameInput)
+  => Validation<Game, InvalidInput<CreateGameInput>>;
+
+export type CreateGameInput = {
+  gameId: GameId;
+  challenge: Challenge;
+  opponent: Opponent;
+  position: Position;
+};
+
+export type AcceptChallengeResult = Result<Game, AcceptChallengeError>;
 
 export type AcceptChallengeError =
-  | ChallengeNotFoundFailure
-  | OpponentNotFoundFailure
-  | AcceptChallengeValidationFailure;
+  | ChallengeNotFoundError
+  | OpponentNotFoundError
+  | CreateGameValidationError;
 
-export class ChallengeNotFoundFailure {
+export class ChallengeNotFoundError {
   readonly kind = "ChallengeNotFoundError";
   constructor(readonly challengeId: ChallengeId) {}
 }
 
-export class OpponentNotFoundFailure {
+export class OpponentNotFoundError {
   readonly kind = "OpponentNotFoundError";
   constructor(readonly opponentId: OpponentId) {}
 }
 
-export class AcceptChallengeValidationFailure {
-  readonly kind = "AcceptChallengeValidationFailure";
-  constructor(readonly validationResult: InvalidGame[]) {}
+export class CreateGameValidationError {
+  readonly kind = "CreateGameValidationError";
+  constructor(readonly validationResult: InvalidInput<CreateGameInput>[]) {}
 }
 
 // ---------------------------------------------------------------------------------------
@@ -86,29 +97,29 @@ export type PlayMove
   => Async<PlayMoveResult>;
 
 export type PlayMoveDependencies = { findGame: FindGame; findPlayer: FindPlayer };
-export type FindGame = Find<GameId, Game, GameNotFoundFailure>;
-export type FindPlayer = Find<PlayerId, Player, PlayerNotFoundFailure>;
+export type FindGame = Find<GameId, Game, GameNotFoundError>;
+export type FindPlayer = Find<PlayerId, Player, PlayerNotFoundError>;
 
 export type PlayMoveInput = { gameId: GameId; playerId: PlayerId; position: Position };
-export type PlayMoveResult = Result<Game, PlayMoveFailure>;
+export type PlayMoveResult = Result<Game, PlayMoveError>;
 
-export type PlayMoveFailure =
-  | GameNotFoundFailure
-  | PlayerNotFoundFailure
-  | PlayMoveValidationFailure;
+export type PlayMoveError =
+  | GameNotFoundError
+  | PlayerNotFoundError
+  | PlayMoveValidationError;
 
-class GameNotFoundFailure {
-  readonly kind = "GameNotFoundFailure";
+class GameNotFoundError {
+  readonly kind = "GameNotFoundError";
   constructor(readonly gameId: GameId) {}
 }
 
-class PlayerNotFoundFailure {
-  readonly kind = "PlayerNotFoundFailure";
+class PlayerNotFoundError {
+  readonly kind = "PlayerNotFoundError";
   constructor(readonly playerId: PlayerId) {}
 }
 
-class PlayMoveValidationFailure {
-  readonly kind = "PlayMoveValidationFailure";
+class PlayMoveValidationError {
+  readonly kind = "PlayMoveValidationError";
   constructor(readonly validationResult: InvalidMove[]) {}
 }
 
