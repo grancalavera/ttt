@@ -151,9 +151,9 @@ export type Players = [Player, Player];
 export type Move = [Player, Position];
 export type Winner = [Player, Position[]];
 
-export type Challenger = Id;
-export type Opponent = Id;
-export type Player = Id;
+export type Challenger = { challengerId: ChallengerId };
+export type Opponent = { opponentId: OpponentId };
+export type Player = { playerId: PlayerId };
 
 export type ChallengerId = Id;
 export type OpponentId = Id;
