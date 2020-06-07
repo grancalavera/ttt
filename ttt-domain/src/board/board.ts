@@ -28,10 +28,10 @@ export const diagonals = (size: number): Diagonals =>
 
 const transpose = (xs: Matrix): Matrix => {
   const transposed: Matrix = [];
-  xs.forEach((v, i) => {
-    v.forEach((x, j) => {
+  xs.forEach((a, i) => {
+    a.forEach((b, j) => {
       transposed[j] = transposed[j] ?? [];
-      transposed[j][i] = x;
+      transposed[j][i] = b;
     });
   });
   return transposed;

@@ -1,6 +1,6 @@
 import { state } from "game/state";
 import { GameValidationError } from "game/validation/types";
-import { Game, GameState } from "model";
+import { Game, GameStatus } from "model";
 import { alice, game } from "test";
 import { aliceWins, draw } from "test/game";
 
@@ -12,11 +12,11 @@ interface ToThrow {
 
 interface NoToThrow {
   kind: "NoToThrow";
-  value: GameState;
+  value: GameStatus;
 }
 
 const toThrow = (): ToThrow => ({ kind: "ToThrow" });
-const notToThrow = (value: GameState): NoToThrow => ({ kind: "NoToThrow", value });
+const notToThrow = (value: GameStatus): NoToThrow => ({ kind: "NoToThrow", value });
 const throws = (t: Throws): t is ToThrow => t.kind === "ToThrow";
 
 interface Scenario {

@@ -1,6 +1,6 @@
 import { CreateChallengeInput, CreateChallengeResult } from "model";
 import { Async } from "result";
-import { alice, bob, uniqueIdProducerMock } from "test";
+import { alice, bob, challengeUniqueIdProducerMock } from "test";
 import { openChallenge } from "./create-challenge-workflow";
 import { toChallenger } from "test/players";
 
@@ -16,7 +16,7 @@ const failureWorkflow = openChallenge({
     kind: "Failure",
     error: { kind: "ChallengerNotFoundError", challengerId },
   }),
-  ...uniqueIdProducerMock,
+  ...challengeUniqueIdProducerMock,
 });
 
 const successWorkflow = openChallenge({
@@ -24,7 +24,7 @@ const successWorkflow = openChallenge({
     kind: "Success",
     value: { challengerId },
   }),
-  ...uniqueIdProducerMock,
+  ...challengeUniqueIdProducerMock,
 });
 
 const scenarios: Scenario[] = [
@@ -53,7 +53,7 @@ const scenarios: Scenario[] = [
     expected: {
       kind: "Success",
       value: {
-        challengeId: uniqueIdProducerMock.getUniqueId(),
+        challengeId: challengeUniqueIdProducerMock.getUniqueId(),
         challenger: toChallenger(alice),
         position: 0,
       },
@@ -66,7 +66,7 @@ const scenarios: Scenario[] = [
     expected: {
       kind: "Success",
       value: {
-        challengeId: uniqueIdProducerMock.getUniqueId(),
+        challengeId: challengeUniqueIdProducerMock.getUniqueId(),
         challenger: toChallenger(bob),
         position: 0,
       },

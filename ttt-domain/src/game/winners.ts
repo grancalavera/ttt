@@ -1,4 +1,4 @@
-import { columns, diagonals, rows } from "game/board";
+import { columns, diagonals, rows } from "board";
 import { Move, Position, Winner } from "model";
 
 export const winners = (size: number, ms: Move[]): Winner[] =>

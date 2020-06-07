@@ -9,14 +9,13 @@ import { InvalidInput, Validation } from "validation";
 
 //  prettier-ignore
 export type CreateChallenge
-  =  (dependencies: CreateChallengeDependencies & UniqueIdProducer)
+  =  (dependencies: CreateChallengeDependencies)
   => (input: CreateChallengeInput)
   => Async<CreateChallengeResult>
 
-export interface CreateChallengeDependencies {
-  readonly findChallenger: FindChallenger;
-}
-export type FindChallenger = Find<ChallengerId, Challenger, ChallengerNotFoundError>;
+export type CreateChallengeDependencies = {
+  readonly findChallenger: Find<ChallengerId, Challenger, ChallengerNotFoundError>;
+} & UniqueIdProducer;
 
 export interface CreateChallengeInput {
   readonly challengerId: ChallengerId;
@@ -37,17 +36,14 @@ export class ChallengerNotFoundError {
 
 // prettier-ignore
 export type AcceptChallenge
-  =  (dependencies: AcceptChallengeDependencies & UniqueIdProducer)
+  =  (dependencies: AcceptChallengeDependencies)
   => (input: AcceptChallengeInput)
   => Async<AcceptChallengeResult>;
 
-export interface AcceptChallengeDependencies {
-  findChallenge: FindChallenge;
-  findOpponent: FindOpponent;
-}
-
-export type FindChallenge = Find<ChallengeId, Challenge, ChallengeNotFoundError>;
-export type FindOpponent = Find<OpponentId, Opponent, OpponentNotFoundError>;
+export type AcceptChallengeDependencies = {
+  findChallenge: Find<ChallengeId, Challenge, ChallengeNotFoundError>;
+  findOpponent: Find<OpponentId, Opponent, OpponentNotFoundError>;
+} & UniqueIdProducer;
 
 export interface AcceptChallengeInput {
   readonly challengeId: ChallengeId;
@@ -102,11 +98,9 @@ export type PlayMove
   => Async<PlayMoveResult>;
 
 export interface PlayMoveDependencies {
-  findGame: FindGame;
-  findPlayer: FindPlayer;
+  findGame: Find<GameId, Game, GameNotFoundError>;
+  findPlayer: Find<PlayerId, Player, PlayerNotFoundError>;
 }
-export type FindGame = Find<GameId, Game, GameNotFoundError>;
-export type FindPlayer = Find<PlayerId, Player, PlayerNotFoundError>;
 
 export interface PlayMoveInput {
   gameId: GameId;
@@ -132,17 +126,17 @@ export type PlayMoveError =
   | PlayerNotFoundError
   | CreateMoveValidationError;
 
-class GameNotFoundError {
+export class GameNotFoundError {
   readonly kind = "GameNotFoundError";
   constructor(readonly gameId: GameId) {}
 }
 
-class PlayerNotFoundError {
+export class PlayerNotFoundError {
   readonly kind = "PlayerNotFoundError";
   constructor(readonly playerId: PlayerId) {}
 }
 
-class CreateMoveValidationError {
+export class CreateMoveValidationError {
   readonly kind = "CreateMoveValidationError";
   constructor(readonly validationResult: InvalidInput<CreateMoveInput>[]) {}
 }
@@ -159,31 +153,17 @@ export interface Challenge {
   readonly position: Position;
 }
 
-// export type Challenge = OpenChallenge | AcceptedChallenge;
-
-export interface OpenChallenge {
-  readonly kind: "OpenChallenge";
-  readonly challengeId: ChallengeId;
-  readonly challenger: Challenger;
-  readonly position: Position;
-}
-
-export interface AcceptedChallenge {
-  readonly kind: "AcceptedChallenge";
-  readonly challengeId: ChallengeId;
-  readonly gameId: GameId;
-  readonly challenger: Challenger;
-  readonly opponent: Opponent;
-}
-
 export interface Game {
+  // I'll add these two later on
+  // readonly challengeId: ChallengeId;
+  // readonly status: GameStatus;
   readonly gameId: GameId;
   readonly players: Players;
   readonly moves: Move[];
   readonly size: number;
 }
 
-export type GameState = OpenGame | DrawGame | WonGame;
+export type GameStatus = OpenGame | DrawGame | WonGame;
 
 export interface OpenGame {
   readonly kind: "OpenGame";
@@ -230,5 +210,5 @@ type Id = string;
 //
 // ---------------------------------------------------------------------------------------
 
-export type UniqueIdProducer = { getUniqueId: () => string };
+export type UniqueIdProducer = { readonly getUniqueId: () => string };
 export type Find<TRef, T, E> = (ref: TRef) => AsyncResult<T, E>;
