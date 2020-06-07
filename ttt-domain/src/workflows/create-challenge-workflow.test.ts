@@ -1,14 +1,14 @@
-import { OpenChallengeInput, OpenChallengeResult } from "model";
+import { CreateChallengeInput, CreateChallengeResult } from "model";
 import { Async } from "result";
 import { alice, bob, uniqueIdProducerMock } from "test";
-import { openChallenge } from "./open-challenge";
+import { openChallenge } from "./create-challenge-workflow";
 import { toChallenger } from "test/players";
 
 interface Scenario {
   name: string;
-  workflow: (input: OpenChallengeInput) => Async<OpenChallengeResult>;
-  input: OpenChallengeInput;
-  expected: OpenChallengeResult;
+  workflow: (input: CreateChallengeInput) => Async<CreateChallengeResult>;
+  input: CreateChallengeInput;
+  expected: CreateChallengeResult;
 }
 
 const failureWorkflow = openChallenge({

@@ -8,15 +8,21 @@ import { InvalidInput, Validation } from "validation";
 // ---------------------------------------------------------------------------------------
 
 //  prettier-ignore
-export type OpenChallenge
-  =  (dependencies: OpenChallengeDependencies & UniqueIdProducer)
-  => (input: OpenChallengeInput)
-  => Async<OpenChallengeResult>
+export type CreateChallenge
+  =  (dependencies: CreateChallengeDependencies & UniqueIdProducer)
+  => (input: CreateChallengeInput)
+  => Async<CreateChallengeResult>
 
-export type OpenChallengeDependencies = { findChallenger: FindChallenger };
+export interface CreateChallengeDependencies {
+  readonly findChallenger: FindChallenger;
+}
 export type FindChallenger = Find<ChallengerId, Challenger, ChallengerNotFoundError>;
-export type OpenChallengeInput = { challengerId: ChallengerId; position: Position };
-export type OpenChallengeResult = Result<Challenge, ChallengerNotFoundError>;
+
+export interface CreateChallengeInput {
+  readonly challengerId: ChallengerId;
+  readonly position: Position;
+}
+export type CreateChallengeResult = Result<Challenge, ChallengerNotFoundError>;
 
 export class ChallengerNotFoundError {
   readonly kind = "ChallengerNotFoundError";
@@ -151,6 +157,23 @@ export interface Challenge {
   readonly challengeId: ChallengeId;
   readonly challenger: Challenger;
   readonly position: Position;
+}
+
+// export type Challenge = OpenChallenge | AcceptedChallenge;
+
+export interface OpenChallenge {
+  readonly kind: "OpenChallenge";
+  readonly challengeId: ChallengeId;
+  readonly challenger: Challenger;
+  readonly position: Position;
+}
+
+export interface AcceptedChallenge {
+  readonly kind: "AcceptedChallenge";
+  readonly challengeId: ChallengeId;
+  readonly gameId: GameId;
+  readonly challenger: Challenger;
+  readonly opponent: Opponent;
 }
 
 export interface Game {

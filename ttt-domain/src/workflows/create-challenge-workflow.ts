@@ -1,7 +1,7 @@
-import { OpenChallenge, ChallengerNotFoundError } from "model";
+import { CreateChallenge, ChallengerNotFoundError } from "model";
 import { failure, isSuccess, success } from "result";
 
-export const openChallenge: OpenChallenge = (dependencies) => (input) => async () => {
+export const openChallenge: CreateChallenge = (dependencies) => (input) => async () => {
   const { findChallenger, getUniqueId } = dependencies;
   const { challengerId, position } = input;
 
