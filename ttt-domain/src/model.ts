@@ -1,5 +1,5 @@
 import { Async, AsyncResult, Result } from "result";
-import { InvalidInput, Validation } from "validation";
+import { InvalidInput, Validation, ValidateInput } from "validation";
 
 // ---------------------------------------------------------------------------------------
 //
@@ -50,11 +50,6 @@ export interface AcceptChallengeInput {
   readonly opponentId: OpponentId;
   readonly position: Position;
 }
-
-// prettier-ignore
-export type CreateGame
-  =  (input: CreateGameInput)
-  => Validation<Game, InvalidInput<CreateGameInput>>;
 
 export interface CreateGameInput {
   readonly gameId: GameId;
@@ -138,7 +133,7 @@ export class PlayerNotFoundError {
 
 export class CreateMoveValidationError {
   readonly kind = "CreateMoveValidationError";
-  constructor(readonly validationResult: InvalidInput<CreateMoveInput>[]) {}
+  constructor(readonly validationResult: InvalidInput<CreateMoveInput>) {}
 }
 
 // ---------------------------------------------------------------------------------------
@@ -186,6 +181,12 @@ export type Winner = [Player, Position[]];
 export interface Challenger {
   readonly challengerId: ChallengerId;
 }
+
+export const challengerToPlayer = (x: Challenger): Player => ({
+  playerId: x.challengerId,
+});
+
+export const opponentToPlayer = (x: Opponent): Player => ({ playerId: x.opponentId });
 
 export interface Opponent {
   readonly opponentId: OpponentId;

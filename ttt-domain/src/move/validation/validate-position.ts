@@ -1,5 +1,5 @@
-import { invalidInput, valid, validations } from "validation";
-import { ValidateMove, MoveInput } from "./types";
+import { valid, validations } from "validation";
+import { invalidMoveInput, MoveInput, ValidateMove } from "./types";
 
 const validateNotPlayed: ValidateMove = (input) => {
   const { moves, position } = moveInput(input);
@@ -15,8 +15,8 @@ const validateMoveInsideRange: ValidateMove = (input) => {
 
 export const validatePosition = validations([validateNotPlayed, validateMoveInsideRange]);
 
-export const invalidMoveAlreadyPlayed = invalidInput("Move has been already played");
-export const invalidMoveOutOfRange = invalidInput("Move out of range");
+export const invalidMoveAlreadyPlayed = invalidMoveInput("Move has been already played");
+export const invalidMoveOutOfRange = invalidMoveInput("Move out of range");
 
 const moveInput = ({ game: { moves, size }, move: [_, position] }: MoveInput) => ({
   moves,

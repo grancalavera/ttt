@@ -1,9 +1,9 @@
+import { invalidGameInput, ValidateGame } from "game/validation/types";
 import { filter, flow, map, uniq } from "lodash/fp";
-import { Game, Move, Player } from "model";
-import { invalidInput, valid } from "validation";
-import { GameValidation, ValidateGame } from "game/validation/types";
+import { Move, Player } from "model";
+import { valid } from "validation";
 
-export const validatePlayersInMoves = (g: Game): GameValidation =>
+export const validatePlayersInMoves: ValidateGame = (g) =>
   flow([
     map(([p]: Move) => p),
     filter((p: Player) => !g.players.includes(p)),
@@ -12,6 +12,6 @@ export const validatePlayersInMoves = (g: Game): GameValidation =>
     (isValid: boolean) => (isValid ? valid(g) : invalidPlayersInMoves(g)),
   ])(g.moves);
 
-export const invalidPlayersInMoves: ValidateGame = invalidInput(
+export const invalidPlayersInMoves = invalidGameInput(
   "Some players in moves do not belong to this game"
 );

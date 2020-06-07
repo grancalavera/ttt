@@ -1,5 +1,5 @@
-import { invalidInput, valid, validations } from "validation";
-import { ValidateMove, MoveInput } from "./types";
+import { valid, validations } from "validation";
+import { invalidMoveInput, MoveInput, ValidateMove } from "./types";
 
 const validatePlayerExistsInGame: ValidateMove = (input) => {
   const { players, player } = moveInput(input);
@@ -20,11 +20,11 @@ export const validatePlayer = validations([
   validatePlayerTurn,
 ]);
 
-export const invalidMovePlayerDoesNotExist: ValidateMove = invalidInput(
+export const invalidMovePlayerDoesNotExist = invalidMoveInput(
   "Player in move does not exist in game"
 );
 
-export const invalidMoveWrongPlayerTurn: ValidateMove = invalidInput(
+export const invalidMoveWrongPlayerTurn = invalidMoveInput(
   "Is not the turn of the player in move"
 );
 

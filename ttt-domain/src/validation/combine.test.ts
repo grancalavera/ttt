@@ -4,8 +4,8 @@ import { invalid, valid, Validation } from "./core";
 
 interface Scenario {
   name: string;
-  results: Validation<string, string>[];
-  expected: Validation<string, string>;
+  results: Validation<string, string[]>[];
+  expected: Validation<string, string[]>;
 }
 
 const scenarios = narrowScenarios<Scenario>([

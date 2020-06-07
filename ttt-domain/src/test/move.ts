@@ -1,7 +1,7 @@
-import { MoveInput, ValidateMove } from "move/validation";
+import { MoveInput } from "move/validation";
 
 export interface MoveScenario {
   name: string;
   input: MoveInput;
-  toValidation: ValidateMove;
+  toValidation: any;
 }
