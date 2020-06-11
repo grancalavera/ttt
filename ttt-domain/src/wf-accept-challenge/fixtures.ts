@@ -8,11 +8,18 @@ export const alicesChallenge: Challenge = {
   position: 0,
 };
 
-export const aliceAcceptsHerOwnChallenge: CreateGameInput = {
+export const aliceAcceptsHerOwnChallengeWithTheSamePosition: CreateGameInput = {
   challenge: alicesChallenge,
   gameId: defaultGameId,
   opponent: toOpponent(alice),
   position: 0,
+};
+
+export const aliceAcceptsHerOwnChallengeWithOtherPosition: CreateGameInput = {
+  challenge: alicesChallenge,
+  gameId: defaultGameId,
+  opponent: toOpponent(alice),
+  position: 1,
 };
 
 export const bobAcceptsAlicesChalengeWithHerSamePosition: CreateGameInput = {

@@ -1,13 +1,9 @@
-import { CreateGameInput, Position, SmartConstructor } from "model";
-import { invalidInput, valid, InvalidInput } from "validation";
+import { CreateGameInput, Position } from "model";
+import { invalidInput, InvalidInput, Validation } from "validation";
 
-type CreatePositions = SmartConstructor<
-  CreateGameInput,
-  [Position, Position],
-  InvalidInput<CreateGameInput>
->;
-
-export const createPositions: CreatePositions = (input) => {
+export const createPositions = (
+  input: CreateGameInput
+): Validation<Position[], InvalidInput<CreateGameInput>> => {
   throw new Error("createPositions not implemented");
 };
 

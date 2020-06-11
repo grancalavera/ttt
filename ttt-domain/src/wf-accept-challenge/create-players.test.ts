@@ -4,7 +4,8 @@ import { bob } from "test/players";
 import { InvalidInput, valid, Validation } from "validation";
 import { createPlayers, invalidPlayers } from "./create-players";
 import {
-  aliceAcceptsHerOwnChallenge,
+  aliceAcceptsHerOwnChallengeWithOtherPosition,
+  aliceAcceptsHerOwnChallengeWithTheSamePosition,
   bobAcceptsAlicesChalengeWithHerSamePosition,
   bobAcceptsAlicesChalengeWithHisOwnPosition,
 } from "./fixtures";
@@ -17,9 +18,14 @@ interface Scenario {
 
 const scenarios: Scenario[] = [
   {
-    name: "alice accepts her own challenge",
-    input: aliceAcceptsHerOwnChallenge,
-    expected: invalidPlayers(aliceAcceptsHerOwnChallenge),
+    name: "alice accepts her own challenge with the same position",
+    input: aliceAcceptsHerOwnChallengeWithTheSamePosition,
+    expected: invalidPlayers(aliceAcceptsHerOwnChallengeWithTheSamePosition),
+  },
+  {
+    name: "alice accepts her own challenge with other position",
+    input: aliceAcceptsHerOwnChallengeWithOtherPosition,
+    expected: invalidPlayers(aliceAcceptsHerOwnChallengeWithOtherPosition),
   },
   {
     name: "bob accepts alice's challenge with her same position",
