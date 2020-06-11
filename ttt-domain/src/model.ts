@@ -182,13 +182,14 @@ export interface Challenger {
   readonly challengerId: ChallengerId;
 }
 
-export const challengerToPlayer = (x: Challenger): Player => ({
-  playerId: x.challengerId,
+export const challengerToPlayer = ({ challengerId }: Challenger): Player => ({
+  playerId: challengerId,
 });
-
-export const opponentToPlayer = (x: Opponent): Player => ({ playerId: x.opponentId });
-
+export const opponentToPlayer = ({ opponentId }: Opponent): Player => ({
+  playerId: opponentId,
+});
 export const arePlayersTheSame = ([p1, p2]: Players) => p1.playerId === p2.playerId;
+export const arePositionsTheSame = ([pos1, pos2]: [Position, Position]) => pos1 === pos2;
 
 export interface Opponent {
   readonly opponentId: OpponentId;

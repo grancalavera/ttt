@@ -1,8 +1,6 @@
-import { CreateGameInput, Players } from "model";
-import { alice } from "test";
-import { bob } from "test/players";
+import { CreateGameInput, Position } from "model";
 import { InvalidInput, valid, Validation } from "validation";
-import { createPlayers, invalidPlayers } from "./create-players";
+import { createPositions, invalidPositions } from "./create-positions";
 import {
   aliceAcceptsHerOwnChallengeWithOtherPosition,
   aliceAcceptsHerOwnChallengeWithTheSamePosition,
@@ -13,36 +11,36 @@ import {
 interface Scenario {
   name: string;
   input: CreateGameInput;
-  expected: Validation<Players, InvalidInput<CreateGameInput>>;
+  expected: Validation<[Position, Position], InvalidInput<CreateGameInput>>;
 }
 
 const scenarios: Scenario[] = [
   {
     name: "alice accepts her own challenge with the same position",
     input: aliceAcceptsHerOwnChallengeWithTheSamePosition,
-    expected: invalidPlayers(aliceAcceptsHerOwnChallengeWithTheSamePosition),
+    expected: invalidPositions(aliceAcceptsHerOwnChallengeWithTheSamePosition),
   },
   {
     name: "alice accepts her own challenge with other position",
     input: aliceAcceptsHerOwnChallengeWithOtherPosition,
-    expected: invalidPlayers(aliceAcceptsHerOwnChallengeWithOtherPosition),
+    expected: valid([0, 1]),
   },
   {
     name: "bob accepts alice's challenge with her same position",
     input: bobAcceptsAlicesChalengeWithHerSamePosition,
-    expected: valid([alice, bob]),
+    expected: invalidPositions(bobAcceptsAlicesChalengeWithHerSamePosition),
   },
   {
     name: "bob accepts alice's challenge with his own position",
     input: bobAcceptsAlicesChalengeWithHisOwnPosition,
-    expected: valid([alice, bob]),
+    expected: valid([0, 1]),
   },
 ];
 
-describe.each(scenarios)("accept challenge: create players", (scenario) => {
+describe.each(scenarios)("accept challenge: create moves", (scenario) => {
   const { name, input, expected } = scenario;
   it(name, () => {
-    const actual = createPlayers(input);
+    const actual = createPositions(input);
     expect(actual).toEqual(expected);
   });
 });

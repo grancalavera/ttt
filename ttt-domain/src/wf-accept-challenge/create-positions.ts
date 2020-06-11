@@ -1,10 +1,16 @@
-import { CreateGameInput, Position } from "model";
-import { invalidInput, InvalidInput, Validation } from "validation";
+import { CreateGameInput, Position, arePositionsTheSame } from "model";
+import { invalidInput, InvalidInput, Validation, valid } from "validation";
 
 export const createPositions = (
   input: CreateGameInput
-): Validation<Position[], InvalidInput<CreateGameInput>> => {
-  throw new Error("createPositions not implemented");
+): Validation<[Position, Position], InvalidInput<CreateGameInput>> => {
+  const {
+    challenge: { position: challengerPosition },
+    position: opponentPosition,
+  } = input;
+
+  const positions: [Position, Position] = [challengerPosition, opponentPosition];
+  return arePositionsTheSame(positions) ? invalidPositions(input) : valid(positions);
 };
 
 export const invalidPositions = invalidInput(
