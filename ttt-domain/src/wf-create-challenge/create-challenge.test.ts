@@ -1,7 +1,7 @@
 import { CreateChallengeInput, CreateChallengeResult } from "model";
 import { Async } from "result";
 import { alice, bob, challengeUniqueIdProducerMock } from "test";
-import { openChallenge } from "./create-challenge-workflow";
+import { openChallenge } from "./create-challenge";
 import { toChallenger } from "test/players";
 
 interface Scenario {

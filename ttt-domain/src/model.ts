@@ -1,5 +1,5 @@
 import { Async, AsyncResult, Result } from "result";
-import { InvalidInput, Validation, ValidateInput } from "validation";
+import { InvalidInput, Validation, ValidateInput, Invalid } from "validation";
 
 // ---------------------------------------------------------------------------------------
 //
@@ -187,6 +187,8 @@ export const challengerToPlayer = (x: Challenger): Player => ({
 });
 
 export const opponentToPlayer = (x: Opponent): Player => ({ playerId: x.opponentId });
+
+export const arePlayersTheSame = ([p1, p2]: Players) => p1.playerId === p2.playerId;
 
 export interface Opponent {
   readonly opponentId: OpponentId;
