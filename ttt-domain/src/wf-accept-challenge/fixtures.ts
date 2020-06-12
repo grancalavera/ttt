@@ -1,6 +1,6 @@
 import { Challenge, CreateGameInput } from "model";
-import { alice, defaultChallengeId, defaultGameId } from "test";
-import { toChallenger, toOpponent, bob } from "test/players";
+import { alice, defaultChallengeId } from "test";
+import { bob, toChallenger, toOpponent } from "test/players";
 
 export const alicesChallenge: Challenge = {
   challengeId: defaultChallengeId,
@@ -10,28 +10,24 @@ export const alicesChallenge: Challenge = {
 
 export const aliceAcceptsHerOwnChallengeWithTheSamePosition: CreateGameInput = {
   challenge: alicesChallenge,
-  gameId: defaultGameId,
   opponent: toOpponent(alice),
   opponentPosition: 0,
 };
 
 export const aliceAcceptsHerOwnChallengeWithOtherPosition: CreateGameInput = {
   challenge: alicesChallenge,
-  gameId: defaultGameId,
   opponent: toOpponent(alice),
   opponentPosition: 1,
 };
 
 export const bobAcceptsAlicesChalengeWithHerSamePosition: CreateGameInput = {
   challenge: alicesChallenge,
-  gameId: defaultGameId,
   opponent: toOpponent(bob),
   opponentPosition: 0,
 };
 
 export const bobAcceptsAlicesChalengeWithHisOwnPosition: CreateGameInput = {
   challenge: alicesChallenge,
-  gameId: defaultGameId,
   opponent: toOpponent(bob),
   opponentPosition: 1,
 };
