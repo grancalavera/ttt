@@ -1,12 +1,6 @@
-import {
-  AcceptChallenge,
-  CreateGameValidationError,
-  Game,
-  Challenger,
-  Opponent,
-} from "model";
+import { AcceptChallenge, CreateGameValidationError, Game } from "model";
 import { failure, getFailure, getSuccess, isFailure, success } from "result";
-import { isInvalid, Validation } from "validation";
+import { isInvalid } from "validation";
 import { sequence } from "validation/sequence";
 import { createPlayers } from "./create-players";
 import { createPositions } from "./create-positions";

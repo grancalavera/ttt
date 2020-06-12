@@ -1,8 +1,8 @@
-import { CreateChallengeInput, CreateChallengeResult } from "model";
+import { ChallengerFinder, CreateChallengeInput, CreateChallengeResult } from "model";
 import { Async } from "result";
 import { alice, bob, challengeUniqueIdProducerMock } from "test";
-import { openChallenge } from "./create-challenge";
 import { toChallenger } from "test/players";
+import { openChallenge } from "./create-challenge";
 
 interface Scenario {
   name: string;
@@ -11,19 +11,27 @@ interface Scenario {
   expected: CreateChallengeResult;
 }
 
-const failureWorkflow = openChallenge({
+const challengerNotFound: ChallengerFinder = {
   findChallenger: (challengerId) => async () => ({
     kind: "Failure",
     error: { kind: "ChallengerNotFoundError", challengerId },
   }),
-  ...challengeUniqueIdProducerMock,
-});
+};
 
-const successWorkflow = openChallenge({
+const challengerFound: ChallengerFinder = {
   findChallenger: (challengerId) => async () => ({
     kind: "Success",
     value: { challengerId },
   }),
+};
+
+const failureWorkflow = openChallenge({
+  ...challengerNotFound,
+  ...challengeUniqueIdProducerMock,
+});
+
+const successWorkflow = openChallenge({
+  ...challengerFound,
   ...challengeUniqueIdProducerMock,
 });
 

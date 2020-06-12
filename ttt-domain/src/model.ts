@@ -1,5 +1,5 @@
 import { Async, AsyncResult, Result } from "result";
-import { InvalidInput, Validation, ValidateInput, Invalid } from "validation";
+import { InvalidInput, Validation } from "validation";
 
 // ---------------------------------------------------------------------------------------
 //
@@ -9,13 +9,13 @@ import { InvalidInput, Validation, ValidateInput, Invalid } from "validation";
 
 //  prettier-ignore
 export type CreateChallenge
-  =  (dependencies: CreateChallengeDependencies)
+  =  (dependencies: ChallengerFinder & UniqueIdProducer)
   => (input: CreateChallengeInput)
   => Async<CreateChallengeResult>
 
-export type CreateChallengeDependencies = {
-  readonly findChallenger: Find<ChallengerId, Challenger, ChallengerNotFoundError>;
-} & UniqueIdProducer;
+export interface ChallengerFinder {
+  findChallenger: Find<ChallengerId, Challenger, ChallengerNotFoundError>;
+}
 
 export interface CreateChallengeInput {
   readonly challengerId: ChallengerId;
@@ -36,14 +36,17 @@ export class ChallengerNotFoundError {
 
 // prettier-ignore
 export type AcceptChallenge
-  =  (dependencies: AcceptChallengeDependencies)
+  =  (dependencies: ChallengeFinder & OpponentFinder & UniqueIdProducer)
   => (input: AcceptChallengeInput)
   => Async<AcceptChallengeResult>;
 
-export type AcceptChallengeDependencies = {
+export interface ChallengeFinder {
   findChallenge: Find<ChallengeId, Challenge, ChallengeNotFoundError>;
+}
+
+export interface OpponentFinder {
   findOpponent: Find<OpponentId, Opponent, OpponentNotFoundError>;
-} & UniqueIdProducer;
+}
 
 export interface AcceptChallengeInput {
   readonly challengeId: ChallengeId;
@@ -213,5 +216,7 @@ type Id = string;
 //
 // ---------------------------------------------------------------------------------------
 
-export type UniqueIdProducer = { readonly getUniqueId: () => string };
+export interface UniqueIdProducer {
+  readonly getUniqueId: () => string;
+}
 export type Find<TRef, T, E> = (ref: TRef) => AsyncResult<T, E>;
