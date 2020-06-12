@@ -19,7 +19,7 @@ export type CreateChallengeDependencies = {
 
 export interface CreateChallengeInput {
   readonly challengerId: ChallengerId;
-  readonly position: Position;
+  readonly challengerPosition: Position;
 }
 export type CreateChallengeResult = Result<Challenge, ChallengerNotFoundError>;
 
@@ -48,14 +48,13 @@ export type AcceptChallengeDependencies = {
 export interface AcceptChallengeInput {
   readonly challengeId: ChallengeId;
   readonly opponentId: OpponentId;
-  readonly position: Position;
+  readonly opponentPosition: Position;
 }
 
 export interface CreateGameInput {
-  readonly gameId: GameId;
   readonly challenge: Challenge;
   readonly opponent: Opponent;
-  readonly position: Position;
+  readonly opponentPosition: Position;
 }
 
 export type AcceptChallengeResult = Result<Game, AcceptChallengeError>;

@@ -31,7 +31,7 @@ const scenarios: Scenario[] = [
   {
     name: `Challenger ${alice} not found`,
     workflow: failureWorkflow,
-    input: { challengerId: alice.playerId, position: 0 },
+    input: { challengerId: alice.playerId, challengerPosition: 0 },
     expected: {
       kind: "Failure",
       error: { kind: "ChallengerNotFoundError", challengerId: alice.playerId },
@@ -40,7 +40,7 @@ const scenarios: Scenario[] = [
   {
     name: `Challenger ${bob} not found`,
     workflow: failureWorkflow,
-    input: { challengerId: bob.playerId, position: 0 },
+    input: { challengerId: bob.playerId, challengerPosition: 0 },
     expected: {
       kind: "Failure",
       error: { kind: "ChallengerNotFoundError", challengerId: bob.playerId },
@@ -49,7 +49,7 @@ const scenarios: Scenario[] = [
   {
     name: `Challenger ${alice} found`,
     workflow: successWorkflow,
-    input: { challengerId: alice.playerId, position: 0 },
+    input: { challengerId: alice.playerId, challengerPosition: 0 },
     expected: {
       kind: "Success",
       value: {
@@ -62,7 +62,7 @@ const scenarios: Scenario[] = [
   {
     name: `Challenger ${bob} found`,
     workflow: successWorkflow,
-    input: { challengerId: bob.playerId, position: 0 },
+    input: { challengerId: bob.playerId, challengerPosition: 0 },
     expected: {
       kind: "Success",
       value: {

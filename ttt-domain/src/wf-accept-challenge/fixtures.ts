@@ -12,26 +12,26 @@ export const aliceAcceptsHerOwnChallengeWithTheSamePosition: CreateGameInput = {
   challenge: alicesChallenge,
   gameId: defaultGameId,
   opponent: toOpponent(alice),
-  position: 0,
+  opponentPosition: 0,
 };
 
 export const aliceAcceptsHerOwnChallengeWithOtherPosition: CreateGameInput = {
   challenge: alicesChallenge,
   gameId: defaultGameId,
   opponent: toOpponent(alice),
-  position: 1,
+  opponentPosition: 1,
 };
 
 export const bobAcceptsAlicesChalengeWithHerSamePosition: CreateGameInput = {
   challenge: alicesChallenge,
   gameId: defaultGameId,
   opponent: toOpponent(bob),
-  position: 0,
+  opponentPosition: 0,
 };
 
 export const bobAcceptsAlicesChalengeWithHisOwnPosition: CreateGameInput = {
   challenge: alicesChallenge,
   gameId: defaultGameId,
   opponent: toOpponent(bob),
-  position: 1,
+  opponentPosition: 1,
 };

@@ -3,7 +3,7 @@ import { isFailure, success } from "result";
 
 export const openChallenge: CreateChallenge = (dependencies) => (input) => async () => {
   const { findChallenger, getUniqueId } = dependencies;
-  const { challengerId, position } = input;
+  const { challengerId, challengerPosition: position } = input;
 
   const runFindChallenger = findChallenger(challengerId);
 

@@ -1,11 +1,19 @@
-import { AcceptChallenge, CreateGameValidationError } from "model";
-import { failure, getSuccess, isFailure } from "result";
-import { isInvalid } from "validation";
-import { createGame } from "./create-game";
+import {
+  AcceptChallenge,
+  CreateGameValidationError,
+  Game,
+  Challenger,
+  Opponent,
+} from "model";
+import { failure, getFailure, getSuccess, isFailure, success } from "result";
+import { isInvalid, Validation } from "validation";
+import { sequence } from "validation/sequence";
+import { createPlayers } from "./create-players";
+import { createPositions } from "./create-positions";
 
 export const acceptChallenge: AcceptChallenge = (dependencies) => (input) => async () => {
   const { findChallenge, findOpponent, getUniqueId } = dependencies;
-  const { challengeId, opponentId, position } = input;
+  const { challengeId, opponentId, opponentPosition } = input;
 
   const runFindChallenge = findChallenge(challengeId);
   const runFindOpponent = findOpponent(opponentId);
@@ -20,16 +28,30 @@ export const acceptChallenge: AcceptChallenge = (dependencies) => (input) => asy
     return findOpponentResult;
   }
 
-  const createGameResult = createGame({
-    gameId: getUniqueId(),
-    challenge: getSuccess(findChallengeResult),
-    opponent: getSuccess(findOpponentResult),
-    position,
-  });
+  const challenge = getSuccess(findChallengeResult);
+  const opponent = getSuccess(findOpponentResult);
+  const createGameInput = { challenge, opponent, opponentPosition };
 
-  if (isInvalid(createGameResult)) {
-    return failure(new CreateGameValidationError(createGameResult.error));
+  const validationResults = sequence([
+    createPlayers(createGameInput),
+    createPositions(createGameInput),
+  ]);
+
+  if (isInvalid(validationResults)) {
+    return failure(new CreateGameValidationError(getFailure(validationResults)));
   }
 
-  return createGameResult;
+  const [players, positions] = getSuccess(validationResults);
+
+  const game: Game = {
+    gameId: getUniqueId(),
+    size: 3,
+    players,
+    moves: [
+      [players[0], positions[0]],
+      [players[1], positions[1]],
+    ],
+  };
+
+  return success(game);
 };
