@@ -21,17 +21,17 @@ const scenarios: Scenario[] = [
     expected: invalidPositions(aliceAcceptsHerOwnChallengeWithTheSamePosition),
   },
   {
-    name: "alice accepts her own challenge with other position",
+    name: "alice accepts her own challenge with another position",
     input: aliceAcceptsHerOwnChallengeWithOtherPosition,
     expected: valid([0, 1]),
   },
   {
-    name: "bob accepts alice's challenge with her same position",
+    name: "bob accepts alice's challenge with the same position",
     input: bobAcceptsAlicesChalengeWithHerSamePosition,
     expected: invalidPositions(bobAcceptsAlicesChalengeWithHerSamePosition),
   },
   {
-    name: "bob accepts alice's challenge with his own position",
+    name: "bob accepts alice's challenge with another position",
     input: bobAcceptsAlicesChalengeWithHisOwnPosition,
     expected: valid([0, 1]),
   },

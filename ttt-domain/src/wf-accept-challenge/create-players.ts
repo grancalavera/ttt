@@ -20,3 +20,8 @@ export const createPlayers = (
 };
 
 export const invalidPlayers = invalidInput("Games cannot contain duplicated players");
+
+const x = (input: CreateGameInput): InvalidInput<CreateGameInput> => ({
+  message: "",
+  input,
+});

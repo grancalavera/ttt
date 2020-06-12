@@ -60,7 +60,7 @@ const scenarios = narrowScenarios<Scenario>([
   },
 ]);
 
-describe.each(scenarios())("Open Challenge", (scenario) => {
+describe.each(scenarios())("create challenge: workflow", (scenario) => {
   const { workflow, expected, name, input } = scenario;
   it(name, async () => {
     const runWorkflow = workflow(input);
