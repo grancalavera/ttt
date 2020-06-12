@@ -1,6 +1,6 @@
 import { CreateGameInput, Position } from "model";
 import { InvalidInput, valid, Validation } from "validation";
-import { createPositions, invalidPositions } from "./create-positions";
+import { createPositions, failWithInvalidPositions } from "./create-positions";
 import {
   aliceAcceptsHerOwnChallengeWithOtherPosition,
   aliceAcceptsHerOwnChallengeWithTheSamePosition,
@@ -18,7 +18,7 @@ const scenarios: Scenario[] = [
   {
     name: "alice accepts her own challenge with the same position",
     input: aliceAcceptsHerOwnChallengeWithTheSamePosition,
-    expected: invalidPositions(aliceAcceptsHerOwnChallengeWithTheSamePosition),
+    expected: failWithInvalidPositions(aliceAcceptsHerOwnChallengeWithTheSamePosition),
   },
   {
     name: "alice accepts her own challenge with another position",
@@ -28,7 +28,7 @@ const scenarios: Scenario[] = [
   {
     name: "bob accepts alice's challenge with the same position",
     input: bobAcceptsAlicesChalengeWithHerSamePosition,
-    expected: invalidPositions(bobAcceptsAlicesChalengeWithHerSamePosition),
+    expected: failWithInvalidPositions(bobAcceptsAlicesChalengeWithHerSamePosition),
   },
   {
     name: "bob accepts alice's challenge with another position",

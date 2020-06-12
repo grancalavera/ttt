@@ -1,6 +1,5 @@
-import { Result } from "result";
 import { combine } from "./combine";
-import { invalid, valid, Validation } from "./core";
+import { invalid, Validation } from "./core";
 
 export type InputValidation<Input, Result> = Validation<Result, InvalidInput<Input>>;
 
@@ -13,11 +12,14 @@ export interface InvalidInput<T> {
   input: T;
 }
 
-export const invalidInput = (message: string) => <Input, Output = Input>(
-  input: Input
-): Validation<Output, InvalidInput<Input>> => invalid({ message, input });
+export const invalidInput = (message: string) => <T>(input: T): InvalidInput<T> => ({
+  message,
+  input,
+});
 
-export const validInput: Result<void, never> = valid(undefined);
+export const failWithInvalidInput = <T>(messageFn: (input: T) => InvalidInput<T>) => (
+  input: T
+) => invalid(messageFn(input));
 
 export const validations = <Input>(validations: ValidateInput<Input>[]) => (
   input: Input

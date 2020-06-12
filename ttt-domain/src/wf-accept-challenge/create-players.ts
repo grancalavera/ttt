@@ -5,7 +5,13 @@ import {
   opponentToPlayer,
   Players,
 } from "model";
-import { invalidInput, InvalidInput, valid, Validation } from "validation";
+import {
+  failWithInvalidInput,
+  InvalidInput,
+  invalidInput,
+  valid,
+  Validation,
+} from "validation";
 
 export const createPlayers = (
   input: CreateGameInput
@@ -16,12 +22,8 @@ export const createPlayers = (
   } = input;
 
   const players: Players = [challengerToPlayer(challenger), opponentToPlayer(opponent)];
-  return arePlayersTheSame(players) ? invalidPlayers(input) : valid(players);
+  return arePlayersTheSame(players) ? failWithInvalidPlayers(input) : valid(players);
 };
 
 export const invalidPlayers = invalidInput("Games cannot contain duplicated players");
-
-const x = (input: CreateGameInput): InvalidInput<CreateGameInput> => ({
-  message: "",
-  input,
-});
+export const failWithInvalidPlayers = failWithInvalidInput(invalidPlayers);

@@ -1,5 +1,11 @@
-import { CreateGameInput, Position, arePositionsTheSame } from "model";
-import { invalidInput, InvalidInput, Validation, valid } from "validation";
+import { arePositionsTheSame, CreateGameInput, Position } from "model";
+import {
+  failWithInvalidInput,
+  InvalidInput,
+  invalidInput,
+  valid,
+  Validation,
+} from "validation";
 
 export const createPositions = (
   input: CreateGameInput
@@ -10,9 +16,12 @@ export const createPositions = (
   } = input;
 
   const positions: [Position, Position] = [challengerPosition, opponentPosition];
-  return arePositionsTheSame(positions) ? invalidPositions(input) : valid(positions);
+  return arePositionsTheSame(positions)
+    ? failWithInvalidPositions(input)
+    : valid(positions);
 };
 
 export const invalidPositions = invalidInput(
   "A challenge can not be accepted using a position already played in the challenge"
 );
+export const failWithInvalidPositions = failWithInvalidInput(invalidPositions);
