@@ -1,5 +1,5 @@
 import { Async, AsyncResult, Result } from "result";
-import { InvalidInput, Validation } from "validation";
+import { InvalidInput } from "validation";
 
 // ---------------------------------------------------------------------------------------
 //
@@ -96,7 +96,7 @@ export class CreateGameValidationError {
 
 // prettier-ignore
 export type PlayMove
-  =  (dependencies: GameFinder & OpponentFinder)
+  =  (dependencies: GameFinder & PlayerFinder)
   => PlayMoveWorkflow
 
 export type PlayMoveWorkflow = (input: PlayMoveInput) => Async<PlayMoveResult>;
@@ -118,7 +118,7 @@ export interface PlayMoveInput {
 export interface CreateMoveInput {
   readonly game: Game;
   readonly player: Player;
-  readonly position: Position;
+  readonly playerPosition: Position;
 }
 
 export type PlayMoveResult = Result<Game, PlayMoveError>;
@@ -140,7 +140,7 @@ export class PlayerNotFoundError {
 
 export class CreateMoveValidationError {
   readonly kind = "CreateMoveValidationError";
-  constructor(readonly validationResult: InvalidInput<CreateMoveInput>) {}
+  constructor(readonly validationResult: InvalidInput<CreateMoveInput>[]) {}
 }
 
 // ---------------------------------------------------------------------------------------

@@ -5,9 +5,12 @@ import { sequence } from "validation/sequence";
 import { createPlayers } from "./create-players";
 import { createPositions } from "./create-positions";
 
-export const acceptChallenge: AcceptChallenge = (dependencies) => (input) => async () => {
+export const acceptChallenge: AcceptChallenge = (dependencies) => ({
+  challengeId,
+  opponentId,
+  opponentPosition,
+}) => async () => {
   const { findChallenge, findOpponent, getUniqueId } = dependencies;
-  const { challengeId, opponentId, opponentPosition } = input;
 
   const runFindChallenge = findChallenge(challengeId);
   const runFindOpponent = findOpponent(opponentId);
@@ -33,12 +36,9 @@ export const acceptChallenge: AcceptChallenge = (dependencies) => (input) => asy
 
   const challenge = getSuccess(findChallengeResult);
   const opponent = getSuccess(findOpponentResult);
-  const createGameInput = { challenge, opponent, opponentPosition };
 
-  const validationResults = sequence([
-    createPlayers(createGameInput),
-    createPositions(createGameInput),
-  ]);
+  const input = { challenge, opponent, opponentPosition };
+  const validationResults = sequence([createPlayers(input), createPositions(input)]);
 
   if (isInvalid(validationResults)) {
     return failWithGameValidationError(getFailure(validationResults));
