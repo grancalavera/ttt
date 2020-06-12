@@ -17,7 +17,7 @@ export type CreateChallengeWorkflow = (
 ) => Async<CreateChallengeResult>;
 
 export interface ChallengerFinder {
-  findChallenger: Find<ChallengerId, Challenger, ChallengerNotFoundError>;
+  readonly findChallenger: Find<ChallengerId, Challenger, ChallengerNotFoundError>;
 }
 
 export interface CreateChallengeInput {
@@ -47,11 +47,11 @@ export type AcceptChallengeWorkflow = (
 ) => Async<AcceptChallengeResult>;
 
 export interface ChallengeFinder {
-  findChallenge: Find<ChallengeId, Challenge, ChallengeNotFoundError>;
+  readonly findChallenge: Find<ChallengeId, Challenge, ChallengeNotFoundError>;
 }
 
 export interface OpponentFinder {
-  findOpponent: Find<OpponentId, Opponent, OpponentNotFoundError>;
+  readonly findOpponent: Find<OpponentId, Opponent, OpponentNotFoundError>;
 }
 
 export interface AcceptChallengeInput {
@@ -102,17 +102,17 @@ export type PlayMove
 export type PlayMoveWorkflow = (input: PlayMoveInput) => Async<PlayMoveResult>;
 
 export interface GameFinder {
-  findGame: Find<GameId, Game, GameNotFoundError>;
+  readonly findGame: Find<GameId, Game, GameNotFoundError>;
 }
 
 export interface PlayerFinder {
-  findPlayer: Find<PlayerId, Player, PlayerNotFoundError>;
+  readonly findPlayer: Find<PlayerId, Player, PlayerNotFoundError>;
 }
 
 export interface PlayMoveInput {
-  gameId: GameId;
-  playerId: PlayerId;
-  playerPosition: Position;
+  readonly gameId: GameId;
+  readonly playerId: PlayerId;
+  readonly playerPosition: Position;
 }
 
 export interface CreateMoveInput {
