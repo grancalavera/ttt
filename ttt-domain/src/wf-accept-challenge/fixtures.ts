@@ -1,5 +1,5 @@
-import { Challenge, CreateGameInput } from "model";
-import { alice, defaultChallengeId } from "test";
+import { Challenge, CreateGameInput, Game } from "model";
+import { alice, defaultChallengeId, defaultGameId } from "test";
 import { bob, toChallenger, toOpponent } from "test/players";
 
 export const alicesChallenge: Challenge = {
@@ -30,4 +30,14 @@ export const bobAcceptsAlicesChalengeWithHisOwnPosition: CreateGameInput = {
   challenge: alicesChallenge,
   opponent: toOpponent(bob),
   opponentPosition: 1,
+};
+
+export const aliceChallengesBobGame: Game = {
+  gameId: defaultGameId,
+  players: [alice, bob],
+  moves: [
+    [alice, 0],
+    [bob, 1],
+  ],
+  size: 3,
 };

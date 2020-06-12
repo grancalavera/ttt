@@ -5,15 +5,13 @@ import {
   ChallengeFinder,
   OpponentFinder,
 } from "model";
-import {
-  bob,
-  challengeUniqueIdProducerMock,
-  defaultChallengeId,
-  narrowScenarios,
-} from "test";
+import { success } from "result";
+import { bob, defaultChallengeId, gameUniqueIdProducerMock, narrowScenarios } from "test";
 import { alice, toOpponent } from "test/players";
-import { acceptChallenge } from "./accept-challenge";
-import { alicesChallenge } from "./fixtures";
+import { acceptChallenge, failWithGameValidationError } from "./accept-challenge";
+import { invalidPlayers } from "./create-players";
+import { invalidPositions } from "./create-positions";
+import { aliceChallengesBobGame, alicesChallenge } from "./fixtures";
 
 interface Scenario {
   name: string;
@@ -57,7 +55,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...neverFindChallenge,
       ...alwaysFindBobAsOpponent,
-      ...challengeUniqueIdProducerMock,
+      ...gameUniqueIdProducerMock,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -74,7 +72,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
       ...neverFindOpponent,
-      ...challengeUniqueIdProducerMock,
+      ...gameUniqueIdProducerMock,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -91,7 +89,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...neverFindChallenge,
       ...neverFindOpponent,
-      ...challengeUniqueIdProducerMock,
+      ...gameUniqueIdProducerMock,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -108,21 +106,83 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
       ...alwaysFindAliceAsOpponent,
-      ...challengeUniqueIdProducerMock,
+      ...gameUniqueIdProducerMock,
     }),
     input: {
       challengeId: defaultChallengeId,
       opponentId: alice.playerId,
       opponentPosition: 1,
     },
-    expected: {} as any,
+    expected: failWithGameValidationError([
+      invalidPlayers({
+        challenge: alicesChallenge,
+        opponent: toOpponent(alice),
+        opponentPosition: 1,
+      }),
+    ]),
   },
-  { name: "Alice accepts her own challenge and plays the same move" } as any,
-  { name: "Bob accepts Alice's challenge and plays the same move" } as any,
-  { name: "Bob accepts Alice's challenge and plays another move" } as any,
+  {
+    name: "Bob accepts Alice's challenge and plays the same move",
+    workflow: acceptChallenge({
+      ...alwaysFindAlicesChallenge,
+      ...alwaysFindBobAsOpponent,
+      ...gameUniqueIdProducerMock,
+    }),
+    input: {
+      challengeId: defaultChallengeId,
+      opponentId: bob.playerId,
+      opponentPosition: 0,
+    },
+    expected: failWithGameValidationError([
+      invalidPositions({
+        challenge: alicesChallenge,
+        opponent: toOpponent(bob),
+        opponentPosition: 0,
+      }),
+    ]),
+  },
+  {
+    name: "Alice accepts her own challenge and plays the same move",
+    workflow: acceptChallenge({
+      ...alwaysFindAlicesChallenge,
+      ...alwaysFindAliceAsOpponent,
+      ...gameUniqueIdProducerMock,
+    }),
+    input: {
+      challengeId: defaultChallengeId,
+      opponentId: alice.playerId,
+      opponentPosition: 0,
+    },
+    expected: failWithGameValidationError([
+      invalidPlayers({
+        challenge: alicesChallenge,
+        opponent: toOpponent(alice),
+        opponentPosition: 0,
+      }),
+      invalidPositions({
+        challenge: alicesChallenge,
+        opponent: toOpponent(alice),
+        opponentPosition: 0,
+      }),
+    ]),
+  },
+  {
+    name: "Bob accepts Alice's challenge and plays another move",
+    workflow: acceptChallenge({
+      ...alwaysFindAlicesChallenge,
+      ...alwaysFindBobAsOpponent,
+      ...gameUniqueIdProducerMock,
+    }),
+    input: {
+      challengeId: defaultChallengeId,
+      opponentId: bob.playerId,
+      opponentPosition: 1,
+    },
+    expected: success(aliceChallengesBobGame),
+  },
 ]);
 
-describe.each(scenarios(0, 3))("accept challenge: workflow", (scenario) => {
+describe.each(scenarios())("accept challenge: workflow", (scenario) => {
   const { name, workflow, input, expected } = scenario;
   it(name, async () => {
     const runWorkflow = workflow(input);
