@@ -1,9 +1,9 @@
 import { CreateChallenge } from "model";
 import { isFailure, success } from "result";
 
-export const openChallenge: CreateChallenge = (dependencies) => (input) => async () => {
+export const createChallenge: CreateChallenge = (dependencies) => (input) => async () => {
   const { findChallenger, getUniqueId } = dependencies;
-  const { challengerId, challengerPosition: position } = input;
+  const { challengerId, challengerPosition } = input;
 
   const runFindChallenger = findChallenger(challengerId);
 
@@ -15,6 +15,6 @@ export const openChallenge: CreateChallenge = (dependencies) => (input) => async
   return success({
     challengeId: getUniqueId(),
     challenger: challengerResult.value,
-    position,
+    challengerPosition,
   });
 };

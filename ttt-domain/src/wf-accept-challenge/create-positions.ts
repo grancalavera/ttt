@@ -5,7 +5,7 @@ export const createPositions = (
   input: CreateGameInput
 ): Validation<[Position, Position], InvalidInput<CreateGameInput>> => {
   const {
-    challenge: { position: challengerPosition },
+    challenge: { challengerPosition: challengerPosition },
     opponentPosition: opponentPosition,
   } = input;
 

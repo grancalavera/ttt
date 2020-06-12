@@ -9,6 +9,7 @@
     "pubsub",
     "typecheck",
     "typeorm",
-    "whoami"
+    "whoami",
+    "alices"
   ]
 }

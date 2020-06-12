@@ -5,7 +5,7 @@ import { bob, toChallenger, toOpponent } from "test/players";
 export const alicesChallenge: Challenge = {
   challengeId: defaultChallengeId,
   challenger: toChallenger(alice),
-  position: 0,
+  challengerPosition: 0,
 };
 
 export const aliceAcceptsHerOwnChallengeWithTheSamePosition: CreateGameInput = {

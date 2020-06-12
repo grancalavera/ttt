@@ -10,8 +10,11 @@ import { InvalidInput, Validation } from "validation";
 //  prettier-ignore
 export type CreateChallenge
   =  (dependencies: ChallengerFinder & UniqueIdProducer)
-  => (input: CreateChallengeInput)
-  => Async<CreateChallengeResult>
+  => CreateChallengeWorkflow
+
+export type CreateChallengeWorkflow = (
+  input: CreateChallengeInput
+) => Async<CreateChallengeResult>;
 
 export interface ChallengerFinder {
   findChallenger: Find<ChallengerId, Challenger, ChallengerNotFoundError>;
@@ -37,8 +40,11 @@ export class ChallengerNotFoundError {
 // prettier-ignore
 export type AcceptChallenge
   =  (dependencies: ChallengeFinder & OpponentFinder & UniqueIdProducer)
-  => (input: AcceptChallengeInput)
-  => Async<AcceptChallengeResult>;
+  => AcceptChallengeWorkflow
+
+export type AcceptChallengeWorkflow = (
+  input: AcceptChallengeInput
+) => Async<AcceptChallengeResult>;
 
 export interface ChallengeFinder {
   findChallenge: Find<ChallengeId, Challenge, ChallengeNotFoundError>;
@@ -147,7 +153,7 @@ export class CreateMoveValidationError {
 export interface Challenge {
   readonly challengeId: ChallengeId;
   readonly challenger: Challenger;
-  readonly position: Position;
+  readonly challengerPosition: Position;
 }
 
 export interface Game {
