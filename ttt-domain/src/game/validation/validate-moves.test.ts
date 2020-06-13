@@ -1,4 +1,4 @@
-import { alice, bob, chris, GameScenario, narrowScenarios, game, label } from "test";
+import { alice, bob, chris, game, GameScenario, label, narrowScenarios } from "test";
 import { isValid, valid, validations } from "validation";
 import {
   invalidContinuity,
@@ -67,12 +67,24 @@ const scenarios = narrowScenarios<GameScenario>([
   },
   {
     name: "moves below range",
-    input: { ...game, moves: [[alice, -1]] },
+    input: {
+      ...game,
+      moves: [
+        [alice, -1],
+        [bob, 0],
+      ],
+    },
     toValidation: invalidRanges,
   },
   {
     name: "moves above range",
-    input: { ...game, moves: [[alice, 9]] },
+    input: {
+      ...game,
+      moves: [
+        [alice, 9],
+        [bob, 0],
+      ],
+    },
     toValidation: invalidRanges,
   },
   {

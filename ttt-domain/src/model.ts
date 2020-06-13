@@ -159,7 +159,7 @@ export interface Game {
   readonly status: GameStatus;
   readonly gameId: GameId;
   readonly players: Players;
-  readonly moves: Move[];
+  readonly moves: Moves;
   readonly size: number;
 }
 
@@ -181,6 +181,7 @@ export interface DrawGame {
 
 export type Players = [Player, Player];
 export type Move = [Player, Position];
+export type Moves = [Move, Move, ...Move[]];
 export type Winner = [Player, Position[]];
 
 export interface Challenger {
@@ -195,6 +196,12 @@ export const opponentToPlayer = ({ opponentId }: Opponent): Player => ({
 });
 export const arePlayersTheSame = ([p1, p2]: Players) => p1.playerId === p2.playerId;
 export const arePositionsTheSame = ([pos1, pos2]: [Position, Position]) => pos1 === pos2;
+
+export const arePlayersTheSame_c = (compare: Player) => (candidate: Player) =>
+  arePlayersTheSame([compare, candidate]);
+
+export const arePositionsTheSame_c = (compare: Position) => (candidate: Position) =>
+  arePositionsTheSame([compare, candidate]);
 
 export interface Opponent {
   readonly opponentId: OpponentId;

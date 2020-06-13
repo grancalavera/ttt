@@ -39,8 +39,9 @@ const scenarios: Scenario[] = [
 
 describe.each(scenarios)("accept challenge: create moves", (scenario) => {
   const { name, input, expected } = scenario;
+  const actual = createPositions(input);
+
   it(name, () => {
-    const actual = createPositions(input);
     expect(actual).toEqual(expected);
   });
 });

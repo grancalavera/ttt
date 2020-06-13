@@ -1,5 +1,5 @@
 import { narrowScenarios, label, game, alice, bob } from "test";
-import { MoveScenario } from "test/move";
+import { MoveScenario } from "test/delete-me-move";
 import { isValid, valid } from "validation";
 import {
   validatePosition,
@@ -9,15 +9,21 @@ import {
 
 const scenarios = narrowScenarios<MoveScenario>([
   {
-    name: "the first move",
-    input: { game, move: [alice, 0] },
+    name: "the third move",
+    input: { game, move: [alice, 2] },
     toValidation: valid,
   },
   {
     name: "already played move",
     input: {
-      game: { ...game, moves: [[alice, 0]] },
-      move: [bob, 0],
+      game: {
+        ...game,
+        moves: [
+          [alice, 0],
+          [bob, 1],
+        ],
+      },
+      move: [alice, 0],
     },
     toValidation: invalidMoveAlreadyPlayed,
   },

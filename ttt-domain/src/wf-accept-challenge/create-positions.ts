@@ -24,4 +24,5 @@ export const createPositions = (
 export const invalidPositions = invalidInput(
   "A challenge can not be accepted using a position already played in the challenge"
 );
+
 export const failWithInvalidPositions = failWithInvalidInput(invalidPositions);

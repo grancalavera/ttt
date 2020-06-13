@@ -9,7 +9,7 @@ import {
 import { failure, Result, success } from "result";
 import {
   alice,
-  challengeUniqueIdProducerMock,
+  challengeUniqueIdProducer,
   defaultChallengeId,
   narrowScenarios,
 } from "test";
@@ -49,7 +49,7 @@ const scenarios = narrowScenarios<Scenario>([
   {
     name: "create challenge but fail to save it",
     workflow: createChallenge({
-      ...challengeUniqueIdProducerMock,
+      ...challengeUniqueIdProducer,
       ...neverCreateChallenge,
     }),
     input: { challenger: toChallenger(alice), challengerPosition: 0 },
@@ -61,7 +61,7 @@ const scenarios = narrowScenarios<Scenario>([
   {
     name: "create and save challenge",
     workflow: createChallenge({
-      ...challengeUniqueIdProducerMock,
+      ...challengeUniqueIdProducer,
       ...alwaysCreateChallenge,
     }),
     input: { challenger: toChallenger(alice), challengerPosition: 0 },

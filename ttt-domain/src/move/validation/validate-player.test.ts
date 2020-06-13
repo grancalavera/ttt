@@ -1,5 +1,5 @@
-import { alice, chris, game, label, narrowScenarios } from "test";
-import { MoveScenario } from "test/move";
+import { alice, chris, game, label, narrowScenarios, bob } from "test";
+import { MoveScenario } from "test/delete-me-move";
 import { isValid, valid } from "validation";
 import {
   invalidMovePlayerDoesNotExist,
@@ -20,7 +20,16 @@ const scenarios = narrowScenarios<MoveScenario>([
   },
   {
     name: "wrong turn",
-    input: { game: { ...game, moves: [[alice, 0]] }, move: [alice, 1] },
+    input: {
+      game: {
+        ...game,
+        moves: [
+          [alice, 0],
+          [bob, 1],
+        ],
+      },
+      move: [bob, 1],
+    },
     toValidation: invalidMoveWrongPlayerTurn,
   },
 ]);

@@ -28,7 +28,14 @@ const scenarios = narrowScenarios<GameScenario>([
   },
   {
     name: "1 invalid unique player in moves",
-    input: { ...game, moves: [[chris, 0]] },
+    input: {
+      ...game,
+      moves: [
+        [alice, 0],
+        [bob, 1],
+        [chris, 2],
+      ],
+    },
     toValidation: invalidPlayersInMoves,
   },
   {
@@ -36,8 +43,10 @@ const scenarios = narrowScenarios<GameScenario>([
     input: {
       ...game,
       moves: [
-        [chris, 0],
-        [dave, 1],
+        [alice, 0],
+        [bob, 1],
+        [chris, 2],
+        [dave, 3],
       ],
     },
     toValidation: invalidPlayersInMoves,
@@ -59,9 +68,7 @@ const scenarios = narrowScenarios<GameScenario>([
 
 describe.each(scenarios())("players in moves validation", (scenario) => {
   const { name, input: game, toValidation } = scenario;
-
   const expected = toValidation(game);
-
   it(label(name, v.isValid(expected)), () => {
     const actual = validatePlayersInMoves(game);
     expect(actual).toEqual(expected);

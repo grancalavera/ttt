@@ -2,7 +2,7 @@ import { CreateMoveInput, CreateMoveValidationError, PlayMove } from "model";
 import { failure, getFailure, isFailure } from "result";
 import { InvalidInput, isInvalid } from "validation";
 import { sequence } from "validation/sequence";
-import { validateGameStatus } from "./validate-game-status";
+import { validateGameStatusIsOpen } from "./validate-game-status-is-open";
 import { validateIsPlayersTurn } from "./validate-is-players-turn";
 import { validatePlayerExistsInGame } from "./validate-player-exists-in-game";
 import { validatePositionInsideBoard } from "./validate-position-inside-board";
@@ -33,7 +33,7 @@ export const playMove: PlayMove = (dependencies) => ({
   const input: CreateMoveInput = { game, player, playerPosition };
 
   const guard = sequence([
-    validateGameStatus(input),
+    validateGameStatusIsOpen(input),
     validatePlayerExistsInGame(input),
     validateIsPlayersTurn(input),
     validatePositionNotPlayed(input),

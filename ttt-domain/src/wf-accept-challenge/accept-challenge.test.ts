@@ -9,7 +9,7 @@ import {
   GameCreator,
 } from "model";
 import { failure, isSuccess, Result, success } from "result";
-import { bob, defaultChallengeId, gameUniqueIdProducerMock, narrowScenarios } from "test";
+import { bob, defaultChallengeId, gameUniqueIdProducer, narrowScenarios } from "test";
 import { alice, toOpponent } from "test/players";
 import { acceptChallenge, failWithGameValidationError } from "./accept-challenge";
 import { invalidPlayers } from "./create-players";
@@ -59,7 +59,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...neverFindChallenge,
       ...neverCreateGame,
-      ...gameUniqueIdProducerMock,
+      ...gameUniqueIdProducer,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -76,7 +76,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...neverFindChallenge,
       ...neverCreateGame,
-      ...gameUniqueIdProducerMock,
+      ...gameUniqueIdProducer,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -93,7 +93,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
       ...neverCreateGame,
-      ...gameUniqueIdProducerMock,
+      ...gameUniqueIdProducer,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -113,7 +113,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
       ...neverCreateGame,
-      ...gameUniqueIdProducerMock,
+      ...gameUniqueIdProducer,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -133,7 +133,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
       ...neverCreateGame,
-      ...gameUniqueIdProducerMock,
+      ...gameUniqueIdProducer,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -158,7 +158,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
       ...alwaysCreateGame,
-      ...gameUniqueIdProducerMock,
+      ...gameUniqueIdProducer,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -173,7 +173,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
       ...neverCreateGame,
-      ...gameUniqueIdProducerMock,
+      ...gameUniqueIdProducer,
     }),
     input: {
       challengeId: defaultChallengeId,
