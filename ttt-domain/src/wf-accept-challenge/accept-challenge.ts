@@ -10,7 +10,7 @@ export const acceptChallenge: AcceptChallenge = (dependencies) => ({
   opponent,
   opponentPosition,
 }) => async () => {
-  const { findChallenge, getUniqueId } = dependencies;
+  const { findChallenge, getUniqueId, createGame } = dependencies;
 
   const runFindChallenge = findChallenge(challengeId);
 
@@ -51,6 +51,12 @@ export const acceptChallenge: AcceptChallenge = (dependencies) => ({
       [players[1], positions[1]],
     ],
   };
+
+  const runCreateGame = createGame(game);
+  const createGameResult = await runCreateGame();
+  if (isFailure(createGameResult)) {
+    return createGameResult;
+  }
 
   return success(game);
 };

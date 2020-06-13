@@ -88,7 +88,7 @@ describe.each(scenarios())("create challenge: workflow", (scenario) => {
       expect(actual).toEqual(expected);
     });
 
-    it("side effects: create", () => {
+    it("side effects: create challenge", () => {
       expect(spyOnCreateChallenge).toHaveBeenCalledWith(alicesChallenge);
     });
   });

@@ -1,14 +1,14 @@
 import {
+  AcceptChallengeError,
   AcceptChallengeInput,
   AcceptChallengeResult,
   AcceptChallengeWorkflow,
   ChallengeFinder,
-  GameCreator,
   Game,
-  AcceptChallengeError,
   GameCreationFailedError,
+  GameCreator,
 } from "model";
-import { success, Result, failure } from "result";
+import { failure, isSuccess, Result, success } from "result";
 import { bob, defaultChallengeId, gameUniqueIdProducerMock, narrowScenarios } from "test";
 import { alice, toOpponent } from "test/players";
 import { acceptChallenge, failWithGameValidationError } from "./accept-challenge";
@@ -157,7 +157,7 @@ const scenarios = narrowScenarios<Scenario>([
     name: "Bob accepts Alice's challenge and plays another move",
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
-      ...neverCreateGame,
+      ...alwaysCreateGame,
       ...gameUniqueIdProducerMock,
     }),
     input: {
@@ -166,6 +166,24 @@ const scenarios = narrowScenarios<Scenario>([
       opponentPosition: 1,
     },
     expected: success(aliceChallengesBobGame),
+  },
+  {
+    name:
+      "Bob accepts Alice's challenge and plays another move, but game fails to be created",
+    workflow: acceptChallenge({
+      ...alwaysFindAlicesChallenge,
+      ...neverCreateGame,
+      ...gameUniqueIdProducerMock,
+    }),
+    input: {
+      challengeId: defaultChallengeId,
+      opponent: toOpponent(bob),
+      opponentPosition: 1,
+    },
+    expected: {
+      kind: "Failure",
+      error: { kind: "GameCreationFailedError", game: aliceChallengesBobGame },
+    },
   },
 ]);
 
@@ -184,5 +202,35 @@ describe.each(scenarios())("accept challenge: workflow", (scenario) => {
     it("workflow", () => {
       expect(actual).toEqual(expected);
     });
+
+    it("side effects: create game", () => {
+      if (isCreateGameExpected(expected)) {
+        expect(spyOnCreateGame).toHaveBeenNthCalledWith(1, aliceChallengesBobGame);
+      } else {
+        expect(spyOnCreateGame).not.toHaveBeenCalled();
+      }
+    });
   });
 });
+
+const isCreateGameExpected = (expected: Result<Game, AcceptChallengeError>): boolean => {
+  if (isSuccess(expected)) {
+    return true;
+  }
+
+  switch (expected.error.kind) {
+    case "ChallengeNotFoundError": {
+      return false;
+    }
+    case "CreateGameValidationError": {
+      return false;
+    }
+    case "GameCreationFailedError": {
+      return true;
+    }
+    default: {
+      const never: never = expected.error;
+      throw new Error(`unexpected error kind ${never}`);
+    }
+  }
+};
