@@ -9,26 +9,26 @@ import { InvalidInput } from "validation";
 
 //  prettier-ignore
 export type CreateChallenge
-  =  (dependencies: UniqueIdProducer)
+  =  (dependencies: UniqueIdProducer & ChallengeSaver)
   => CreateChallengeWorkflow
 
 export type CreateChallengeWorkflow = (
   input: CreateChallengeInput
 ) => Async<CreateChallengeResult>;
 
-export interface ChallengerFinder {
-  readonly findChallenger: Find<ChallengerId, Challenger, ChallengerNotFoundError>;
+export interface ChallengeSaver {
+  readonly saveChallenge: Save<Challenge, ChallengeNotSavedError>;
 }
 
 export interface CreateChallengeInput {
   readonly challenger: Challenger;
   readonly challengerPosition: Position;
 }
-export type CreateChallengeResult = Result<Challenge, ChallengerNotFoundError>;
+export type CreateChallengeResult = Result<Challenge, ChallengeNotSavedError>;
 
-export class ChallengerNotFoundError {
-  readonly kind = "ChallengerNotFoundError";
-  constructor(readonly challengerId: ChallengerId) {}
+export class ChallengeNotSavedError {
+  readonly kind = "ChallengeNotSavedError";
+  constructor(readonly challenge: Challenge) {}
 }
 
 // ---------------------------------------------------------------------------------------
@@ -224,4 +224,6 @@ type Id = string;
 export interface UniqueIdProducer {
   readonly getUniqueId: () => string;
 }
+
 export type Find<TRef, T, E> = (ref: TRef) => AsyncResult<T, E>;
+export type Save<T, E> = (data: T) => AsyncResult<void, E>;

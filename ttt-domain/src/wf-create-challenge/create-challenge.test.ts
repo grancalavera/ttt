@@ -1,12 +1,28 @@
 import {
-  ChallengerFinder,
+  ChallengeSaver,
   CreateChallengeInput,
   CreateChallengeResult,
   CreateChallengeWorkflow,
+  Challenge,
+  ChallengeNotSavedError,
 } from "model";
-import { alice, challengeUniqueIdProducerMock, narrowScenarios } from "test";
+import {
+  alice,
+  challengeUniqueIdProducerMock,
+  narrowScenarios,
+  defaultChallengeId,
+} from "test";
 import { toChallenger } from "test/players";
 import { createChallenge } from "./create-challenge";
+import { failure, success, Result } from "result";
+
+const spyOnSave = jest.fn();
+
+export const alicesChallenge: Challenge = {
+  challengeId: defaultChallengeId,
+  challenger: toChallenger(alice),
+  challengerPosition: 0,
+};
 
 interface Scenario {
   name: string;
@@ -15,37 +31,64 @@ interface Scenario {
   expected: CreateChallengeResult;
 }
 
-const alwaysFindAliceAsChallenger: ChallengerFinder = {
-  findChallenger: () => async () => ({
-    kind: "Success",
-    value: toChallenger(alice),
-  }),
+const alwaysFailToSaveChallenge: ChallengeSaver = {
+  saveChallenge: (data) => async () => {
+    spyOnSave(data);
+    return failure(new ChallengeNotSavedError(data));
+  },
+};
+
+const alwaysSaveChallenge: ChallengeSaver = {
+  saveChallenge: (data) => async () => {
+    spyOnSave(data);
+    return success(undefined);
+  },
 };
 
 const scenarios = narrowScenarios<Scenario>([
   {
-    name: `Challenger found`,
+    name: "create challenge but fail to save it",
     workflow: createChallenge({
-      ...alwaysFindAliceAsChallenger,
       ...challengeUniqueIdProducerMock,
+      ...alwaysFailToSaveChallenge,
+    }),
+    input: { challenger: toChallenger(alice), challengerPosition: 0 },
+    expected: {
+      kind: "Failure",
+      error: { kind: "ChallengeNotSavedError", challenge: alicesChallenge },
+    },
+  },
+  {
+    name: "create and save challenge",
+    workflow: createChallenge({
+      ...challengeUniqueIdProducerMock,
+      ...alwaysSaveChallenge,
     }),
     input: { challenger: toChallenger(alice), challengerPosition: 0 },
     expected: {
       kind: "Success",
-      value: {
-        challengeId: challengeUniqueIdProducerMock.getUniqueId(),
-        challenger: toChallenger(alice),
-        challengerPosition: 0,
-      },
+      value: alicesChallenge,
     },
   },
 ]);
 
 describe.each(scenarios())("create challenge: workflow", (scenario) => {
   const { workflow, expected, name, input } = scenario;
-  it(name, async () => {
+  let actual: Result<Challenge, ChallengeNotSavedError>;
+
+  beforeEach(async () => {
+    spyOnSave.mockClear();
     const runWorkflow = workflow(input);
-    const actual = await runWorkflow();
-    expect(actual).toEqual(expected);
+    actual = await runWorkflow();
+  });
+
+  describe(name, () => {
+    it("workflow", () => {
+      expect(actual).toEqual(expected);
+    });
+
+    it("side effects: save", () => {
+      expect(spyOnSave).toHaveBeenCalledWith(alicesChallenge);
+    });
   });
 });
