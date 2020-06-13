@@ -9,24 +9,24 @@ import { InvalidInput } from "validation";
 
 //  prettier-ignore
 export type CreateChallenge
-  =  (dependencies: UniqueIdProducer & ChallengeSaver)
+  =  (dependencies: UniqueIdProducer & ChallengeCreator)
   => CreateChallengeWorkflow
 
 export type CreateChallengeWorkflow = (
   input: CreateChallengeInput
 ) => Async<CreateChallengeResult>;
 
-export interface ChallengeSaver {
-  readonly saveChallenge: Save<Challenge, ChallengeNotSavedError>;
+export interface ChallengeCreator {
+  readonly createChallenge: Create<Challenge, ChallengeCreationFailedError>;
 }
 
 export interface CreateChallengeInput {
   readonly challenger: Challenger;
   readonly challengerPosition: Position;
 }
-export type CreateChallengeResult = Result<Challenge, ChallengeNotSavedError>;
+export type CreateChallengeResult = Result<Challenge, ChallengeCreationFailedError>;
 
-export class ChallengeNotSavedError {
+export class ChallengeCreationFailedError {
   readonly kind = "ChallengeNotSavedError";
   constructor(readonly challenge: Challenge) {}
 }
@@ -39,7 +39,7 @@ export class ChallengeNotSavedError {
 
 // prettier-ignore
 export type AcceptChallenge
-  =  (dependencies: ChallengeFinder & UniqueIdProducer)
+  =  (dependencies: UniqueIdProducer&ChallengeFinder & GameCreator)
   => AcceptChallengeWorkflow
 
 export type AcceptChallengeWorkflow = (
@@ -48,6 +48,10 @@ export type AcceptChallengeWorkflow = (
 
 export interface ChallengeFinder {
   readonly findChallenge: Find<ChallengeId, Challenge, ChallengeNotFoundError>;
+}
+
+export interface GameCreator {
+  readonly createGame: Create<Game, GameCreationFailedError>;
 }
 
 export interface AcceptChallengeInput {
@@ -64,7 +68,10 @@ export interface CreateGameInput {
 
 export type AcceptChallengeResult = Result<Game, AcceptChallengeError>;
 
-export type AcceptChallengeError = ChallengeNotFoundError | CreateGameValidationError;
+export type AcceptChallengeError =
+  | ChallengeNotFoundError
+  | CreateGameValidationError
+  | GameCreationFailedError;
 
 export class ChallengeNotFoundError {
   readonly kind = "ChallengeNotFoundError";
@@ -74,6 +81,11 @@ export class ChallengeNotFoundError {
 export class CreateGameValidationError {
   readonly kind = "CreateGameValidationError";
   constructor(readonly validationResult: InvalidInput<CreateGameInput>[]) {}
+}
+
+export class GameCreationFailedError {
+  readonly kind = "GameCreationFailedError";
+  constructor(readonly game: Game) {}
 }
 
 // ---------------------------------------------------------------------------------------
@@ -212,4 +224,5 @@ export interface UniqueIdProducer {
 }
 
 export type Find<TRef, T, E> = (ref: TRef) => AsyncResult<T, E>;
-export type Save<T, E> = (data: T) => AsyncResult<void, E>;
+export type Create<T, E> = (data: T) => AsyncResult<void, E>;
+export type Update<TRef, T, E> = (ref: TRef, data: T) => AsyncResult<void, E>;

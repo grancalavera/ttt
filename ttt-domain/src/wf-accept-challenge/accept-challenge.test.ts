@@ -3,14 +3,20 @@ import {
   AcceptChallengeResult,
   AcceptChallengeWorkflow,
   ChallengeFinder,
+  GameCreator,
+  Game,
+  AcceptChallengeError,
+  GameCreationFailedError,
 } from "model";
-import { success } from "result";
+import { success, Result, failure } from "result";
 import { bob, defaultChallengeId, gameUniqueIdProducerMock, narrowScenarios } from "test";
 import { alice, toOpponent } from "test/players";
 import { acceptChallenge, failWithGameValidationError } from "./accept-challenge";
 import { invalidPlayers } from "./create-players";
 import { invalidPositions } from "./create-positions";
 import { aliceChallengesBobGame, alicesChallenge } from "./fixtures";
+
+const spyOnCreateGame = jest.fn();
 
 interface Scenario {
   name: string;
@@ -33,11 +39,26 @@ const alwaysFindAlicesChallenge: ChallengeFinder = {
   }),
 };
 
+const neverCreateGame: GameCreator = {
+  createGame: (game) => async () => {
+    spyOnCreateGame(game);
+    return failure(new GameCreationFailedError(game));
+  },
+};
+
+const alwaysCreateGame: GameCreator = {
+  createGame: (game) => async () => {
+    spyOnCreateGame(game);
+    return success(undefined);
+  },
+};
+
 const scenarios = narrowScenarios<Scenario>([
   {
     name: "Challenge not found and challenger found",
     workflow: acceptChallenge({
       ...neverFindChallenge,
+      ...neverCreateGame,
       ...gameUniqueIdProducerMock,
     }),
     input: {
@@ -54,6 +75,7 @@ const scenarios = narrowScenarios<Scenario>([
     name: "Challenge not found and challenger not found",
     workflow: acceptChallenge({
       ...neverFindChallenge,
+      ...neverCreateGame,
       ...gameUniqueIdProducerMock,
     }),
     input: {
@@ -70,6 +92,7 @@ const scenarios = narrowScenarios<Scenario>([
     name: "Alice accepts her own challenge and play another move",
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
+      ...neverCreateGame,
       ...gameUniqueIdProducerMock,
     }),
     input: {
@@ -89,6 +112,7 @@ const scenarios = narrowScenarios<Scenario>([
     name: "Bob accepts Alice's challenge and plays the same move",
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
+      ...neverCreateGame,
       ...gameUniqueIdProducerMock,
     }),
     input: {
@@ -108,6 +132,7 @@ const scenarios = narrowScenarios<Scenario>([
     name: "Alice accepts her own challenge and plays the same move",
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
+      ...neverCreateGame,
       ...gameUniqueIdProducerMock,
     }),
     input: {
@@ -132,6 +157,7 @@ const scenarios = narrowScenarios<Scenario>([
     name: "Bob accepts Alice's challenge and plays another move",
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
+      ...neverCreateGame,
       ...gameUniqueIdProducerMock,
     }),
     input: {
@@ -145,9 +171,18 @@ const scenarios = narrowScenarios<Scenario>([
 
 describe.each(scenarios())("accept challenge: workflow", (scenario) => {
   const { name, workflow, input, expected } = scenario;
-  it(name, async () => {
-    const runWorkflow = workflow(input);
-    const actual = await runWorkflow();
-    expect(actual).toEqual(expected);
+  const runWorkflow = workflow(input);
+
+  let actual: Result<Game, AcceptChallengeError>;
+
+  beforeEach(async () => {
+    spyOnCreateGame.mockClear();
+    actual = await runWorkflow();
+  });
+
+  describe(name, () => {
+    it("workflow", () => {
+      expect(actual).toEqual(expected);
+    });
   });
 });

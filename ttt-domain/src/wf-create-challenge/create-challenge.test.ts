@@ -1,22 +1,22 @@
 import {
-  ChallengeSaver,
+  Challenge,
+  ChallengeCreationFailedError,
+  ChallengeCreator,
   CreateChallengeInput,
   CreateChallengeResult,
   CreateChallengeWorkflow,
-  Challenge,
-  ChallengeNotSavedError,
 } from "model";
+import { failure, Result, success } from "result";
 import {
   alice,
   challengeUniqueIdProducerMock,
-  narrowScenarios,
   defaultChallengeId,
+  narrowScenarios,
 } from "test";
 import { toChallenger } from "test/players";
 import { createChallenge } from "./create-challenge";
-import { failure, success, Result } from "result";
 
-const spyOnSave = jest.fn();
+const spyOnCreateChallenge = jest.fn();
 
 export const alicesChallenge: Challenge = {
   challengeId: defaultChallengeId,
@@ -31,16 +31,16 @@ interface Scenario {
   expected: CreateChallengeResult;
 }
 
-const alwaysFailToSaveChallenge: ChallengeSaver = {
-  saveChallenge: (data) => async () => {
-    spyOnSave(data);
-    return failure(new ChallengeNotSavedError(data));
+const neverCreateChallenge: ChallengeCreator = {
+  createChallenge: (data) => async () => {
+    spyOnCreateChallenge(data);
+    return failure(new ChallengeCreationFailedError(data));
   },
 };
 
-const alwaysSaveChallenge: ChallengeSaver = {
-  saveChallenge: (data) => async () => {
-    spyOnSave(data);
+const alwaysCreateChallenge: ChallengeCreator = {
+  createChallenge: (data) => async () => {
+    spyOnCreateChallenge(data);
     return success(undefined);
   },
 };
@@ -50,7 +50,7 @@ const scenarios = narrowScenarios<Scenario>([
     name: "create challenge but fail to save it",
     workflow: createChallenge({
       ...challengeUniqueIdProducerMock,
-      ...alwaysFailToSaveChallenge,
+      ...neverCreateChallenge,
     }),
     input: { challenger: toChallenger(alice), challengerPosition: 0 },
     expected: {
@@ -62,7 +62,7 @@ const scenarios = narrowScenarios<Scenario>([
     name: "create and save challenge",
     workflow: createChallenge({
       ...challengeUniqueIdProducerMock,
-      ...alwaysSaveChallenge,
+      ...alwaysCreateChallenge,
     }),
     input: { challenger: toChallenger(alice), challengerPosition: 0 },
     expected: {
@@ -74,11 +74,12 @@ const scenarios = narrowScenarios<Scenario>([
 
 describe.each(scenarios())("create challenge: workflow", (scenario) => {
   const { workflow, expected, name, input } = scenario;
-  let actual: Result<Challenge, ChallengeNotSavedError>;
+  const runWorkflow = workflow(input);
+
+  let actual: Result<Challenge, ChallengeCreationFailedError>;
 
   beforeEach(async () => {
-    spyOnSave.mockClear();
-    const runWorkflow = workflow(input);
+    spyOnCreateChallenge.mockClear();
     actual = await runWorkflow();
   });
 
@@ -87,8 +88,8 @@ describe.each(scenarios())("create challenge: workflow", (scenario) => {
       expect(actual).toEqual(expected);
     });
 
-    it("side effects: save", () => {
-      expect(spyOnSave).toHaveBeenCalledWith(alicesChallenge);
+    it("side effects: create", () => {
+      expect(spyOnCreateChallenge).toHaveBeenCalledWith(alicesChallenge);
     });
   });
 });

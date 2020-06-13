@@ -1,8 +1,8 @@
 import { Challenge, CreateChallenge } from "model";
-import { success, isFailure } from "result";
+import { isFailure, success } from "result";
 
 export const createChallenge: CreateChallenge = (dependencies) => (input) => async () => {
-  const { getUniqueId, saveChallenge } = dependencies;
+  const { getUniqueId, createChallenge } = dependencies;
   const { challenger, challengerPosition } = input;
 
   const challenge: Challenge = {
@@ -11,8 +11,8 @@ export const createChallenge: CreateChallenge = (dependencies) => (input) => asy
     challengerPosition,
   };
 
-  const runSaveChallenge = saveChallenge(challenge);
-  const saveResult = await runSaveChallenge();
+  const runCreateChallenge = createChallenge(challenge);
+  const saveResult = await runCreateChallenge();
   if (isFailure(saveResult)) {
     return saveResult;
   }
