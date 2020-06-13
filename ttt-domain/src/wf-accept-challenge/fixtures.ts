@@ -40,4 +40,5 @@ export const aliceChallengesBobGame: Game = {
     [bob, 1],
   ],
   size: 3,
+  status: { kind: "OpenGame", next: alice },
 };

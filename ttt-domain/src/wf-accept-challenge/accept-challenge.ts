@@ -48,6 +48,7 @@ export const acceptChallenge: AcceptChallenge = (dependencies) => ({
 
   const game: Game = {
     gameId: getUniqueId(),
+    status: { kind: "OpenGame", next: players[0] },
     size: 3,
     players,
     moves: [

@@ -156,9 +156,7 @@ export interface Challenge {
 }
 
 export interface Game {
-  // I'll add these two later on
-  // readonly challengeId: ChallengeId;
-  // readonly status: GameStatus;
+  readonly status: GameStatus;
   readonly gameId: GameId;
   readonly players: Players;
   readonly moves: Move[];

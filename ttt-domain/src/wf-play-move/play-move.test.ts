@@ -35,6 +35,7 @@ const alwaysFindAliceVsBobGame = alwaysFindGame({
     [bob, 1],
   ],
   size: 3,
+  status: { kind: "OpenGame", next: alice },
 });
 
 const neverFindPlayer: PlayerFinder = {

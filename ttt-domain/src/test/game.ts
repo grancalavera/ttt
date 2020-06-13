@@ -11,6 +11,7 @@ export const game: Game = {
   size,
   players,
   moves: [],
+  status: { kind: "OpenGame", next: players[0] },
 };
 
 export const draw: Game = {
@@ -28,6 +29,7 @@ export const draw: Game = {
     [bob, 7],
     [alice, 8],
   ],
+  status: { kind: "DrawGame" },
 };
 
 export const aliceWins: Game = {
@@ -41,6 +43,7 @@ export const aliceWins: Game = {
     [bob, 4],
     [alice, 6],
   ],
+  status: { kind: "WonGame", winner: [alice, [0, 3, 6]] },
 };
 
 export interface GameScenario {
