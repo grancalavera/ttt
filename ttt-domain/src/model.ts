@@ -39,7 +39,7 @@ export class ChallengeNotSavedError {
 
 // prettier-ignore
 export type AcceptChallenge
-  =  (dependencies: ChallengeFinder & OpponentFinder & UniqueIdProducer)
+  =  (dependencies: ChallengeFinder & UniqueIdProducer)
   => AcceptChallengeWorkflow
 
 export type AcceptChallengeWorkflow = (
@@ -50,13 +50,9 @@ export interface ChallengeFinder {
   readonly findChallenge: Find<ChallengeId, Challenge, ChallengeNotFoundError>;
 }
 
-export interface OpponentFinder {
-  readonly findOpponent: Find<OpponentId, Opponent, OpponentNotFoundError>;
-}
-
 export interface AcceptChallengeInput {
   readonly challengeId: ChallengeId;
-  readonly opponentId: OpponentId;
+  readonly opponent: Opponent;
   readonly opponentPosition: Position;
 }
 
@@ -68,19 +64,11 @@ export interface CreateGameInput {
 
 export type AcceptChallengeResult = Result<Game, AcceptChallengeError>;
 
-export type AcceptChallengeError =
-  | ChallengeNotFoundError
-  | OpponentNotFoundError
-  | CreateGameValidationError;
+export type AcceptChallengeError = ChallengeNotFoundError | CreateGameValidationError;
 
 export class ChallengeNotFoundError {
   readonly kind = "ChallengeNotFoundError";
   constructor(readonly challengeId: ChallengeId) {}
-}
-
-export class OpponentNotFoundError {
-  readonly kind = "OpponentNotFoundError";
-  constructor(readonly opponentId: OpponentId) {}
 }
 
 export class CreateGameValidationError {

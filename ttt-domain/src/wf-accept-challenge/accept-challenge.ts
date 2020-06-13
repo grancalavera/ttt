@@ -7,13 +7,12 @@ import { createPositions } from "./create-positions";
 
 export const acceptChallenge: AcceptChallenge = (dependencies) => ({
   challengeId,
-  opponentId,
+  opponent,
   opponentPosition,
 }) => async () => {
-  const { findChallenge, findOpponent, getUniqueId } = dependencies;
+  const { findChallenge, getUniqueId } = dependencies;
 
   const runFindChallenge = findChallenge(challengeId);
-  const runFindOpponent = findOpponent(opponentId);
 
   // With the current behaviour we try to resolve dependencies in sequence: earlier
   // failures will prevent subsequent dependencies from being resolved. Another approach
@@ -29,17 +28,13 @@ export const acceptChallenge: AcceptChallenge = (dependencies) => ({
     return findChallengeResult;
   }
 
-  const findOpponentResult = await runFindOpponent();
-  if (isFailure(findOpponentResult)) {
-    return findOpponentResult;
-  }
+  const input = {
+    challenge: getSuccess(findChallengeResult),
+    opponent,
+    opponentPosition,
+  };
 
-  const challenge = getSuccess(findChallengeResult);
-  const opponent = getSuccess(findOpponentResult);
-
-  const input = { challenge, opponent, opponentPosition };
   const validationResults = sequence([createPlayers(input), createPositions(input)]);
-
   if (isInvalid(validationResults)) {
     return failWithGameValidationError(getFailure(validationResults));
   }

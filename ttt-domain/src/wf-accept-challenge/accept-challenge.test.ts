@@ -3,7 +3,6 @@ import {
   AcceptChallengeResult,
   AcceptChallengeWorkflow,
   ChallengeFinder,
-  OpponentFinder,
 } from "model";
 import { success } from "result";
 import { bob, defaultChallengeId, gameUniqueIdProducerMock, narrowScenarios } from "test";
@@ -34,32 +33,16 @@ const alwaysFindAlicesChallenge: ChallengeFinder = {
   }),
 };
 
-const neverFindOpponent: OpponentFinder = {
-  findOpponent: (opponentId) => async () => ({
-    kind: "Failure",
-    error: { kind: "OpponentNotFoundError", opponentId },
-  }),
-};
-
-const alwaysFindBobAsOpponent: OpponentFinder = {
-  findOpponent: () => async () => ({ kind: "Success", value: toOpponent(bob) }),
-};
-
-const alwaysFindAliceAsOpponent: OpponentFinder = {
-  findOpponent: () => async () => ({ kind: "Success", value: toOpponent(alice) }),
-};
-
 const scenarios = narrowScenarios<Scenario>([
   {
     name: "Challenge not found and challenger found",
     workflow: acceptChallenge({
       ...neverFindChallenge,
-      ...alwaysFindBobAsOpponent,
       ...gameUniqueIdProducerMock,
     }),
     input: {
       challengeId: defaultChallengeId,
-      opponentId: bob.playerId,
+      opponent: toOpponent(bob),
       opponentPosition: 1,
     },
     expected: {
@@ -68,32 +51,14 @@ const scenarios = narrowScenarios<Scenario>([
     },
   },
   {
-    name: "Challenge found and challenger not found",
-    workflow: acceptChallenge({
-      ...alwaysFindAlicesChallenge,
-      ...neverFindOpponent,
-      ...gameUniqueIdProducerMock,
-    }),
-    input: {
-      challengeId: defaultChallengeId,
-      opponentId: bob.playerId,
-      opponentPosition: 1,
-    },
-    expected: {
-      kind: "Failure",
-      error: { kind: "OpponentNotFoundError", opponentId: bob.playerId },
-    },
-  },
-  {
     name: "Challenge not found and challenger not found",
     workflow: acceptChallenge({
       ...neverFindChallenge,
-      ...neverFindOpponent,
       ...gameUniqueIdProducerMock,
     }),
     input: {
       challengeId: defaultChallengeId,
-      opponentId: bob.playerId,
+      opponent: toOpponent(bob),
       opponentPosition: 1,
     },
     expected: {
@@ -105,12 +70,11 @@ const scenarios = narrowScenarios<Scenario>([
     name: "Alice accepts her own challenge and play another move",
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
-      ...alwaysFindAliceAsOpponent,
       ...gameUniqueIdProducerMock,
     }),
     input: {
       challengeId: defaultChallengeId,
-      opponentId: alice.playerId,
+      opponent: toOpponent(alice),
       opponentPosition: 1,
     },
     expected: failWithGameValidationError([
@@ -125,12 +89,11 @@ const scenarios = narrowScenarios<Scenario>([
     name: "Bob accepts Alice's challenge and plays the same move",
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
-      ...alwaysFindBobAsOpponent,
       ...gameUniqueIdProducerMock,
     }),
     input: {
       challengeId: defaultChallengeId,
-      opponentId: bob.playerId,
+      opponent: toOpponent(bob),
       opponentPosition: 0,
     },
     expected: failWithGameValidationError([
@@ -145,12 +108,11 @@ const scenarios = narrowScenarios<Scenario>([
     name: "Alice accepts her own challenge and plays the same move",
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
-      ...alwaysFindAliceAsOpponent,
       ...gameUniqueIdProducerMock,
     }),
     input: {
       challengeId: defaultChallengeId,
-      opponentId: alice.playerId,
+      opponent: toOpponent(alice),
       opponentPosition: 0,
     },
     expected: failWithGameValidationError([
@@ -170,12 +132,11 @@ const scenarios = narrowScenarios<Scenario>([
     name: "Bob accepts Alice's challenge and plays another move",
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
-      ...alwaysFindBobAsOpponent,
       ...gameUniqueIdProducerMock,
     }),
     input: {
       challengeId: defaultChallengeId,
-      opponentId: bob.playerId,
+      opponent: toOpponent(bob),
       opponentPosition: 1,
     },
     expected: success(aliceChallengesBobGame),
