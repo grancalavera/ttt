@@ -15,13 +15,6 @@ interface Scenario {
   expected: CreateChallengeResult;
 }
 
-const neverFindChallenger: ChallengerFinder = {
-  findChallenger: (challengerId) => async () => ({
-    kind: "Failure",
-    error: { kind: "ChallengerNotFoundError", challengerId },
-  }),
-};
-
 const alwaysFindAliceAsChallenger: ChallengerFinder = {
   findChallenger: () => async () => ({
     kind: "Success",
@@ -31,24 +24,12 @@ const alwaysFindAliceAsChallenger: ChallengerFinder = {
 
 const scenarios = narrowScenarios<Scenario>([
   {
-    name: "Challenger not found",
-    workflow: createChallenge({
-      ...neverFindChallenger,
-      ...challengeUniqueIdProducerMock,
-    }),
-    input: { challengerId: alice.playerId, challengerPosition: 0 },
-    expected: {
-      kind: "Failure",
-      error: { kind: "ChallengerNotFoundError", challengerId: alice.playerId },
-    },
-  },
-  {
     name: `Challenger found`,
     workflow: createChallenge({
       ...alwaysFindAliceAsChallenger,
       ...challengeUniqueIdProducerMock,
     }),
-    input: { challengerId: alice.playerId, challengerPosition: 0 },
+    input: { challenger: toChallenger(alice), challengerPosition: 0 },
     expected: {
       kind: "Success",
       value: {

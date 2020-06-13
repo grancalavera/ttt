@@ -1,20 +1,13 @@
 import { CreateChallenge } from "model";
-import { isFailure, success } from "result";
+import { success } from "result";
 
 export const createChallenge: CreateChallenge = (dependencies) => (input) => async () => {
-  const { findChallenger, getUniqueId } = dependencies;
-  const { challengerId, challengerPosition } = input;
-
-  const runFindChallenger = findChallenger(challengerId);
-
-  const challengerResult = await runFindChallenger();
-  if (isFailure(challengerResult)) {
-    return challengerResult;
-  }
+  const { getUniqueId } = dependencies;
+  const { challenger, challengerPosition } = input;
 
   return success({
     challengeId: getUniqueId(),
-    challenger: challengerResult.value,
+    challenger,
     challengerPosition,
   });
 };

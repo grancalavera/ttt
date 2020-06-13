@@ -9,7 +9,7 @@ import { InvalidInput } from "validation";
 
 //  prettier-ignore
 export type CreateChallenge
-  =  (dependencies: ChallengerFinder & UniqueIdProducer)
+  =  (dependencies: UniqueIdProducer)
   => CreateChallengeWorkflow
 
 export type CreateChallengeWorkflow = (
@@ -21,7 +21,7 @@ export interface ChallengerFinder {
 }
 
 export interface CreateChallengeInput {
-  readonly challengerId: ChallengerId;
+  readonly challenger: Challenger;
   readonly challengerPosition: Position;
 }
 export type CreateChallengeResult = Result<Challenge, ChallengerNotFoundError>;
