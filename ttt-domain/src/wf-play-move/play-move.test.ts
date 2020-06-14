@@ -7,7 +7,16 @@ import {
   PlayMoveWorkflow,
 } from "model";
 import { alice, bob, chris, defaultGameId, narrowScenarios } from "test";
-import { aliceChallengesBobGame } from "./fixtures";
+import {
+  alicesDrawMove,
+  aliceWinningMove,
+  aliceWinsGame,
+  defaultGame,
+  drawGame,
+  drawOnNextMoveGame,
+  impossibleGame,
+  winOnNextMoveGame,
+} from "./fixtures";
 import { failWithMoveValidationError, playMove } from "./play-move";
 import { invalidGameStatus } from "./validate-game-status-is-open";
 import { invalidTurn } from "./validate-is-players-turn";
@@ -33,19 +42,8 @@ const alwaysFindGame = (game: Game): GameFinder => ({
   findGame: () => async () => ({ kind: "Success", value: game }),
 });
 
-const forceAllValidationErrorsGame: Game = {
-  gameId: defaultGameId,
-  size: 3,
-  players: [alice, bob],
-  moves: [
-    [alice, -1],
-    [bob, 1],
-  ],
-  status: { kind: "DrawGame" },
-};
-
 const allValidationErrorsInput: CreateMoveInput = {
-  game: forceAllValidationErrorsGame,
+  game: impossibleGame,
   player: chris,
   playerPosition: -1,
 };
@@ -53,7 +51,7 @@ const allValidationErrorsInput: CreateMoveInput = {
 const scenarios = narrowScenarios<Scenario>([
   {
     name: "force all validation errors",
-    workflow: playMove({ ...alwaysFindGame(forceAllValidationErrorsGame) }),
+    workflow: playMove({ ...alwaysFindGame(impossibleGame) }),
     input: {
       gameId: defaultGameId,
       player: chris,
@@ -76,9 +74,46 @@ const scenarios = narrowScenarios<Scenario>([
       error: { kind: "GameNotFoundError", gameId: defaultGameId },
     },
   },
+  {
+    name: "alice plays the third move",
+    workflow: playMove({
+      ...alwaysFindGame(defaultGame),
+    }),
+    input: { gameId: defaultGameId, player: alice, playerPosition: 2 },
+    expected: {
+      kind: "Success",
+      value: {
+        ...defaultGame,
+        moves: [...defaultGame.moves, [alice, 2]],
+        status: { kind: "OpenGame", next: bob },
+      },
+    },
+  },
+  {
+    name: "alice plays the draw move",
+    workflow: playMove({
+      ...alwaysFindGame(drawOnNextMoveGame),
+    }),
+    input: { gameId: defaultGameId, player: alice, playerPosition: alicesDrawMove[1] },
+    expected: {
+      kind: "Success",
+      value: drawGame,
+    },
+  },
+  {
+    name: "alice plays the winning move",
+    workflow: playMove({
+      ...alwaysFindGame(winOnNextMoveGame),
+    }),
+    input: { gameId: defaultGameId, player: alice, playerPosition: aliceWinningMove[1] },
+    expected: {
+      kind: "Success",
+      value: aliceWinsGame,
+    },
+  },
 ]);
 
-describe.each(scenarios(0, 1))("play move: workflow", (scenario) => {
+describe.each(scenarios())("play move: workflow", (scenario) => {
   const { name, workflow, input, expected } = scenario;
   it(name, async () => {
     const runWorkflow = workflow(input);

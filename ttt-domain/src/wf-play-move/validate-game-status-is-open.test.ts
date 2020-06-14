@@ -1,11 +1,7 @@
 import { CreateMoveInput } from "model";
 import { alice } from "test";
 import { allow, InvalidInput, Validation } from "validation";
-import {
-  aliceChallengesBobAndAliceWinsGame,
-  aliceChallengesBobGame,
-  drawGame,
-} from "./fixtures";
+import { aliceWinsGame, defaultGame, drawGame } from "./fixtures";
 import {
   failWithInvalidGameStatus,
   validateGameStatusIsOpen,
@@ -20,7 +16,7 @@ interface Scenario {
 const scenarios: Scenario[] = [
   {
     name: 'an "OpenGame" should be valid',
-    input: { game: aliceChallengesBobGame, player: alice, playerPosition: 2 },
+    input: { game: defaultGame, player: alice, playerPosition: 2 },
     expected: allow,
   },
   {
@@ -34,9 +30,9 @@ const scenarios: Scenario[] = [
   },
   {
     name: 'a "WonGame" should be invalid',
-    input: { game: aliceChallengesBobAndAliceWinsGame, player: alice, playerPosition: 2 },
+    input: { game: aliceWinsGame, player: alice, playerPosition: 2 },
     expected: failWithInvalidGameStatus({
-      game: aliceChallengesBobAndAliceWinsGame,
+      game: aliceWinsGame,
       player: alice,
       playerPosition: 2,
     }),

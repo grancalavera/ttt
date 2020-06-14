@@ -1,11 +1,7 @@
 import { CreateMoveInput } from "model";
 import { alice, bob, chris } from "test";
 import { allow, InvalidInput, Validation } from "validation";
-import {
-  aliceChallengesBobGame,
-  drawGame,
-  aliceChallengesBobAndAliceWinsGame,
-} from "./fixtures";
+import { defaultGame, drawGame, aliceWinsGame } from "./fixtures";
 import { failWithInvalidTurn, validateIsPlayersTurn } from "./validate-is-players-turn";
 
 interface Scenario {
@@ -17,23 +13,23 @@ interface Scenario {
 const scenarios: Scenario[] = [
   {
     name: "new game: alice should play next",
-    input: { game: aliceChallengesBobGame, player: alice, playerPosition: 2 },
+    input: { game: defaultGame, player: alice, playerPosition: 2 },
     expected: allow,
   },
   {
     name: "new game: bob should not play next",
-    input: { game: aliceChallengesBobGame, player: bob, playerPosition: 2 },
+    input: { game: defaultGame, player: bob, playerPosition: 2 },
     expected: failWithInvalidTurn({
-      game: aliceChallengesBobGame,
+      game: defaultGame,
       player: bob,
       playerPosition: 2,
     }),
   },
   {
     name: "new game: unknown player should never be next",
-    input: { game: aliceChallengesBobGame, player: chris, playerPosition: 2 },
+    input: { game: defaultGame, player: chris, playerPosition: 2 },
     expected: failWithInvalidTurn({
-      game: aliceChallengesBobGame,
+      game: defaultGame,
       player: chris,
       playerPosition: 2,
     }),
@@ -50,18 +46,18 @@ const scenarios: Scenario[] = [
   },
   {
     name: "won game: alice should never be next",
-    input: { game: aliceChallengesBobAndAliceWinsGame, player: bob, playerPosition: 2 },
+    input: { game: aliceWinsGame, player: bob, playerPosition: 2 },
     expected: failWithInvalidTurn({
-      game: aliceChallengesBobAndAliceWinsGame,
+      game: aliceWinsGame,
       player: bob,
       playerPosition: 2,
     }),
   },
   {
     name: "won game: bob should never be next",
-    input: { game: aliceChallengesBobAndAliceWinsGame, player: bob, playerPosition: 2 },
+    input: { game: aliceWinsGame, player: bob, playerPosition: 2 },
     expected: failWithInvalidTurn({
-      game: aliceChallengesBobAndAliceWinsGame,
+      game: aliceWinsGame,
       player: bob,
       playerPosition: 2,
     }),

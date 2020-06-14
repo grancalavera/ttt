@@ -1,7 +1,7 @@
 import { CreateMoveInput } from "model";
 import { alice } from "test";
 import { allow, InvalidInput, Validation } from "validation";
-import { aliceChallengesBobGame } from "./fixtures";
+import { defaultGame } from "./fixtures";
 import {
   failWithInvalidPositionOutsideBoard,
   validatePositionInsideBoard,
@@ -16,23 +16,23 @@ interface Scenario {
 const scenarios: Scenario[] = [
   {
     name: "new game: alice should be allowed to play 2",
-    input: { game: aliceChallengesBobGame, player: alice, playerPosition: 2 },
+    input: { game: defaultGame, player: alice, playerPosition: 2 },
     expected: allow,
   },
   {
     name: "new game: alice should not be allowed to play -1",
-    input: { game: aliceChallengesBobGame, player: alice, playerPosition: -1 },
+    input: { game: defaultGame, player: alice, playerPosition: -1 },
     expected: failWithInvalidPositionOutsideBoard({
-      game: aliceChallengesBobGame,
+      game: defaultGame,
       player: alice,
       playerPosition: -1,
     }),
   },
   {
     name: "new game: alice should not be allowed to play 9",
-    input: { game: aliceChallengesBobGame, player: alice, playerPosition: 9 },
+    input: { game: defaultGame, player: alice, playerPosition: 9 },
     expected: failWithInvalidPositionOutsideBoard({
-      game: aliceChallengesBobGame,
+      game: defaultGame,
       player: alice,
       playerPosition: 9,
     }),

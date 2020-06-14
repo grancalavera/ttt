@@ -1,7 +1,10 @@
-import { columns, diagonals, rows } from "board";
+import { columns, diagonals, rows } from "./board";
 import { Move, Position, Winner } from "model";
 
-export const winners = (size: number, ms: Move[]): Winner[] =>
+export const findWinner = (size: number, ms: Move[]): Winner | undefined =>
+  findWinners(size, ms)[0];
+
+export const findWinners = (size: number, ms: Move[]): Winner[] =>
   wins(size)
     .map(toMaybeWinner(ms))
     .filter(Boolean) as Winner[];
@@ -12,9 +15,6 @@ const wins = (size: number) => {
   const dg = diagonals(size);
   return [...rs, ...cs, ...dg];
 };
-
-export const winner = (size: number, ms: Move[]): Winner | undefined =>
-  winners(size, ms)[0];
 
 const toMaybeWinner = (ms: Move[]) => (win: Position[]): Winner | undefined => {
   interface Result {

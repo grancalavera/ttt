@@ -1,5 +1,5 @@
 import { CreateMoveInput, CreateMoveValidationError, PlayMove } from "model";
-import { failure, getFailure, isFailure } from "result";
+import { failure, getFailure, isFailure, success } from "result";
 import { InvalidInput, isInvalid } from "validation";
 import { sequence } from "validation/sequence";
 import { validateGameStatusIsOpen } from "./validate-game-status-is-open";
@@ -7,6 +7,7 @@ import { validateIsPlayersTurn } from "./validate-is-players-turn";
 import { validatePlayerExistsInGame } from "./validate-player-exists-in-game";
 import { validatePositionInsideBoard } from "./validate-position-inside-board";
 import { validatePositionNotPlayed } from "./validate-position-not-played";
+import { transitionGameState } from "./transition-game-state";
 
 export const playMove: PlayMove = (dependencies) => ({
   gameId,
@@ -36,7 +37,8 @@ export const playMove: PlayMove = (dependencies) => ({
     return failWithMoveValidationError(getFailure(guard));
   }
 
-  throw new Error("playMove not fully implemented");
+  const newGame = transitionGameState(game, [player, playerPosition]);
+  return success(newGame);
 };
 
 export const failWithMoveValidationError = (

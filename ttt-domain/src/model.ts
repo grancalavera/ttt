@@ -169,7 +169,7 @@ export interface DrawGame {
 
 export type Players = [Player, Player];
 export type Move = [Player, Position];
-export type Moves = [Move, Move, ...Move[]];
+export type Moves = Move[];
 export type Winner = [Player, Position[]];
 
 export interface Challenger {

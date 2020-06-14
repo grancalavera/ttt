@@ -1,10 +1,10 @@
-import { Game, Moves, Players } from "model";
+import { Game, Move, Moves, Players } from "model";
 import { alice, bob, defaultGameId } from "test";
 
 const size = 3;
 const players: Players = [alice, bob];
 
-export const drawMoves: Moves = [
+export const aliceDrawOnNextMove: Moves = [
   [alice, 0],
   [bob, 3],
   [alice, 6],
@@ -13,8 +13,9 @@ export const drawMoves: Moves = [
   [bob, 2],
   [alice, 5],
   [bob, 7],
-  [alice, 8],
 ];
+
+export const alicesDrawMove: Move = [alice, 8];
 
 export const aliceWinsMoves: Moves = [
   [alice, 0],
@@ -24,7 +25,16 @@ export const aliceWinsMoves: Moves = [
   [alice, 6],
 ];
 
-export const aliceChallengesBobGame: Game = {
+export const aliceWinsOnNextMove: Moves = [
+  [alice, 0],
+  [bob, 1],
+  [alice, 3],
+  [bob, 4],
+];
+
+export const aliceWinningMove: Move = [alice, 6];
+
+export const defaultGame: Game = {
   gameId: defaultGameId,
   size,
   players,
@@ -32,21 +42,36 @@ export const aliceChallengesBobGame: Game = {
     [alice, 0],
     [bob, 1],
   ],
-  status: { kind: "OpenGame", next: players[0] },
+  status: { kind: "OpenGame", next: alice },
+};
+
+export const drawOnNextMoveGame: Game = {
+  ...defaultGame,
+  moves: aliceDrawOnNextMove,
 };
 
 export const drawGame: Game = {
-  gameId: defaultGameId,
-  size,
-  players,
-  moves: drawMoves,
+  ...defaultGame,
+  moves: [...aliceDrawOnNextMove, alicesDrawMove],
   status: { kind: "DrawGame" },
 };
 
-export const aliceChallengesBobAndAliceWinsGame: Game = {
-  gameId: defaultGameId,
-  size,
-  players,
-  moves: aliceWinsMoves,
+export const winOnNextMoveGame: Game = {
+  ...defaultGame,
+  moves: aliceWinsOnNextMove,
+};
+
+export const aliceWinsGame: Game = {
+  ...defaultGame,
+  moves: [...aliceWinsOnNextMove, aliceWinningMove],
   status: { kind: "WonGame", winner: [alice, [0, 3, 6]] },
+};
+
+export const impossibleGame: Game = {
+  ...defaultGame,
+  moves: [
+    [alice, -1],
+    [bob, 1],
+  ],
+  status: { kind: "DrawGame" },
 };

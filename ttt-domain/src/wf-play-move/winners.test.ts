@@ -1,6 +1,6 @@
 import { Move, Winner } from "model";
 import { narrowScenarios, alice, bob } from "test";
-import { winners } from "./winners";
+import { findWinners } from "./winners";
 import { chris } from "test/players";
 
 const size = 3;
@@ -70,7 +70,7 @@ describe.each(scenarios())("states", (scenario) => {
   const { name, moves, size, expected } = scenario;
 
   it(name, () => {
-    const actual = winners(size, moves);
+    const actual = findWinners(size, moves);
     expect(actual).toEqual(expected);
   });
 });

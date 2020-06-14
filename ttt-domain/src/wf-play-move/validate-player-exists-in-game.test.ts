@@ -1,7 +1,7 @@
 import { CreateMoveInput } from "model";
 import { alice, bob, chris } from "test";
 import { allow, InvalidInput, Validation } from "validation";
-import { aliceChallengesBobGame } from "./fixtures";
+import { defaultGame } from "./fixtures";
 import {
   failWithInvalidPlayer,
   validatePlayerExistsInGame,
@@ -16,19 +16,19 @@ interface Scenario {
 const scenarios: Scenario[] = [
   {
     name: "alice exists in game",
-    input: { game: aliceChallengesBobGame, player: alice, playerPosition: 2 },
+    input: { game: defaultGame, player: alice, playerPosition: 2 },
     expected: allow,
   },
   {
     name: "bob exists in game (even when he's not next)",
-    input: { game: aliceChallengesBobGame, player: bob, playerPosition: 2 },
+    input: { game: defaultGame, player: bob, playerPosition: 2 },
     expected: allow,
   },
   {
     name: "chris doesn't exist in game",
-    input: { game: aliceChallengesBobGame, player: chris, playerPosition: 2 },
+    input: { game: defaultGame, player: chris, playerPosition: 2 },
     expected: failWithInvalidPlayer({
-      game: aliceChallengesBobGame,
+      game: defaultGame,
       player: chris,
       playerPosition: 2,
     }),
