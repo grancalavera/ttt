@@ -1,3 +1,3 @@
-export { acceptChallenge } from "./accept-challenge/accept-challenge";
-export { createChallenge } from "./create-challenge/create-challenge";
-export { playMove } from "./play-move/play-move";
+export { acceptChallenge } from "./accept-challenge-implementation/accept-challenge";
+export { createChallenge } from "./create-challenge-implementation/create-challenge";
+export { playMove } from "./play-move-implementation/play-move";
