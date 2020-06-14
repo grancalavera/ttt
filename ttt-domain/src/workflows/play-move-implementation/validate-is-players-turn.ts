@@ -1,4 +1,4 @@
-import { arePlayersTheSame, CreateMoveInput } from "../../model";
+import { arePlayersTheSame } from "../../model";
 import {
   allow,
   failWithInvalidInput,
@@ -6,6 +6,7 @@ import {
   invalidInput,
   Validation,
 } from "../../validation";
+import { CreateMoveInput } from "../play-move";
 
 export const validateIsPlayersTurn = (
   input: CreateMoveInput

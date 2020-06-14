@@ -10,7 +10,6 @@ import {
 } from "../model";
 import { Async, Result } from "../result";
 import { InvalidInput } from "../validation";
-export { acceptChallenge } from "./accept-challenge-implementation/accept-challenge";
 
 // prettier-ignore
 export type AcceptChallenge

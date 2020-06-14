@@ -1,6 +1,6 @@
-import { CreateMoveInput } from "../../model";
 import { alice } from "../../test-support";
 import { allow, InvalidInput, Validation } from "../../validation";
+import { CreateMoveInput } from "../play-move";
 import { aliceWinsGame, defaultGame, drawGame } from "./fixtures";
 import {
   failWithInvalidGameStatus,

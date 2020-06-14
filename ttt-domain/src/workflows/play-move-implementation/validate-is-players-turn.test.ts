@@ -1,7 +1,7 @@
-import { CreateMoveInput } from "../../model";
 import { alice, bob, illegalPlayer } from "../../test-support";
 import { allow, InvalidInput, Validation } from "../../validation";
-import { defaultGame, drawGame, aliceWinsGame } from "./fixtures";
+import { CreateMoveInput } from "../play-move";
+import { aliceWinsGame, defaultGame, drawGame } from "./fixtures";
 import { failWithInvalidTurn, validateIsPlayersTurn } from "./validate-is-players-turn";
 
 interface Scenario {

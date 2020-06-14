@@ -1,6 +1,5 @@
 import { Challenge, Challenger, Create, Position, UniqueIdProducer } from "../model";
 import { Async, Result } from "../result";
-export { createChallenge } from "./create-challenge-implementation/create-challenge";
 
 //  prettier-ignore
 export type CreateChallenge

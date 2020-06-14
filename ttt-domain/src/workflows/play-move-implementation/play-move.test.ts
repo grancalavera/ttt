@@ -1,16 +1,9 @@
-import {
-  CreateMoveInput,
-  Game,
-  GameFinder,
-  PlayMoveInput,
-  PlayMoveResult,
-  PlayMoveWorkflow,
-} from "../../model";
+import { Game } from "../../model";
 import {
   alice,
   bob,
-  illegalPlayer,
   defaultGameId,
+  illegalPlayer,
   narrowScenarios,
 } from "../../test-support";
 import {
@@ -29,6 +22,13 @@ import { invalidTurn } from "./validate-is-players-turn";
 import { invalidPlayer } from "./validate-player-exists-in-game";
 import { invalidPositionOutsideBoard } from "./validate-position-inside-board";
 import { invalidPosition } from "./validate-position-not-played";
+import {
+  PlayMoveWorkflow,
+  PlayMoveInput,
+  PlayMoveResult,
+  GameFinder,
+  CreateMoveInput,
+} from "../play-move";
 
 interface Scenario {
   name: string;

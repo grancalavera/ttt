@@ -4,9 +4,9 @@ import { validateIsPlayersTurn } from "./validate-is-players-turn";
 import { validatePlayerExistsInGame } from "./validate-player-exists-in-game";
 import { validatePositionInsideBoard } from "./validate-position-inside-board";
 import { validatePositionNotPlayed } from "./validate-position-not-played";
-import { PlayMove, CreateMoveInput, CreateMoveValidationError } from "../../model";
 import { isFailure, getFailure, success, failure } from "../../result";
 import { sequence, isInvalid, InvalidInput } from "../../validation";
+import { PlayMove, CreateMoveInput, CreateMoveValidationError } from "../play-move";
 
 export const playMove: PlayMove = (dependencies) => ({
   gameId,
