@@ -10,26 +10,18 @@ import { validatePositionNotPlayed } from "./validate-position-not-played";
 
 export const playMove: PlayMove = (dependencies) => ({
   gameId,
-  playerId,
+  player,
   playerPosition,
 }) => async () => {
-  const { findGame, findPlayer } = dependencies;
-
+  const { findGame } = dependencies;
   const runFindGame = findGame(gameId);
-  const runFindPlayer = findPlayer(playerId);
 
   const findGameResult = await runFindGame();
   if (isFailure(findGameResult)) {
     return findGameResult;
   }
 
-  const findPlayerResult = await runFindPlayer();
-  if (isFailure(findPlayerResult)) {
-    return findPlayerResult;
-  }
-
   const game = findGameResult.value;
-  const player = findPlayerResult.value;
   const input: CreateMoveInput = { game, player, playerPosition };
 
   const guard = sequence([

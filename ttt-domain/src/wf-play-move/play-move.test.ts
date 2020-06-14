@@ -1,13 +1,19 @@
 import {
-  PlayMoveWorkflow,
+  CreateMoveInput,
+  Game,
+  GameFinder,
   PlayMoveInput,
   PlayMoveResult,
-  GameFinder,
-  Game,
-  PlayerFinder,
+  PlayMoveWorkflow,
 } from "model";
-import { narrowScenarios, alice, bob, defaultGameId } from "test";
-import { playMove } from "./play-move";
+import { alice, bob, chris, defaultGameId, narrowScenarios } from "test";
+import { aliceChallengesBobGame } from "./fixtures";
+import { failWithMoveValidationError, playMove } from "./play-move";
+import { invalidGameStatus } from "./validate-game-status-is-open";
+import { invalidTurn } from "./validate-is-players-turn";
+import { invalidPlayer } from "./validate-player-exists-in-game";
+import { invalidPositionOutsideBoard } from "./validate-position-inside-board";
+import { invalidPosition } from "./validate-position-not-played";
 
 interface Scenario {
   name: string;
@@ -27,55 +33,44 @@ const alwaysFindGame = (game: Game): GameFinder => ({
   findGame: () => async () => ({ kind: "Success", value: game }),
 });
 
-const alwaysFindAliceVsBobGame = alwaysFindGame({
+const forceAllValidationErrorsGame: Game = {
   gameId: defaultGameId,
+  size: 3,
   players: [alice, bob],
   moves: [
-    [alice, 0],
+    [alice, -1],
     [bob, 1],
   ],
-  size: 3,
-  status: { kind: "OpenGame", next: alice },
-});
-
-const neverFindPlayer: PlayerFinder = {
-  findPlayer: (playerId) => async () => ({
-    kind: "Failure",
-    error: { kind: "PlayerNotFoundError", playerId },
-  }),
+  status: { kind: "DrawGame" },
 };
 
-const alwaysFindAlice: PlayerFinder = {
-  findPlayer: () => async () => ({ kind: "Success", value: alice }),
-};
-
-const alwaysFindBob: PlayerFinder = {
-  findPlayer: () => async () => ({ kind: "Success", value: bob }),
+const allValidationErrorsInput: CreateMoveInput = {
+  game: forceAllValidationErrorsGame,
+  player: chris,
+  playerPosition: -1,
 };
 
 const scenarios = narrowScenarios<Scenario>([
   {
+    name: "force all validation errors",
+    workflow: playMove({ ...alwaysFindGame(forceAllValidationErrorsGame) }),
+    input: {
+      gameId: defaultGameId,
+      player: chris,
+      playerPosition: -1,
+    },
+    expected: failWithMoveValidationError([
+      invalidGameStatus(allValidationErrorsInput),
+      invalidPlayer(allValidationErrorsInput),
+      invalidTurn(allValidationErrorsInput),
+      invalidPosition(allValidationErrorsInput),
+      invalidPositionOutsideBoard(allValidationErrorsInput),
+    ]),
+  },
+  {
     name: "game not found",
-    workflow: playMove({ ...neverFindGame, ...alwaysFindAlice }),
-    input: { gameId: defaultGameId, playerId: alice.playerId, playerPosition: 0 },
-    expected: {
-      kind: "Failure",
-      error: { kind: "GameNotFoundError", gameId: defaultGameId },
-    },
-  },
-  {
-    name: "player not found",
-    workflow: playMove({ ...alwaysFindAliceVsBobGame, ...neverFindPlayer }),
-    input: { gameId: defaultGameId, playerId: alice.playerId, playerPosition: 0 },
-    expected: {
-      kind: "Failure",
-      error: { kind: "PlayerNotFoundError", playerId: alice.playerId },
-    },
-  },
-  {
-    name: "game not found and player not found",
-    workflow: playMove({ ...neverFindGame, ...neverFindPlayer }),
-    input: { gameId: defaultGameId, playerId: alice.playerId, playerPosition: 0 },
+    workflow: playMove({ ...neverFindGame }),
+    input: { gameId: defaultGameId, player: chris, playerPosition: 0 },
     expected: {
       kind: "Failure",
       error: { kind: "GameNotFoundError", gameId: defaultGameId },
@@ -83,7 +78,7 @@ const scenarios = narrowScenarios<Scenario>([
   },
 ]);
 
-describe.each(scenarios())("play move: workflow", (scenario) => {
+describe.each(scenarios(0, 1))("play move: workflow", (scenario) => {
   const { name, workflow, input, expected } = scenario;
   it(name, async () => {
     const runWorkflow = workflow(input);

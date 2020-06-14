@@ -96,7 +96,7 @@ export class GameCreationFailedError {
 
 // prettier-ignore
 export type PlayMove
-  =  (dependencies: GameFinder & PlayerFinder)
+  =  (dependencies: GameFinder)
   => PlayMoveWorkflow
 
 export type PlayMoveWorkflow = (input: PlayMoveInput) => Async<PlayMoveResult>;
@@ -105,13 +105,9 @@ export interface GameFinder {
   readonly findGame: Find<GameId, Game, GameNotFoundError>;
 }
 
-export interface PlayerFinder {
-  readonly findPlayer: Find<PlayerId, Player, PlayerNotFoundError>;
-}
-
 export interface PlayMoveInput {
   readonly gameId: GameId;
-  readonly playerId: PlayerId;
+  readonly player: Player;
   readonly playerPosition: Position;
 }
 
@@ -123,19 +119,11 @@ export interface CreateMoveInput {
 
 export type PlayMoveResult = Result<Game, PlayMoveError>;
 
-export type PlayMoveError =
-  | GameNotFoundError
-  | PlayerNotFoundError
-  | CreateMoveValidationError;
+export type PlayMoveError = GameNotFoundError | CreateMoveValidationError;
 
 export class GameNotFoundError {
   readonly kind = "GameNotFoundError";
   constructor(readonly gameId: GameId) {}
-}
-
-export class PlayerNotFoundError {
-  readonly kind = "PlayerNotFoundError";
-  constructor(readonly playerId: PlayerId) {}
 }
 
 export class CreateMoveValidationError {
