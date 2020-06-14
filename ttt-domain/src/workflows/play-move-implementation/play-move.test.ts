@@ -1,4 +1,5 @@
-import { Game } from "../../model";
+import { Game, GameId } from "../../model";
+import { failure, isSuccess, Result, success } from "../../result";
 import {
   alice,
   bob,
@@ -6,6 +7,15 @@ import {
   illegalPlayer,
   narrowScenarios,
 } from "../../test-support";
+import {
+  CreateMoveInput,
+  GameFinder,
+  GameUpdateFailedError,
+  GameUpdater,
+  PlayMoveInput,
+  PlayMoveResult,
+  PlayMoveWorkflow,
+} from "../play-move";
 import {
   alicesDrawMove,
   aliceWinningMove,
@@ -22,13 +32,8 @@ import { invalidTurn } from "./validate-is-players-turn";
 import { invalidPlayer } from "./validate-player-exists-in-game";
 import { invalidPositionOutsideBoard } from "./validate-position-inside-board";
 import { invalidPosition } from "./validate-position-not-played";
-import {
-  PlayMoveWorkflow,
-  PlayMoveInput,
-  PlayMoveResult,
-  GameFinder,
-  CreateMoveInput,
-} from "../play-move";
+
+const spyOnUpdateGame = jest.fn();
 
 interface Scenario {
   name: string;
@@ -48,6 +53,20 @@ const alwaysFindGame = (game: Game): GameFinder => ({
   findGame: () => async () => ({ kind: "Success", value: game }),
 });
 
+const neverUpdateGame: GameUpdater = {
+  updateGame: (gameId, game) => async () => {
+    spyOnUpdateGame(gameId, game);
+    return failure(new GameUpdateFailedError(game));
+  },
+};
+
+const alwaysUpdateGame: GameUpdater = {
+  updateGame: (gameId, game) => async () => {
+    spyOnUpdateGame(gameId, game);
+    return success(undefined);
+  },
+};
+
 const allValidationErrorsInput: CreateMoveInput = {
   game: impossibleGame,
   player: illegalPlayer,
@@ -57,7 +76,7 @@ const allValidationErrorsInput: CreateMoveInput = {
 const scenarios = narrowScenarios<Scenario>([
   {
     name: "force all validation errors",
-    workflow: playMove({ ...alwaysFindGame(impossibleGame) }),
+    workflow: playMove({ ...alwaysFindGame(impossibleGame), ...alwaysUpdateGame }),
     input: {
       gameId: defaultGameId,
       player: illegalPlayer,
@@ -73,7 +92,7 @@ const scenarios = narrowScenarios<Scenario>([
   },
   {
     name: "game not found",
-    workflow: playMove({ ...neverFindGame }),
+    workflow: playMove({ ...neverFindGame, ...alwaysUpdateGame }),
     input: { gameId: defaultGameId, player: illegalPlayer, playerPosition: 0 },
     expected: {
       kind: "Failure",
@@ -84,6 +103,7 @@ const scenarios = narrowScenarios<Scenario>([
     name: "alice plays the third move",
     workflow: playMove({
       ...alwaysFindGame(defaultGame),
+      ...alwaysUpdateGame,
     }),
     input: { gameId: defaultGameId, player: alice, playerPosition: 2 },
     expected: {
@@ -99,6 +119,7 @@ const scenarios = narrowScenarios<Scenario>([
     name: "alice plays the draw move",
     workflow: playMove({
       ...alwaysFindGame(drawOnNextMoveGame),
+      ...alwaysUpdateGame,
     }),
     input: { gameId: defaultGameId, player: alice, playerPosition: alicesDrawMove[1] },
     expected: {
@@ -110,6 +131,7 @@ const scenarios = narrowScenarios<Scenario>([
     name: "alice plays the winning move",
     workflow: playMove({
       ...alwaysFindGame(winOnNextMoveGame),
+      ...alwaysUpdateGame,
     }),
     input: { gameId: defaultGameId, player: alice, playerPosition: aliceWinningMove[1] },
     expected: {
@@ -121,9 +143,44 @@ const scenarios = narrowScenarios<Scenario>([
 
 describe.each(scenarios())("play move: workflow", (scenario) => {
   const { name, workflow, input, expected } = scenario;
-  it(name, async () => {
-    const runWorkflow = workflow(input);
-    const actual = await runWorkflow();
-    expect(actual).toEqual(expected);
+  const runWorkflow = workflow(input);
+
+  let actual: PlayMoveResult;
+
+  beforeEach(async () => {
+    spyOnUpdateGame.mockClear();
+    actual = await runWorkflow();
+  });
+
+  describe(name, () => {
+    it("workflow", () => {
+      expect(actual).toEqual(expected);
+    });
+
+    xit("side effects: update game", () => {});
   });
 });
+
+const updateExpected = (expected: PlayMoveResult): Result<[GameId, Game], void> => {
+  if (isSuccess(expected)) {
+    const game = expected.value;
+    return success([game.gameId, game]);
+  }
+
+  switch (expected.error.kind) {
+    case "CreateMoveValidationError": {
+      return failure(undefined);
+    }
+    case "GameNotFoundError": {
+      return failure(undefined);
+    }
+    case "GameUpdateFailedError": {
+      const { game } = expected.error;
+      return success([game.gameId, game]);
+    }
+    default: {
+      const never: never = expected.error;
+      throw new Error(`unexpected error kind ${never}`);
+    }
+  }
+};

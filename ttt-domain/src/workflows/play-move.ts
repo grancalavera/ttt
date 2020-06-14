@@ -1,11 +1,11 @@
 import { Game, GameId, Player, Position } from "../model";
 import { Async, Result } from "../result";
 import { InvalidInput } from "../validation";
-import { Find } from "./workflow-support";
+import { Find, Update } from "./workflow-support";
 
 // prettier-ignore
 export type PlayMove
-  =  (dependencies: GameFinder)
+  =  (dependencies: GameFinder & GameUpdater)
   => PlayMoveWorkflow
 
 // prettier-ignore
@@ -27,11 +27,19 @@ export interface CreateMoveInput {
 
 export type PlayMoveResult = Result<Game, PlayMoveError>;
 
-export type PlayMoveError = GameNotFoundError | CreateMoveValidationError;
+export type PlayMoveError =
+  | GameNotFoundError
+  | CreateMoveValidationError
+  | GameUpdateFailedError;
 
 export class GameNotFoundError {
   readonly kind = "GameNotFoundError";
   constructor(readonly gameId: GameId) {}
+}
+
+export class GameUpdateFailedError {
+  readonly kind = "GameUpdateFailedError";
+  constructor(readonly game: Game) {}
 }
 
 export class CreateMoveValidationError {
@@ -41,4 +49,8 @@ export class CreateMoveValidationError {
 
 export interface GameFinder {
   readonly findGame: Find<GameId, Game, GameNotFoundError>;
+}
+
+export interface GameUpdater {
+  readonly updateGame: Update<GameId, Game, GameUpdateFailedError>;
 }

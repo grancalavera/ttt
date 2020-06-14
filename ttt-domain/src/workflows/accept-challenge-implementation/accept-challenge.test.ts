@@ -1,5 +1,4 @@
-import { Game } from "../../model";
-import { failure, isSuccess, Result, success } from "../../result";
+import { failure, isSuccess, success, Result } from "../../result";
 import {
   alice,
   bob,
@@ -9,7 +8,6 @@ import {
   toOpponent,
 } from "../../test-support";
 import {
-  AcceptChallengeError,
   AcceptChallengeInput,
   AcceptChallengeResult,
   AcceptChallengeWorkflow,
@@ -21,6 +19,7 @@ import { acceptChallenge, failWithGameValidationError } from "./accept-challenge
 import { invalidPlayers } from "./create-players";
 import { invalidPositions } from "./create-positions";
 import { aliceChallengesBobGame, alicesChallenge } from "./fixtures";
+import { Game } from "../../model";
 
 const spyOnCreateGame = jest.fn();
 
@@ -197,7 +196,7 @@ describe.each(scenarios())("accept challenge: workflow", (scenario) => {
   const { name, workflow, input, expected } = scenario;
   const runWorkflow = workflow(input);
 
-  let actual: Result<Game, AcceptChallengeError>;
+  let actual: AcceptChallengeResult;
 
   beforeEach(async () => {
     spyOnCreateGame.mockClear();
@@ -210,8 +209,9 @@ describe.each(scenarios())("accept challenge: workflow", (scenario) => {
     });
 
     it("side effects: create game", () => {
-      if (isCreateGameExpected(expected)) {
-        expect(spyOnCreateGame).toHaveBeenNthCalledWith(1, aliceChallengesBobGame);
+      const expectCreate = createExpected(expected);
+      if (isSuccess(expectCreate)) {
+        expect(spyOnCreateGame).toHaveBeenNthCalledWith(1, expectCreate.value);
       } else {
         expect(spyOnCreateGame).not.toHaveBeenCalled();
       }
@@ -219,20 +219,21 @@ describe.each(scenarios())("accept challenge: workflow", (scenario) => {
   });
 });
 
-const isCreateGameExpected = (expected: Result<Game, AcceptChallengeError>): boolean => {
+const createExpected = (expected: AcceptChallengeResult): Result<Game, void> => {
   if (isSuccess(expected)) {
-    return true;
+    return success(expected.value);
   }
 
   switch (expected.error.kind) {
     case "ChallengeNotFoundError": {
-      return false;
+      return failure(undefined);
     }
     case "CreateGameValidationError": {
-      return false;
+      return failure(undefined);
     }
     case "GameCreationFailedError": {
-      return true;
+      const { game } = expected.error;
+      return success(game);
     }
     default: {
       const never: never = expected.error;
