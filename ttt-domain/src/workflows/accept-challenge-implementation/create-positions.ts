@@ -7,7 +7,6 @@ import {
   Validation,
 } from "../../validation";
 import { CreateGameInput } from "../accept-challenge";
-import { arePositionsTheSame } from "../workflow-support";
 
 export const createPositions = (
   input: CreateGameInput
@@ -17,10 +16,9 @@ export const createPositions = (
     opponentPosition,
   } = input;
 
-  const positions: [Position, Position] = [challengerPosition, opponentPosition];
-  return arePositionsTheSame(positions)
+  return challengerPosition === opponentPosition
     ? failWithInvalidPositions(input)
-    : valid(positions);
+    : valid([challengerPosition, opponentPosition]);
 };
 
 export const invalidPositions = invalidInput(

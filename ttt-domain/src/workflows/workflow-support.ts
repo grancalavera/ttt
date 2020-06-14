@@ -1,4 +1,4 @@
-import { Challenger, Opponent, Player, Players, Position } from "../model";
+import { Challenger, Opponent, Player } from "../model";
 import { AsyncResult } from "../result";
 
 export interface UniqueIdProducer {
@@ -18,5 +18,3 @@ export const opponentToPlayer = ({ opponentId }: Opponent): Player => ({
 });
 
 export const arePlayersTheSame = (p1: Player, p2: Player) => p1.playerId === p2.playerId;
-
-export const arePositionsTheSame = ([pos1, pos2]: [Position, Position]) => pos1 === pos2;
