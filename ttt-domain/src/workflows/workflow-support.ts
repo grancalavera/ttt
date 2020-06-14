@@ -17,6 +17,6 @@ export const opponentToPlayer = ({ opponentId }: Opponent): Player => ({
   playerId: opponentId,
 });
 
-export const arePlayersTheSame = ([p1, p2]: Players) => p1.playerId === p2.playerId;
+export const arePlayersTheSame = (p1: Player, p2: Player) => p1.playerId === p2.playerId;
 
 export const arePositionsTheSame = ([pos1, pos2]: [Position, Position]) => pos1 === pos2;

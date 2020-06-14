@@ -13,8 +13,7 @@ export const validateIsPlayersTurn = (
 ): Validation<void, InvalidInput<CreateMoveInput>> => {
   const { game } = input;
   const shouldAllow =
-    game.status.kind === "OpenGame" &&
-    arePlayersTheSame([input.player, game.status.next]);
+    game.status.kind === "OpenGame" && arePlayersTheSame(input.player, game.status.next);
   return shouldAllow ? allow : failWithInvalidTurn(input);
 };
 

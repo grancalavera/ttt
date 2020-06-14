@@ -22,7 +22,8 @@ export const createPlayers = (
   } = input;
 
   const players: Players = [challengerToPlayer(challenger), opponentToPlayer(opponent)];
-  return arePlayersTheSame(players) ? failWithInvalidPlayers(input) : valid(players);
+  const [p1, p2] = players;
+  return arePlayersTheSame(p1, p2) ? failWithInvalidPlayers(input) : valid(players);
 };
 
 export const invalidPlayers = invalidInput("Games cannot contain duplicated players");
