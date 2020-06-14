@@ -1,11 +1,4 @@
-import {
-  Challenge,
-  ChallengeCreationFailedError,
-  ChallengeCreator,
-  CreateChallengeInput,
-  CreateChallengeResult,
-  CreateChallengeWorkflow,
-} from "../../model";
+import { Challenge } from "../../model";
 import { failure, Result, success } from "../../result";
 import {
   alice,
@@ -14,6 +7,13 @@ import {
   narrowScenarios,
   toChallenger,
 } from "../../test-support";
+import {
+  ChallengeCreationFailedError,
+  ChallengeCreator,
+  CreateChallengeInput,
+  CreateChallengeResult,
+  CreateChallengeWorkflow,
+} from "../create-challenge";
 import { createChallenge } from "./create-challenge";
 
 const spyOnCreateChallenge = jest.fn();
