@@ -1,5 +1,5 @@
 import { CreateMoveInput } from "model";
-import { alice } from "test";
+import { alice } from "test-support";
 import { allow, InvalidInput, Validation } from "validation";
 import { defaultGame } from "./fixtures";
 import {

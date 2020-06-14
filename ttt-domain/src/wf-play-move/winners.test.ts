@@ -1,7 +1,7 @@
 import { Move, Winner } from "model";
-import { narrowScenarios, alice, bob } from "test";
+import { narrowScenarios, alice, bob } from "test-support";
 import { findWinners } from "./winners";
-import { chris } from "test/players";
+import { chris } from "test-support/players";
 
 const size = 3;
 

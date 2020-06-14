@@ -1,5 +1,5 @@
 import { Game, Move, Moves, Players } from "model";
-import { alice, bob, defaultGameId } from "test";
+import { alice, bob, defaultGameId } from "test-support";
 
 const size = 3;
 const players: Players = [alice, bob];

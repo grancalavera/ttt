@@ -12,8 +12,8 @@ import {
   challengeUniqueIdProducer,
   defaultChallengeId,
   narrowScenarios,
-} from "test";
-import { toChallenger } from "test/players";
+} from "test-support";
+import { toChallenger } from "test-support/players";
 import { createChallenge } from "./create-challenge";
 
 const spyOnCreateChallenge = jest.fn();
