@@ -1,8 +1,21 @@
-import { CreateMoveInput } from "model";
-import { InvalidInput, Validation } from "validation";
+import { arePlayersTheSame, CreateMoveInput } from "model";
+import {
+  allow,
+  failWithInvalidInput,
+  InvalidInput,
+  invalidInput,
+  Validation,
+} from "validation";
 
 export const validateIsPlayersTurn = (
   input: CreateMoveInput
 ): Validation<void, InvalidInput<CreateMoveInput>> => {
-  throw new Error("validateIsPlayerTurn not implemented");
+  const { game } = input;
+  const shouldAllow =
+    game.status.kind === "OpenGame" &&
+    arePlayersTheSame([input.player, game.status.next]);
+  return shouldAllow ? allow : failWithInvalidTurn(input);
 };
+
+export const invalidTurn = invalidInput("Invalid turn: not this player's turn");
+export const failWithInvalidTurn = failWithInvalidInput(invalidTurn);
