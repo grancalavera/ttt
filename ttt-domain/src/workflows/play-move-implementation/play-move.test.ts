@@ -157,11 +157,19 @@ describe.each(scenarios())("play move: workflow", (scenario) => {
       expect(actual).toEqual(expected);
     });
 
-    xit("side effects: update game", () => {});
+    it("side effects: update game", () => {
+      const sideEffects = inferSideEffects(expected);
+      if (isSuccess(sideEffects)) {
+        const [gameId, game] = sideEffects.value;
+        expect(spyOnUpdateGame).toHaveBeenNthCalledWith(1, gameId, game);
+      } else {
+        expect(spyOnUpdateGame).not.toHaveBeenCalled();
+      }
+    });
   });
 });
 
-const updateExpected = (expected: PlayMoveResult): Result<[GameId, Game], void> => {
+const inferSideEffects = (expected: PlayMoveResult): Result<[GameId, Game], void> => {
   if (isSuccess(expected)) {
     const game = expected.value;
     return success([game.gameId, game]);

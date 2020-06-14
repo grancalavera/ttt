@@ -1,4 +1,5 @@
-import { failure, isSuccess, success, Result } from "../../result";
+import { Game } from "../../model";
+import { failure, isSuccess, Result, success } from "../../result";
 import {
   alice,
   bob,
@@ -19,7 +20,6 @@ import { acceptChallenge, failWithGameValidationError } from "./accept-challenge
 import { invalidPlayers } from "./create-players";
 import { invalidPositions } from "./create-positions";
 import { aliceChallengesBobGame, alicesChallenge } from "./fixtures";
-import { Game } from "../../model";
 
 const spyOnCreateGame = jest.fn();
 
@@ -209,9 +209,9 @@ describe.each(scenarios())("accept challenge: workflow", (scenario) => {
     });
 
     it("side effects: create game", () => {
-      const expectCreate = createExpected(expected);
-      if (isSuccess(expectCreate)) {
-        expect(spyOnCreateGame).toHaveBeenNthCalledWith(1, expectCreate.value);
+      const sideEffects = inferSideEffects(expected);
+      if (isSuccess(sideEffects)) {
+        expect(spyOnCreateGame).toHaveBeenNthCalledWith(1, sideEffects.value);
       } else {
         expect(spyOnCreateGame).not.toHaveBeenCalled();
       }
@@ -219,7 +219,7 @@ describe.each(scenarios())("accept challenge: workflow", (scenario) => {
   });
 });
 
-const createExpected = (expected: AcceptChallengeResult): Result<Game, void> => {
+const inferSideEffects = (expected: AcceptChallengeResult): Result<Game, void> => {
   if (isSuccess(expected)) {
     return success(expected.value);
   }

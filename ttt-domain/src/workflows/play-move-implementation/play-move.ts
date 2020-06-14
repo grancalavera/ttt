@@ -1,19 +1,24 @@
+import { failure, getFailure, isFailure, success } from "../../result";
+import { InvalidInput, isInvalid, sequence } from "../../validation";
+import {
+  CreateMoveInput,
+  CreateMoveValidationError,
+  GameUpdateFailedError,
+  PlayMove,
+} from "../play-move";
 import { transitionGameState } from "./transition-game-state";
 import { validateGameStatusIsOpen } from "./validate-game-status-is-open";
 import { validateIsPlayersTurn } from "./validate-is-players-turn";
 import { validatePlayerExistsInGame } from "./validate-player-exists-in-game";
 import { validatePositionInsideBoard } from "./validate-position-inside-board";
 import { validatePositionNotPlayed } from "./validate-position-not-played";
-import { isFailure, getFailure, success, failure } from "../../result";
-import { sequence, isInvalid, InvalidInput } from "../../validation";
-import { PlayMove, CreateMoveInput, CreateMoveValidationError } from "../play-move";
 
 export const playMove: PlayMove = (dependencies) => ({
   gameId,
   player,
   playerPosition,
 }) => async () => {
-  const { findGame } = dependencies;
+  const { findGame, updateGame } = dependencies;
   const runFindGame = findGame(gameId);
 
   const findGameResult = await runFindGame();
@@ -36,8 +41,15 @@ export const playMove: PlayMove = (dependencies) => ({
     return failWithMoveValidationError(getFailure(guard));
   }
 
-  const newGame = transitionGameState(game, [player, playerPosition]);
-  return success(newGame);
+  const updatedGame = transitionGameState(game, [player, playerPosition]);
+
+  const runUpdateGame = updateGame(updatedGame.gameId, updatedGame);
+  const updateGameResult = await runUpdateGame();
+  if (isFailure(updateGameResult)) {
+    return failure(new GameUpdateFailedError(updatedGame));
+  }
+
+  return success(updatedGame);
 };
 
 export const failWithMoveValidationError = (
