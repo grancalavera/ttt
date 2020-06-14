@@ -1,8 +1,23 @@
 import { CreateMoveInput } from "model";
-import { InvalidInput, Validation } from "validation";
+import {
+  failWithInvalidInput,
+  InvalidInput,
+  invalidInput,
+  Validation,
+  allow,
+} from "validation";
 
 export const validatePositionNotPlayed = (
   input: CreateMoveInput
 ): Validation<void, InvalidInput<CreateMoveInput>> => {
-  throw new Error("validateMoveInsideBoard not implemented");
+  const neverPlayed = input.game.moves.every(
+    ([_, candidate]) => input.playerPosition !== candidate
+  );
+
+  return neverPlayed ? allow : failWithInvalidPosition(input);
 };
+
+export const invalidPosition = invalidInput(
+  "can't play a position that has already been played"
+);
+export const failWithInvalidPosition = failWithInvalidInput(invalidPosition);
