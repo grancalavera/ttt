@@ -1,5 +1,5 @@
 import { CreateMoveInput } from "../../model";
-import { alice, bob, chris } from "../../test-support";
+import { alice, bob, illegalPlayer } from "../../test-support";
 import { allow, InvalidInput, Validation } from "../../validation";
 import { defaultGame, drawGame, aliceWinsGame } from "./fixtures";
 import { failWithInvalidTurn, validateIsPlayersTurn } from "./validate-is-players-turn";
@@ -27,10 +27,10 @@ const scenarios: Scenario[] = [
   },
   {
     name: "new game: unknown player should never be next",
-    input: { game: defaultGame, player: chris, playerPosition: 2 },
+    input: { game: defaultGame, player: illegalPlayer, playerPosition: 2 },
     expected: failWithInvalidTurn({
       game: defaultGame,
-      player: chris,
+      player: illegalPlayer,
       playerPosition: 2,
     }),
   },

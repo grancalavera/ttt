@@ -1,4 +1,4 @@
-export { alice, bob, chris, dave, toOpponent, toChallenger } from "./players";
+export { alice, bob, illegalPlayer, toOpponent, toChallenger } from "./players";
 export { narrowScenarios } from "./scenario";
 export {
   defaultGameId,

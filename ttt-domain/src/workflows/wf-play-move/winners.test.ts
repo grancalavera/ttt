@@ -1,5 +1,5 @@
 import { Move, Winner } from "../../model";
-import { narrowScenarios, alice, bob, chris } from "../../test-support";
+import { narrowScenarios, alice, bob, illegalPlayer } from "../../test-support";
 import { findWinners } from "./winners";
 
 interface Scenario {
@@ -50,15 +50,15 @@ const scenarios = narrowScenarios<Scenario>([
       [bob, 3],
       [bob, 4],
       [bob, 5],
-      [chris, 6],
-      [chris, 7],
-      [chris, 8],
+      [illegalPlayer, 6],
+      [illegalPlayer, 7],
+      [illegalPlayer, 8],
     ],
     size: 3,
     expected: [
       [alice, [0, 1, 2]],
       [bob, [3, 4, 5]],
-      [chris, [6, 7, 8]],
+      [illegalPlayer, [6, 7, 8]],
     ],
   },
 ]);

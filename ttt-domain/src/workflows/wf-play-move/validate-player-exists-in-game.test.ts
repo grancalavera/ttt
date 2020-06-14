@@ -5,7 +5,7 @@ import {
 } from "./validate-player-exists-in-game";
 import { CreateMoveInput } from "../../model";
 import { Validation, InvalidInput, allow } from "../../validation";
-import { alice, bob, chris } from "../../test-support";
+import { alice, bob, illegalPlayer } from "../../test-support";
 
 interface Scenario {
   name: string;
@@ -26,10 +26,10 @@ const scenarios: Scenario[] = [
   },
   {
     name: "chris doesn't exist in game",
-    input: { game: defaultGame, player: chris, playerPosition: 2 },
+    input: { game: defaultGame, player: illegalPlayer, playerPosition: 2 },
     expected: failWithInvalidPlayer({
       game: defaultGame,
-      player: chris,
+      player: illegalPlayer,
       playerPosition: 2,
     }),
   },

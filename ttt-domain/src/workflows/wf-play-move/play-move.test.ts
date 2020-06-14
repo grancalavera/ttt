@@ -6,7 +6,13 @@ import {
   PlayMoveResult,
   PlayMoveWorkflow,
 } from "../../model";
-import { alice, bob, chris, defaultGameId, narrowScenarios } from "../../test-support";
+import {
+  alice,
+  bob,
+  illegalPlayer,
+  defaultGameId,
+  narrowScenarios,
+} from "../../test-support";
 import {
   alicesDrawMove,
   aliceWinningMove,
@@ -44,7 +50,7 @@ const alwaysFindGame = (game: Game): GameFinder => ({
 
 const allValidationErrorsInput: CreateMoveInput = {
   game: impossibleGame,
-  player: chris,
+  player: illegalPlayer,
   playerPosition: -1,
 };
 
@@ -54,7 +60,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: playMove({ ...alwaysFindGame(impossibleGame) }),
     input: {
       gameId: defaultGameId,
-      player: chris,
+      player: illegalPlayer,
       playerPosition: -1,
     },
     expected: failWithMoveValidationError([
@@ -68,7 +74,7 @@ const scenarios = narrowScenarios<Scenario>([
   {
     name: "game not found",
     workflow: playMove({ ...neverFindGame }),
-    input: { gameId: defaultGameId, player: chris, playerPosition: 0 },
+    input: { gameId: defaultGameId, player: illegalPlayer, playerPosition: 0 },
     expected: {
       kind: "Failure",
       error: { kind: "GameNotFoundError", gameId: defaultGameId },
