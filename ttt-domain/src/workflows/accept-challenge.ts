@@ -1,19 +1,11 @@
-import {
-  Challenge,
-  ChallengeId,
-  Create,
-  Find,
-  Game,
-  Opponent,
-  Position,
-  UniqueIdProducer,
-} from "../model";
+import { Challenge, ChallengeId, Game, Opponent, Position } from "../model";
 import { Async, Result } from "../result";
 import { InvalidInput } from "../validation";
+import { Create, Find, UniqueIdProducer } from "./workflow-support";
 
 // prettier-ignore
 export type AcceptChallenge
-  =  (dependencies: UniqueIdProducer&ChallengeFinder & GameCreator)
+  =  (dependencies: UniqueIdProducer & ChallengeFinder & GameCreator)
   => AcceptChallengeWorkflow
 
 export type AcceptChallengeWorkflow = (

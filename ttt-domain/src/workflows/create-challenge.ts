@@ -1,5 +1,6 @@
-import { Challenge, Challenger, Create, Position, UniqueIdProducer } from "../model";
+import { Challenge, Challenger, Position } from "../model";
 import { Async, Result } from "../result";
+import { Create, UniqueIdProducer } from "./workflow-support";
 
 //  prettier-ignore
 export type CreateChallenge

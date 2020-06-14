@@ -1,6 +1,7 @@
-import { Find, Game, GameId, Player, Position } from "../model";
+import { Game, GameId, Player, Position } from "../model";
 import { Async, Result } from "../result";
 import { InvalidInput } from "../validation";
+import { Find } from "./workflow-support";
 
 // prettier-ignore
 export type PlayMove

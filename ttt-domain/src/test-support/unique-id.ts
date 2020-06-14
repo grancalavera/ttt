@@ -1,4 +1,5 @@
-import { ChallengeId, GameId, UniqueIdProducer } from "../model";
+import { ChallengeId, GameId } from "../model";
+import { UniqueIdProducer } from "../workflows";
 
 export const defaultGameId: GameId = "default-game-id";
 export const defaultChallengeId: ChallengeId = "default-challenge-id";
