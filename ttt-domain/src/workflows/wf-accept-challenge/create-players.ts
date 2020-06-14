@@ -4,14 +4,14 @@ import {
   CreateGameInput,
   opponentToPlayer,
   Players,
-} from "model";
+} from "../../model";
 import {
   failWithInvalidInput,
   InvalidInput,
   invalidInput,
   valid,
   Validation,
-} from "validation";
+} from "../../validation";
 
 export const createPlayers = (
   input: CreateGameInput

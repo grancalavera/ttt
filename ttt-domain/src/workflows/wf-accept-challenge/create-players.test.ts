@@ -1,7 +1,6 @@
-import { CreateGameInput, Players } from "model";
-import { alice } from "test-support";
-import { bob } from "test-support/players";
-import { InvalidInput, valid, Validation } from "validation";
+import { CreateGameInput, Players } from "../../model";
+import { alice, bob } from "../../test-support";
+import { InvalidInput, valid, Validation } from "../../validation";
 import { createPlayers, failWithInvalidPlayers } from "./create-players";
 import {
   aliceAcceptsHerOwnChallengeWithOtherPosition,

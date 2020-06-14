@@ -1,11 +1,11 @@
-import { CreateMoveInput } from "model";
+import { CreateMoveInput } from "../../model";
 import {
   failWithInvalidInput,
   InvalidInput,
   invalidInput,
   Validation,
   allow,
-} from "validation";
+} from "../../validation";
 
 export const validatePositionNotPlayed = (
   input: CreateMoveInput

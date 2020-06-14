@@ -1,11 +1,11 @@
-import { arePositionsTheSame, CreateGameInput, Position } from "model";
+import { arePositionsTheSame, CreateGameInput, Position } from "../../model";
 import {
   failWithInvalidInput,
   InvalidInput,
   invalidInput,
   valid,
   Validation,
-} from "validation";
+} from "../../validation";
 
 export const createPositions = (
   input: CreateGameInput

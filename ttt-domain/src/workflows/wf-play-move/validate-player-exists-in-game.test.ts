@@ -1,11 +1,11 @@
-import { CreateMoveInput } from "model";
-import { alice, bob, chris } from "test-support";
-import { allow, InvalidInput, Validation } from "validation";
 import { defaultGame } from "./fixtures";
 import {
   failWithInvalidPlayer,
   validatePlayerExistsInGame,
 } from "./validate-player-exists-in-game";
+import { CreateMoveInput } from "../../model";
+import { Validation, InvalidInput, allow } from "../../validation";
+import { alice, bob, chris } from "../../test-support";
 
 interface Scenario {
   name: string;

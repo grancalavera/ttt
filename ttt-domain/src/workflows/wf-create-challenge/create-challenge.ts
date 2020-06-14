@@ -1,5 +1,5 @@
-import { Challenge, CreateChallenge } from "model";
-import { isFailure, success } from "result";
+import { Challenge, CreateChallenge } from "../../model";
+import { isFailure, success } from "../../result";
 
 export const createChallenge: CreateChallenge = (dependencies) => (input) => async () => {
   const { getUniqueId, createChallenge } = dependencies;

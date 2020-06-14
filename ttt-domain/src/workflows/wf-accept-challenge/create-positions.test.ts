@@ -1,5 +1,5 @@
-import { CreateGameInput, Position } from "model";
-import { InvalidInput, valid, Validation } from "validation";
+import { CreateGameInput, Position } from "../../model";
+import { InvalidInput, valid, Validation } from "../../validation";
 import { createPositions, failWithInvalidPositions } from "./create-positions";
 import {
   aliceAcceptsHerOwnChallengeWithOtherPosition,

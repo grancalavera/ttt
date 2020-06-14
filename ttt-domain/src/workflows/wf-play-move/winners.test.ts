@@ -1,9 +1,6 @@
-import { Move, Winner } from "model";
-import { narrowScenarios, alice, bob } from "test-support";
+import { Move, Winner } from "../../model";
+import { narrowScenarios, alice, bob, chris } from "../../test-support";
 import { findWinners } from "./winners";
-import { chris } from "test-support/players";
-
-const size = 3;
 
 interface Scenario {
   name: string;

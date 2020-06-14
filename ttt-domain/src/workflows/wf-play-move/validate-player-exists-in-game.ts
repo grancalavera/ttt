@@ -1,11 +1,11 @@
-import { arePlayersTheSame_c, CreateMoveInput } from "model";
+import { arePlayersTheSame_c, CreateMoveInput } from "../../model";
 import {
   allow,
   failWithInvalidInput,
   InvalidInput,
   invalidInput,
   Validation,
-} from "validation";
+} from "../../validation";
 
 export const validatePlayerExistsInGame = (
   input: CreateMoveInput

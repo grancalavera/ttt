@@ -5,15 +5,15 @@ import {
   CreateChallengeInput,
   CreateChallengeResult,
   CreateChallengeWorkflow,
-} from "model";
-import { failure, Result, success } from "result";
+} from "../../model";
+import { failure, Result, success } from "../../result";
 import {
   alice,
   challengeUniqueIdProducer,
   defaultChallengeId,
   narrowScenarios,
-} from "test-support";
-import { toChallenger } from "test-support/players";
+  toChallenger,
+} from "../../test-support";
 import { createChallenge } from "./create-challenge";
 
 const spyOnCreateChallenge = jest.fn();

@@ -1,4 +1,4 @@
-import { Game, Move, OpenGame, Player, Players, Winner } from "model";
+import { Game, Move, OpenGame, Player, Players, Winner } from "../../model";
 import { findWinner } from "./winners";
 
 export const transitionGameState = (game: Game, move: Move): Game => {

@@ -1,5 +1,5 @@
 import { columns, diagonals, rows } from "./board";
-import { Move, Position, Winner } from "model";
+import { Move, Position, Winner } from "../../model";
 
 export const findWinner = (size: number, ms: Move[]): Winner | undefined =>
   findWinners(size, ms)[0];

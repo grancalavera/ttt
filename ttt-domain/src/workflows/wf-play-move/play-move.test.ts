@@ -5,8 +5,8 @@ import {
   PlayMoveInput,
   PlayMoveResult,
   PlayMoveWorkflow,
-} from "model";
-import { alice, bob, chris, defaultGameId, narrowScenarios } from "test-support";
+} from "../../model";
+import { alice, bob, chris, defaultGameId, narrowScenarios } from "../../test-support";
 import {
   alicesDrawMove,
   aliceWinningMove,

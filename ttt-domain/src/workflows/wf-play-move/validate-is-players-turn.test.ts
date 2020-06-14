@@ -1,6 +1,6 @@
-import { CreateMoveInput } from "model";
-import { alice, bob, chris } from "test-support";
-import { allow, InvalidInput, Validation } from "validation";
+import { CreateMoveInput } from "../../model";
+import { alice, bob, chris } from "../../test-support";
+import { allow, InvalidInput, Validation } from "../../validation";
 import { defaultGame, drawGame, aliceWinsGame } from "./fixtures";
 import { failWithInvalidTurn, validateIsPlayersTurn } from "./validate-is-players-turn";
 

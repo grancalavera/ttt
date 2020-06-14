@@ -1,4 +1,4 @@
-import { failure, success } from "result";
+import { failure, success } from "../result";
 import { sequence } from "./sequence";
 
 describe("sequence validations", () => {

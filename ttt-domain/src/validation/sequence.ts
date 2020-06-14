@@ -1,4 +1,4 @@
-import { Result, failure, success, isFailure, isSuccess } from "result";
+import { Result, failure, success, isFailure, isSuccess } from "../result";
 
 // prettier-ignore
 export function sequence<E, T1, T2, T3, T4, T5>(results: [Result<T1, E>, Result<T2, E>, Result<T3, E>, Result<T4, E>, Result<T5, E>]): Result<[T1, T2, T3, T4, T5], E[]>;

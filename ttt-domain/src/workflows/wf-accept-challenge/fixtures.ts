@@ -1,6 +1,12 @@
-import { Challenge, CreateGameInput, Game } from "model";
-import { alice, defaultChallengeId, defaultGameId } from "test-support";
-import { bob, toChallenger, toOpponent } from "test-support/players";
+import { Challenge, CreateGameInput, Game } from "../../model";
+import {
+  alice,
+  defaultChallengeId,
+  defaultGameId,
+  bob,
+  toChallenger,
+  toOpponent,
+} from "../../test-support";
 
 export const alicesChallenge: Challenge = {
   challengeId: defaultChallengeId,

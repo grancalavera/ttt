@@ -1,4 +1,4 @@
-import { Player, Challenger, Opponent } from "model";
+import { Player, Challenger, Opponent } from "../model";
 
 export const alice: Player = { playerId: "alice" };
 export const bob: Player = { playerId: "bob" };

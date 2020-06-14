@@ -1,5 +1,5 @@
-import { Async, AsyncResult, Result } from "result";
-import { InvalidInput } from "validation";
+import { Async, Result, AsyncResult } from "./result";
+import { InvalidInput } from "./validation";
 
 // ---------------------------------------------------------------------------------------
 //
