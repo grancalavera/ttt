@@ -1,8 +1,30 @@
 import { CreateMoveInput } from "model";
-import { InvalidInput, Validation } from "validation";
+import {
+  failWithInvalidInput,
+  InvalidInput,
+  invalidInput,
+  Validation,
+  allow,
+} from "validation";
 
 export const validatePositionInsideBoard = (
   input: CreateMoveInput
 ): Validation<void, InvalidInput<CreateMoveInput>> => {
-  throw new Error("validatePositionNotPlayers not implemented");
+  const {
+    playerPosition,
+    game: { size },
+  } = input;
+
+  const lowerBound = -1;
+  const upperBound = size * size;
+  const insideBoard = lowerBound < playerPosition && playerPosition < upperBound;
+
+  return insideBoard ? allow : failWithInvalidPositionOutsideBoard(input);
 };
+
+export const invalidPositionOutsideBoard = invalidInput(
+  "can't play a position outside the board"
+);
+export const failWithInvalidPositionOutsideBoard = failWithInvalidInput(
+  invalidPositionOutsideBoard
+);
