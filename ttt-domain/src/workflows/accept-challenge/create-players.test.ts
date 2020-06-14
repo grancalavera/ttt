@@ -1,6 +1,8 @@
-import { CreateGameInput, Position } from "../../model";
+import { Players } from "../../model";
+import { alice, bob } from "../../test-support";
 import { InvalidInput, valid, Validation } from "../../validation";
-import { createPositions, failWithInvalidPositions } from "./create-positions";
+import { CreateGameInput } from "../accept-challenge";
+import { createPlayers, failWithInvalidPlayers } from "./create-players";
 import {
   aliceAcceptsHerOwnChallengeWithOtherPosition,
   aliceAcceptsHerOwnChallengeWithTheSamePosition,
@@ -11,35 +13,35 @@ import {
 interface Scenario {
   name: string;
   input: CreateGameInput;
-  expected: Validation<[Position, Position], InvalidInput<CreateGameInput>>;
+  expected: Validation<Players, InvalidInput<CreateGameInput>>;
 }
 
 const scenarios: Scenario[] = [
   {
     name: "alice accepts her own challenge with the same position",
     input: aliceAcceptsHerOwnChallengeWithTheSamePosition,
-    expected: failWithInvalidPositions(aliceAcceptsHerOwnChallengeWithTheSamePosition),
+    expected: failWithInvalidPlayers(aliceAcceptsHerOwnChallengeWithTheSamePosition),
   },
   {
-    name: "alice accepts her own challenge with another position",
+    name: "alice accepts her own challenge with another other position",
     input: aliceAcceptsHerOwnChallengeWithOtherPosition,
-    expected: valid([0, 1]),
+    expected: failWithInvalidPlayers(aliceAcceptsHerOwnChallengeWithOtherPosition),
   },
   {
     name: "bob accepts alice's challenge with the same position",
     input: bobAcceptsAlicesChalengeWithHerSamePosition,
-    expected: failWithInvalidPositions(bobAcceptsAlicesChalengeWithHerSamePosition),
+    expected: valid([alice, bob]),
   },
   {
     name: "bob accepts alice's challenge with another position",
     input: bobAcceptsAlicesChalengeWithHisOwnPosition,
-    expected: valid([0, 1]),
+    expected: valid([alice, bob]),
   },
 ];
 
-describe.each(scenarios)("accept challenge: create moves", (scenario) => {
+describe.each(scenarios)("accept challenge: create players", (scenario) => {
   const { name, input, expected } = scenario;
-  const actual = createPositions(input);
+  const actual = createPlayers(input);
 
   it(name, () => {
     expect(actual).toEqual(expected);

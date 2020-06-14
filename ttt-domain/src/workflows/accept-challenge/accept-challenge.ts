@@ -1,11 +1,11 @@
+import { Game } from "../../model";
+import { failure, getFailure, getSuccess, isFailure, success } from "../../result";
+import { InvalidInput, isInvalid, sequence } from "../../validation";
 import {
   AcceptChallenge,
   CreateGameInput,
   CreateGameValidationError,
-  Game,
-} from "../../model";
-import { failure, getFailure, getSuccess, isFailure, success } from "../../result";
-import { InvalidInput, isInvalid, sequence } from "../../validation";
+} from "../accept-challenge";
 import { createPlayers } from "./create-players";
 import { createPositions } from "./create-positions";
 

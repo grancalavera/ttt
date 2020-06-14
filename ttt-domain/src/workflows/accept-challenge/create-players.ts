@@ -1,7 +1,6 @@
 import {
   arePlayersTheSame,
   challengerToPlayer,
-  CreateGameInput,
   opponentToPlayer,
   Players,
 } from "../../model";
@@ -12,6 +11,7 @@ import {
   valid,
   Validation,
 } from "../../validation";
+import { CreateGameInput } from "../accept-challenge";
 
 export const createPlayers = (
   input: CreateGameInput

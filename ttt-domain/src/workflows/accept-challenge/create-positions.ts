@@ -1,4 +1,4 @@
-import { arePositionsTheSame, CreateGameInput, Position } from "../../model";
+import { arePositionsTheSame, Position } from "../../model";
 import {
   failWithInvalidInput,
   InvalidInput,
@@ -6,13 +6,14 @@ import {
   valid,
   Validation,
 } from "../../validation";
+import { CreateGameInput } from "../accept-challenge";
 
 export const createPositions = (
   input: CreateGameInput
 ): Validation<[Position, Position], InvalidInput<CreateGameInput>> => {
   const {
-    challenge: { challengerPosition: challengerPosition },
-    opponentPosition: opponentPosition,
+    challenge: { challengerPosition },
+    opponentPosition,
   } = input;
 
   const positions: [Position, Position] = [challengerPosition, opponentPosition];

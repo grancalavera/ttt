@@ -1,23 +1,22 @@
+import { Game } from "../../model";
+import { failure, isSuccess, Result, success } from "../../result";
+import {
+  alice,
+  bob,
+  defaultChallengeId,
+  gameUniqueIdProducer,
+  narrowScenarios,
+  toOpponent,
+} from "../../test-support";
 import {
   AcceptChallengeError,
   AcceptChallengeInput,
   AcceptChallengeResult,
   AcceptChallengeWorkflow,
   ChallengeFinder,
-  Game,
   GameCreationFailedError,
   GameCreator,
-} from "../../model";
-import { failure, isSuccess, Result, success } from "../../result";
-import {
-  bob,
-  defaultChallengeId,
-  gameUniqueIdProducer,
-  narrowScenarios,
-  alice,
-  toOpponent,
-} from "../../test-support";
-
+} from "../accept-challenge";
 import { acceptChallenge, failWithGameValidationError } from "./accept-challenge";
 import { invalidPlayers } from "./create-players";
 import { invalidPositions } from "./create-positions";
