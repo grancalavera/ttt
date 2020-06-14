@@ -37,21 +37,6 @@ export interface Challenger {
   readonly challengerId: ChallengerId;
 }
 
-export const challengerToPlayer = ({ challengerId }: Challenger): Player => ({
-  playerId: challengerId,
-});
-export const opponentToPlayer = ({ opponentId }: Opponent): Player => ({
-  playerId: opponentId,
-});
-export const arePlayersTheSame = ([p1, p2]: Players) => p1.playerId === p2.playerId;
-export const arePositionsTheSame = ([pos1, pos2]: [Position, Position]) => pos1 === pos2;
-
-export const arePlayersTheSame_c = (compare: Player) => (candidate: Player) =>
-  arePlayersTheSame([compare, candidate]);
-
-export const arePositionsTheSame_c = (compare: Position) => (candidate: Position) =>
-  arePositionsTheSame([compare, candidate]);
-
 export interface Opponent {
   readonly opponentId: OpponentId;
 }

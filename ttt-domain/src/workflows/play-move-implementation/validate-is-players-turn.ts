@@ -1,4 +1,3 @@
-import { arePlayersTheSame } from "../../model";
 import {
   allow,
   failWithInvalidInput,
@@ -7,6 +6,7 @@ import {
   Validation,
 } from "../../validation";
 import { CreateMoveInput } from "../play-move";
+import { arePlayersTheSame } from "../workflow-support";
 
 export const validateIsPlayersTurn = (
   input: CreateMoveInput

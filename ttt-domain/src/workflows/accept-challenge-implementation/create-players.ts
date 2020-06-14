@@ -1,9 +1,4 @@
-import {
-  arePlayersTheSame,
-  challengerToPlayer,
-  opponentToPlayer,
-  Players,
-} from "../../model";
+import { Players } from "../../model";
 import {
   failWithInvalidInput,
   InvalidInput,
@@ -12,6 +7,11 @@ import {
   Validation,
 } from "../../validation";
 import { CreateGameInput } from "../accept-challenge";
+import {
+  arePlayersTheSame,
+  challengerToPlayer,
+  opponentToPlayer,
+} from "../workflow-support";
 
 export const createPlayers = (
   input: CreateGameInput

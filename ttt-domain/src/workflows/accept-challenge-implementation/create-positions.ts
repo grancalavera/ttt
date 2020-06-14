@@ -1,4 +1,4 @@
-import { arePositionsTheSame, Position } from "../../model";
+import { Position } from "../../model";
 import {
   failWithInvalidInput,
   InvalidInput,
@@ -7,6 +7,7 @@ import {
   Validation,
 } from "../../validation";
 import { CreateGameInput } from "../accept-challenge";
+import { arePositionsTheSame } from "../workflow-support";
 
 export const createPositions = (
   input: CreateGameInput
