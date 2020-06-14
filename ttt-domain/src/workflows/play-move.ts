@@ -8,11 +8,10 @@ export type PlayMove
   =  (dependencies: GameFinder)
   => PlayMoveWorkflow
 
-export type PlayMoveWorkflow = (input: PlayMoveInput) => Async<PlayMoveResult>;
-
-export interface GameFinder {
-  readonly findGame: Find<GameId, Game, GameNotFoundError>;
-}
+// prettier-ignore
+export type PlayMoveWorkflow
+  =  (input: PlayMoveInput)
+  => Async<PlayMoveResult>;
 
 export interface PlayMoveInput {
   readonly gameId: GameId;
@@ -38,4 +37,8 @@ export class GameNotFoundError {
 export class CreateMoveValidationError {
   readonly kind = "CreateMoveValidationError";
   constructor(readonly validationResult: InvalidInput<CreateMoveInput>[]) {}
+}
+
+export interface GameFinder {
+  readonly findGame: Find<GameId, Game, GameNotFoundError>;
 }
