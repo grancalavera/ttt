@@ -13,30 +13,19 @@ import { validatePlayerExistsInGame } from "./validate-player-exists-in-game";
 import { validatePositionInsideBoard } from "./validate-position-inside-board";
 import { validatePositionNotPlayed } from "./validate-position-not-played";
 
-export const playMove: PlayMove = (dependencies) => ({
-  gameId,
-  player,
-  playerPosition,
-}) => async () => {
+export const playMove: PlayMove = (dependencies) => (input) => async () => {
   const { findGame, updateGame } = dependencies;
-  const runFindGame = findGame(gameId);
+  const { gameId, player, playerPosition } = input;
 
+  const runFindGame = findGame(gameId);
   const findGameResult = await runFindGame();
   if (isFailure(findGameResult)) {
     return findGameResult;
   }
 
   const game = findGameResult.value;
-  const input: CreateMoveInput = { game, player, playerPosition };
 
-  const guard = sequence([
-    validateGameStatusIsOpen(input),
-    validatePlayerExistsInGame(input),
-    validateIsPlayersTurn(input),
-    validatePositionNotPlayed(input),
-    validatePositionInsideBoard(input),
-  ]);
-
+  const guard = validate({ game, player, playerPosition });
   if (isInvalid(guard)) {
     return failWithMoveValidationError(getFailure(guard));
   }
@@ -51,6 +40,15 @@ export const playMove: PlayMove = (dependencies) => ({
 
   return success(updatedGame);
 };
+
+const validate = (input: CreateMoveInput) =>
+  sequence([
+    validateGameStatusIsOpen(input),
+    validatePlayerExistsInGame(input),
+    validateIsPlayersTurn(input),
+    validatePositionNotPlayed(input),
+    validatePositionInsideBoard(input),
+  ]);
 
 export const failWithMoveValidationError = (
   validationResults: InvalidInput<CreateMoveInput>[]
