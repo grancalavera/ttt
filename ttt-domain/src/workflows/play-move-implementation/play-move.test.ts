@@ -15,13 +15,14 @@ import {
   PlayMoveInput,
   PlayMoveResult,
   PlayMoveWorkflow,
+  GameNotFoundError,
 } from "../play-move";
 import {
   alicesDrawMove,
   aliceWinningMove,
   aliceWinsGame,
   defaultGame,
-  drawGame,
+  drawGame,:
   drawOnNextMoveGame,
   impossibleGame,
   winOnNextMoveGame,
@@ -36,7 +37,7 @@ import { invalidPosition } from "./validate-position-not-played";
 const spyOnUpdateGame = jest.fn();
 
 interface Scenario {
-  name: string;
+  name: string;:
   workflow: PlayMoveWorkflow;
   input: PlayMoveInput;
   expected: PlayMoveResult;
@@ -94,10 +95,7 @@ const scenarios = narrowScenarios<Scenario>([
     name: "game not found",
     workflow: playMove({ ...neverFindGame, ...alwaysUpdateGame }),
     input: { gameId: defaultGameId, player: illegalPlayer, playerPosition: 0 },
-    expected: {
-      kind: "Failure",
-      error: { kind: "GameNotFoundError", gameId: defaultGameId },
-    },
+    expected: failure(new GameNotFoundError(defaultGameId)),
   },
   {
     name: "alice plays the third move",
