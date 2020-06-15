@@ -1,7 +1,11 @@
 import { Game, Move, OpenGame, Player, Players, Winner } from "../../model";
 import { findWinner } from "./winners";
+import { CreateMoveInput } from "../play-move";
 
-export const transitionGameState = (game: Game, move: Move): Game => {
+export const applyStateTransition = (input: CreateMoveInput): Game => {
+  const { game, player, playerPosition } = input;
+  const move: Move = [player, playerPosition];
+
   if (game.status.kind === "DrawGame" || game.status.kind === "WonGame") {
     return game;
   }

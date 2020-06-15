@@ -6,7 +6,7 @@ import {
   GameUpdateFailedError,
   PlayMove,
 } from "../play-move";
-import { transitionGameState } from "./transition-game-state";
+import { applyStateTransition } from "./apply-state-transition";
 import { validateGameStatusIsOpen } from "./validate-game-status-is-open";
 import { validateIsPlayersTurn } from "./validate-is-players-turn";
 import { validatePlayerExistsInGame } from "./validate-player-exists-in-game";
@@ -30,8 +30,7 @@ export const playMove: PlayMove = (dependencies) => (input) => async () => {
     return failWithMoveValidationError(getFailure(guard));
   }
 
-  const updatedGame = transitionGameState(game, [player, playerPosition]);
-
+  const updatedGame = applyStateTransition({ game, player, playerPosition });
   const runUpdateGame = updateGame(updatedGame.gameId, updatedGame);
   const updateGameResult = await runUpdateGame();
   if (isFailure(updateGameResult)) {
