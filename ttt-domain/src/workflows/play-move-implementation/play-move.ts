@@ -69,7 +69,7 @@ const applyStateTransition = (input: CreateMoveInput): Game => {
     return { ...game, moves, status: { kind: "WonGame", winner: maybeWinner } };
   }
 
-  if (!maybeWinner && moves.length === game.size * game.size) {
+  if (moves.length === game.size * game.size) {
     return { ...game, moves, status: { kind: "DrawGame" } };
   }
 
