@@ -139,6 +139,15 @@ const scenarios = narrowScenarios<Scenario>([
       value: aliceWinsGame,
     },
   },
+  {
+    name: "alice plays the winning move but the game fails to update",
+    workflow: playMove({
+      ...alwaysFindGame(winOnNextMoveGame),
+      ...neverUpdateGame,
+    }),
+    input: { gameId: defaultGameId, player: alice, playerPosition: aliceWinningMove[1] },
+    expected: failure(new GameUpdateFailedError(aliceWinsGame)),
+  },
 ]);
 
 describe.each(scenarios())("play move: workflow", (scenario) => {
