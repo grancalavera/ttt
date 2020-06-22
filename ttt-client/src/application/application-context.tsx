@@ -1,4 +1,3 @@
-import { Maybe } from "@grancalavera/ttt-core";
 import { SetState } from "common";
 import { failProxy } from "common/fail-proxy";
 import { Token } from "generated/graphql";
@@ -9,8 +8,8 @@ import { GlobalStyle } from "../common/global-style";
 interface Application {
   gameId: string;
   setGameId: SetState<string>;
-  token: Maybe<Token>;
-  setToken: SetState<Maybe<Token>>;
+  token?: Token;
+  setToken: SetState<Token | undefined>;
 }
 
 const ApplicationContext = React.createContext<Application>(
@@ -19,7 +18,7 @@ const ApplicationContext = React.createContext<Application>(
 
 export const ApplicationProvider: React.FC = ({ children }) => {
   const [gameId, setGameId] = useState("");
-  const [token, setToken] = useState<Maybe<Token>>();
+  const [token, setToken] = useState<Token | undefined>();
 
   return (
     <>

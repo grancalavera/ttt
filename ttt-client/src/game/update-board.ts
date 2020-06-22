@@ -1,4 +1,3 @@
-import { assertNever, Maybe } from "@grancalavera/ttt-core";
 import { WithTypename } from "../common/with-typename";
 import { amINext } from "./turn";
 import { GameState, Move, Position, Token } from "../generated/graphql";
@@ -15,12 +14,14 @@ export const updateBoard = (gameState: WithTypename<GameState>): CellState[] => 
     case "GameOverDrawState":
     case "GameOverWonState":
       return EMPTY_BOARD.map(select);
-    default:
-      assertNever(gameState);
+    default: {
+      const never: never = gameState;
+      throw new Error(`unknown game state ${never}`);
+    }
   }
 };
 
-type FindPlayedCell = (i: Index) => Maybe<PlayedCell>;
+type FindPlayedCell = (i: Index) => PlayedCell | undefined;
 
 type SelectCell = <T extends FreeCell | DisabledCell>(
   findCell: FindPlayedCell
@@ -28,22 +29,22 @@ type SelectCell = <T extends FreeCell | DisabledCell>(
 
 type Index = number;
 
-const selectCell: SelectCell = findCell => (cell, i) => findCell(i) ?? cell;
+const selectCell: SelectCell = (findCell) => (cell, i) => findCell(i) ?? cell;
 
 const BOARD = Array.from({ length: 9 }, (_, i) => i);
 
 const EMPTY_BOARD = BOARD.map(() => ({ kind: "disabled" as const }));
 
 const freeBoard = (token: Token): FreeCell[] =>
-  BOARD.map(i => ({
+  BOARD.map((i) => ({
     kind: "free",
-    move: { position: indexToPosition(i), token }
+    move: { position: indexToPosition(i), token },
   }));
 
 const getPlayedCellByIndex = (moves: readonly Move[]) => (
   i: number
-): Maybe<PlayedCell> => {
-  const move = moves.find(move => move.position === indexToPosition(i));
+): PlayedCell | undefined => {
+  const move = moves.find((move) => move.position === indexToPosition(i));
   return move ? { kind: "played", move } : undefined;
 };
 

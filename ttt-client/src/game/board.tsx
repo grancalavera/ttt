@@ -1,5 +1,4 @@
 import { Button, Intent } from "@blueprintjs/core";
-import { assertNever } from "@grancalavera/ttt-core";
 import React from "react";
 import { BoardLayout, CellLayout } from "../common/layout";
 import { WithTypename } from "../common/with-typename";
@@ -38,8 +37,10 @@ const Cell: React.FC<{ cellState: CellState }> = ({ cellState }) => {
         return <PlayedCell move={cellState.move} />;
       case "disabled":
         return null;
-      default:
-        return assertNever(cellState);
+      default: {
+        const never: never = cellState;
+        throw new Error(`unknown cell state ${never}`);
+      }
     }
   };
 

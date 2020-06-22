@@ -1,5 +1,4 @@
 import { Alert, H5 } from "@blueprintjs/core";
-import { assertNever } from "@grancalavera/ttt-core";
 import React, { ErrorInfo } from "react";
 
 interface FatalErrorHandlerProps {
@@ -22,12 +21,12 @@ interface DoesNotHaveError {
 
 const resetError = (): FatalErrorHandlerState => ({
   errorResult: { kind: "DoesNotHaveError" },
-  showError: false
+  showError: false,
 });
 
 const createError = (error: any): FatalErrorHandlerState => ({
   errorResult: { kind: "HasError", error },
-  showError: true
+  showError: true,
 });
 
 export class FatalErrorHandler extends React.Component<
@@ -70,8 +69,10 @@ export class FatalErrorHandler extends React.Component<
           </Alert>
         );
       }
-      default:
-        assertNever(this.state.errorResult);
+      default: {
+        const never: never = this.state.errorResult;
+        throw new Error(`unknown error result ${never}`);
+      }
     }
   }
 }
