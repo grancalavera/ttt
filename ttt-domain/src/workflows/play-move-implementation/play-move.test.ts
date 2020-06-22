@@ -22,7 +22,7 @@ import {
   aliceWinningMove,
   aliceWinsGame,
   defaultGame,
-  drawGame,:
+  drawGame,
   drawOnNextMoveGame,
   impossibleGame,
   winOnNextMoveGame,
@@ -37,7 +37,7 @@ import { invalidPosition } from "./validate-position-not-played";
 const spyOnUpdateGame = jest.fn();
 
 interface Scenario {
-  name: string;:
+  name: string;
   workflow: PlayMoveWorkflow;
   input: PlayMoveInput;
   expected: PlayMoveResult;

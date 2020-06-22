@@ -14,16 +14,16 @@
     "gen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
-    "@graphql-codegen/cli": "1.9.1",
-    "@graphql-codegen/fragment-matcher": "1.9.1",
-    "@graphql-codegen/typescript": "1.9.1",
-    "@graphql-codegen/typescript-operations": "1.9.1",
-    "@graphql-codegen/typescript-react-apollo": "1.9.1",
-    "@graphql-codegen/typescript-resolvers": "1.9.1",
+    "@graphql-codegen/cli": "1.15.3",
+    "@graphql-codegen/fragment-matcher": "1.15.3",
+    "@graphql-codegen/typescript": "1.15.3",
+    "@graphql-codegen/typescript-operations": "1.15.3",
+    "@graphql-codegen/typescript-react-apollo": "1.15.3",
+    "@graphql-codegen/typescript-resolvers": "1.15.3",
     "@types/graphql": "14.5.0",
-    "graphql": "14.5.8",
-    "graphql-tag": "2.0.0",
-    "lerna": "3.16.4"
+    "graphql": "15.1.0",
+    "graphql-tag": "2.10.3",
+    "lerna": "3.22.1"
   },
   "workspaces": [
     "ttt-*"
