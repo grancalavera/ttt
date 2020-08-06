@@ -6,13 +6,14 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.scss";
 
-ReactDOM.render(
-  <FatalErrorHandler title="Fatal Error">
-    <ApplicationProvider>
-      <NetworkProvider>
-        <Application />
-      </NetworkProvider>
-    </ApplicationProvider>
-  </FatalErrorHandler>,
-  document.getElementById("root")
+ReactDOM.unstable_createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <FatalErrorHandler title="Fatal Error">
+      <ApplicationProvider>
+        <NetworkProvider>
+          <Application />
+        </NetworkProvider>
+      </ApplicationProvider>
+    </FatalErrorHandler>
+  </React.StrictMode>
 );
