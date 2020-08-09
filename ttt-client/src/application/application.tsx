@@ -3,7 +3,7 @@ import { GameRoute } from "game";
 import { MenuRoute } from "menu";
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { Button } from "@blueprintjs/core";
+
 export const Application: React.FC = () => {
   return (
     <>
