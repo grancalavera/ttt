@@ -76,7 +76,7 @@ export class AnonymousUserLink extends ApolloLink {
     forward: NextLink
   ): Observable<FetchResult> {
     return new Observable<FetchResult>((observer) => {
-      const fetchAnonymousUser = async () => {
+      (async () => {
         const response = await fetch(this.endpoint, {
           method: "POST",
           credentials: "include",
@@ -96,9 +96,7 @@ export class AnonymousUserLink extends ApolloLink {
           error: observer.error.bind(observer),
           complete: observer.complete.bind(observer),
         });
-      };
-
-      fetchAnonymousUser();
+      })();
     });
   }
 }

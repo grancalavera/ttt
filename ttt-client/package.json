@@ -30,7 +30,7 @@
     "styled-components": "5.1.1",
     "typescript": "3.9.5",
     "uuid": "8.1.0",
-    "zustand": "2.2.3"
+    "zustand": "2.2.4"
   },
   "scripts": {
     "start": "BROWSER=none react-scripts start",
