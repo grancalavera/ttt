@@ -1,5 +1,9 @@
 @import "@blueprintjs/core/lib/scss/variables";
 
-body {
+body.bp3-dark {
   background-color: $pt-dark-app-background-color;
+}
+
+body.bp3-light {
+  background-color: $pt-app-background-color;
 }
