@@ -1,5 +1,6 @@
 import { Alert, H5 } from "@blueprintjs/core";
 import React, { ErrorInfo } from "react";
+import { useStore } from "app-store";
 
 interface FatalErrorHandlerProps {
   title: string;
@@ -53,20 +54,13 @@ export class FatalErrorHandler extends React.Component<
       case "DoesNotHaveError":
         return this.props.children;
       case "HasError": {
-        const error = this.state.errorResult.error;
         return (
-          <Alert
-            isOpen={this.state.showError}
-            className="bp3-dark"
-            intent="danger"
-            icon="error"
+          <ErrorAlert
+            show={this.state.showError}
+            title={this.props.title}
+            error={this.state.errorResult.error}
             onConfirm={() => this.setState({ showError: false })}
-          >
-            <>
-              <H5>{this.props.title}</H5>
-              <p>{error.message ?? error.toString()}</p>
-            </>
-          </Alert>
+          />
         );
       }
       default: {
@@ -76,3 +70,29 @@ export class FatalErrorHandler extends React.Component<
     }
   }
 }
+
+interface Props {
+  show: boolean;
+  title: string;
+  error: any;
+  onConfirm: () => void;
+}
+
+const ErrorAlert: React.FC<Props> = ({ error, title, show, onConfirm }) => {
+  const theme = useStore((s) => s.theme);
+
+  return (
+    <Alert
+      isOpen={show}
+      className={theme}
+      intent="danger"
+      icon="error"
+      onConfirm={onConfirm}
+    >
+      <>
+        <H5>{title}</H5>
+        <p>{error.message ?? error.toString()}</p>
+      </>
+    </Alert>
+  );
+};
