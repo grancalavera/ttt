@@ -16,7 +16,9 @@ export const GameRoute: React.FC = () => {
     openGame();
   }, [openGame]);
 
-  toggleLoading(task.isLoading(openGameTask));
+  useEffect(() => {
+    toggleLoading(task.isLoading(openGameTask));
+  }, [toggleLoading, openGameTask]);
 
   if (task.didFail(openGameTask)) {
     return <Redirect to="/" />;

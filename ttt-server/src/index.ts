@@ -1,12 +1,10 @@
 import "dotenv/config";
-import "reflect-metadata";
-import { createConnection, getConnectionOptions } from "typeorm";
-import { mkServer, mkSubscriptionServer } from "server";
 import { createServer } from "http";
+import "reflect-metadata";
+import { mkServer, mkSubscriptionServer } from "server";
+import { createConnection, getConnectionOptions } from "typeorm";
 
-main();
-
-async function main() {
+(async () => {
   const port = process.env.PORT!;
   const origin = process.env.ORIGIN!;
 
@@ -20,4 +18,4 @@ async function main() {
     console.log(`express + graphql server running at port ${port}`);
     mkSubscriptionServer(server);
   });
-}
+})();
