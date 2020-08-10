@@ -50,7 +50,7 @@ export class AnonymousUserLink extends ApolloLink {
 
   private setAuthorizationHeader(operation: Operation) {
     const context = operation.getContext();
-    const { authorization, ...headers } = context.headers || {};
+    const { authorization, ...headers } = context.headers ?? {};
     if (this.isAuthorized()) {
       operation.setContext({
         headers: {

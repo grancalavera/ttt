@@ -1,7 +1,7 @@
 import "@blueprintjs/core/lib/css/blueprint.css";
 import { Application } from "application";
-import { GlobalStyle } from "common";
 import { FatalErrorHandler } from "common/fatal-error-handler";
+import { GlobalStyle } from "common/global-style";
 import { TTTThemeProvider } from "common/theme";
 import { ToggleTheme } from "common/toggle-theme";
 import { NetworkProvider } from "network/network-context";

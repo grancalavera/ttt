@@ -1,4 +1,5 @@
-import { Background, Layout } from "common";
+import { Background } from "common/background";
+import { Layout } from "common/layout";
 import { GameRoute } from "game";
 import { MenuRoute } from "menu";
 import React from "react";
