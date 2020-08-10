@@ -1,46 +1,20 @@
 import { Alert, H5 } from "@blueprintjs/core";
-import React, { ErrorInfo } from "react";
+import { isSome, none, Option, some } from "@grancalavera/ttt-etc";
 import { useStore } from "app-store";
+import React, { ErrorInfo, useState } from "react";
 
-interface FatalErrorHandlerProps {
-  title: string;
+interface State {
+  error: Option<any>;
 }
 
-interface FatalErrorHandlerState {
-  errorResult: DoesNotHaveError | HasError;
-  showError: boolean;
-}
-
-interface HasError {
-  kind: "HasError";
-  error: any;
-}
-
-interface DoesNotHaveError {
-  kind: "DoesNotHaveError";
-}
-
-const resetError = (): FatalErrorHandlerState => ({
-  errorResult: { kind: "DoesNotHaveError" },
-  showError: false,
-});
-
-const createError = (error: any): FatalErrorHandlerState => ({
-  errorResult: { kind: "HasError", error },
-  showError: true,
-});
-
-export class FatalErrorHandler extends React.Component<
-  FatalErrorHandlerProps,
-  FatalErrorHandlerState
-> {
-  constructor(props: FatalErrorHandlerProps) {
+export class FatalErrorHandler extends React.Component<{}, State> {
+  constructor(props: {}) {
     super(props);
-    this.state = resetError();
+    this.state = { error: none };
   }
 
   static getDerivedStateFromError(error: any) {
-    return createError(error);
+    return { error: some(error) };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -50,36 +24,21 @@ export class FatalErrorHandler extends React.Component<
   }
 
   render() {
-    switch (this.state.errorResult.kind) {
-      case "DoesNotHaveError":
-        return this.props.children;
-      case "HasError": {
-        return (
-          <ErrorAlert
-            show={this.state.showError}
-            title={this.props.title}
-            error={this.state.errorResult.error}
-            onConfirm={() => this.setState({ showError: false })}
-          />
-        );
-      }
-      default: {
-        const never: never = this.state.errorResult;
-        throw new Error(`unknown error result ${never}`);
-      }
-    }
+    return isSome(this.state.error) ? (
+      <ErrorAlert error={this.state.error.value} />
+    ) : (
+      this.props.children
+    );
   }
 }
 
-interface Props {
-  show: boolean;
-  title: string;
+interface ErrorAlertProps {
   error: any;
-  onConfirm: () => void;
 }
 
-const ErrorAlert: React.FC<Props> = ({ error, title, show, onConfirm }) => {
+const ErrorAlert: React.FC<ErrorAlertProps> = ({ error }) => {
   const theme = useStore((s) => s.theme);
+  const [show, setShow] = useState(true);
 
   return (
     <Alert
@@ -87,12 +46,10 @@ const ErrorAlert: React.FC<Props> = ({ error, title, show, onConfirm }) => {
       className={theme}
       intent="danger"
       icon="error"
-      onConfirm={onConfirm}
+      onConfirm={() => setShow(false)}
     >
-      <>
-        <H5>{title}</H5>
-        <p>{error.message ?? error.toString()}</p>
-      </>
+      <H5>Fatal Error</H5>
+      <p>{error.message ?? error.toString()}</p>
     </Alert>
   );
 };

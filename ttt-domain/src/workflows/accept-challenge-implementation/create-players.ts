@@ -5,7 +5,7 @@ import {
   invalidInput,
   valid,
   Validation,
-} from "../../validation";
+} from "@grancalavera/ttt-etc";
 import { CreateGameInput } from "../accept-challenge";
 import {
   arePlayersTheSame,

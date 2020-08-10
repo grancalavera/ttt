@@ -1,6 +1,13 @@
+import {
+  failure,
+  getFailure,
+  InvalidInput,
+  isFailure,
+  isInvalid,
+  sequence,
+  success,
+} from "@grancalavera/ttt-etc";
 import { Game, Move, OpenGame, Player, Players, Winner } from "../..";
-import { failure, getFailure, isFailure, success } from "../../result";
-import { InvalidInput, isInvalid, sequence } from "../../validation";
 import {
   CreateMoveInput,
   CreateMoveValidationError,

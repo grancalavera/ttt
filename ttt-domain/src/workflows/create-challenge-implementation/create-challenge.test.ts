@@ -1,5 +1,5 @@
 import { Challenge } from "../../model";
-import { failure, Result, success } from "../../result";
+import { failure, Result, success } from "@grancalavera/ttt-etc";
 import {
   alice,
   challengeUniqueIdProducer,

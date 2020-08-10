@@ -1,6 +1,4 @@
 export type Result<T, E> = Success<T> | Failure<E>;
-export type AsyncResult<T, E> = Async<Result<T, E>>;
-export type Async<T> = () => Promise<T>;
 
 export type Success<T> = { kind: "Success"; value: T };
 export type Failure<E> = { kind: "Failure"; error: E };

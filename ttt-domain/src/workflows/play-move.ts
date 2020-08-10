@@ -1,6 +1,5 @@
+import { Async, InvalidInput, Result } from "@grancalavera/ttt-etc";
 import { Game, GameId, Player, Position } from "../model";
-import { Async, Result } from "../result";
-import { InvalidInput } from "../validation";
 import { Find, Update } from "./workflow-support";
 
 // prettier-ignore

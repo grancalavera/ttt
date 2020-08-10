@@ -4,7 +4,7 @@ import {
   InvalidInput,
   invalidInput,
   Validation,
-} from "../../validation";
+} from "@grancalavera/ttt-etc";
 import { CreateMoveInput } from "../play-move";
 import { arePlayersTheSame } from "../workflow-support";
 

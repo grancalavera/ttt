@@ -1,6 +1,6 @@
 import { Players } from "../../model";
 import { alice, bob } from "../../test-support";
-import { InvalidInput, valid, Validation } from "../../validation";
+import { InvalidInput, valid, Validation } from "@grancalavera/ttt-etc";
 import { CreateGameInput } from "../accept-challenge";
 import { createPlayers, failWithInvalidPlayers } from "./create-players";
 import {

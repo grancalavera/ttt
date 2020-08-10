@@ -1,5 +1,5 @@
 import { Position } from "../../model";
-import { InvalidInput, valid, Validation } from "../../validation";
+import { InvalidInput, valid, Validation } from "@grancalavera/ttt-etc";
 import { CreateGameInput } from "../accept-challenge";
 import { createPositions, failWithInvalidPositions } from "./create-positions";
 import {

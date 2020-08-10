@@ -1,5 +1,5 @@
 import { Game } from "../../model";
-import { failure, isSuccess, Result, success } from "../../result";
+import { failure, isSuccess, Result, success } from "@grancalavera/ttt-etc";
 import {
   alice,
   bob,

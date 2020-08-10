@@ -1,4 +1,4 @@
-import * as r from "../result";
+import * as r from "./result";
 export { sequence } from "./sequence";
 
 export type Validation<T, E> = r.Result<T, E>;

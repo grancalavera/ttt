@@ -1,5 +1,5 @@
 import { Challenge, Challenger, Position } from "../model";
-import { Async, Result } from "../result";
+import { Async, Result } from "@grancalavera/ttt-etc";
 import { Create, UniqueIdProducer } from "./workflow-support";
 
 //  prettier-ignore

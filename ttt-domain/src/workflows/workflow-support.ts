@@ -1,5 +1,5 @@
 import { Challenger, Opponent, Player } from "../model";
-import { AsyncResult } from "../result";
+import { AsyncResult } from "@grancalavera/ttt-etc";
 
 export interface UniqueIdProducer {
   readonly getUniqueId: () => string;

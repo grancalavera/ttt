@@ -13,7 +13,7 @@ ReactDOM.unstable_createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <GlobalStyle />
     <TTTThemeProvider>
-      <FatalErrorHandler title="Fatal Error">
+      <FatalErrorHandler>
         <NetworkProvider>
           <Application />
           <ToggleTheme />

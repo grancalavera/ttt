@@ -1,5 +1,5 @@
 import { alice, bob, illegalPlayer } from "../../test-support";
-import { allow, InvalidInput, Validation } from "../../validation";
+import { allow, InvalidInput, Validation } from "@grancalavera/ttt-etc";
 import { CreateMoveInput } from "../play-move";
 import { defaultGame } from "./fixtures";
 import {

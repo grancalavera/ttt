@@ -1,5 +1,5 @@
 import { Challenge } from "../../model";
-import { isFailure, success } from "../../result";
+import { isFailure, success } from "@grancalavera/ttt-etc";
 import { CreateChallenge } from "../create-challenge";
 
 export const createChallenge: CreateChallenge = (dependencies) => (input) => async () => {
