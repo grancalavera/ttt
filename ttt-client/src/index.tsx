@@ -1,10 +1,10 @@
 import "@blueprintjs/core/lib/css/blueprint.css";
 import { Application } from "application";
 import { GlobalStyle } from "common";
+import { FatalErrorHandler } from "common/fatal-error-handler";
 import { TTTThemeProvider } from "common/theme";
 import { ToggleTheme } from "common/toggle-theme";
-import { FatalErrorHandler } from "error";
-import { NetworkProvider } from "network";
+import { NetworkProvider } from "network/network-context";
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.scss";
