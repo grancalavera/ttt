@@ -7,12 +7,10 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 export const Application: React.FC = () => {
   return (
-    <>
-      <Layout>
-        <Background />
-        <AppRouter />
-      </Layout>
-    </>
+    <Layout>
+      <Background />
+      <AppRouter />
+    </Layout>
   );
 };
 
