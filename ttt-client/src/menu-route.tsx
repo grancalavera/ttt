@@ -1,67 +1,35 @@
-import { Button, Tooltip, Icon, Colors } from "@blueprintjs/core";
 import React from "react";
-import { useHistory } from "react-router-dom";
-import { hoverOpenDelay } from "./app-constants";
-import { Cell, Screen } from "./layout";
 import { useTheme } from "styled-components";
+import { Cell, Layer, StrokeLayer } from "./layout";
 
 export const MenuRoute: React.FC = () => {
-  const history = useHistory();
-  const theme = useTheme();
-
-  const handlePlay = () => {
-    history.push("/game");
-  };
-
+  const { opponent, player } = useTheme();
   return (
-    <Screen>
-      <Cell>
-        <Tooltip content="new game" hoverOpenDelay={hoverOpenDelay}>
-          <Button icon="add" onClick={handlePlay} large intent="primary" />
-        </Tooltip>
-      </Cell>
+    <>
+      <Layer>
+        <Cell></Cell>
+        <Cell>
+          <span style={{ fontSize: 40, color: opponent }}>O</span>
+        </Cell>
+        <Cell>
+          <span style={{ fontSize: 40, color: player }}>X</span>
+        </Cell>
 
-      <Cell>
-        <Tooltip content="waiting for opponent's turn" hoverOpenDelay={hoverOpenDelay}>
-          <Icon icon="time" intent="warning" />
-        </Tooltip>
-      </Cell>
+        <Cell></Cell>
+        <Cell>
+          <span style={{ fontSize: 40, color: player }}>X</span>
+        </Cell>
+        <Cell></Cell>
 
-      <Cell>
-        <Tooltip content="is your turn" hoverOpenDelay={hoverOpenDelay}>
-          <Button icon="play" large intent="success" />
-        </Tooltip>
-      </Cell>
-
-      <Cell>
-        <Tooltip content="is your turn" hoverOpenDelay={hoverOpenDelay}>
-          <Button icon="play" large intent="success" />
-        </Tooltip>
-      </Cell>
-
-      <Cell>
-        <Tooltip content="waiting for opponent's turn" hoverOpenDelay={hoverOpenDelay}>
-          <Icon icon="time" intent="warning" />
-        </Tooltip>
-      </Cell>
-
-      <Cell>
-        <Tooltip content="waiting for opponent's turn" hoverOpenDelay={hoverOpenDelay}>
-          <Icon icon="time" intent="warning" />
-        </Tooltip>
-      </Cell>
-
-      <Cell>
-        <Tooltip content="waiting for opponent's turn" hoverOpenDelay={hoverOpenDelay}>
-          <Icon icon="time" intent="warning" />
-        </Tooltip>
-      </Cell>
-
-      <Cell>
-        <Tooltip content="is your turn" hoverOpenDelay={hoverOpenDelay}>
-          <Button icon="play" large intent="success" />
-        </Tooltip>
-      </Cell>
-    </Screen>
+        <Cell>
+          <span style={{ fontSize: 40, color: player }}>X</span>
+        </Cell>
+        <Cell>
+          <span style={{ fontSize: 40, color: opponent }}>O</span>
+        </Cell>
+        <Cell></Cell>
+      </Layer>
+      <StrokeLayer s="d2" />
+    </>
   );
 };

@@ -1,7 +1,8 @@
 import { Card } from "@blueprintjs/core";
 import React, { FC } from "react";
 import styled, { css } from "styled-components/macro";
-import { gridBackgroundImage } from "./grid-background-image";
+import { gridImage } from "./grid-image";
+import { Stroke, strokeImage } from "./stroke-image";
 
 const centerChildren = css`
   display: grid;
@@ -29,7 +30,13 @@ const Grid = styled.div`
   grid-template: repeat(3, 1fr) / repeat(3, 1fr);
   width: ${({ theme }) => theme.innerWidth}px;
   height: ${({ theme }) => theme.innerWidth}px;
-  ${gridBackgroundImage};
+  ${gridImage};
+`;
+
+const StrokeImage = styled.div<{ s: Stroke }>`
+  width: ${({ theme }) => theme.innerWidth}px;
+  height: ${({ theme }) => theme.innerWidth}px;
+  ${strokeImage};
 `;
 
 export const Cell = styled.span`
@@ -38,10 +45,16 @@ export const Cell = styled.span`
   height: ${({ theme }) => theme.cellWidth}px;
 `;
 
-export const Screen: FC = ({ children }) => (
+export const Layer: FC = ({ children }) => (
   <Cover>
     <Content>
       <Grid>{children}</Grid>
     </Content>
+  </Cover>
+);
+
+export const StrokeLayer: React.FC<{ s: Stroke }> = ({ s }) => (
+  <Cover>
+    <StrokeImage s={s} />
   </Cover>
 );

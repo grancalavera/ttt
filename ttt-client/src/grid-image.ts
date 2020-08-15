@@ -13,24 +13,24 @@ const gridGradient = css(
   ${transparent} ${gradientStop(theme)}px,
 
   // first line
-  ${theme.accent} ${gradientStop(theme)}px,
-  ${theme.accent} ${gradientStop(theme, 1)}px,
+  ${theme.gridLine} ${gradientStop(theme)}px,
+  ${theme.gridLine} ${gradientStop(theme, 1)}px,
 
   // middle row / col
   ${transparent} ${gradientStop(theme, 1)}px,
   ${transparent} ${gradientStop(theme, -1, 2)}px,
 
   // second line
-  ${theme.accent} ${gradientStop(theme, -1, 2)}px,
-  ${theme.accent} ${gradientStop(theme, 1, 2)}px,
+  ${theme.gridLine} ${gradientStop(theme, -1, 2)}px,
+  ${theme.gridLine} ${gradientStop(theme, 1, 2)}px,
 
   // last row / col
   ${transparent} ${gradientStop(theme, 1, 2)}px`
 );
 
 // prettier-ignore
-export const gridBackgroundImage = css`
-  background-image:
+export const gridImage = css`
+  background:
     linear-gradient(to right, ${gridGradient}),
     linear-gradient(to bottom, ${gridGradient});
 `

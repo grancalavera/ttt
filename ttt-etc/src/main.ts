@@ -4,3 +4,4 @@ export * from "./option";
 export * from "./result";
 export * from "./sequence";
 export * from "./validation";
+export * from "./enumerate";

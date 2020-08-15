@@ -2,18 +2,22 @@ import { Colors, FocusStyleManager } from "@blueprintjs/core";
 import React from "react";
 import { ThemeProvider as SCThemeProvider } from "styled-components";
 import { createGlobalStyle } from "styled-components/macro";
-
 import { useAppState } from "./app-state";
+import chroma from "chroma-js";
 
 FocusStyleManager.onlyShowFocusOnTabs();
 
 export interface Theme {
-  accent: string;
+  gridLine: string;
+  stroke: string;
   isDark: boolean;
   padding: number;
   cellWidth: number;
   innerWidth: number;
   outerWidth: number;
+  transparent: string;
+  player: string;
+  opponent: string;
 }
 
 const padding = 20;
@@ -26,9 +30,14 @@ const defaultTheme: Theme = {
   cellWidth,
   innerWidth,
   outerWidth,
-  accent: Colors.DARK_GRAY3,
   isDark: true,
+  transparent: "rgba(0, 0, 0, 0)",
+  gridLine: "",
+  stroke: "",
+  player: "",
+  opponent: "",
 };
+const alpha = (c: string) => chroma(c).alpha(0.9).hex();
 
 declare module "styled-components" {
   export interface DefaultTheme extends Theme {}
@@ -40,7 +49,10 @@ export const ThemeProvider: React.FC = ({ children }) => {
   const theme: Theme = {
     ...defaultTheme,
     isDark,
-    accent: isDark ? Colors.DARK_GRAY3 : Colors.LIGHT_GRAY3,
+    gridLine: isDark ? Colors.DARK_GRAY3 : Colors.LIGHT_GRAY3,
+    stroke: isDark ? alpha(Colors.DARK_GRAY3) : alpha(Colors.LIGHT_GRAY1),
+    player: isDark ? Colors.LIGHT_GRAY4 : Colors.DARK_GRAY2,
+    opponent: isDark ? Colors.DARK_GRAY2 : Colors.GRAY5,
   };
 
   return (
