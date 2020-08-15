@@ -2,38 +2,45 @@ import { Colors, FocusStyleManager } from "@blueprintjs/core";
 import React from "react";
 import { ThemeProvider as SCThemeProvider } from "styled-components";
 import { createGlobalStyle } from "styled-components/macro";
-import { useStore } from "./app-store";
+
+import { useAppState } from "./app-state";
 
 FocusStyleManager.onlyShowFocusOnTabs();
 
-interface Theme {
-  boardGridLine: string;
+export interface Theme {
+  accent: string;
   isDark: boolean;
-  contentWidth: number;
   padding: number;
-  fullWidth: number;
   cellWidth: number;
+  innerWidth: number;
+  outerWidth: number;
 }
 
-const contentWidth = 300;
 const padding = 20;
-const fullWidth = padding * 2 + contentWidth;
-const cellWidth = contentWidth / 3 - padding;
+const cellWidth = 100;
+const innerWidth = cellWidth * 3;
+const outerWidth = innerWidth + padding * 2;
+
+const defaultTheme: Theme = {
+  padding,
+  cellWidth,
+  innerWidth,
+  outerWidth,
+  accent: Colors.DARK_GRAY3,
+  isDark: true,
+};
 
 declare module "styled-components" {
   export interface DefaultTheme extends Theme {}
 }
 
 export const ThemeProvider: React.FC = ({ children }) => {
-  const isDark = useStore((s) => s.isDark);
+  const isDark = useAppState((s) => s.isDark);
 
   const theme: Theme = {
+    ...defaultTheme,
     isDark,
-    boardGridLine: isDark ? Colors.DARK_GRAY3 : Colors.LIGHT_GRAY3,
-    padding,
-    contentWidth,
-    fullWidth,
-    cellWidth,
+    accent: isDark ? Colors.DARK_GRAY3 : Colors.LIGHT_GRAY3,
   };
 
   return (
@@ -47,9 +54,12 @@ export const ThemeProvider: React.FC = ({ children }) => {
 export const GlobalStyle = createGlobalStyle`
   body, html, #root {
     height: 100vh;
-    max-width: 100vw;
+    width: 100vw;
     overflow: hidden;
+    margin: 0;
+    padding: 0;
   }
+
   #root {
     position: relative;
   }

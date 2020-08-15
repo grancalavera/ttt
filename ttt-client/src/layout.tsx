@@ -1,43 +1,47 @@
 import { Card } from "@blueprintjs/core";
-import styled from "styled-components/macro";
+import React, { FC } from "react";
+import styled, { css } from "styled-components/macro";
+import { gridBackgroundImage } from "./grid-background-image";
 
-export const Cover = styled.div`
-  width: calc(100% - ${({ theme }) => theme.padding * 2}px);
-  height: calc(100% - ${({ theme }) => theme.padding * 2}px);
+const centerChildren = css`
+  display: grid;
+  place-items: center;
+`;
+
+const Cover = styled.div`
+  ${centerChildren};
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
   position: absolute;
 `;
 
-export const Layout = styled(Card)`
-  width: ${({ theme }) => theme.fullWidth}px;
-  height: ${({ theme }) => theme.fullWidth}px;
-  position: relative;
-  margin: auto;
+const Content = styled(Card)`
+  ${centerChildren};
+  width: ${({ theme }) => theme.outerWidth}px;
+  height: ${({ theme }) => theme.outerWidth}px;
+  padding: ${({ theme }) => theme.padding}px;
   overflow: hidden;
 `;
 
-export const Content = styled(Cover)`
+const Grid = styled.div`
   display: grid;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
+  grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+  width: ${({ theme }) => theme.innerWidth}px;
+  height: ${({ theme }) => theme.innerWidth}px;
+  ${gridBackgroundImage};
 `;
 
-export const BoardLayout = styled(Cover)`
-  display: grid;
-  grid-template-areas:
-    "cell cell cell"
-    "cell cell cell"
-    "cell cell cell";
-`;
-
-export const CellLayout = styled.div`
-  justify-self: center;
-  align-self: center;
-  user-select: none;
+export const Cell = styled.span`
+  ${centerChildren};
   width: ${({ theme }) => theme.cellWidth}px;
   height: ${({ theme }) => theme.cellWidth}px;
-  & > * {
-    width: ${({ theme }) => theme.cellWidth}px;
-    height: ${({ theme }) => theme.cellWidth}px;
-  }
 `;
+
+export const Screen: FC = ({ children }) => (
+  <Cover>
+    <Content>
+      <Grid>{children}</Grid>
+    </Content>
+  </Cover>
+);

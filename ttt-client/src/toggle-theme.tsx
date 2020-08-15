@@ -1,14 +1,14 @@
 import { Button } from "@blueprintjs/core";
-import { DARK_THEME, LIGHT_THEME, useStore } from "./app-store";
+import { darkTheme, lightTheme, useAppState } from "./app-state";
 import React, { useEffect, useRef } from "react";
 import shallow from "zustand/shallow";
 
 export const ToggleTheme: React.FC = () => {
   const bodyRef = useRef(document.querySelector("body"));
-  const [isDark, toggleTheme] = useStore((s) => [s.isDark, s.toggleTheme], shallow);
+  const [isDark, toggleTheme] = useAppState((s) => [s.isDark, s.toggleTheme], shallow);
 
   useEffect(() => {
-    const [add, remove] = isDark ? [DARK_THEME, LIGHT_THEME] : [LIGHT_THEME, DARK_THEME];
+    const [add, remove] = isDark ? [darkTheme, lightTheme] : [lightTheme, darkTheme];
     bodyRef.current?.classList.add(add);
     bodyRef.current?.classList.remove(remove);
   }, [isDark]);

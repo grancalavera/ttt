@@ -1,28 +1,19 @@
-import { Background } from "./background";
-import { Layout } from "./layout";
-import { GameRoute } from "./game-route";
-import { MenuRoute } from "./menu-route";
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { GameRoute } from "./game-route";
+import { MenuRoute } from "./menu-route";
 
 export const Application: React.FC = () => {
   return (
-    <Layout>
-      <Background />
-      <AppRouter />
-    </Layout>
+    <BrowserRouter>
+      <Switch>
+        <Route path="/" exact>
+          <MenuRoute />
+        </Route>
+        <Route path="/game">
+          <GameRoute />
+        </Route>
+      </Switch>
+    </BrowserRouter>
   );
 };
-
-export const AppRouter: React.FC = () => (
-  <BrowserRouter>
-    <Switch>
-      <Route path="/" exact>
-        <MenuRoute />
-      </Route>
-      <Route path="/game">
-        <GameRoute />
-      </Route>
-    </Switch>
-  </BrowserRouter>
-);

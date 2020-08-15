@@ -1,7 +1,7 @@
 import { Alert, H5 } from "@blueprintjs/core";
 import { isSome, none, Option, some } from "@grancalavera/ttt-etc";
 import React, { ErrorInfo, useState } from "react";
-import { useStore } from "./app-store";
+import { useAppState } from "./app-state";
 
 interface State {
   error: Option<any>;
@@ -37,7 +37,7 @@ interface ErrorAlertProps {
 }
 
 const ErrorAlert: React.FC<ErrorAlertProps> = ({ error }) => {
-  const theme = useStore((s) => s.theme);
+  const theme = useAppState((s) => s.themeClass);
   const [show, setShow] = useState(true);
 
   return (
