@@ -1,7 +1,7 @@
 import { Button, Tooltip } from "@blueprintjs/core";
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { Content } from "../common/layout";
+import { Content } from "./layout";
 
 export const MenuRoute: React.FC = () => {
   const history = useHistory();

@@ -1,9 +1,9 @@
-import { GameView } from "game/view";
-import { useOpenGameMutation } from "generated/graphql";
 import React, { useEffect } from "react";
 import { Redirect } from "react-router-dom";
-import * as task from "task";
-import { mutationResultToTask } from "task";
+import { GameView } from "./game-view";
+import { useOpenGameMutation } from "./generated/graphql";
+import { mutationResultToTask } from "./mutation-result-to-task";
+import * as task from "./task-state";
 
 export const GameRoute: React.FC = () => {
   const [openGame, openGameResult] = useOpenGameMutation();

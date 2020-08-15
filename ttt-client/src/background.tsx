@@ -12,16 +12,16 @@ const gradientStyles = css(
   ${TRANSPARENT} ${oneThird(theme.contentWidth) - LINE_HALF_WIDTH}px,
 
   // first line
-  ${theme.accent} ${oneThird(theme.contentWidth) - LINE_HALF_WIDTH}px,
-  ${theme.accent} ${oneThird(theme.contentWidth) + LINE_HALF_WIDTH}px,
+  ${theme.boardGridLine} ${oneThird(theme.contentWidth) - LINE_HALF_WIDTH}px,
+  ${theme.boardGridLine} ${oneThird(theme.contentWidth) + LINE_HALF_WIDTH}px,
 
   // middle row / col
   ${TRANSPARENT} ${oneThird(theme.contentWidth) + LINE_HALF_WIDTH}px,
   ${TRANSPARENT} ${twoThirds(theme.contentWidth) - LINE_HALF_WIDTH}px,
 
   // second line
-  ${theme.accent} ${twoThirds(theme.contentWidth) - LINE_HALF_WIDTH}px,
-  ${theme.accent} ${twoThirds(theme.contentWidth) + LINE_HALF_WIDTH}px,
+  ${theme.boardGridLine} ${twoThirds(theme.contentWidth) - LINE_HALF_WIDTH}px,
+  ${theme.boardGridLine} ${twoThirds(theme.contentWidth) + LINE_HALF_WIDTH}px,
 
   // last row / col
   ${TRANSPARENT} ${twoThirds(theme.contentWidth) + LINE_HALF_WIDTH}px`

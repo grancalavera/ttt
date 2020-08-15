@@ -1,13 +1,13 @@
 import { Alert, H5 } from "@blueprintjs/core";
 import { isSome, none, Option, some } from "@grancalavera/ttt-etc";
-import { useStore } from "app-store";
 import React, { ErrorInfo, useState } from "react";
+import { useStore } from "./app-store";
 
 interface State {
   error: Option<any>;
 }
 
-export class FatalErrorHandler extends React.Component<{}, State> {
+export class AppErrorHandler extends React.Component<{}, State> {
   constructor(props: {}) {
     super(props);
     this.state = { error: none };

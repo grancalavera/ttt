@@ -5,9 +5,9 @@ import {
   HttpLink,
   InMemoryCache,
 } from "@apollo/client";
-import { endpoints } from "configuration";
-import { AnonymousUserLink } from "network/middleware";
+import { endpoints } from "./configuration";
 import React from "react";
+import { AnonymousUserLink } from "./anonymous-user-link";
 const { anonymousUserEndpoint, graphqlEndpoint } = endpoints;
 
 const client = new ApolloClient({

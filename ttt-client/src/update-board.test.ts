@@ -5,9 +5,9 @@ import {
   GamePlayingState,
   GameState,
   Position,
-  Token
+  Token,
 } from "../generated/graphql";
-import { CellState } from "./types";
+import { CellState } from "./cell-types";
 
 interface Scenario {
   name: string;
@@ -20,7 +20,7 @@ const PLAYING_ME_O_NEXT_O: GamePlayingState = {
   id: "0",
   me: Token.O,
   moves: [],
-  next: Token.O
+  next: Token.O,
 };
 
 const PLAYING_ME_O_NEXT_X: GamePlayingState = {
@@ -28,7 +28,7 @@ const PLAYING_ME_O_NEXT_X: GamePlayingState = {
   id: "0",
   me: Token.O,
   moves: [],
-  next: Token.X
+  next: Token.X,
 };
 
 const WON: GameOverWonState = {
@@ -37,7 +37,7 @@ const WON: GameOverWonState = {
   me: Token.O,
   winner: Token.O,
   moves: [],
-  finished: false
+  finished: false,
 };
 
 const DRAW: GameOverDrawState = {
@@ -45,7 +45,7 @@ const DRAW: GameOverDrawState = {
   id: "0",
   me: Token.O,
   moves: [],
-  finished: false
+  finished: false,
 };
 
 const scenarios: Scenario[] = [
@@ -58,13 +58,13 @@ const scenarios: Scenario[] = [
     { kind: "disabled" },
     { kind: "disabled" },
     { kind: "disabled" },
-    { kind: "disabled" }
+    { kind: "disabled" },
   ]),
   mkScenario(
     "first cell taken, somebody else's turn",
     {
       ...PLAYING_ME_O_NEXT_X,
-      moves: [{ position: Position.A, token: Token.O }]
+      moves: [{ position: Position.A, token: Token.O }],
     },
     [
       { kind: "played", move: { position: Position.A, token: Token.O } },
@@ -75,7 +75,7 @@ const scenarios: Scenario[] = [
       { kind: "disabled" },
       { kind: "disabled" },
       { kind: "disabled" },
-      { kind: "disabled" }
+      { kind: "disabled" },
     ]
   ),
   mkScenario("disabled moves", PLAYING_ME_O_NEXT_O, [
@@ -87,7 +87,7 @@ const scenarios: Scenario[] = [
     { kind: "free", move: { position: Position.F, token: Token.O } },
     { kind: "free", move: { position: Position.G, token: Token.O } },
     { kind: "free", move: { position: Position.H, token: Token.O } },
-    { kind: "free", move: { position: Position.I, token: Token.O } }
+    { kind: "free", move: { position: Position.I, token: Token.O } },
   ]),
   mkScenario(
     "first cell taken",
@@ -101,7 +101,7 @@ const scenarios: Scenario[] = [
       { kind: "free", move: { position: Position.F, token: Token.O } },
       { kind: "free", move: { position: Position.G, token: Token.O } },
       { kind: "free", move: { position: Position.H, token: Token.O } },
-      { kind: "free", move: { position: Position.I, token: Token.O } }
+      { kind: "free", move: { position: Position.I, token: Token.O } },
     ]
   ),
   mkScenario(
@@ -110,8 +110,8 @@ const scenarios: Scenario[] = [
       ...PLAYING_ME_O_NEXT_O,
       moves: [
         { position: Position.A, token: Token.O },
-        { position: Position.C, token: Token.O }
-      ]
+        { position: Position.C, token: Token.O },
+      ],
     },
     [
       { kind: "played", move: { position: Position.A, token: Token.O } },
@@ -122,7 +122,7 @@ const scenarios: Scenario[] = [
       { kind: "free", move: { position: Position.F, token: Token.O } },
       { kind: "free", move: { position: Position.G, token: Token.O } },
       { kind: "free", move: { position: Position.H, token: Token.O } },
-      { kind: "free", move: { position: Position.I, token: Token.O } }
+      { kind: "free", move: { position: Position.I, token: Token.O } },
     ]
   ),
   mkScenario(
@@ -131,8 +131,8 @@ const scenarios: Scenario[] = [
       ...PLAYING_ME_O_NEXT_O,
       moves: [
         { position: Position.C, token: Token.O },
-        { position: Position.A, token: Token.O }
-      ]
+        { position: Position.A, token: Token.O },
+      ],
     },
     [
       { kind: "played", move: { position: Position.A, token: Token.O } },
@@ -143,7 +143,7 @@ const scenarios: Scenario[] = [
       { kind: "free", move: { position: Position.F, token: Token.O } },
       { kind: "free", move: { position: Position.G, token: Token.O } },
       { kind: "free", move: { position: Position.H, token: Token.O } },
-      { kind: "free", move: { position: Position.I, token: Token.O } }
+      { kind: "free", move: { position: Position.I, token: Token.O } },
     ]
   ),
   mkScenario(
@@ -153,8 +153,8 @@ const scenarios: Scenario[] = [
       moves: [
         { position: Position.A, token: Token.O },
         { position: Position.B, token: Token.O },
-        { position: Position.C, token: Token.O }
-      ]
+        { position: Position.C, token: Token.O },
+      ],
     },
     [
       { kind: "played", move: { position: Position.A, token: Token.O } },
@@ -165,7 +165,7 @@ const scenarios: Scenario[] = [
       { kind: "free", move: { position: Position.F, token: Token.O } },
       { kind: "free", move: { position: Position.G, token: Token.O } },
       { kind: "free", move: { position: Position.H, token: Token.O } },
-      { kind: "free", move: { position: Position.I, token: Token.O } }
+      { kind: "free", move: { position: Position.I, token: Token.O } },
     ]
   ),
   mkScenario(
@@ -175,8 +175,8 @@ const scenarios: Scenario[] = [
       moves: [
         { position: Position.C, token: Token.O },
         { position: Position.A, token: Token.O },
-        { position: Position.B, token: Token.O }
-      ]
+        { position: Position.B, token: Token.O },
+      ],
     },
     [
       { kind: "played", move: { position: Position.A, token: Token.O } },
@@ -187,7 +187,7 @@ const scenarios: Scenario[] = [
       { kind: "free", move: { position: Position.F, token: Token.O } },
       { kind: "free", move: { position: Position.G, token: Token.O } },
       { kind: "free", move: { position: Position.H, token: Token.O } },
-      { kind: "free", move: { position: Position.I, token: Token.O } }
+      { kind: "free", move: { position: Position.I, token: Token.O } },
     ]
   ),
   mkScenario(
@@ -203,8 +203,8 @@ const scenarios: Scenario[] = [
         { position: Position.F, token: Token.O },
         { position: Position.G, token: Token.O },
         { position: Position.H, token: Token.O },
-        { position: Position.I, token: Token.O }
-      ]
+        { position: Position.I, token: Token.O },
+      ],
     },
     [
       { kind: "played", move: { position: Position.A, token: Token.O } },
@@ -215,7 +215,7 @@ const scenarios: Scenario[] = [
       { kind: "played", move: { position: Position.F, token: Token.O } },
       { kind: "played", move: { position: Position.G, token: Token.O } },
       { kind: "played", move: { position: Position.H, token: Token.O } },
-      { kind: "played", move: { position: Position.I, token: Token.O } }
+      { kind: "played", move: { position: Position.I, token: Token.O } },
     ]
   ),
   mkScenario(
@@ -225,8 +225,8 @@ const scenarios: Scenario[] = [
       moves: [
         { position: Position.C, token: Token.O },
         { position: Position.A, token: Token.O },
-        { position: Position.B, token: Token.O }
-      ]
+        { position: Position.B, token: Token.O },
+      ],
     },
     [
       { kind: "played", move: { position: Position.A, token: Token.O } },
@@ -237,7 +237,7 @@ const scenarios: Scenario[] = [
       { kind: "disabled" },
       { kind: "disabled" },
       { kind: "disabled" },
-      { kind: "disabled" }
+      { kind: "disabled" },
     ]
   ),
   mkScenario(
@@ -247,8 +247,8 @@ const scenarios: Scenario[] = [
       moves: [
         { position: Position.C, token: Token.O },
         { position: Position.A, token: Token.O },
-        { position: Position.B, token: Token.O }
-      ]
+        { position: Position.B, token: Token.O },
+      ],
     },
     [
       { kind: "played", move: { position: Position.A, token: Token.O } },
@@ -259,12 +259,12 @@ const scenarios: Scenario[] = [
       { kind: "disabled" },
       { kind: "disabled" },
       { kind: "disabled" },
-      { kind: "disabled" }
+      { kind: "disabled" },
     ]
-  )
+  ),
 ];
 
-describe.each(scenarios)("generateBoard", scenario => {
+describe.each(scenarios)("generateBoard", (scenario) => {
   const { name, game, expected } = scenario;
   it(name, () => {
     const actual = updateBoard(game);
@@ -276,6 +276,6 @@ function mkScenario(name: string, game: GameState, expected: CellState[]): Scena
   return {
     name,
     game,
-    expected
+    expected,
   };
 }

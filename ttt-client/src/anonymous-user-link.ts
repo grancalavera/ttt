@@ -1,14 +1,14 @@
 import { ApolloLink, FetchResult, NextLink, Observable, Operation } from "@apollo/client";
 import { decode } from "jsonwebtoken";
 
-type UsafeJWT = { [key: string]: any } | null | string;
+type UnsafeJWT = { [key: string]: any } | null | string;
 type SafeJWT = { exp: number };
 
 const isExpired = (jwt: SafeJWT) => {
   return 1000 * jwt.exp < Date.now();
 };
 
-const isValid = (jwt: UsafeJWT): jwt is SafeJWT => {
+const isValid = (jwt: UnsafeJWT): jwt is SafeJWT => {
   return (
     jwt !== null && typeof jwt !== "string" && jwt.exp && typeof jwt.exp === "number"
   );

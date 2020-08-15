@@ -1,5 +1,5 @@
 import { Button } from "@blueprintjs/core";
-import { DARK_THEME, LIGHT_THEME, useStore } from "app-store";
+import { DARK_THEME, LIGHT_THEME, useStore } from "./app-store";
 import React, { useEffect, useRef } from "react";
 import shallow from "zustand/shallow";
 

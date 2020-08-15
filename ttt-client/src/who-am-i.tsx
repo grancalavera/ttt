@@ -1,5 +1,5 @@
 import React from "react";
-import { useWhoamiQuery } from "../generated/graphql";
+import { useWhoamiQuery } from "./generated/graphql";
 
 export const WhoAmI: React.FC = () => {
   const result = useWhoamiQuery({

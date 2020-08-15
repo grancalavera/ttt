@@ -1,7 +1,7 @@
-import { WithTypename } from "../common/with-typename";
+import { GameState, Move, Position, Token } from "./generated/graphql";
+import { CellState, DisabledCell, FreeCell, PlayedCell } from "./cell-types";
 import { amINext } from "./turn";
-import { GameState, Move, Position, Token } from "../generated/graphql";
-import { CellState, DisabledCell, FreeCell, PlayedCell } from "./types";
+import { WithTypename } from "./with-typename";
 
 export const updateBoard = (gameState: WithTypename<GameState>): CellState[] => {
   const select = selectCell(getPlayedCellByIndex(gameState.moves));

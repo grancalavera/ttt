@@ -1,7 +1,7 @@
-import { Background } from "common/background";
-import { Layout } from "common/layout";
-import { GameRoute } from "game";
-import { MenuRoute } from "menu";
+import { Background } from "./background";
+import { Layout } from "./layout";
+import { GameRoute } from "./game-route";
+import { MenuRoute } from "./menu-route";
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 

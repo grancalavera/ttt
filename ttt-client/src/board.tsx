@@ -1,9 +1,9 @@
 import { Button, Intent } from "@blueprintjs/core";
 import React from "react";
-import { BoardLayout, CellLayout } from "../common/layout";
-import { WithTypename } from "../common/with-typename";
-import { GameState, Move } from "../generated/graphql";
-import { CellState } from "./types";
+import { GameState, Move } from "./generated/graphql";
+import { BoardLayout, CellLayout } from "./layout";
+import { WithTypename } from "./with-typename";
+import { CellState } from "./cell-types";
 import { updateBoard } from "./update-board";
 
 interface BoardProps {

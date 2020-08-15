@@ -1,5 +1,5 @@
 import { ApolloError, MutationResult } from "@apollo/client";
-import * as task from "task/task-state";
+import * as task from "./task-state";
 import { Task } from "./task-state";
 
 export const mutationResultToTask = <TData>(

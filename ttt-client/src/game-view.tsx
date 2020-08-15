@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import { hasTypename } from "../common/with-typename";
-import { useBeginGameMutation, useGameChangedSubscription } from "../generated/graphql";
 import { Board } from "./board";
+import { useBeginGameMutation, useGameChangedSubscription } from "./generated/graphql";
+import { hasTypename } from "./with-typename";
 
 interface GameViewProps {
   channelId: string;

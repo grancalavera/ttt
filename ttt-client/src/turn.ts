@@ -1,4 +1,4 @@
-import { GamePlayingState, GameState } from "../generated/graphql";
+import { GamePlayingState, GameState } from "./generated/graphql";
 
 export const amINext = (game: GamePlayingState) => game.next === game.me;
 
