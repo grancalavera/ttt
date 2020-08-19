@@ -1,6 +1,5 @@
-import { GameState, Move, Position, Token } from "./generated/graphql";
 import { CellState, DisabledCell, FreeCell, PlayedCell } from "./cell-types";
-import { amINext } from "./turn";
+import { GamePlayingState, GameState, Move, Position, Token } from "../generated/graphql";
 import { WithTypename } from "./with-typename";
 
 export const updateBoard = (gameState: WithTypename<GameState>): CellState[] => {
@@ -49,3 +48,8 @@ const getPlayedCellByIndex = (moves: readonly Move[]) => (
 };
 
 const indexToPosition = (i: number): Position => String.fromCharCode(65 + i) as Position;
+
+export const amINext = (game: GamePlayingState) => game.next === game.me;
+
+export const amIWaiting = (game: GameState) =>
+  game.__typename === "GamePlayingState" && !amINext(game);

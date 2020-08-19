@@ -1,5 +1,5 @@
 import { css } from "styled-components/macro";
-import { Theme } from "./theme";
+import { Theme } from "../app/theme";
 import { enumerate } from "@grancalavera/ttt-etc";
 
 export type Stroke = "d1" | "d2" | "h1" | "h2" | "h3" | "v1" | "v2" | "v3";

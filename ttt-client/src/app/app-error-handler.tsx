@@ -38,15 +38,15 @@ interface ErrorAlertProps {
 
 const ErrorAlert: React.FC<ErrorAlertProps> = ({ error }) => {
   const theme = useAppState((s) => s.themeClass);
-  const [show, setShow] = useState(true);
+  const [showError, toggleError] = useState(true);
 
   return (
     <Alert
-      isOpen={show}
+      isOpen={showError}
       className={theme}
       intent="danger"
       icon="error"
-      onConfirm={() => setShow(false)}
+      onConfirm={() => toggleError(false)}
     >
       <H5>Fatal Error</H5>
       <p>{error.message ?? error.toString()}</p>

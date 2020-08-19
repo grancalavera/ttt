@@ -7,7 +7,7 @@ import {
   Position,
   Token,
 } from "../generated/graphql";
-import { CellState } from "./cell-types";
+import { CellState } from "./game/cell-types";
 
 interface Scenario {
   name: string;

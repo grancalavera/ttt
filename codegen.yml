@@ -38,6 +38,6 @@ config:
   withHOC: false
   withComponent: false
   withHooks: true
-  gqlImport: "@apollo/client#gql"
+  # gqlImport: "@apollo/client#gql"
   apolloReactCommonImportFrom: "@apollo/client"
   apolloReactHooksImportFrom: "@apollo/client"

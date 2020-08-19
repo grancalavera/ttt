@@ -1,5 +1,5 @@
 import { css } from "styled-components/macro";
-import { Theme } from "./theme";
+import { Theme } from "../app/theme";
 
 const transparent = "rgba(0, 0, 0, 0)";
 

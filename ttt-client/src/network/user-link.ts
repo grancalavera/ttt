@@ -14,7 +14,7 @@ const isValid = (jwt: UnsafeJWT): jwt is SafeJWT => {
   );
 };
 
-export class AnonymousUserLink extends ApolloLink {
+export class UserLink extends ApolloLink {
   private accessToken = "";
   private jwt: SafeJWT | null = null;
 
