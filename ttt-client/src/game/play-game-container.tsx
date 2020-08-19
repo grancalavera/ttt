@@ -1,18 +1,13 @@
-import React, { useEffect } from "react";
-import { Cell, Screen } from "../layout/layout";
-import { useParams, useHistory } from "react-router-dom";
 import { Button } from "@blueprintjs/core";
+import React from "react";
+import { useHistory } from "react-router-dom";
 import { useTheme } from "styled-components";
+import { Cell, Screen } from "../layout/layout";
 
 export const PlayGameContainer = () => {
-  const { id } = useParams<{ id: string | undefined }>();
   const history = useHistory();
 
-  const handleClick = () => {
-    setTimeout(() => {
-      history.push("/");
-    }, 1000);
-  };
+  const handleClick = () => setTimeout(() => history.push("/"), 300);
 
   return (
     <Screen>
