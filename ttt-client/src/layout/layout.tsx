@@ -45,7 +45,7 @@ export const Cell = styled.span`
   height: ${({ theme }) => theme.cellWidth}px;
 `;
 
-export const Layer: FC = ({ children }) => (
+export const Screen: FC = ({ children }) => (
   <Cover>
     <Content>
       <Grid>{children}</Grid>

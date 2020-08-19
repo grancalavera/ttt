@@ -1,6 +1,6 @@
 import React from "react";
 import { useWhoamiQuery } from "../generated/graphql";
-import { Layer } from "../layout/layout";
+import { Screen } from "../layout/layout";
 
 export const WhoAmI: React.FC = () => {
   const result = useWhoamiQuery({
@@ -10,7 +10,7 @@ export const WhoAmI: React.FC = () => {
   const { data, loading, error } = result;
 
   return (
-    <Layer>
+    <Screen>
       {data ? (
         <pre>{JSON.stringify(data, null, 2)}</pre>
       ) : loading ? (
@@ -20,6 +20,6 @@ export const WhoAmI: React.FC = () => {
       ) : (
         "something went wrong"
       )}
-    </Layer>
+    </Screen>
   );
 };

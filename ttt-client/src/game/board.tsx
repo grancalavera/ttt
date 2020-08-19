@@ -2,7 +2,7 @@ import { Button, Intent } from "@blueprintjs/core";
 import React from "react";
 import { CellState } from "./cell-types";
 import { GameState, Move } from "../generated/graphql";
-import { Cell, Layer } from "../layout/layout";
+import { Cell, Screen } from "../layout/layout";
 import { updateBoard } from "./update-board";
 import { WithTypename } from "./with-typename";
 
@@ -12,14 +12,14 @@ interface BoardProps {
 
 export const Board: React.FC<BoardProps> = ({ gameState }) => {
   return (
-    <Layer>
+    <Screen>
       {updateBoard(gameState).map((cellState, i) => (
         // we know cell are always sorted by position
         // and position is isomorphic to iteration index,
         // so is fine to use `i` as `key`, leave us alone!
         <Cell key={i}>{toCell(cellState)}</Cell>
       ))}
-    </Layer>
+    </Screen>
   );
 };
 

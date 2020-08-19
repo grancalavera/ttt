@@ -1,9 +1,11 @@
 import React from "react";
-import { BrowserRouter, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { MenuContainer } from "../game/menu-container";
+import { PlayGameContainer } from "../game/play-game-container";
 import { NetworkProvider } from "../network/net-provider";
+import { routes } from "./app-constants";
 import { ThemeProvider } from "./theme";
 import { ToggleTheme } from "./toggle-theme";
-import { Layer } from "../layout/layout";
 
 export const App: React.FC = () => {
   return (
@@ -11,7 +13,8 @@ export const App: React.FC = () => {
       <ThemeProvider>
         <BrowserRouter>
           <Switch>
-            <Layer></Layer>
+            <Route exact path={`${routes.game}/:id`} component={PlayGameContainer} />
+            <Route component={MenuContainer} />
           </Switch>
         </BrowserRouter>
         <ToggleTheme />
