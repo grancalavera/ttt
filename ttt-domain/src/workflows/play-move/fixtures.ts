@@ -1,5 +1,5 @@
 import { Game, Move, Moves, Players } from "../../domain/model";
-import { alice, bob, defaultGameId } from "../../test/support";
+import { alice, bob, defaultMatchId } from "../../test/support";
 
 const size = 3;
 const players: Players = [alice, bob];
@@ -35,7 +35,7 @@ export const aliceWinsOnNextMove: Moves = [
 export const aliceWinningMove: Move = [alice, 6];
 
 export const defaultGame: Game = {
-  gameId: defaultGameId,
+  gameId: defaultMatchId,
   size,
   players,
   moves: [

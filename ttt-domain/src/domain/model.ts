@@ -1,31 +1,42 @@
+export interface Match {
+  readonly id: MatchId;
+  readonly owner: Player;
+  readonly state: MatchState;
+}
+
+export type MatchState = New | Challenge | Game | Draw | Victory;
+
+export interface New {
+  readonly kind: "New";
+}
+
 export interface Challenge {
-  readonly challengeId: ChallengeId;
-  readonly challenger: Challenger;
-  readonly challengerPosition: Position;
+  readonly kind: "Challenge";
+  readonly move: Move;
 }
 
-export interface Game {
-  readonly status: GameStatus;
-  readonly gameId: GameId;
-  readonly players: Players;
-  readonly moves: Moves;
-  readonly size: number;
-}
-
-export type GameStatus = OpenGame | DrawGame | WonGame;
-
-export interface OpenGame {
-  readonly kind: "OpenGame";
+export interface Game extends GameState {
+  readonly kind: "Game";
   readonly next: Player;
 }
 
-export interface WonGame {
-  readonly kind: "WonGame";
+export interface Draw extends GameState {
+  readonly kind: "Draw";
+}
+
+export interface Victory extends GameState {
+  readonly kind: "Victory";
   readonly winner: Winner;
 }
 
-export interface DrawGame {
-  readonly kind: "DrawGame";
+export interface SystemConfig {
+  readonly gameSize: number;
+  readonly maxActiveMatches: number;
+}
+
+interface GameState {
+  readonly players: Players;
+  readonly moves: Moves;
 }
 
 export type Players = [Player, Player];
@@ -33,23 +44,11 @@ export type Move = [Player, Position];
 export type Moves = Move[];
 export type Winner = [Player, Position[]];
 
-export interface Challenger {
-  readonly challengerId: ChallengerId;
-}
-
-export interface Opponent {
-  readonly opponentId: OpponentId;
-}
-
 export interface Player {
-  readonly playerId: PlayerId;
+  readonly id: PlayerId;
 }
 
-export type ChallengerId = Id;
-export type OpponentId = Id;
 export type PlayerId = Id;
-
+export type MatchId = Id;
 export type Position = number;
-export type ChallengeId = Id;
-export type GameId = Id;
 type Id = string;

@@ -3,7 +3,7 @@ import {
   alice,
   bob,
   defaultChallengeId,
-  defaultGameId,
+  defaultMatchId,
   toChallenger,
   toOpponent,
 } from "../../test/support";
@@ -40,7 +40,7 @@ export const bobAcceptsAlicesChalengeWithHisOwnPosition: CreateGameInput = {
 };
 
 export const aliceChallengesBobGame: Game = {
-  gameId: defaultGameId,
+  gameId: defaultMatchId,
   players: [alice, bob],
   moves: [
     [alice, 0],

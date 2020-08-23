@@ -3,7 +3,7 @@ import { failure, isSuccess, Result, success } from "@grancalavera/ttt-etc";
 import {
   alice,
   bob,
-  defaultGameId,
+  defaultMatchId,
   illegalPlayer,
   narrowScenarios,
 } from "../../test/support";
@@ -79,7 +79,7 @@ const scenarios = narrowScenarios<Scenario>([
     name: "force all validation errors",
     workflow: playMove({ ...alwaysFindGame(impossibleGame), ...alwaysUpdateGame }),
     input: {
-      gameId: defaultGameId,
+      gameId: defaultMatchId,
       player: illegalPlayer,
       playerPosition: -1,
     },
@@ -94,8 +94,8 @@ const scenarios = narrowScenarios<Scenario>([
   {
     name: "game not found",
     workflow: playMove({ ...neverFindGame, ...alwaysUpdateGame }),
-    input: { gameId: defaultGameId, player: illegalPlayer, playerPosition: 0 },
-    expected: failure(new GameNotFoundError(defaultGameId)),
+    input: { gameId: defaultMatchId, player: illegalPlayer, playerPosition: 0 },
+    expected: failure(new GameNotFoundError(defaultMatchId)),
   },
   {
     name: "alice plays the third move",
@@ -103,7 +103,7 @@ const scenarios = narrowScenarios<Scenario>([
       ...alwaysFindGame(defaultGame),
       ...alwaysUpdateGame,
     }),
-    input: { gameId: defaultGameId, player: alice, playerPosition: 2 },
+    input: { gameId: defaultMatchId, player: alice, playerPosition: 2 },
     expected: {
       kind: "Success",
       value: {
@@ -119,7 +119,7 @@ const scenarios = narrowScenarios<Scenario>([
       ...alwaysFindGame(drawOnNextMoveGame),
       ...alwaysUpdateGame,
     }),
-    input: { gameId: defaultGameId, player: alice, playerPosition: alicesDrawMove[1] },
+    input: { gameId: defaultMatchId, player: alice, playerPosition: alicesDrawMove[1] },
     expected: {
       kind: "Success",
       value: drawGame,
@@ -131,7 +131,7 @@ const scenarios = narrowScenarios<Scenario>([
       ...alwaysFindGame(winOnNextMoveGame),
       ...alwaysUpdateGame,
     }),
-    input: { gameId: defaultGameId, player: alice, playerPosition: aliceWinningMove[1] },
+    input: { gameId: defaultMatchId, player: alice, playerPosition: aliceWinningMove[1] },
     expected: {
       kind: "Success",
       value: aliceWinsGame,
@@ -143,7 +143,7 @@ const scenarios = narrowScenarios<Scenario>([
       ...alwaysFindGame(winOnNextMoveGame),
       ...neverUpdateGame,
     }),
-    input: { gameId: defaultGameId, player: alice, playerPosition: aliceWinningMove[1] },
+    input: { gameId: defaultMatchId, player: alice, playerPosition: aliceWinningMove[1] },
     expected: failure(new GameUpdateFailedError(aliceWinsGame)),
   },
 ]);

@@ -1,55 +1,24 @@
-import { Async, InvalidInput, Result } from "@grancalavera/ttt-etc";
-import { Game, GameId, Player, Position } from "../../domain/model";
-import { Find, Update } from "../support";
+import { Match, SystemConfig } from "../../domain/model";
+import { FindMatch, MoveInput, UpsertMatch, WorkflowResult } from "../support";
 
-// prettier-ignore
-export type PlayMove
-  =  (dependencies: GameFinder & GameUpdater)
-  => PlayMoveWorkflow
+export type PlayMove = (
+  dependencies: SystemConfig & FindMatch & UpsertMatch
+) => PlayMoveWorkflow;
 
-// prettier-ignore
-export type PlayMoveWorkflow
-  =  (input: PlayMoveInput)
-  => Async<PlayMoveResult>;
+export type PlayMoveWorkflow = (input: MoveInput) => WorkflowResult<Match>;
 
-export interface PlayMoveInput {
-  readonly gameId: GameId;
-  readonly player: Player;
-  readonly playerPosition: Position;
+export interface PlayMoveError {
+  readonly kind: "PlayMoveError";
+  readonly input: MoveInput;
 }
 
-export interface CreateMoveInput {
-  readonly game: Game;
-  readonly player: Player;
-  readonly playerPosition: Position;
-}
+export const playMoveError = (input: MoveInput): PlayMoveError => ({
+  kind: "PlayMoveError",
+  input,
+});
 
-export type PlayMoveResult = Result<Game, PlayMoveError>;
-
-export type PlayMoveError =
-  | GameNotFoundError
-  | CreateMoveValidationError
-  | GameUpdateFailedError;
-
-export class GameNotFoundError {
-  readonly kind = "GameNotFoundError";
-  constructor(readonly gameId: GameId) {}
-}
-
-export class GameUpdateFailedError {
-  readonly kind = "GameUpdateFailedError";
-  constructor(readonly game: Game) {}
-}
-
-export class CreateMoveValidationError {
-  readonly kind = "CreateMoveValidationError";
-  constructor(readonly validationResult: InvalidInput<CreateMoveInput>[]) {}
-}
-
-export interface GameFinder {
-  readonly findGame: Find<GameId, Game, GameNotFoundError>;
-}
-
-export interface GameUpdater {
-  readonly updateGame: Update<GameId, Game, GameUpdateFailedError>;
+declare module "../errors" {
+  export interface WorkflowErrorMap {
+    PlayMoveError: PlayMoveError;
+  }
 }
