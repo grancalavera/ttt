@@ -1,20 +1,52 @@
-import { Challenger, Opponent, Player } from "../domain/model";
 import { AsyncResult } from "@grancalavera/ttt-etc";
+import { Match, MatchId, Player, Move } from "../domain/model";
+import { WorkflowError } from "./errors";
 
-export interface UniqueIdProducer {
+export interface GetUniqueId {
   readonly getUniqueId: () => string;
 }
 
-export type Find<TRef, T, E> = (ref: TRef) => AsyncResult<T, E>;
-export type Create<T, E> = (data: T) => AsyncResult<void, E>;
-export type Update<TRef, T, E> = (ref: TRef, data: T) => AsyncResult<void, E>;
+export interface MoveInput {
+  matchId: MatchId;
+  move: Move;
+}
 
-export const challengerToPlayer = ({ challengerId }: Challenger): Player => ({
-  playerId: challengerId,
+type Find<TRef, T> = (ref: TRef) => WorkflowResult<T>;
+type Upsert<T> = (data: T) => WorkflowResult<void>;
+
+export type WorkflowResult<T> = AsyncResult<T, WorkflowError>;
+export type FindMatch = { findMatch: Find<MatchId, Match> };
+export type UpsertMatch = { upsertMatch: Upsert<Match> };
+
+export interface FindMatchError {
+  kind: "FindMatchError";
+  matchId: MatchId;
+  message: string;
+}
+
+export interface UpsertMatchError {
+  kind: "UpsertMatchError";
+  match: Match;
+  message: string;
+}
+
+export const findMatchError = (matchId: MatchId, message: string): FindMatchError => ({
+  kind: "FindMatchError",
+  matchId,
+  message,
 });
 
-export const opponentToPlayer = ({ opponentId }: Opponent): Player => ({
-  playerId: opponentId,
+export const upsertMatchError = (match: Match, message: string): UpsertMatchError => ({
+  kind: "UpsertMatchError",
+  match,
+  message,
 });
 
-export const arePlayersTheSame = (p1: Player, p2: Player) => p1.playerId === p2.playerId;
+export const arePlayersTheSame = (l: Player, r: Player) => l.id === r.id;
+
+declare module "./errors" {
+  export interface WorkflowErrorMap {
+    FindMatchError: FindMatchError;
+    UpsertMatchError: UpsertMatchError;
+  }
+}

@@ -4,7 +4,7 @@ import {
   alice,
   bob,
   defaultChallengeId,
-  gameUniqueIdProducer,
+  getMatchUniqueId,
   narrowScenarios,
   toOpponent,
 } from "../../test/support";
@@ -12,11 +12,11 @@ import {
   AcceptChallengeInput,
   AcceptChallengeResult,
   AcceptChallengeWorkflow,
-  ChallengeFinder,
+  FindChallenge,
   GameCreationFailedError,
-  GameCreator,
+  CreateGame,
 } from "./workflow";
-import { acceptChallenge, failWithGameValidationError } from "./accept-challenge";
+import { acceptChallenge, failWithGameValidationError } from "./create-game";
 import { invalidPlayers } from "./create-players";
 import { invalidPositions } from "./create-positions";
 import { aliceChallengesBobGame, alicesChallenge } from "./fixtures";
@@ -30,28 +30,28 @@ interface Scenario {
   expected: AcceptChallengeResult;
 }
 
-const neverFindChallenge: ChallengeFinder = {
+const neverFindChallenge: FindChallenge = {
   findChallenge: (challengeId) => async () => ({
     kind: "Failure",
     error: { kind: "ChallengeNotFoundError", challengeId },
   }),
 };
 
-const alwaysFindAlicesChallenge: ChallengeFinder = {
+const alwaysFindAlicesChallenge: FindChallenge = {
   findChallenge: (challengeId) => async () => ({
     kind: "Success",
     value: alicesChallenge,
   }),
 };
 
-const neverCreateGame: GameCreator = {
+const neverCreateGame: CreateGame = {
   createGame: (game) => async () => {
     spyOnCreateGame(game);
     return failure(new GameCreationFailedError(game));
   },
 };
 
-const alwaysCreateGame: GameCreator = {
+const alwaysCreateGame: CreateGame = {
   createGame: (game) => async () => {
     spyOnCreateGame(game);
     return success(undefined);
@@ -64,7 +64,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...neverFindChallenge,
       ...neverCreateGame,
-      ...gameUniqueIdProducer,
+      ...getMatchUniqueId,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -81,7 +81,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...neverFindChallenge,
       ...neverCreateGame,
-      ...gameUniqueIdProducer,
+      ...getMatchUniqueId,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -98,7 +98,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
       ...neverCreateGame,
-      ...gameUniqueIdProducer,
+      ...getMatchUniqueId,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -118,7 +118,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
       ...neverCreateGame,
-      ...gameUniqueIdProducer,
+      ...getMatchUniqueId,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -138,7 +138,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
       ...neverCreateGame,
-      ...gameUniqueIdProducer,
+      ...getMatchUniqueId,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -163,7 +163,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
       ...alwaysCreateGame,
-      ...gameUniqueIdProducer,
+      ...getMatchUniqueId,
     }),
     input: {
       challengeId: defaultChallengeId,
@@ -178,7 +178,7 @@ const scenarios = narrowScenarios<Scenario>([
     workflow: acceptChallenge({
       ...alwaysFindAlicesChallenge,
       ...neverCreateGame,
-      ...gameUniqueIdProducer,
+      ...getMatchUniqueId,
     }),
     input: {
       challengeId: defaultChallengeId,

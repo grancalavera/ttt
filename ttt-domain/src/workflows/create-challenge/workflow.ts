@@ -1,29 +1,24 @@
-import { Challenge, Challenger, Position } from "../../domain/model";
-import { Async, Result } from "@grancalavera/ttt-etc";
-import { Create, UniqueIdProducer } from "../support";
+import { Match, SystemConfig } from "../../domain/model";
+import { FindMatch, MoveInput, UpsertMatch, WorkflowResult } from "../support";
 
-//  prettier-ignore
-export type CreateChallenge
-  =  (dependencies: UniqueIdProducer & ChallengeCreator)
-  => CreateChallengeWorkflow
+export type CreateChallenge = (
+  dependencies: SystemConfig & FindMatch & UpsertMatch
+) => CreateChallengeWorkflow;
 
-//  prettier-ignore
-export type CreateChallengeWorkflow
-  =  (input: CreateChallengeInput)
-  => Async<CreateChallengeResult>;
+export type CreateChallengeWorkflow = (input: MoveInput) => WorkflowResult<Match>;
 
-export interface CreateChallengeInput {
-  readonly challenger: Challenger;
-  readonly challengerPosition: Position;
+export interface CreateChallengeError {
+  readonly kind: "CreateChallengeError";
+  readonly input: MoveInput;
 }
 
-export type CreateChallengeResult = Result<Challenge, ChallengeCreationFailedError>;
+export const createChallengeError = (input: MoveInput): CreateChallengeError => ({
+  kind: "CreateChallengeError",
+  input,
+});
 
-export class ChallengeCreationFailedError {
-  readonly kind = "ChallengeNotSavedError";
-  constructor(readonly challenge: Challenge) {}
-}
-
-export interface ChallengeCreator {
-  readonly createChallenge: Create<Challenge, ChallengeCreationFailedError>;
+declare module "../errors" {
+  export interface WorkflowErrorMap {
+    CreateChallengeError: CreateChallengeError;
+  }
 }

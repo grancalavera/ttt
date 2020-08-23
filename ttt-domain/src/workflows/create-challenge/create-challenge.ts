@@ -3,7 +3,7 @@ import { isFailure, success } from "@grancalavera/ttt-etc";
 import { CreateChallenge } from "./workflow";
 
 export const createChallenge: CreateChallenge = (dependencies) => (input) => async () => {
-  const { getUniqueId, createChallenge } = dependencies;
+  const { getUniqueId: getUniqueId, createChallenge } = dependencies;
   const { challenger, challengerPosition } = input;
 
   const challenge: Challenge = {

@@ -18,7 +18,7 @@ export const acceptChallenge: AcceptChallenge = (dependencies) => ({
   opponent,
   opponentPosition,
 }) => async () => {
-  const { findChallenge, getUniqueId, createGame } = dependencies;
+  const { findChallenge, getUniqueId: getUniqueId, createGame } = dependencies;
 
   const runFindChallenge = findChallenge(challengeId);
 
