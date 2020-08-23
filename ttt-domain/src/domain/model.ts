@@ -6,7 +6,7 @@ export interface Match {
 
 export type MatchState = New | Challenge | Game | Draw | Victory;
 export type ActiveMatch = New | Challenge | Game;
-export type MoveType = "CreateChallenge" | "AcceptChallenge" | "PlayMove";
+export type MoveType = "CreateChallenge" | "CreateChallenge" | "PlayMove";
 
 export interface New {
   readonly kind: "New";

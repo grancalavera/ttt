@@ -1,6 +1,16 @@
 # ttt
 
-## Join a match
+## Domain model
+
+- [ttt-domain/src/domain/model.ts](./ttt-domain/src/domain/model.ts)
+
+## Workflows
+
+- [Create match](./ttt-domain/src/workflows/create-match/workflow.ts)
+- [Create game](./ttt-domain/src/workflows/create-game/workflow.ts)
+- [Create challenge](./ttt-domain/src/workflows/create-challenge/workflow.ts)
+- [Accept challenge](./ttt-domain/src/workflows/accept-challenge/workflow.ts)
+- [Play move](./ttt-domain/src/workflows/play-move/workflow.ts)
 
 ```mermaid
 sequenceDiagram
@@ -8,15 +18,16 @@ sequenceDiagram
   participant s as ttt-server
   participant d as ttt-domain
 
+  note over c,d: joining matches <br />(workflows: create match, accept challenge)
 
   c->>+s: join(Player)
 
     alt firstChallenge = None
-      s->>+d: createMatch(Challenger = Player)
+      s->>+d: createMatch(Player)
       d-->>-s: Match | WorkflowError
 
     else firstChallenge = Some<Match>
-      s->>+d: acceptChallenge(Match, Opponent = Player)
+      s->>+d: acceptChallenge(Match, Player)
 
       d-->>-s: Match | WorkflowError
     end
@@ -25,17 +36,8 @@ sequenceDiagram
   s-->>-c: Match | WorkflowError
 
   c->>c: redirect to /match/:Match.id
-```
 
-
-
-## Gameplay
-
-```mermaid
-sequenceDiagram
-  participant c as ttt-client
-  participant s as ttt-server
-  participant d as ttt-domain
+  note over c,d: playing moves <br />(workflows: create challenge, create game, play move)
 
   c->>+s: subscribe(Match.id)
   activate c
@@ -52,13 +54,13 @@ sequenceDiagram
     s->>s: publish(WorkflowError)
 
   else Result = CreateChallenge
-    s->>+d: createChallenge(Match, Move, Challenger=Move.Player)
+    s->>+d: createChallenge(Match, Move)
     d-->>-s: Match | WorkflowError
     s->>s: publish(Match.MatchState | WorkflowError)
 
 
   else Result = AcceptChallenge
-    s->>+d: createChallenge(Match, Move, Opponent=Move.Player)
+    s->>+d: createGame(Match, Move)
     d-->>-s: Match | WorkflowError
     s->>s: publish(Match.MatchState | WorkflowError)
 
@@ -69,20 +71,17 @@ sequenceDiagram
     s->>s: publish(Match.MatchState | WorkflowError)
 
   end
+
+  note right of d: these state transitions <br /> DO create moves
+
   deactivate s
 
   s--xc: MatchState | WorkflowError
   c->>s: unsubscribe(Match)
   s-->>-c: void
   deactivate c
-```
 
-## Resume a match
-
-```mermaid
-sequenceDiagram
-  participant c as ttt-client
-  participant s as ttt-server
+  note over c,d: resuming matches
 
   c->>+s: findActiveMatches(Player)
   s-->>-c: Match[]
