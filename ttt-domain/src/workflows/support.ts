@@ -15,6 +15,8 @@ type Find<TRef, T> = (ref: TRef) => WorkflowResult<T>;
 type Upsert<T> = (data: T) => WorkflowResult<void>;
 
 export type WorkflowResult<T> = AsyncResult<T, WorkflowError>;
+export type MatchResult = AsyncResult<Match, WorkflowError>;
+
 export type FindMatch = { findMatch: Find<MatchId, Match> };
 export type UpsertMatch = { upsertMatch: Upsert<Match> };
 
