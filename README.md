@@ -11,6 +11,7 @@
 - [Create challenge](./ttt-domain/src/workflows/create-challenge/workflow.ts)
 - [Accept challenge](./ttt-domain/src/workflows/accept-challenge/workflow.ts)
 - [Play move](./ttt-domain/src/workflows/play-move/workflow.ts)
+- [Workflow support](./ttt-domain/src/workflows/support.ts)
 
 ![ttt sequence diagram](ttt-sequence-diagram.png)
 
