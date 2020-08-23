@@ -5,7 +5,7 @@ import {
   invalidInput,
   valid,
   Validation,
-} from "@grancalavera/ttt-etc";
+} from "../../../../ttt-etc/dist";
 import { CreateGameInput } from "./workflow";
 
 export const createPositions = (

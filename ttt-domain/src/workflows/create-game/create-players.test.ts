@@ -1,6 +1,6 @@
 import { Players } from "../../domain/model";
 import { alice, bob } from "../../test/support";
-import { InvalidInput, valid, Validation } from "@grancalavera/ttt-etc";
+import { InvalidInput, valid, Validation } from "../../../../ttt-etc/dist";
 import { CreateGameInput } from "./workflow";
 import { createPlayers, failWithInvalidPlayers } from "./create-players";
 import {
