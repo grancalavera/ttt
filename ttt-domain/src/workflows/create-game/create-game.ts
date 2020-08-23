@@ -7,7 +7,7 @@ import {
   isInvalid,
   sequence,
   success,
-} from "@grancalavera/ttt-etc";
+} from "../../../../ttt-etc/dist";
 import { Game } from "../../domain/model";
 import { AcceptChallenge, CreateGameInput, CreateGameValidationError } from "./workflow";
 import { createPlayers } from "./create-players";

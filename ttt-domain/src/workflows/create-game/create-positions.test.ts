@@ -1,5 +1,5 @@
 import { Position } from "../../domain/model";
-import { InvalidInput, valid, Validation } from "@grancalavera/ttt-etc";
+import { InvalidInput, valid, Validation } from "../../../../ttt-etc/dist";
 import { CreateGameInput } from "./workflow";
 import { createPositions, failWithInvalidPositions } from "./create-positions";
 import {

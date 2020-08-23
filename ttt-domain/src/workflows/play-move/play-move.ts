@@ -6,7 +6,7 @@ import {
   isInvalid,
   sequence,
   success,
-} from "@grancalavera/ttt-etc";
+} from "../../../../ttt-etc/dist";
 import { Game, Move, OpenGame, Player, Players, Winner } from "../..";
 import {
   CreateMoveInput,

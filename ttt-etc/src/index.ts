@@ -1,4 +1,3 @@
-export * from "./async";
 export * from "./non-empty-array";
 export * from "./option";
 export * from "./result";
