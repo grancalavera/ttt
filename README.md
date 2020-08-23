@@ -4,54 +4,98 @@
 
 ```mermaid
 sequenceDiagram
-  participant C as ttt-client
-  participant S as ttt-server
+  participant c as ttt-client
+  participant s as ttt-server
+  participant d as ttt-domain
 
-  C->>+S: join()
-  note right of S: Find first <br/>Match.state = Challenge<br/> If nothing found then create<br/>Match.state = NewMatch
-  S-->>-C: Match
 
-  note left of C: We already have the <br />state of the Match,<br />so no need to query it.
-  C->>C: redirect to /match/:Match.id
+  c->>+s: join(Player)
+
+    alt firstChallenge = None
+      s->>+d: createMatch(Challenger = Player)
+      d-->>-s: Match | WorkflowError
+
+    else firstChallenge = Some<Match>
+      s->>+d: acceptChallenge(Match, Opponent = Player)
+
+      d-->>-s: Match | WorkflowError
+    end
+      note right of d: these state transitions <br /> DON'T create moves
+
+  s-->>-c: Match | WorkflowError
+
+  c->>c: redirect to /match/:Match.id
+```
+
+
+
+## Gameplay
+
+```mermaid
+sequenceDiagram
+  participant c as ttt-client
+  participant s as ttt-server
+  participant d as ttt-domain
+
+  c->>+s: subscribe(Match.id)
+  activate c
+
+  c->>+s: playMove(Match.id, Move)
+  activate s
+  s-->>-c: void
+
+  s->>+d: resolveMove(Match.id, Move)
+  d-->>-s: Result = MoveType | WorkflowError
+
+
+  alt Result = WorkflowError
+    s->>s: publish(WorkflowError)
+
+  else Result = CreateChallenge
+    s->>+d: createChallenge(Match, Move, Challenger=Move.Player)
+    d-->>-s: Match | WorkflowError
+    s->>s: publish(Match.MatchState | WorkflowError)
+
+
+  else Result = AcceptChallenge
+    s->>+d: createChallenge(Match, Move, Opponent=Move.Player)
+    d-->>-s: Match | WorkflowError
+    s->>s: publish(Match.MatchState | WorkflowError)
+
+
+  else Result = PlayMove
+    s->>+d: playMove(Match, Move)
+    d-->>-s: Match | WorkflowError
+    s->>s: publish(Match.MatchState | WorkflowError)
+
+  end
+  deactivate s
+
+  s--xc: MatchState | WorkflowError
+  c->>s: unsubscribe(Match)
+  s-->>-c: void
+  deactivate c
 ```
 
 ## Resume a match
 
 ```mermaid
 sequenceDiagram
-  participant C as ttt-client
-  participant S as ttt-server
+  participant c as ttt-client
+  participant s as ttt-server
 
-  C->>+S: query all (Match, User)
-  S-->>-C: List of Match
+  c->>+s: findActiveMatches(Player)
+  s-->>-c: Match[]
 
-  C->>C: select(Match)
-  activate C
-  C->>+S: query(Match.id)
-  S-->>-C: Match | WorflowError
-  C->>C: redirect to /match/:Match.id
-  deactivate C
+  c->>c: select(Match)
+  activate c
+  c->>+s: query(Match.id)
+  s-->>-c: Match | WorflowError
+  c->>c: redirect to /match/:Match.id
+  deactivate c
 ```
 
-## Gameplay
-
-```mermaid
-sequenceDiagram
-  participant C as ttt-client
-  participant S as ttt-server
-
-  C->>+S: subscribe(Match.id)
-  activate C
-  S--xC: MatchState | WorkflowError
-
-  C->>+S: mutate(Match)
-  S-->>-C: void
-
-  C->>S: unsubscribe(Match)
-  S-->>-C: void
-  deactivate C
-```
 ## References
 
-- [Wlaschin, Scott. Domain Modelling Made Functional](https://fsharpforfunandprofit.com/books/)
 - [Harel, David. Statecharts: A visual formalism for complex systems](http://www.inf.ed.ac.uk/teaching/courses/seoc/2004_2005/resources/statecharts.pdf)
+- [Wlaschin, Scott. Domain Modelling Made Functional](https://fsharpforfunandprofit.com/books/)
