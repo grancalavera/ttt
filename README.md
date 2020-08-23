@@ -2,7 +2,7 @@
 
 ## Domain model
 
-- [ttt-domain/src/domain/model.ts](./ttt-domain/src/domain/model.ts)
+- [Domain model](./ttt-domain/src/domain/model.ts)
 
 ## Workflows
 
@@ -11,6 +11,8 @@
 - [Create challenge](./ttt-domain/src/workflows/create-challenge/workflow.ts)
 - [Accept challenge](./ttt-domain/src/workflows/accept-challenge/workflow.ts)
 - [Play move](./ttt-domain/src/workflows/play-move/workflow.ts)
+
+![ttt sequence diagram](ttt-sequence-diagram.png)
 
 ```mermaid
 sequenceDiagram
