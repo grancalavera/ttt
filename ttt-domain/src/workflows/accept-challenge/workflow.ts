@@ -1,21 +1,16 @@
 import { Match, Player, SystemConfig } from "../../domain/model";
-import { UpsertMatch, WorkflowResult } from "../support";
+import { UpsertMatch, WorkflowResult, FindMatch } from "../support";
 
-export type AcceptChallenge = (
-  dependencies: SystemConfig & UpsertMatch
-) => AcceptChallengeWorkflow;
+export type AcceptChallengeWorkflow = (
+  dependencies: SystemConfig & FindMatch & UpsertMatch
+) => AcceptChallenge;
 
-export type AcceptChallengeWorkflow = (input: Player) => WorkflowResult<Match>;
+export type AcceptChallenge = (input: Player) => WorkflowResult<Match>;
 
-export interface AcceptChallengeError {
-  readonly kind: "AcceptChallengeError";
-  readonly input: Player;
+export class AcceptChallengeError {
+  readonly kind = "AcceptChallengeError";
+  constructor(readonly input: Player) {}
 }
-
-export const acceptChallengeError = (input: Player): AcceptChallengeError => ({
-  kind: "AcceptChallengeError",
-  input,
-});
 
 declare module "../errors" {
   export interface WorkflowErrorMap {

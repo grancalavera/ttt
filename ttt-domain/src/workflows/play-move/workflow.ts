@@ -1,21 +1,16 @@
 import { Match, SystemConfig } from "../../domain/model";
 import { FindMatch, MoveInput, UpsertMatch, WorkflowResult } from "../support";
 
-export type PlayMove = (
+export type PlayMoveWorkflow = (
   dependencies: SystemConfig & FindMatch & UpsertMatch
-) => PlayMoveWorkflow;
+) => PlayMove;
 
-export type PlayMoveWorkflow = (input: MoveInput) => WorkflowResult<Match>;
+export type PlayMove = (input: MoveInput) => WorkflowResult<Match>;
 
-export interface PlayMoveError {
-  readonly kind: "PlayMoveError";
-  readonly input: MoveInput;
+export class PlayMoveError {
+  readonly kind = "PlayMoveError";
+  constructor(readonly input: MoveInput) {}
 }
-
-export const playMoveError = (input: MoveInput): PlayMoveError => ({
-  kind: "PlayMoveError",
-  input,
-});
 
 declare module "../errors" {
   export interface WorkflowErrorMap {

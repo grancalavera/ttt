@@ -1,21 +1,16 @@
 import { Match, SystemConfig } from "../../domain/model";
 import { FindMatch, MoveInput, UpsertMatch, WorkflowResult } from "../support";
 
-export type CreateGame = (
+export type CreateGameCreateGameWorkflow = (
   dependencies: SystemConfig & FindMatch & UpsertMatch
-) => CreateGameWorkflow;
+) => CreateGame;
 
-export type CreateGameWorkflow = (input: MoveInput) => WorkflowResult<Match>;
+export type CreateGame = (input: MoveInput) => WorkflowResult<Match>;
 
-export interface CreateGameError {
-  readonly kind: "CreateGameError";
-  readonly input: MoveInput;
+export class CreateGameError {
+  readonly kind = "CreateGameError";
+  constructor(readonly input: MoveInput) {}
 }
-
-export const createGameError = (input: MoveInput): CreateGameError => ({
-  kind: "CreateGameError",
-  input,
-});
 
 declare module "../errors" {
   export interface WorkflowErrorMap {

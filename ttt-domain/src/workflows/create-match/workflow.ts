@@ -1,21 +1,16 @@
 import { Match, Player, SystemConfig } from "../../domain/model";
 import { GetUniqueId, UpsertMatch, WorkflowResult } from "../support";
 
-export type CreateMatch = (
+export type CreateMatchWorkflow = (
   dependencies: SystemConfig & GetUniqueId & UpsertMatch
-) => CreateMatchWorkflow;
+) => CreateMatch;
 
-export type CreateMatchWorkflow = (input: Player) => WorkflowResult<Match>;
+export type CreateMatch = (input: Player) => WorkflowResult<Match>;
 
-export interface CreateMatchError {
-  readonly kind: "CreateMatchError";
-  readonly input: Player;
+export class CreateMatchError {
+  readonly kind = "CreateMatchError";
+  constructor(readonly input: Player) {}
 }
-
-export const createMatchError = (input: Player): CreateMatchError => ({
-  kind: "CreateMatchError",
-  input,
-});
 
 declare module "../errors" {
   export interface WorkflowErrorMap {

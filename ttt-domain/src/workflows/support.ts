@@ -1,5 +1,5 @@
 import { AsyncResult } from "@grancalavera/ttt-etc";
-import { Match, MatchId, Player, Move } from "../domain/model";
+import { Match, MatchId, Move, Player } from "../domain/model";
 import { WorkflowError } from "./errors";
 
 export interface GetUniqueId {
@@ -20,29 +20,15 @@ export type MatchResult = AsyncResult<Match, WorkflowError>;
 export type FindMatch = { findMatch: Find<MatchId, Match> };
 export type UpsertMatch = { upsertMatch: Upsert<Match> };
 
-export interface FindMatchError {
-  kind: "FindMatchError";
-  matchId: MatchId;
-  message: string;
+export class FindMatchError {
+  readonly kind = "FindMatchError";
+  constructor(readonly matchId: MatchId, readonly message: string) {}
 }
 
-export interface UpsertMatchError {
-  kind: "UpsertMatchError";
-  match: Match;
-  message: string;
+export class UpsertMatchError {
+  readonly kind = "UpsertMatchError";
+  constructor(readonly match: Match, readonly message: string) {}
 }
-
-export const findMatchError = (matchId: MatchId, message: string): FindMatchError => ({
-  kind: "FindMatchError",
-  matchId,
-  message,
-});
-
-export const upsertMatchError = (match: Match, message: string): UpsertMatchError => ({
-  kind: "UpsertMatchError",
-  match,
-  message,
-});
 
 export const arePlayersTheSame = (l: Player, r: Player) => l.id === r.id;
 
