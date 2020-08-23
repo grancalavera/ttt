@@ -8,11 +8,14 @@ sequenceDiagram
 
   c->>+s: join(Player)
 
-    alt firstChallenge = None
+    s->>+d: resolveFirstChallenge
+    d-->>-s: Result = Option<Match>
+
+    alt Result = None
       s->>+d: createMatch(Player)
       d-->>-s: Match | WorkflowError
 
-    else firstChallenge = Some<Match>
+    else Result = Some<Match>
       s->>+d: acceptChallenge(Match, Player)
 
       d-->>-s: Match | WorkflowError
