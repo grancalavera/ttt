@@ -14,7 +14,7 @@
 - [Workflow support](./ttt-domain/src/workflows/support.ts)
 - [Sequence diagram](./sequence-diagram.md)
 
-![ttt sequence diagram](ttt-sequence-diagram.png)
+![ttt sequence diagram](ttt-sequence-diagram.jpeg)
 
 ## References
 

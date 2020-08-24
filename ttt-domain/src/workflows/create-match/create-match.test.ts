@@ -1,16 +1,13 @@
 import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
-import { Match, Player, SystemConfig } from "../../domain/model";
+import { Match, Player } from "../../domain/model";
 import { alice, bob } from "../../test/support";
-import {
-  arePlayersTheSame,
-  CountActiveMatches,
-  GetUniqueId,
-  UnknownError,
-  UpsertMatch,
-  WorkflowResult,
-} from "../support";
+import { arePlayersTheSame, UnknownError, WorkflowResult } from "../support";
 import { createMatchWorkflow } from "./create-match";
-import { CreateMatch, TooManyActiveMatchesError } from "./workflow";
+import {
+  CreateMatch,
+  CreateMatchDependencies,
+  TooManyActiveMatchesError,
+} from "./workflow";
 
 interface Scenario {
   name: string;
@@ -24,7 +21,7 @@ const matchId = "default-match-id";
 const maxActiveMatches = 1;
 const unknownFailure = failure(new UnknownError("Boom!"));
 
-const dependencies: SystemConfig & GetUniqueId & CountActiveMatches & UpsertMatch = {
+const dependencies: CreateMatchDependencies = {
   gameSize: 3 * 3,
   maxActiveMatches,
   getUniqueId: () => matchId,
@@ -61,10 +58,10 @@ const scenarios: Scenario[] = [
         return unknownFailure;
       },
     }),
-    input: bob,
+    input: alice,
     expected: unknownFailure,
   },
-];
+].slice(2, 3) as Scenario[];
 
 describe.each(scenarios)("create match workflow", (scenario) => {
   const { name, runWorkflow, input, expected } = scenario;
@@ -76,9 +73,7 @@ describe.each(scenarios)("create match workflow", (scenario) => {
   });
 
   describe(name, () => {
-    it("workflow", () => {
-      expect(actual).toEqual(expected);
-    });
+    it("workflow", () => expect(actual).toEqual(expected));
 
     it("side effects", () => {
       if (isSuccess(expected)) {

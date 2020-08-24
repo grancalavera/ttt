@@ -6,11 +6,16 @@ import {
   UpsertMatch,
 } from "../support";
 
-export type CreateMatchWorkflow = (
-  dependencies: SystemConfig & CountActiveMatches & GetUniqueId & UpsertMatch
-) => CreateMatch;
+export type CreateMatchWorkflow = (dependencies: CreateMatchDependencies) => CreateMatch;
 
 export type CreateMatch = (input: Player) => AsyncWorkflowResult<Match>;
+
+// prettier-ignore
+export type CreateMatchDependencies =
+  & SystemConfig
+  & CountActiveMatches
+  & GetUniqueId
+  & UpsertMatch;
 
 export class TooManyActiveMatchesError {
   readonly kind = "TooManyActiveMatchesError";
