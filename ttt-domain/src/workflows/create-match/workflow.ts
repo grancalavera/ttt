@@ -19,11 +19,9 @@ export type CreateMatchDependencies =
 
 export class TooManyActiveMatchesError {
   readonly kind = "TooManyActiveMatchesError";
-
   get message(): string {
     return `player ${this.input.id} already reached the max count of ${this.maxActiveGames} active matches`;
   }
-
   constructor(readonly input: Player, readonly maxActiveGames: number) {}
 }
 

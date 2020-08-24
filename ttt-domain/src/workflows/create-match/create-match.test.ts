@@ -1,13 +1,15 @@
 import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
 import { Match, Player } from "../../domain/model";
-import { alice, bob } from "../../test/support";
-import { arePlayersTheSame, UnknownError, WorkflowResult } from "../support";
-import { createMatchWorkflow } from "./create-match";
 import {
-  CreateMatch,
-  CreateMatchDependencies,
-  TooManyActiveMatchesError,
-} from "./workflow";
+  alice,
+  bob,
+  createMatchDependencies,
+  matchId,
+  maxActiveMatches,
+} from "../../test/support";
+import { UpsertFailedError, WorkflowResult } from "../support";
+import { createMatchWorkflow } from "./create-match";
+import { CreateMatch, TooManyActiveMatchesError } from "./workflow";
 
 interface Scenario {
   name: string;
@@ -16,59 +18,55 @@ interface Scenario {
   expected: WorkflowResult<Match>;
 }
 
-const spyOnUpsertMatch = jest.fn();
-const matchId = "default-match-id";
-const maxActiveMatches = 1;
-const unknownFailure = failure(new UnknownError("Boom!"));
+const spyOnUpsert = jest.fn();
 
-const dependencies: CreateMatchDependencies = {
-  gameSize: 3 * 3,
-  maxActiveMatches,
-  getUniqueId: () => matchId,
-  countActiveMatches: async (p) => (arePlayersTheSame(p, bob) ? 1 : 0),
-  upsertMatch: async (match) => {
-    spyOnUpsertMatch(match);
-    return success(undefined);
-  },
+const alicesNewMatch: Match = {
+  id: matchId,
+  owner: alice,
+  state: { kind: "New" },
 };
+
+const upsertFailure = failure(new UpsertFailedError(alicesNewMatch, "for reasons"));
 
 const scenarios: Scenario[] = [
   {
-    name: "Create match successfully",
-    runWorkflow: createMatchWorkflow(dependencies),
-    input: alice,
-    expected: success({
-      id: matchId,
-      owner: alice,
-      state: { kind: "New" },
-    }),
-  },
-  {
-    name: "Fail with too many active games",
-    runWorkflow: createMatchWorkflow(dependencies),
+    name: "too many active games",
+    runWorkflow: createMatchWorkflow(
+      createMatchDependencies({
+        upsertResult: success(undefined),
+        spyOnUpsert,
+      })
+    ),
     input: bob,
     expected: failure(new TooManyActiveMatchesError(bob, maxActiveMatches)),
   },
   {
-    name: "Fail with unknown error",
-    runWorkflow: createMatchWorkflow({
-      ...dependencies,
-      upsertMatch: async (match) => {
-        spyOnUpsertMatch(match);
-        return unknownFailure;
-      },
-    }),
+    name: "upsert failed",
+    runWorkflow: createMatchWorkflow(
+      createMatchDependencies({ upsertResult: upsertFailure, spyOnUpsert: spyOnUpsert })
+    ),
     input: alice,
-    expected: unknownFailure,
+    expected: upsertFailure,
   },
-].slice(2, 3) as Scenario[];
+  {
+    name: "create match",
+    runWorkflow: createMatchWorkflow(
+      createMatchDependencies({
+        upsertResult: success(undefined),
+        spyOnUpsert,
+      })
+    ),
+    input: alice,
+    expected: success(alicesNewMatch),
+  },
+];
 
 describe.each(scenarios)("create match workflow", (scenario) => {
   const { name, runWorkflow, input, expected } = scenario;
   let actual: WorkflowResult<Match>;
 
   beforeEach(async () => {
-    spyOnUpsertMatch.mockClear();
+    spyOnUpsert.mockClear();
     actual = await runWorkflow(input);
   });
 
@@ -77,14 +75,14 @@ describe.each(scenarios)("create match workflow", (scenario) => {
 
     it("side effects", () => {
       if (isSuccess(expected)) {
-        expect(spyOnUpsertMatch).toHaveBeenNthCalledWith(1, expected.value);
+        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expected.value);
       } else {
         switch (expected.error.kind) {
           case "TooManyActiveMatchesError":
-            expect(spyOnUpsertMatch).not.toHaveBeenCalled();
+            expect(spyOnUpsert).not.toHaveBeenCalled();
             break;
-          case "UnknownError":
-            expect(spyOnUpsertMatch).toHaveBeenCalledTimes(1);
+          case "UpsertFailedError":
+            expect(spyOnUpsert).toHaveBeenCalledTimes(1);
             break;
           default:
             throw new Error(

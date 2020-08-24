@@ -1,9 +1,7 @@
-import { Match, SystemConfig } from "../../domain/model";
-import { FindMatch, MoveInput, UpsertMatch, WorkflowResult } from "../support";
+import { Match } from "../../domain/model";
+import { MoveInput, StandardDependencies, WorkflowResult } from "../support";
 
-export type PlayMoveWorkflow = (
-  dependencies: SystemConfig & FindMatch & UpsertMatch
-) => PlayMove;
+export type PlayMoveWorkflow = (dependencies: StandardDependencies) => PlayMove;
 
 export type PlayMove = (input: MoveInput) => WorkflowResult<Match>;
 
