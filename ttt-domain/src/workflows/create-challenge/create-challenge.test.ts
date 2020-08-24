@@ -1,95 +1,150 @@
-import { Challenge } from "../../domain/model";
-import { failure, Result, success } from "../../../../ttt-etc/dist";
+import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
+import { Match } from "../../domain/model";
+import { alice, bob, matchId, standardDependencies } from "../../test/support";
 import {
-  alice,
-  challengeUniqueIdProducer,
-  defaultChallengeId,
-  narrowScenarios,
-  toChallenger,
-} from "../../test/support";
-import {
-  ChallengeCreationFailedError,
-  ChallengeCreator,
-  CreateChallengeInput,
-  CreateChallengeResult,
-  CreateChallengeWorkflow,
-} from "./workflow";
-import { createChallenge } from "./create-challenge";
-
-const spyOnCreateChallenge = jest.fn();
-
-export const alicesChallenge: Challenge = {
-  challengeId: defaultChallengeId,
-  challenger: toChallenger(alice),
-  challengerPosition: 0,
-};
+  IllegalMatchStateError,
+  MatchNotFoundError,
+  MoveInput,
+  UpsertFailedError,
+  WorkflowResult,
+} from "../support";
+import { createChallengeWorkflow } from "./create-challenge";
+import { CreateChallenge, IllegalMatchOwnerError } from "./workflow";
 
 interface Scenario {
   name: string;
-  workflow: CreateChallengeWorkflow;
-  input: CreateChallengeInput;
-  expected: CreateChallengeResult;
+  ruWorkflow: CreateChallenge;
+  input: MoveInput;
+  expected: WorkflowResult<Match>;
 }
 
-const neverCreateChallenge: ChallengeCreator = {
-  createChallenge: (data) => async () => {
-    spyOnCreateChallenge(data);
-    return failure(new ChallengeCreationFailedError(data));
-  },
+const spyOnFind = jest.fn();
+const spyOnUpsert = jest.fn();
+
+const alicesInput: MoveInput = { matchId, move: [alice, 0] };
+
+const alicesNewMatch: Match = {
+  id: matchId,
+  owner: alice,
+  state: { kind: "New" },
 };
 
-const alwaysCreateChallenge: ChallengeCreator = {
-  createChallenge: (data) => async () => {
-    spyOnCreateChallenge(data);
-    return success(undefined);
-  },
+const bobsNewMatch: Match = {
+  id: matchId,
+  owner: bob,
+  state: { kind: "New" },
 };
 
-const scenarios = narrowScenarios<Scenario>([
+const alicesChallenge: Match = {
+  id: matchId,
+  owner: alice,
+  state: { kind: "Challenge", move: alicesInput.move },
+};
+
+const upsertFailure = failure(new UpsertFailedError(alicesNewMatch, "for reasons"));
+
+const scenarios: Scenario[] = [
   {
-    name: "create challenge but fail to save it",
-    workflow: createChallenge({
-      ...challengeUniqueIdProducer,
-      ...neverCreateChallenge,
-    }),
-    input: { challenger: toChallenger(alice), challengerPosition: 0 },
-    expected: {
-      kind: "Failure",
-      error: { kind: "ChallengeNotSavedError", challenge: alicesChallenge },
-    },
+    name: "match not found",
+    ruWorkflow: createChallengeWorkflow(
+      standardDependencies({
+        findResult: failure(new MatchNotFoundError(matchId)),
+        spyOnFind,
+        upsertResult: success(undefined),
+        spyOnUpsert,
+      })
+    ),
+    input: alicesInput,
+    expected: failure(new MatchNotFoundError(matchId)),
   },
   {
-    name: "create and save challenge",
-    workflow: createChallenge({
-      ...challengeUniqueIdProducer,
-      ...alwaysCreateChallenge,
-    }),
-    input: { challenger: toChallenger(alice), challengerPosition: 0 },
-    expected: {
-      kind: "Success",
-      value: alicesChallenge,
-    },
+    name: "illegal match owner",
+    ruWorkflow: createChallengeWorkflow(
+      standardDependencies({
+        findResult: success(bobsNewMatch),
+        spyOnFind,
+        upsertResult: success(undefined),
+        spyOnUpsert,
+      })
+    ),
+    input: alicesInput,
+    expected: failure(new IllegalMatchOwnerError(alicesInput)),
   },
-]);
+  {
+    name: "illegal match state",
+    ruWorkflow: createChallengeWorkflow(
+      standardDependencies({
+        findResult: success(alicesChallenge),
+        spyOnFind,
+        upsertResult: success(undefined),
+        spyOnUpsert,
+      })
+    ),
+    input: alicesInput,
+    expected: failure(new IllegalMatchStateError(alicesInput, "New", "Challenge")),
+  },
+  {
+    name: "upsert failed",
+    ruWorkflow: createChallengeWorkflow(
+      standardDependencies({
+        findResult: success(alicesNewMatch),
+        spyOnFind,
+        upsertResult: upsertFailure,
+        spyOnUpsert,
+      })
+    ),
+    input: alicesInput,
+    expected: upsertFailure,
+  },
+  {
+    name: "create challenge",
+    ruWorkflow: createChallengeWorkflow(
+      standardDependencies({
+        findResult: success(alicesNewMatch),
+        spyOnFind,
+        upsertResult: success(undefined),
+        spyOnUpsert,
+      })
+    ),
+    input: alicesInput,
+    expected: success(alicesChallenge),
+  },
+];
 
-describe.each(scenarios())("create challenge: workflow", (scenario) => {
-  const { workflow, expected, name, input } = scenario;
-  const runWorkflow = workflow(input);
-
-  let actual: Result<Challenge, ChallengeCreationFailedError>;
+describe.each(scenarios)("create challenge: workflow", (scenario) => {
+  const { name, ruWorkflow, input, expected } = scenario;
+  let actual: WorkflowResult<Match>;
 
   beforeEach(async () => {
-    spyOnCreateChallenge.mockClear();
-    actual = await runWorkflow();
+    spyOnFind.mockClear();
+    spyOnUpsert.mockClear();
+    actual = await ruWorkflow(input);
   });
 
   describe(name, () => {
-    it("workflow", () => {
-      expect(actual).toEqual(expected);
-    });
+    it("workflow", () => expect(actual).toEqual(expected));
 
-    it("side effects: create challenge", () => {
-      expect(spyOnCreateChallenge).toHaveBeenCalledWith(alicesChallenge);
+    it("side effects", () => {
+      expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
+
+      if (isSuccess(expected)) {
+        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expected.value);
+      } else {
+        switch (expected.error.kind) {
+          case "MatchNotFoundError":
+          case "IllegalMatchOwnerError":
+          case "IllegalMatchStateError":
+            expect(spyOnUpsert).not.toHaveBeenCalled();
+            break;
+          case "UpsertFailedError":
+            expect(spyOnUpsert).toHaveBeenCalledTimes(1);
+            break;
+          default:
+            throw new Error(
+              `This workflow should never fail with ${expected.error.kind}`
+            );
+        }
+      }
     });
   });
 });

@@ -1,5 +1,12 @@
 import { Result } from "@grancalavera/ttt-etc";
-import { Match, MatchId, Move, Player } from "../domain/model";
+import {
+  Match,
+  MatchId,
+  Move,
+  Player,
+  SystemConfig,
+  MatchStateName,
+} from "../domain/model";
 import { WorkflowError } from "./errors";
 
 export interface GetUniqueId {
@@ -23,27 +30,39 @@ export type CountActiveMatches = {
   countActiveMatches: (player: Player) => Promise<number>;
 };
 
-export class FindMatchError {
-  readonly kind = "FindMatchError";
-  constructor(readonly matchId: MatchId, readonly message: string) {}
+export type StandardDependencies = SystemConfig & FindMatch & UpsertMatch;
+
+export class MatchNotFoundError {
+  readonly kind = "MatchNotFoundError";
+  get message(): string {
+    return `match ${this.matchId} not found`;
+  }
+  constructor(readonly matchId: MatchId) {}
 }
 
-export class UpsertMatchError {
-  readonly kind = "UpsertMatchError";
-  constructor(readonly match: Match, readonly message: string) {}
+export class UpsertFailedError {
+  readonly kind = "UpsertFailedError";
+  constructor(readonly match: Match, readonly reason: any) {}
 }
 
-export class UnknownError {
-  readonly kind = "UnknownError";
-  constructor(readonly message: string) {}
+export class IllegalMatchStateError {
+  readonly kind = "IllegalMatchStateError";
+  get message(): string {
+    return `match ${this.input.matchId} is on an illegal state: wanted state ${this.wantedState}, actual state ${this.actualState}`;
+  }
+  constructor(
+    readonly input: MoveInput,
+    readonly wantedState: MatchStateName,
+    readonly actualState: MatchStateName
+  ) {}
 }
 
 export const arePlayersTheSame = (l: Player, r: Player) => l.id === r.id;
 
 declare module "./errors" {
   export interface WorkflowErrorMap {
-    FindMatchError: FindMatchError;
-    UpsertMatchError: UpsertMatchError;
-    UnknownError: UnknownError;
+    MatchNotFoundError: MatchNotFoundError;
+    UpsertFailedError: UpsertFailedError;
+    IllegalMatchStateError: IllegalMatchStateError;
   }
 }
