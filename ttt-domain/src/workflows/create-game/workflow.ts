@@ -1,11 +1,20 @@
 import { Match, SystemConfig } from "../../domain/model";
-import { FindMatch, MoveInput, UpsertMatch, WorkflowResult } from "../support";
+import { AsyncWorkflowResult, FindMatch, MoveInput, UpsertMatch } from "../support";
 
-export type CreateGameCreateGameWorkflow = (
+export type CreateGameWorkflow = (
   dependencies: SystemConfig & FindMatch & UpsertMatch
 ) => CreateGame;
 
-export type CreateGame = (input: MoveInput) => WorkflowResult<Match>;
+export type CreateGame = (input: MoveInput) => AsyncWorkflowResult<Match>;
+
+export class IllegalGameOpponentError {
+  readonly kind = "IllegalGameOpponentError";
+  get message(): string {
+    const [player] = this.input.move;
+    return `${player.id} cannot be both the owner and opponent of the same match`;
+  }
+  constructor(readonly input: MoveInput) {}
+}
 
 export class CreateGameError {
   readonly kind = "CreateGameError";
@@ -14,6 +23,6 @@ export class CreateGameError {
 
 declare module "../errors" {
   export interface WorkflowErrorMap {
-    CreateGameError: CreateGameError;
+    IllegalGameOpponentError: IllegalGameOpponentError;
   }
 }

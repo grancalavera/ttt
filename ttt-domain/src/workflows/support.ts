@@ -32,6 +32,14 @@ export type CountActiveMatches = {
 
 export type StandardDependencies = SystemConfig & FindMatch & UpsertMatch;
 
+export class TooManyActiveMatchesError {
+  readonly kind = "TooManyActiveMatchesError";
+  get message(): string {
+    return `player ${this.input.id} already reached the max count of ${this.maxActiveGames} active matches`;
+  }
+  constructor(readonly input: Player, readonly maxActiveGames: number) {}
+}
+
 export class MatchNotFoundError {
   readonly kind = "MatchNotFoundError";
   get message(): string {
@@ -57,12 +65,22 @@ export class IllegalMatchStateError {
   ) {}
 }
 
+export class IllegalMoveError {
+  readonly kind = "IllegalMoveError";
+  get message(): string {
+    return `position ${this.input.move[1]} already played on match ${this.input.matchId}`;
+  }
+  constructor(readonly input: MoveInput) {}
+}
+
 export const arePlayersTheSame = (l: Player, r: Player) => l.id === r.id;
 
 declare module "./errors" {
   export interface WorkflowErrorMap {
-    MatchNotFoundError: MatchNotFoundError;
-    UpsertFailedError: UpsertFailedError;
     IllegalMatchStateError: IllegalMatchStateError;
+    IllegalMoveError: IllegalMoveError;
+    MatchNotFoundError: MatchNotFoundError;
+    TooManyActiveMatchesError: TooManyActiveMatchesError;
+    UpsertFailedError: UpsertFailedError;
   }
 }

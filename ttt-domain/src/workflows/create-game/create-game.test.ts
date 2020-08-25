@@ -1,243 +1,179 @@
-import { Game } from "../../domain/model";
-import { failure, isSuccess, Result, success } from "../../../../ttt-etc/dist";
+import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
+import { Match } from "../../domain/model";
 import {
   alice,
   bob,
-  defaultChallengeId,
-  getMatchUniqueId,
-  narrowScenarios,
-  toOpponent,
+  matchId,
+  maxActiveMatches,
+  mockDependencies,
+  upsertFailure,
 } from "../../test/support";
 import {
-  AcceptChallengeInput,
-  AcceptChallengeResult,
-  AcceptChallengeWorkflow,
-  FindChallenge,
-  GameCreationFailedError,
-  CreateGame,
-} from "./workflow";
-import { acceptChallenge, failWithGameValidationError } from "./create-game";
-import { invalidPlayers } from "./create-players";
-import { invalidPositions } from "./create-positions";
-import { aliceChallengesBobGame, alicesChallenge } from "./fixtures";
-
-const spyOnCreateGame = jest.fn();
+  IllegalMatchStateError,
+  IllegalMoveError,
+  MatchNotFoundError,
+  MoveInput,
+  TooManyActiveMatchesError,
+  WorkflowResult,
+} from "../support";
+import { createGameWorkflow } from "./create-game";
+import { CreateGame, IllegalGameOpponentError } from "./workflow";
 
 interface Scenario {
   name: string;
-  workflow: AcceptChallengeWorkflow;
-  input: AcceptChallengeInput;
-  expected: AcceptChallengeResult;
+  runWorkflow: CreateGame;
+  input: MoveInput;
+  expected: WorkflowResult<Match>;
 }
 
-const neverFindChallenge: FindChallenge = {
-  findChallenge: (challengeId) => async () => ({
-    kind: "Failure",
-    error: { kind: "ChallengeNotFoundError", challengeId },
-  }),
+const spyOnFind = jest.fn();
+const spyOnUpsert = jest.fn();
+
+const matchOnNewState: Match = {
+  id: matchId,
+  owner: alice,
+  state: { kind: "New" },
 };
 
-const alwaysFindAlicesChallenge: FindChallenge = {
-  findChallenge: (challengeId) => async () => ({
-    kind: "Success",
-    value: alicesChallenge,
-  }),
+const matchOnChallengeState: Match = {
+  id: matchId,
+  owner: alice,
+  state: { kind: "Challenge", move: [alice, 0] },
 };
 
-const neverCreateGame: CreateGame = {
-  createGame: (game) => async () => {
-    spyOnCreateGame(game);
-    return failure(new GameCreationFailedError(game));
-  },
-};
+const alicesInvalidInput: MoveInput = { matchId, move: [alice, 1] };
+const bobsInvalidInput: MoveInput = { matchId, move: [bob, 0] };
+const bobsValidInput: MoveInput = { matchId, move: [bob, 1] };
 
-const alwaysCreateGame: CreateGame = {
-  createGame: (game) => async () => {
-    spyOnCreateGame(game);
-    return success(undefined);
+const scenarios: Scenario[] = [
+  {
+    name: "too many active matches",
+    runWorkflow: createGameWorkflow(mockDependencies({ activeMatches: 1 })),
+    input: bobsValidInput,
+    expected: failure(new TooManyActiveMatchesError(bob, maxActiveMatches)),
   },
-};
+  {
+    name: "match not found",
+    runWorkflow: createGameWorkflow(
+      mockDependencies({
+        findResult: failure(new MatchNotFoundError(matchId)),
+        spyOnFind,
+        upsertResult: success(undefined),
+        spyOnUpsert,
+      })
+    ),
+    input: bobsValidInput,
+    expected: failure(new MatchNotFoundError(matchId)),
+  },
+  {
+    name: "illegal match state",
+    runWorkflow: createGameWorkflow(
+      mockDependencies({
+        findResult: success(matchOnNewState),
+        spyOnFind,
+        upsertResult: success(undefined),
+        spyOnUpsert,
+      })
+    ),
+    input: alicesInvalidInput,
+    expected: failure(
+      new IllegalMatchStateError(
+        alicesInvalidInput,
+        "Challenge",
+        matchOnNewState.state.kind
+      )
+    ),
+  },
+  {
+    name: "illegal challenge opponent",
+    runWorkflow: createGameWorkflow(
+      mockDependencies({
+        findResult: success(matchOnChallengeState),
+        spyOnFind,
+        upsertResult: success(undefined),
+        spyOnUpsert,
+      })
+    ),
+    input: alicesInvalidInput,
+    expected: failure(new IllegalGameOpponentError(alicesInvalidInput)),
+  },
+  {
+    name: "illegal move",
+    runWorkflow: createGameWorkflow(
+      mockDependencies({
+        findResult: success(matchOnChallengeState),
+        spyOnFind,
+        upsertResult: success(undefined),
+        spyOnUpsert,
+      })
+    ),
+    input: bobsInvalidInput,
+    expected: failure(new IllegalMoveError(bobsInvalidInput)),
+  },
+  {
+    name: "upsert failed",
+    runWorkflow: createGameWorkflow(
+      mockDependencies({ upsertResult: upsertFailure, spyOnUpsert: spyOnUpsert })
+    ),
+    input: bobsValidInput,
+    expected: upsertFailure,
+  },
+  {
+    name: "create game",
+    runWorkflow: createGameWorkflow(mockDependencies({})),
+    input: bobsValidInput,
+    expected: success({
+      id: matchId,
+      owner: alice,
+      state: {
+        kind: "Game",
+        moves: [
+          [alice, 0],
+          [bob, 1],
+        ],
+        next: alice,
+        players: [alice, bob],
+      },
+    }),
+  },
+];
 
-const scenarios = narrowScenarios<Scenario>([
-  {
-    name: "Challenge not found and challenger found",
-    workflow: acceptChallenge({
-      ...neverFindChallenge,
-      ...neverCreateGame,
-      ...getMatchUniqueId,
-    }),
-    input: {
-      challengeId: defaultChallengeId,
-      opponent: toOpponent(bob),
-      opponentPosition: 1,
-    },
-    expected: {
-      kind: "Failure",
-      error: { kind: "ChallengeNotFoundError", challengeId: defaultChallengeId },
-    },
-  },
-  {
-    name: "Challenge not found and challenger not found",
-    workflow: acceptChallenge({
-      ...neverFindChallenge,
-      ...neverCreateGame,
-      ...getMatchUniqueId,
-    }),
-    input: {
-      challengeId: defaultChallengeId,
-      opponent: toOpponent(bob),
-      opponentPosition: 1,
-    },
-    expected: {
-      kind: "Failure",
-      error: { kind: "ChallengeNotFoundError", challengeId: defaultChallengeId },
-    },
-  },
-  {
-    name: "Alice accepts her own challenge and play another move",
-    workflow: acceptChallenge({
-      ...alwaysFindAlicesChallenge,
-      ...neverCreateGame,
-      ...getMatchUniqueId,
-    }),
-    input: {
-      challengeId: defaultChallengeId,
-      opponent: toOpponent(alice),
-      opponentPosition: 1,
-    },
-    expected: failWithGameValidationError([
-      invalidPlayers({
-        challenge: alicesChallenge,
-        opponent: toOpponent(alice),
-        opponentPosition: 1,
-      }),
-    ]),
-  },
-  {
-    name: "Bob accepts Alice's challenge and plays the same move",
-    workflow: acceptChallenge({
-      ...alwaysFindAlicesChallenge,
-      ...neverCreateGame,
-      ...getMatchUniqueId,
-    }),
-    input: {
-      challengeId: defaultChallengeId,
-      opponent: toOpponent(bob),
-      opponentPosition: 0,
-    },
-    expected: failWithGameValidationError([
-      invalidPositions({
-        challenge: alicesChallenge,
-        opponent: toOpponent(bob),
-        opponentPosition: 0,
-      }),
-    ]),
-  },
-  {
-    name: "Alice accepts her own challenge and plays the same move",
-    workflow: acceptChallenge({
-      ...alwaysFindAlicesChallenge,
-      ...neverCreateGame,
-      ...getMatchUniqueId,
-    }),
-    input: {
-      challengeId: defaultChallengeId,
-      opponent: toOpponent(alice),
-      opponentPosition: 0,
-    },
-    expected: failWithGameValidationError([
-      invalidPlayers({
-        challenge: alicesChallenge,
-        opponent: toOpponent(alice),
-        opponentPosition: 0,
-      }),
-      invalidPositions({
-        challenge: alicesChallenge,
-        opponent: toOpponent(alice),
-        opponentPosition: 0,
-      }),
-    ]),
-  },
-  {
-    name: "Bob accepts Alice's challenge and plays another move",
-    workflow: acceptChallenge({
-      ...alwaysFindAlicesChallenge,
-      ...alwaysCreateGame,
-      ...getMatchUniqueId,
-    }),
-    input: {
-      challengeId: defaultChallengeId,
-      opponent: toOpponent(bob),
-      opponentPosition: 1,
-    },
-    expected: success(aliceChallengesBobGame),
-  },
-  {
-    name:
-      "Bob accepts Alice's challenge and plays another move, but game fails to be created",
-    workflow: acceptChallenge({
-      ...alwaysFindAlicesChallenge,
-      ...neverCreateGame,
-      ...getMatchUniqueId,
-    }),
-    input: {
-      challengeId: defaultChallengeId,
-      opponent: toOpponent(bob),
-      opponentPosition: 1,
-    },
-    expected: {
-      kind: "Failure",
-      error: { kind: "GameCreationFailedError", game: aliceChallengesBobGame },
-    },
-  },
-]);
-
-describe.each(scenarios())("accept challenge: workflow", (scenario) => {
-  const { name, workflow, input, expected } = scenario;
-  const runWorkflow = workflow(input);
-
-  let actual: AcceptChallengeResult;
+describe.each(scenarios)("create game: workflow", (scenario) => {
+  const { name, runWorkflow, input, expected } = scenario;
+  let actual: WorkflowResult<Match>;
 
   beforeEach(async () => {
-    spyOnCreateGame.mockClear();
-    actual = await runWorkflow();
+    spyOnFind.mockClear();
+    spyOnUpsert.mockClear();
+    actual = await runWorkflow(input);
   });
 
   describe(name, () => {
-    it("workflow", () => {
-      expect(actual).toEqual(expected);
-    });
+    it("workflow", () => expect(actual).toEqual(expected));
 
-    it("side effects: create game", () => {
-      const sideEffects = inferSideEffects(expected);
-      if (isSuccess(sideEffects)) {
-        expect(spyOnCreateGame).toHaveBeenNthCalledWith(1, sideEffects.value);
+    it("side effects", () => {
+      expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
+
+      if (isSuccess(expected)) {
+        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expected.value);
       } else {
-        expect(spyOnCreateGame).not.toHaveBeenCalled();
+        switch (expected.error.kind) {
+          case "MatchNotFoundError":
+          case "IllegalMatchStateError":
+          case "IllegalGameOpponentError":
+          case "IllegalMoveError":
+          case "TooManyActiveMatchesError":
+            expect(spyOnUpsert).not.toHaveBeenCalled();
+            break;
+          case "UpsertFailedError":
+            expect(spyOnUpsert).toHaveBeenCalledTimes(1);
+            break;
+          default:
+            throw new Error(
+              `This workflow should never fail with ${expected.error.kind}`
+            );
+        }
       }
     });
   });
 });
-
-const inferSideEffects = (expected: AcceptChallengeResult): Result<Game, void> => {
-  if (isSuccess(expected)) {
-    return success(expected.value);
-  }
-
-  switch (expected.error.kind) {
-    case "ChallengeNotFoundError": {
-      return failure(undefined);
-    }
-    case "CreateGameValidationError": {
-      return failure(undefined);
-    }
-    case "GameCreationFailedError": {
-      const { game } = expected.error;
-      return success(game);
-    }
-    default: {
-      const never: never = expected.error;
-      throw new Error(`unexpected error kind ${never}`);
-    }
-  }
-};
