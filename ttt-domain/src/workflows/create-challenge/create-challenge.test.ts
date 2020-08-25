@@ -1,11 +1,10 @@
 import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
 import { Match } from "../../domain/model";
-import { alice, bob, matchId, standardDependencies } from "../../test/support";
+import { alice, bob, matchId, mockDependencies, upsertFailure } from "../../test/support";
 import {
   IllegalMatchStateError,
   MatchNotFoundError,
   MoveInput,
-  UpsertFailedError,
   WorkflowResult,
 } from "../support";
 import { createChallengeWorkflow } from "./create-challenge";
@@ -23,31 +22,23 @@ const spyOnUpsert = jest.fn();
 
 const alicesInput: MoveInput = { matchId, move: [alice, 0] };
 
-const alicesNewMatch: Match = {
+const matchOnNewState: Match = {
   id: matchId,
   owner: alice,
   state: { kind: "New" },
 };
 
-const bobsNewMatch: Match = {
-  id: matchId,
-  owner: bob,
-  state: { kind: "New" },
-};
-
-const alicesChallenge: Match = {
+const matchOnChallengeState: Match = {
   id: matchId,
   owner: alice,
   state: { kind: "Challenge", move: alicesInput.move },
 };
 
-const upsertFailure = failure(new UpsertFailedError(alicesNewMatch, "for reasons"));
-
 const scenarios: Scenario[] = [
   {
     name: "match not found",
     ruWorkflow: createChallengeWorkflow(
-      standardDependencies({
+      mockDependencies({
         findResult: failure(new MatchNotFoundError(matchId)),
         spyOnFind,
         upsertResult: success(undefined),
@@ -58,10 +49,29 @@ const scenarios: Scenario[] = [
     expected: failure(new MatchNotFoundError(matchId)),
   },
   {
+    name: "illegal match state",
+    ruWorkflow: createChallengeWorkflow(
+      mockDependencies({
+        findResult: success(matchOnChallengeState),
+        spyOnFind,
+        upsertResult: success(undefined),
+        spyOnUpsert,
+      })
+    ),
+    input: alicesInput,
+    expected: failure(
+      new IllegalMatchStateError(alicesInput, "New", matchOnChallengeState.state.kind)
+    ),
+  },
+  {
     name: "illegal match owner",
     ruWorkflow: createChallengeWorkflow(
-      standardDependencies({
-        findResult: success(bobsNewMatch),
+      mockDependencies({
+        findResult: success({
+          id: matchId,
+          owner: bob,
+          state: { kind: "New" },
+        }),
         spyOnFind,
         upsertResult: success(undefined),
         spyOnUpsert,
@@ -71,23 +81,10 @@ const scenarios: Scenario[] = [
     expected: failure(new IllegalMatchOwnerError(alicesInput)),
   },
   {
-    name: "illegal match state",
-    ruWorkflow: createChallengeWorkflow(
-      standardDependencies({
-        findResult: success(alicesChallenge),
-        spyOnFind,
-        upsertResult: success(undefined),
-        spyOnUpsert,
-      })
-    ),
-    input: alicesInput,
-    expected: failure(new IllegalMatchStateError(alicesInput, "New", "Challenge")),
-  },
-  {
     name: "upsert failed",
     ruWorkflow: createChallengeWorkflow(
-      standardDependencies({
-        findResult: success(alicesNewMatch),
+      mockDependencies({
+        findResult: success(matchOnNewState),
         spyOnFind,
         upsertResult: upsertFailure,
         spyOnUpsert,
@@ -99,26 +96,26 @@ const scenarios: Scenario[] = [
   {
     name: "create challenge",
     ruWorkflow: createChallengeWorkflow(
-      standardDependencies({
-        findResult: success(alicesNewMatch),
+      mockDependencies({
+        findResult: success(matchOnNewState),
         spyOnFind,
         upsertResult: success(undefined),
         spyOnUpsert,
       })
     ),
     input: alicesInput,
-    expected: success(alicesChallenge),
+    expected: success(matchOnChallengeState),
   },
 ];
 
 describe.each(scenarios)("create challenge: workflow", (scenario) => {
-  const { name, ruWorkflow, input, expected } = scenario;
+  const { name, ruWorkflow: runWorkflow, input, expected } = scenario;
   let actual: WorkflowResult<Match>;
 
   beforeEach(async () => {
     spyOnFind.mockClear();
     spyOnUpsert.mockClear();
-    actual = await ruWorkflow(input);
+    actual = await runWorkflow(input);
   });
 
   describe(name, () => {

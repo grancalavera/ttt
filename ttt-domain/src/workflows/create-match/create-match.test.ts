@@ -3,13 +3,14 @@ import { Match, Player } from "../../domain/model";
 import {
   alice,
   bob,
-  createMatchDependencies,
   matchId,
   maxActiveMatches,
+  mockDependencies,
+  upsertFailure,
 } from "../../test/support";
-import { UpsertFailedError, WorkflowResult } from "../support";
+import { WorkflowResult, TooManyActiveMatchesError } from "../support";
 import { createMatchWorkflow } from "./create-match";
-import { CreateMatch, TooManyActiveMatchesError } from "./workflow";
+import { CreateMatch } from "./workflow";
 
 interface Scenario {
   name: string;
@@ -20,21 +21,12 @@ interface Scenario {
 
 const spyOnUpsert = jest.fn();
 
-const alicesNewMatch: Match = {
-  id: matchId,
-  owner: alice,
-  state: { kind: "New" },
-};
-
-const upsertFailure = failure(new UpsertFailedError(alicesNewMatch, "for reasons"));
-
 const scenarios: Scenario[] = [
   {
-    name: "too many active games",
+    name: "too many active matches",
     runWorkflow: createMatchWorkflow(
-      createMatchDependencies({
-        upsertResult: success(undefined),
-        spyOnUpsert,
+      mockDependencies({
+        activeMatches: 1,
       })
     ),
     input: bob,
@@ -43,7 +35,7 @@ const scenarios: Scenario[] = [
   {
     name: "upsert failed",
     runWorkflow: createMatchWorkflow(
-      createMatchDependencies({ upsertResult: upsertFailure, spyOnUpsert: spyOnUpsert })
+      mockDependencies({ upsertResult: upsertFailure, spyOnUpsert: spyOnUpsert })
     ),
     input: alice,
     expected: upsertFailure,
@@ -51,13 +43,16 @@ const scenarios: Scenario[] = [
   {
     name: "create match",
     runWorkflow: createMatchWorkflow(
-      createMatchDependencies({
-        upsertResult: success(undefined),
+      mockDependencies({
         spyOnUpsert,
       })
     ),
     input: alice,
-    expected: success(alicesNewMatch),
+    expected: success({
+      id: matchId,
+      owner: alice,
+      state: { kind: "New" },
+    }),
   },
 ];
 
