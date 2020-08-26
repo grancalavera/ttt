@@ -1,5 +1,5 @@
 import { failure, Result, success, NonEmptyArray } from "@grancalavera/ttt-etc";
-import { Match, Player, SystemConfig } from "../domain/model";
+import { Match, Player, GameSettings } from "../domain/model";
 import { WorkflowError } from "../workflows/errors";
 import {
   CountActiveMatches,
@@ -28,7 +28,7 @@ const gameSize = 3 * 3;
 
 // prettier-ignore
 type Dependencies =
-  & SystemConfig
+  & GameSettings
   & CountActiveMatches
   & GetUniqueId
   & FindMatch

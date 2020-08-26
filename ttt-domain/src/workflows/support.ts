@@ -1,12 +1,11 @@
-import { Result, Failure, NonEmptyArray, sequence, failure } from "@grancalavera/ttt-etc";
 import {
-  Match,
-  MatchId,
-  Move,
-  Player,
-  SystemConfig,
-  MatchStateName,
-} from "../domain/model";
+  AsyncResult,
+  Failure,
+  failure,
+  NonEmptyArray,
+  Result,
+} from "@grancalavera/ttt-etc";
+import { Match, MatchId, MatchStateName, Move, Player } from "../domain/model";
 import { WorkflowError } from "./errors";
 
 export interface GetUniqueId {
@@ -18,16 +17,15 @@ export interface MoveInput {
   move: Move;
 }
 
-type Find<TRef, T> = (ref: TRef) => Promise<Result<T, WorkflowError>>;
-type Upsert<T> = (data: T) => Promise<Result<void, WorkflowError>>;
+type Find<TRef, T> = (ref: TRef) => AsyncResult<T, WorkflowError>;
+type Upsert<T> = (data: T) => AsyncResult<void, WorkflowError>;
 
+export type WorkflowResult = AsyncResult<Match, WorkflowError[]>;
 export type FindMatch = { findMatch: Find<MatchId, Match> };
 export type UpsertMatch = { upsertMatch: Upsert<Match> };
 export type CountActiveMatches = {
   countActiveMatches: (player: Player) => Promise<number>;
 };
-
-export type StandardDependencies = SystemConfig & FindMatch & UpsertMatch;
 
 export class TooManyActiveMatchesError {
   readonly kind = "TooManyActiveMatchesError";

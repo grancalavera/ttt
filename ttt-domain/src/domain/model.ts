@@ -1,13 +1,20 @@
+// ----------------------------------------------------------------------------
+//
+// aggregate root
+//
+// ----------------------------------------------------------------------------
+
 export interface Match {
   readonly id: MatchId;
   readonly owner: Player;
-  readonly state: MatchState;
+  readonly state: New | Challenge | Game | GameOver;
 }
 
-export type MatchState = New | Challenge | Game | Draw | Victory;
-export type MatchStateName = MatchState["kind"];
-export type ActiveMatch = New | Challenge | Game;
-export type MoveType = "CreateChallenge" | "CreateChallenge" | "PlayMove";
+// ----------------------------------------------------------------------------
+//
+// states
+//
+// ----------------------------------------------------------------------------
 
 export interface New {
   readonly kind: "New";
@@ -15,32 +22,39 @@ export interface New {
 
 export interface Challenge {
   readonly kind: "Challenge";
-
   readonly move: Move;
 }
 
-export interface Game extends GameState {
+export interface Game extends GameBaseState {
   readonly kind: "Game";
   readonly next: Player;
 }
 
-export interface Draw extends GameState {
+export type GameOver = Draw | Victory;
+
+export interface Draw extends GameBaseState {
   readonly kind: "Draw";
 }
 
-export interface Victory extends GameState {
+export interface Victory extends GameBaseState {
   readonly kind: "Victory";
   readonly winner: Winner;
 }
 
-export interface SystemConfig {
-  readonly gameSize: number;
-  readonly maxActiveMatches: number;
-}
-
-interface GameState {
+interface GameBaseState {
   readonly players: Players;
   readonly moves: Moves;
+}
+
+// ----------------------------------------------------------------------------
+//
+// support
+//
+// ----------------------------------------------------------------------------
+
+export interface GameSettings {
+  readonly gameSize: number;
+  readonly maxActiveMatches: number;
 }
 
 export type Players = [Player, Player];
@@ -56,3 +70,13 @@ export type PlayerId = Id;
 export type MatchId = Id;
 export type Position = number;
 type Id = string;
+
+// ----------------------------------------------------------------------------
+//
+// not in use yet
+//
+// ----------------------------------------------------------------------------
+
+export type MatchStateName = Match["state"]["kind"];
+export type ActiveMatch = New | Challenge | Game;
+export type MoveType = "CreateChallenge" | "CreateChallenge" | "PlayMove";

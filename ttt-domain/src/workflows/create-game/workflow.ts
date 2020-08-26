@@ -1,13 +1,17 @@
-import { Result } from "@grancalavera/ttt-etc";
-import { Match, SystemConfig } from "../../domain/model";
-import { WorkflowError } from "../errors";
-import { CountActiveMatches, FindMatch, MoveInput, UpsertMatch } from "../support";
+import { GameSettings } from "../../domain/model";
+import {
+  CountActiveMatches,
+  FindMatch,
+  MoveInput,
+  UpsertMatch,
+  WorkflowResult,
+} from "../support";
 
 export type CreateGameWorkflow = (
-  dependencies: SystemConfig & FindMatch & UpsertMatch & CountActiveMatches
+  dependencies: GameSettings & FindMatch & UpsertMatch & CountActiveMatches
 ) => CreateGame;
 
-export type CreateGame = (input: MoveInput) => Promise<Result<Match, WorkflowError[]>>;
+export type CreateGame = (input: MoveInput) => WorkflowResult;
 
 export class IllegalGameOpponentError {
   readonly kind = "IllegalGameOpponentError";
@@ -15,11 +19,6 @@ export class IllegalGameOpponentError {
     const [player] = this.input.move;
     return `${player.id} cannot be both the owner and opponent of the same match`;
   }
-  constructor(readonly input: MoveInput) {}
-}
-
-export class CreateGameError {
-  readonly kind = "CreateGameError";
   constructor(readonly input: MoveInput) {}
 }
 
