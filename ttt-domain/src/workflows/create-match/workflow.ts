@@ -1,10 +1,8 @@
-import { Result } from "@grancalavera/ttt-etc";
-import { Match, Player, SystemConfig } from "../../domain/model";
-import { WorkflowError } from "../errors";
-import { CountActiveMatches, GetUniqueId, UpsertMatch } from "../support";
+import { Player, GameSettings } from "../../domain/model";
+import { CountActiveMatches, GetUniqueId, UpsertMatch, WorkflowResult } from "../support";
 
 export type CreateMatchWorkflow = (
-  dependencies: SystemConfig & CountActiveMatches & GetUniqueId & UpsertMatch
+  dependencies: GameSettings & CountActiveMatches & GetUniqueId & UpsertMatch
 ) => CreateMatch;
 
-export type CreateMatch = (input: Player) => Promise<Result<Match, WorkflowError[]>>;
+export type CreateMatch = (input: Player) => WorkflowResult;
