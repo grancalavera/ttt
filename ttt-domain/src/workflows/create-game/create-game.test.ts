@@ -1,4 +1,4 @@
-import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
+import { assertNever, failure, isSuccess, Result, success } from "@grancalavera/ttt-etc";
 import { Match } from "../../domain/model";
 import {
   alice,
@@ -7,14 +7,16 @@ import {
   maxActiveMatches,
   mockDependencies,
   upsertFailure,
+  hasErrorKind,
+  upsertError,
 } from "../../test/support";
+import { WorkflowError } from "../errors";
 import {
   IllegalMatchStateError,
   IllegalMoveError,
   MatchNotFoundError,
   MoveInput,
   TooManyActiveMatchesError,
-  WorkflowResult,
 } from "../support";
 import { createGameWorkflow } from "./create-game";
 import { CreateGame, IllegalGameOpponentError } from "./workflow";
@@ -23,7 +25,7 @@ interface Scenario {
   name: string;
   runWorkflow: CreateGame;
   input: MoveInput;
-  expected: WorkflowResult<Match>;
+  expected: Result<Match, WorkflowError[]>;
 }
 
 const spyOnFind = jest.fn();
@@ -44,13 +46,14 @@ const matchOnChallengeState: Match = {
 const alicesInvalidInput: MoveInput = { matchId, move: [alice, 1] };
 const bobsInvalidInput: MoveInput = { matchId, move: [bob, 0] };
 const bobsValidInput: MoveInput = { matchId, move: [bob, 1] };
+const findSuccess = success(matchOnChallengeState);
 
 const scenarios: Scenario[] = [
   {
     name: "too many active matches",
     runWorkflow: createGameWorkflow(mockDependencies({ activeMatches: 1 })),
     input: bobsValidInput,
-    expected: failure(new TooManyActiveMatchesError(bob, maxActiveMatches)),
+    expected: failure([new TooManyActiveMatchesError(bob, maxActiveMatches)]),
   },
   {
     name: "match not found",
@@ -58,12 +61,11 @@ const scenarios: Scenario[] = [
       mockDependencies({
         findResult: failure(new MatchNotFoundError(matchId)),
         spyOnFind,
-        upsertResult: success(undefined),
         spyOnUpsert,
       })
     ),
     input: bobsValidInput,
-    expected: failure(new MatchNotFoundError(matchId)),
+    expected: failure([new MatchNotFoundError(matchId)]),
   },
   {
     name: "illegal match state",
@@ -71,56 +73,64 @@ const scenarios: Scenario[] = [
       mockDependencies({
         findResult: success(matchOnNewState),
         spyOnFind,
-        upsertResult: success(undefined),
         spyOnUpsert,
       })
     ),
     input: alicesInvalidInput,
-    expected: failure(
+    expected: failure([
       new IllegalMatchStateError(
         alicesInvalidInput,
         "Challenge",
         matchOnNewState.state.kind
-      )
-    ),
+      ),
+    ]),
   },
   {
     name: "illegal challenge opponent",
     runWorkflow: createGameWorkflow(
       mockDependencies({
-        findResult: success(matchOnChallengeState),
+        findResult: findSuccess,
         spyOnFind,
-        upsertResult: success(undefined),
         spyOnUpsert,
       })
     ),
     input: alicesInvalidInput,
-    expected: failure(new IllegalGameOpponentError(alicesInvalidInput)),
+    expected: failure([new IllegalGameOpponentError(alicesInvalidInput)]),
   },
   {
     name: "illegal move",
     runWorkflow: createGameWorkflow(
       mockDependencies({
-        findResult: success(matchOnChallengeState),
+        findResult: findSuccess,
         spyOnFind,
-        upsertResult: success(undefined),
         spyOnUpsert,
       })
     ),
     input: bobsInvalidInput,
-    expected: failure(new IllegalMoveError(bobsInvalidInput)),
+    expected: failure([new IllegalMoveError(bobsInvalidInput)]),
   },
   {
     name: "upsert failed",
     runWorkflow: createGameWorkflow(
-      mockDependencies({ upsertResult: upsertFailure, spyOnUpsert: spyOnUpsert })
+      mockDependencies({
+        findResult: findSuccess,
+        spyOnFind,
+        upsertResult: upsertFailure,
+        spyOnUpsert: spyOnUpsert,
+      })
     ),
     input: bobsValidInput,
-    expected: upsertFailure,
+    expected: failure([upsertError]),
   },
   {
     name: "create game",
-    runWorkflow: createGameWorkflow(mockDependencies({})),
+    runWorkflow: createGameWorkflow(
+      mockDependencies({
+        findResult: findSuccess,
+        spyOnFind,
+        spyOnUpsert,
+      })
+    ),
     input: bobsValidInput,
     expected: success({
       id: matchId,
@@ -138,9 +148,9 @@ const scenarios: Scenario[] = [
   },
 ];
 
-describe.each(scenarios)("create game: workflow", (scenario) => {
+describe.each(scenarios)("create game workflow", (scenario) => {
   const { name, runWorkflow, input, expected } = scenario;
-  let actual: WorkflowResult<Match>;
+  let actual: Result<Match, WorkflowError[]>;
 
   beforeEach(async () => {
     spyOnFind.mockClear();
@@ -152,26 +162,32 @@ describe.each(scenarios)("create game: workflow", (scenario) => {
     it("workflow", () => expect(actual).toEqual(expected));
 
     it("side effects", () => {
-      expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
-
       if (isSuccess(expected)) {
+        expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
         expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expected.value);
       } else {
-        switch (expected.error.kind) {
-          case "MatchNotFoundError":
-          case "IllegalMatchStateError":
-          case "IllegalGameOpponentError":
-          case "IllegalMoveError":
-          case "TooManyActiveMatchesError":
-            expect(spyOnUpsert).not.toHaveBeenCalled();
-            break;
-          case "UpsertFailedError":
-            expect(spyOnUpsert).toHaveBeenCalledTimes(1);
-            break;
-          default:
-            throw new Error(
-              `This workflow should never fail with ${expected.error.kind}`
-            );
+        const hasKind = hasErrorKind(expected.error);
+
+        if (hasKind("TooManyActiveMatchesError")) {
+          expect(spyOnFind).not.toHaveBeenCalled();
+          expect(spyOnUpsert).not.toHaveBeenCalled();
+        }
+
+        if (
+          hasKind(
+            "MatchNotFoundError",
+            "IllegalMatchStateError",
+            "IllegalGameOpponentError",
+            "IllegalMoveError"
+          )
+        ) {
+          expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
+          expect(spyOnUpsert).not.toHaveBeenCalled();
+        }
+
+        if (hasKind("UpsertFailedError")) {
+          expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
+          expect(spyOnUpsert).toHaveBeenCalledTimes(1);
         }
       }
     });

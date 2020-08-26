@@ -1,12 +1,16 @@
-import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
+import { failure, isSuccess, Result, success } from "@grancalavera/ttt-etc";
 import { Match } from "../../domain/model";
-import { alice, bob, matchId, mockDependencies, upsertFailure } from "../../test/support";
 import {
-  IllegalMatchStateError,
-  MatchNotFoundError,
-  MoveInput,
-  WorkflowResult,
-} from "../support";
+  alice,
+  bob,
+  hasErrorKind,
+  matchId,
+  mockDependencies,
+  upsertError,
+  upsertFailure,
+} from "../../test/support";
+import { WorkflowError } from "../errors";
+import { IllegalMatchStateError, MatchNotFoundError, MoveInput } from "../support";
 import { createChallengeWorkflow } from "./create-challenge";
 import { CreateChallenge, IllegalMatchOwnerError } from "./workflow";
 
@@ -14,7 +18,7 @@ interface Scenario {
   name: string;
   ruWorkflow: CreateChallenge;
   input: MoveInput;
-  expected: WorkflowResult<Match>;
+  expected: Result<Match, WorkflowError[]>;
 }
 
 const spyOnFind = jest.fn();
@@ -46,7 +50,7 @@ const scenarios: Scenario[] = [
       })
     ),
     input: alicesInput,
-    expected: failure(new MatchNotFoundError(matchId)),
+    expected: failure([new MatchNotFoundError(matchId)]),
   },
   {
     name: "illegal match state",
@@ -59,9 +63,9 @@ const scenarios: Scenario[] = [
       })
     ),
     input: alicesInput,
-    expected: failure(
-      new IllegalMatchStateError(alicesInput, "New", matchOnChallengeState.state.kind)
-    ),
+    expected: failure([
+      new IllegalMatchStateError(alicesInput, "New", matchOnChallengeState.state.kind),
+    ]),
   },
   {
     name: "illegal match owner",
@@ -78,7 +82,7 @@ const scenarios: Scenario[] = [
       })
     ),
     input: alicesInput,
-    expected: failure(new IllegalMatchOwnerError(alicesInput)),
+    expected: failure([new IllegalMatchOwnerError(alicesInput)]),
   },
   {
     name: "upsert failed",
@@ -91,7 +95,7 @@ const scenarios: Scenario[] = [
       })
     ),
     input: alicesInput,
-    expected: upsertFailure,
+    expected: failure([upsertError]),
   },
   {
     name: "create challenge",
@@ -108,9 +112,9 @@ const scenarios: Scenario[] = [
   },
 ];
 
-describe.each(scenarios)("create challenge: workflow", (scenario) => {
+describe.each(scenarios)("create challenge workflow", (scenario) => {
   const { name, ruWorkflow: runWorkflow, input, expected } = scenario;
-  let actual: WorkflowResult<Match>;
+  let actual: Result<Match, WorkflowError[]>;
 
   beforeEach(async () => {
     spyOnFind.mockClear();
@@ -127,19 +131,20 @@ describe.each(scenarios)("create challenge: workflow", (scenario) => {
       if (isSuccess(expected)) {
         expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expected.value);
       } else {
-        switch (expected.error.kind) {
-          case "MatchNotFoundError":
-          case "IllegalMatchOwnerError":
-          case "IllegalMatchStateError":
-            expect(spyOnUpsert).not.toHaveBeenCalled();
-            break;
-          case "UpsertFailedError":
-            expect(spyOnUpsert).toHaveBeenCalledTimes(1);
-            break;
-          default:
-            throw new Error(
-              `This workflow should never fail with ${expected.error.kind}`
-            );
+        const hasKind = hasErrorKind(expected.error);
+
+        if (
+          hasKind(
+            "MatchNotFoundError",
+            "IllegalMatchOwnerError",
+            "IllegalMatchStateError"
+          )
+        ) {
+          expect(spyOnUpsert).not.toHaveBeenCalled();
+        }
+
+        if (hasKind("UpsertFailedError")) {
+          expect(spyOnUpsert).toHaveBeenCalledTimes(1);
         }
       }
     });

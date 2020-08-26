@@ -4,3 +4,4 @@ export * from "./result";
 export * from "./sequence";
 export * from "./validation";
 export * from "./enumerate";
+export * from "./assert-never";
