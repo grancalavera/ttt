@@ -1,9 +1,8 @@
-import { failure, isFailure, success, isSuccess } from "@grancalavera/ttt-etc";
+import { failure, isFailure, isSuccess, success } from "@grancalavera/ttt-etc";
 import { Match } from "../../domain/model";
 import {
   arePlayersTheSame,
   IllegalMatchStateError,
-  IllegalMoveError,
   TooManyActiveMatchesError,
   workflowFailure,
 } from "../support";
@@ -11,11 +10,11 @@ import { CreateGameWorkflow, IllegalGameOpponentError } from "./workflow";
 
 export const createGameWorkflow: CreateGameWorkflow = (dependencies) => async (input) => {
   const { countActiveMatches, maxActiveMatches, findMatch, upsertMatch } = dependencies;
-  const [player] = input.move;
+  const { matchId, opponent } = input;
 
-  const activeMatches = await countActiveMatches(player);
+  const activeMatches = await countActiveMatches(opponent);
   if (maxActiveMatches <= activeMatches) {
-    return failure([new TooManyActiveMatchesError(player, maxActiveMatches)]);
+    return failure([new TooManyActiveMatchesError(opponent, maxActiveMatches)]);
   }
 
   const findResult = await findMatch(input.matchId);
@@ -25,24 +24,20 @@ export const createGameWorkflow: CreateGameWorkflow = (dependencies) => async (i
 
   const match = findResult.value;
   if (match.state.kind !== "Challenge") {
-    return failure([new IllegalMatchStateError(input, "Challenge", match.state.kind)]);
+    return failure([new IllegalMatchStateError(matchId, "Challenge", match.state.kind)]);
   }
 
-  if (arePlayersTheSame(match.owner, player)) {
+  if (arePlayersTheSame(match.owner, opponent)) {
     return failure([new IllegalGameOpponentError(input)]);
-  }
-
-  if (match.state.move[1] === input.move[1]) {
-    return failure([new IllegalMoveError(input)]);
   }
 
   const gameMatch: Match = {
     ...match,
     state: {
       kind: "Game",
-      players: [match.owner, player],
-      moves: [match.state.move, input.move],
-      next: match.owner,
+      players: [match.owner, opponent],
+      moves: [match.state.move],
+      next: opponent,
     },
   };
 

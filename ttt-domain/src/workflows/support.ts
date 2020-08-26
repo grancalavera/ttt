@@ -51,10 +51,10 @@ export class UpsertFailedError {
 export class IllegalMatchStateError {
   readonly kind = "IllegalMatchStateError";
   get message(): string {
-    return `match ${this.input.matchId} is on an illegal state: wanted state ${this.wantedState}, actual state ${this.actualState}`;
+    return `match ${this.matchId} is on an illegal state: wanted state ${this.wantedState}, actual state ${this.actualState}`;
   }
   constructor(
-    readonly input: MoveInput,
+    readonly matchId: MatchId,
     readonly wantedState: MatchStateName,
     readonly actualState: MatchStateName
   ) {}

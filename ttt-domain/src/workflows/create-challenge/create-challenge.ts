@@ -7,10 +7,10 @@ export const createChallengeWorkflow: CreateChallengeWorkflow = (dependencies) =
   input
 ) => {
   const { findMatch, upsertMatch } = dependencies;
-  const { move } = input;
+  const { move, matchId } = input;
   const [player] = move;
 
-  const findResult = await findMatch(input.matchId);
+  const findResult = await findMatch(matchId);
 
   if (isFailure(findResult)) {
     return workflowFailure(findResult);
@@ -23,7 +23,7 @@ export const createChallengeWorkflow: CreateChallengeWorkflow = (dependencies) =
   }
 
   if (match.state.kind !== "New") {
-    return failure([new IllegalMatchStateError(input, "New", match.state.kind)]);
+    return failure([new IllegalMatchStateError(matchId, "New", match.state.kind)]);
   }
 
   const challengeMatch: Match = { ...match, state: { kind: "Challenge", move } };

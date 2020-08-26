@@ -79,4 +79,4 @@ type Id = string;
 
 export type MatchStateName = Match["state"]["kind"];
 export type ActiveMatch = New | Challenge | Game;
-export type MoveType = "CreateChallenge" | "CreateChallenge" | "PlayMove";
+export type MoveType = "CreateChallenge" | "PlayMove";
