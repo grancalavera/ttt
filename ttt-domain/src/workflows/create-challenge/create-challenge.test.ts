@@ -64,7 +64,7 @@ const scenarios: Scenario[] = [
     ),
     input: alicesInput,
     expected: failure([
-      new IllegalMatchStateError(alicesInput, "New", matchOnChallengeState.state.kind),
+      new IllegalMatchStateError(matchId, "New", matchOnChallengeState.state.kind),
     ]),
   },
   {

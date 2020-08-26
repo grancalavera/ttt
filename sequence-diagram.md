@@ -16,7 +16,7 @@ sequenceDiagram
       d-->>-s: Match | WorkflowError
 
     else Result = Some<Match>
-      s->>+d: acceptChallenge(Match, Player)
+      s->>+d: createGame(Match, Player)
 
       d-->>-s: Match | WorkflowError
     end
@@ -46,13 +46,6 @@ sequenceDiagram
     s->>+d: createChallenge(Match, Move)
     d-->>-s: Match | WorkflowError
     s->>s: publish(Match.MatchState | WorkflowError)
-
-
-  else Result = AcceptChallenge
-    s->>+d: createGame(Match, Move)
-    d-->>-s: Match | WorkflowError
-    s->>s: publish(Match.MatchState | WorkflowError)
-
 
   else Result = PlayMove
     s->>+d: playMove(Match, Move)

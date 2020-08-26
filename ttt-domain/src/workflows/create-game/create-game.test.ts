@@ -1,30 +1,28 @@
-import { assertNever, failure, isSuccess, Result, success } from "@grancalavera/ttt-etc";
+import { failure, isSuccess, Result, success } from "@grancalavera/ttt-etc";
 import { Match } from "../../domain/model";
 import {
   alice,
   bob,
+  hasErrorKind,
   matchId,
   maxActiveMatches,
   mockDependencies,
-  upsertFailure,
-  hasErrorKind,
   upsertError,
+  upsertFailure,
 } from "../../test/support";
 import { WorkflowError } from "../errors";
 import {
   IllegalMatchStateError,
-  IllegalMoveError,
   MatchNotFoundError,
-  MoveInput,
   TooManyActiveMatchesError,
 } from "../support";
 import { createGameWorkflow } from "./create-game";
-import { CreateGame, IllegalGameOpponentError } from "./workflow";
+import { CreateGame, CreateGameInput, IllegalGameOpponentError } from "./workflow";
 
 interface Scenario {
   name: string;
   runWorkflow: CreateGame;
-  input: MoveInput;
+  input: CreateGameInput;
   expected: Result<Match, WorkflowError[]>;
 }
 
@@ -43,9 +41,8 @@ const matchOnChallengeState: Match = {
   state: { kind: "Challenge", move: [alice, 0] },
 };
 
-const alicesInvalidInput: MoveInput = { matchId, move: [alice, 1] };
-const bobsInvalidInput: MoveInput = { matchId, move: [bob, 0] };
-const bobsValidInput: MoveInput = { matchId, move: [bob, 1] };
+const alicesInvalidInput: CreateGameInput = { matchId, opponent: alice };
+const bobsValidInput: CreateGameInput = { matchId, opponent: bob };
 const findSuccess = success(matchOnChallengeState);
 
 const scenarios: Scenario[] = [
@@ -78,11 +75,7 @@ const scenarios: Scenario[] = [
     ),
     input: alicesInvalidInput,
     expected: failure([
-      new IllegalMatchStateError(
-        alicesInvalidInput,
-        "Challenge",
-        matchOnNewState.state.kind
-      ),
+      new IllegalMatchStateError(matchId, "Challenge", matchOnNewState.state.kind),
     ]),
   },
   {
@@ -96,18 +89,6 @@ const scenarios: Scenario[] = [
     ),
     input: alicesInvalidInput,
     expected: failure([new IllegalGameOpponentError(alicesInvalidInput)]),
-  },
-  {
-    name: "illegal move",
-    runWorkflow: createGameWorkflow(
-      mockDependencies({
-        findResult: findSuccess,
-        spyOnFind,
-        spyOnUpsert,
-      })
-    ),
-    input: bobsInvalidInput,
-    expected: failure([new IllegalMoveError(bobsInvalidInput)]),
   },
   {
     name: "upsert failed",
@@ -137,11 +118,8 @@ const scenarios: Scenario[] = [
       owner: alice,
       state: {
         kind: "Game",
-        moves: [
-          [alice, 0],
-          [bob, 1],
-        ],
-        next: alice,
+        moves: [[alice, 0]],
+        next: bob,
         players: [alice, bob],
       },
     }),
