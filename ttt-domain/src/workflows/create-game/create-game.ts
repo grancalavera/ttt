@@ -1,65 +1,52 @@
-import { CreateGameWorkflow } from "./workflow";
+import { failure, isFailure, success, isSuccess } from "@grancalavera/ttt-etc";
+import { Match } from "../../domain/model";
+import {
+  arePlayersTheSame,
+  IllegalMatchStateError,
+  IllegalMoveError,
+  TooManyActiveMatchesError,
+  workflowFailure,
+} from "../support";
+import { CreateGameWorkflow, IllegalGameOpponentError } from "./workflow";
 
 export const createGameWorkflow: CreateGameWorkflow = (dependencies) => async (input) => {
-  throw new Error("createGameWorkflow not implemented");
+  const { countActiveMatches, maxActiveMatches, findMatch, upsertMatch } = dependencies;
+  const [player] = input.move;
+
+  const activeMatches = await countActiveMatches(player);
+  if (maxActiveMatches <= activeMatches) {
+    return failure([new TooManyActiveMatchesError(player, maxActiveMatches)]);
+  }
+
+  const findResult = await findMatch(input.matchId);
+  if (isFailure(findResult)) {
+    return workflowFailure(findResult);
+  }
+
+  const match = findResult.value;
+  if (match.state.kind !== "Challenge") {
+    return failure([new IllegalMatchStateError(input, "Challenge", match.state.kind)]);
+  }
+
+  if (arePlayersTheSame(match.owner, player)) {
+    return failure([new IllegalGameOpponentError(input)]);
+  }
+
+  if (match.state.move[1] === input.move[1]) {
+    return failure([new IllegalMoveError(input)]);
+  }
+
+  const gameMatch: Match = {
+    ...match,
+    state: {
+      kind: "Game",
+      players: [match.owner, player],
+      moves: [match.state.move, input.move],
+      next: match.owner,
+    },
+  };
+
+  const upsertResult = await upsertMatch(gameMatch);
+
+  return isSuccess(upsertResult) ? success(gameMatch) : workflowFailure(upsertResult);
 };
-
-// export const acceptChallenge: AcceptChallenge = (dependencies) => ({
-//   challengeId,
-//   opponent,
-//   opponentPosition,
-// }) => async () => {
-//   const { findChallenge, getUniqueId: getUniqueId, createGame } = dependencies;
-
-//   const runFindChallenge = findChallenge(challengeId);
-
-//   // With the current behaviour we try to resolve dependencies in sequence: earlier
-//   // failures will prevent subsequent dependencies from being resolved. Another approach
-//   // would be to resolve dependencies concurrently and bail eagerly as soon as the first
-//   // dependency fails, so that we don't leave any client hanging for too long. The
-//   // downside of this is potentially clients would have to do several roundtrips in order
-//   // to discover all dependency errors. Another option would be to resolve the
-//   // dependencies concurrently and wait for all of them to complete, collect errors and
-//   // send lists of failures, as we do with validations.
-
-//   const findChallengeResult = await runFindChallenge();
-//   if (isFailure(findChallengeResult)) {
-//     return findChallengeResult;
-//   }
-
-//   const input = {
-//     challenge: getSuccess(findChallengeResult),
-//     opponent,
-//     opponentPosition,
-//   };
-
-//   const validationResults = sequence([createPlayers(input), createPositions(input)]);
-//   if (isInvalid(validationResults)) {
-//     return failWithGameValidationError(getFailure(validationResults));
-//   }
-
-//   const [players, positions] = getSuccess(validationResults);
-
-//   const game: Game = {
-//     gameId: getUniqueId(),
-//     status: { kind: "OpenGame", next: players[0] },
-//     size: 3,
-//     players,
-//     moves: [
-//       [players[0], positions[0]],
-//       [players[1], positions[1]],
-//     ],
-//   };
-
-//   const runCreateGame = createGame(game);
-//   const createGameResult = await runCreateGame();
-//   if (isFailure(createGameResult)) {
-//     return createGameResult;
-//   }
-
-//   return success(game);
-// };
-
-// export const failWithGameValidationError = (
-//   validationResults: InvalidInput<CreateGameInput>[]
-// ) => failure(new CreateGameValidationError(validationResults));

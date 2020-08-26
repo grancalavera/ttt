@@ -1,11 +1,15 @@
+import { Result } from "@grancalavera/ttt-etc";
 import { Match } from "../../domain/model";
-import { AsyncWorkflowResult, FindMatch, MoveInput, UpsertMatch } from "../support";
+import { WorkflowError } from "../errors";
+import { FindMatch, MoveInput, UpsertMatch } from "../support";
 
 export type CreateChallengeWorkflow = (
   dependencies: FindMatch & UpsertMatch
 ) => CreateChallenge;
 
-export type CreateChallenge = (input: MoveInput) => AsyncWorkflowResult<Match>;
+export type CreateChallenge = (
+  input: MoveInput
+) => Promise<Result<Match, WorkflowError[]>>;
 
 export class IllegalMatchOwnerError {
   readonly kind = "IllegalMatchOwnerError";

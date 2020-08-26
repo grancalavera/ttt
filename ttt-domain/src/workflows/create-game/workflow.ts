@@ -1,11 +1,13 @@
+import { Result } from "@grancalavera/ttt-etc";
 import { Match, SystemConfig } from "../../domain/model";
-import { AsyncWorkflowResult, FindMatch, MoveInput, UpsertMatch } from "../support";
+import { WorkflowError } from "../errors";
+import { CountActiveMatches, FindMatch, MoveInput, UpsertMatch } from "../support";
 
 export type CreateGameWorkflow = (
-  dependencies: SystemConfig & FindMatch & UpsertMatch
+  dependencies: SystemConfig & FindMatch & UpsertMatch & CountActiveMatches
 ) => CreateGame;
 
-export type CreateGame = (input: MoveInput) => AsyncWorkflowResult<Match>;
+export type CreateGame = (input: MoveInput) => Promise<Result<Match, WorkflowError[]>>;
 
 export class IllegalGameOpponentError {
   readonly kind = "IllegalGameOpponentError";

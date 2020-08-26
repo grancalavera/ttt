@@ -1,13 +1,13 @@
-import { failure, success } from "@grancalavera/ttt-etc";
+import { failure, Result, success, NonEmptyArray } from "@grancalavera/ttt-etc";
 import { Match, Player, SystemConfig } from "../domain/model";
+import { WorkflowError } from "../workflows/errors";
 import {
   CountActiveMatches,
   FindMatch,
   GetUniqueId,
   MatchNotFoundError,
-  UpsertMatch,
-  WorkflowResult,
   UpsertFailedError,
+  UpsertMatch,
 } from "../workflows/support";
 
 export const alice: Player = { id: "alice" };
@@ -17,12 +17,12 @@ export const matchId = "default-match-id";
 export const getUniqueId = () => matchId;
 export const maxActiveMatches = 1;
 
-export const upsertFailure = failure(
-  new UpsertFailedError(
-    { id: matchId, owner: alice, state: { kind: "New" } },
-    "mock upsert failure"
-  )
+export const upsertError = new UpsertFailedError(
+  { id: matchId, owner: alice, state: { kind: "New" } },
+  "mock upsert failure"
 );
+
+export const upsertFailure = failure(upsertError);
 
 const gameSize = 3 * 3;
 
@@ -35,9 +35,9 @@ type Dependencies =
   & UpsertMatch;
 
 interface Mocks {
-  upsertResult?: WorkflowResult<void>;
+  upsertResult?: Result<void, WorkflowError>;
   spyOnUpsert?: jest.Mock;
-  findResult?: WorkflowResult<Match>;
+  findResult?: Result<Match, WorkflowError>;
   spyOnFind?: jest.Mock;
   activeMatches?: number;
 }
@@ -56,3 +56,7 @@ export const mockDependencies = (mocks: Mocks = {}): Dependencies => ({
   countActiveMatches: async () => mocks.activeMatches ?? 0,
   getUniqueId,
 });
+
+export const hasErrorKind = (errors: WorkflowError[]) => (
+  ...kinds: NonEmptyArray<WorkflowError["kind"]>
+) => errors.some((e) => kinds.includes(e.kind));
