@@ -9,8 +9,8 @@ import {
   upsertError,
   upsertFailure,
 } from "../../test/support";
-import { WorkflowError } from "../errors";
 import { IllegalMatchStateError, MatchNotFoundError, MoveInput } from "../support";
+import { WorkflowError } from "../workflow-error";
 import { createChallengeWorkflow } from "./create-challenge";
 import { CreateChallenge, IllegalMatchOwnerError } from "./workflow";
 
@@ -82,7 +82,7 @@ const scenarios: Scenario[] = [
       })
     ),
     input: alicesInput,
-    expected: failure([new IllegalMatchOwnerError(alicesInput)]),
+    expected: failure([new IllegalMatchOwnerError(matchId, alice)]),
   },
   {
     name: "upsert failed",

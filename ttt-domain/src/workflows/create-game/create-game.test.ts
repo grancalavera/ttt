@@ -10,12 +10,12 @@ import {
   upsertError,
   upsertFailure,
 } from "../../test/support";
-import { WorkflowError } from "../errors";
 import {
   IllegalMatchStateError,
   MatchNotFoundError,
   TooManyActiveMatchesError,
 } from "../support";
+import { WorkflowError } from "../workflow-error";
 import { createGameWorkflow } from "./create-game";
 import { CreateGame, CreateGameInput, IllegalGameOpponentError } from "./workflow";
 
@@ -88,7 +88,7 @@ const scenarios: Scenario[] = [
       })
     ),
     input: alicesInvalidInput,
-    expected: failure([new IllegalGameOpponentError(alicesInvalidInput)]),
+    expected: failure([new IllegalGameOpponentError(matchId, alice)]),
   },
   {
     name: "upsert failed",

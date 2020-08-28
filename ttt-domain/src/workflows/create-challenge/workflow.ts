@@ -1,3 +1,4 @@
+import { Player, MatchId } from "../../domain/model";
 import { FindMatch, MoveInput, UpsertMatch, WorkflowResult } from "../support";
 
 export type CreateChallengeWorkflow = (
@@ -9,13 +10,12 @@ export type CreateChallenge = (input: MoveInput) => WorkflowResult;
 export class IllegalMatchOwnerError {
   readonly kind = "IllegalMatchOwnerError";
   get message(): string {
-    const [player] = this.input.move;
-    return `illegal owner ${player.id} for match ${this.input.matchId}`;
+    return `illegal owner ${this.player.id} for match ${this.matchId}`;
   }
-  constructor(readonly input: MoveInput) {}
+  constructor(readonly matchId: MatchId, readonly player: Player) {}
 }
 
-declare module "../errors" {
+declare module "../workflow-error" {
   export interface WorkflowErrorMap {
     IllegalMatchOwnerError: IllegalMatchOwnerError;
   }
