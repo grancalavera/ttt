@@ -11,12 +11,12 @@ export type CreateGameInput = { matchId: MatchId; opponent: Player };
 export class IllegalGameOpponentError {
   readonly kind = "IllegalGameOpponentError";
   get message(): string {
-    return `${this.input.opponent.id} cannot be both the owner and opponent on match ${this.input.matchId}`;
+    return `${this.opponent.id} cannot be both the owner and opponent on match ${this.matchId}`;
   }
-  constructor(readonly input: CreateGameInput) {}
+  constructor(readonly matchId: MatchId, readonly opponent: Player) {}
 }
 
-declare module "../errors" {
+declare module "../workflow-error" {
   export interface WorkflowErrorMap {
     IllegalGameOpponentError: IllegalGameOpponentError;
   }

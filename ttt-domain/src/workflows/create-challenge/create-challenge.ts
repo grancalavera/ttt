@@ -19,7 +19,7 @@ export const createChallengeWorkflow: CreateChallengeWorkflow = (dependencies) =
   const match = findResult.value;
 
   if (!arePlayersTheSame(match.owner, player)) {
-    return failure([new IllegalMatchOwnerError(input)]);
+    return failure([new IllegalMatchOwnerError(match.id, player)]);
   }
 
   if (match.state.kind !== "New") {

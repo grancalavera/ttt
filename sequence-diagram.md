@@ -45,12 +45,12 @@ sequenceDiagram
   else Result = CreateChallenge
     s->>+d: createChallenge(Match, Move)
     d-->>-s: Match | WorkflowError
-    s->>s: publish(Match.MatchState | WorkflowError)
+    s->>s: publish(Match.state | WorkflowError)
 
   else Result = PlayMove
     s->>+d: playMove(Match, Move)
     d-->>-s: Match | WorkflowError
-    s->>s: publish(Match.MatchState | WorkflowError)
+    s->>s: publish(Match.state | WorkflowError)
 
   end
 

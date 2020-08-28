@@ -28,7 +28,7 @@ export const createGameWorkflow: CreateGameWorkflow = (dependencies) => async (i
   }
 
   if (arePlayersTheSame(match.owner, opponent)) {
-    return failure([new IllegalGameOpponentError(input)]);
+    return failure([new IllegalGameOpponentError(match.id, opponent)]);
   }
 
   const gameMatch: Match = {

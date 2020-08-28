@@ -1,6 +1,6 @@
 import { failure, Result, success, NonEmptyArray } from "@grancalavera/ttt-etc";
 import { Match, Player, GameSettings } from "../domain/model";
-import { WorkflowError } from "../workflows/errors";
+import { WorkflowError } from "../workflows/workflow-error";
 import {
   CountActiveMatches,
   FindMatch,

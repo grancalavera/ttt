@@ -1,4 +1,4 @@
-import { Player, GameSettings } from "../../domain/model";
+import { GameSettings, Player } from "../../domain/model";
 import { CountActiveMatches, GetUniqueId, UpsertMatch, WorkflowResult } from "../support";
 
 export type CreateMatchWorkflow = (

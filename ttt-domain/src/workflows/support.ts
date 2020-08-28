@@ -5,8 +5,8 @@ import {
   NonEmptyArray,
   Result,
 } from "@grancalavera/ttt-etc";
-import { Match, MatchId, MatchStateName, Move, Player } from "../domain/model";
-import { WorkflowError } from "./errors";
+import { Match, MatchId, MatchStateName, Move, Player, Position } from "../domain/model";
+import { WorkflowError } from "./workflow-error";
 
 export interface GetUniqueId {
   readonly getUniqueId: () => string;
@@ -30,9 +30,9 @@ export type CountActiveMatches = {
 export class TooManyActiveMatchesError {
   readonly kind = "TooManyActiveMatchesError";
   get message(): string {
-    return `player ${this.input.id} already reached the max count of ${this.maxActiveMatches} active matches`;
+    return `player ${this.player.id} already reached the max count of ${this.maxActiveMatches} active matches`;
   }
-  constructor(readonly input: Player, readonly maxActiveMatches: number) {}
+  constructor(readonly player: Player, readonly maxActiveMatches: number) {}
 }
 
 export class MatchNotFoundError {
@@ -45,7 +45,7 @@ export class MatchNotFoundError {
 
 export class UpsertFailedError {
   readonly kind = "UpsertFailedError";
-  constructor(readonly match: Match, readonly reason: any) {}
+  constructor(readonly match: Match, readonly message: string) {}
 }
 
 export class IllegalMatchStateError {
@@ -63,9 +63,9 @@ export class IllegalMatchStateError {
 export class IllegalMoveError {
   readonly kind = "IllegalMoveError";
   get message(): string {
-    return `position ${this.input.move[1]} already played on match ${this.input.matchId}`;
+    return `position ${this.position} already played on match ${this.matchId}`;
   }
-  constructor(readonly input: MoveInput) {}
+  constructor(readonly matchId: MatchId, readonly position: Position) {}
 }
 
 export const arePlayersTheSame = (l: Player, r: Player) => l.id === r.id;
@@ -74,7 +74,7 @@ export const workflowFailure = (
   ...failures: NonEmptyArray<Failure<WorkflowError>>
 ): Result<Match, WorkflowError[]> => failure(failures.map(({ error }) => error));
 
-declare module "./errors" {
+declare module "./workflow-error" {
   export interface WorkflowErrorMap {
     IllegalMatchStateError: IllegalMatchStateError;
     IllegalMoveError: IllegalMoveError;
