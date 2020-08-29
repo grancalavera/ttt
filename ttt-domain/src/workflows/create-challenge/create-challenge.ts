@@ -7,7 +7,7 @@ import {
   UpsertMatch,
   workflowFailure,
 } from "../support";
-import { IllegalMatchOwnerError, IllegalMatchStateError } from "../workflow-error";
+import { IllegalMatchChallengerError, IllegalMatchStateError } from "../workflow-error";
 
 export type Dependencies = FindMatch & UpsertMatch;
 export type Input = { matchId: MatchId; move: Move };
@@ -27,7 +27,7 @@ export const createChallenge: Workflow = (dependencies) => async (input) => {
   const match = findResult.value;
 
   if (!arePlayersTheSame(match.owner, player)) {
-    return failure([new IllegalMatchOwnerError(match.id, player)]);
+    return failure([new IllegalMatchChallengerError(match.id, player)]);
   }
 
   if (match.state.kind !== "New") {

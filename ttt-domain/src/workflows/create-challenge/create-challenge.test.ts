@@ -5,13 +5,12 @@ import {
   bob,
   matchId,
   mockDependencies,
-  WorkflowScenario,
-  upsertError,
   upsertFailure,
+  WorkflowScenario,
 } from "../../test/support";
 import { hasErrorKind } from "../support";
 import {
-  IllegalMatchOwnerError,
+  IllegalMatchChallengerError,
   IllegalMatchStateError,
   MatchNotFoundError,
   WorkflowError,
@@ -21,18 +20,18 @@ import { createChallenge, Input } from "./create-challenge";
 const spyOnFind = jest.fn();
 const spyOnUpsert = jest.fn();
 
-const alicesInput: Input = { matchId, move: [alice, 0] };
+const input: Input = { matchId, move: [alice, 0] };
 
-const matchOnNewState: Match = {
+const initialState: Match = {
   id: matchId,
   owner: alice,
   state: { kind: "New" },
 };
 
-const matchOnChallengeState: Match = {
+const finalState: Match = {
   id: matchId,
   owner: alice,
-  state: { kind: "Challenge", move: alicesInput.move },
+  state: { kind: "Challenge", move: input.move },
 };
 
 const scenarios: WorkflowScenario<Input>[] = [
@@ -41,26 +40,24 @@ const scenarios: WorkflowScenario<Input>[] = [
     runWorkflow: createChallenge(
       mockDependencies({
         spyOnFind,
-        upsertResult: success(undefined),
         spyOnUpsert,
       })
     ),
-    input: alicesInput,
+    input,
     expected: failure([new MatchNotFoundError(matchId)]),
   },
   {
     name: "illegal match state",
     runWorkflow: createChallenge(
       mockDependencies({
-        matchToFind: matchOnChallengeState,
+        matchToFind: finalState,
         spyOnFind,
-        upsertResult: success(undefined),
         spyOnUpsert,
       })
     ),
-    input: alicesInput,
+    input,
     expected: failure([
-      new IllegalMatchStateError(matchId, "New", matchOnChallengeState.state.kind),
+      new IllegalMatchStateError(matchId, "New", finalState.state.kind),
     ]),
   },
   {
@@ -73,38 +70,36 @@ const scenarios: WorkflowScenario<Input>[] = [
           state: { kind: "New" },
         },
         spyOnFind,
-        upsertResult: success(undefined),
         spyOnUpsert,
       })
     ),
-    input: alicesInput,
-    expected: failure([new IllegalMatchOwnerError(matchId, alice)]),
+    input,
+    expected: failure([new IllegalMatchChallengerError(matchId, alice)]),
   },
   {
     name: "upsert failed",
     runWorkflow: createChallenge(
       mockDependencies({
-        matchToFind: matchOnNewState,
+        matchToFind: initialState,
         spyOnFind,
-        upsertResult: upsertFailure,
+        matchToUpsertFail: finalState,
         spyOnUpsert,
       })
     ),
-    input: alicesInput,
-    expected: failure([upsertError]),
+    input,
+    expected: upsertFailure(finalState),
   },
   {
     name: "create challenge",
     runWorkflow: createChallenge(
       mockDependencies({
-        matchToFind: matchOnNewState,
+        matchToFind: initialState,
         spyOnFind,
-        upsertResult: success(undefined),
         spyOnUpsert,
       })
     ),
-    input: alicesInput,
-    expected: success(matchOnChallengeState),
+    input,
+    expected: success(finalState),
   },
 ];
 
@@ -132,7 +127,7 @@ describe.each(scenarios)("create challenge workflow", (scenario) => {
         if (
           hasKind(
             "MatchNotFoundError",
-            "IllegalMatchOwnerError",
+            "IllegalMatchChallengerError",
             "IllegalMatchStateError"
           )
         ) {
