@@ -1,14 +1,9 @@
 import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
-import { CountActiveMatches, GetUniqueId, UpsertMatch } from "..";
-import { GameSettings, Match, New, Player } from "../domain/model";
-import { CreateWorkflow } from "./support";
+import { Match, New } from "../domain/model";
+import { CreateMatchWorkflow } from "./support";
 import { TooManyActiveMatchesError } from "./workflow-error";
 
-export type Dependencies = GameSettings & CountActiveMatches & GetUniqueId & UpsertMatch;
-export type Input = Player;
-type Workflow = CreateWorkflow<Dependencies, Input>;
-
-export const createMatch: Workflow = (dependencies) => async (player) => {
+export const createMatch: CreateMatchWorkflow = (dependencies) => async (player) => {
   const { getUniqueId, upsertMatch, countActiveMatches, maxActiveMatches } = dependencies;
 
   const activeMatches = await countActiveMatches(player);

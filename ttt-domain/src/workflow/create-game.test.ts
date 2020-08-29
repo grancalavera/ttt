@@ -8,7 +8,8 @@ import {
   upsertFailure,
   WorkflowScenario,
 } from "../test/support";
-import { hasErrorKind } from "./support";
+import { createGame } from "./create-game";
+import { CreateGameInput, hasErrorKind } from "./support";
 import {
   IllegalGameOpponentError,
   IllegalMatchStateError,
@@ -16,12 +17,11 @@ import {
   TooManyActiveMatchesError,
   WorkflowError,
 } from "./workflow-error";
-import { createGame, Input } from "./create-game";
 
 const spyOnFind = jest.fn();
 const spyOnUpsert = jest.fn();
 
-const input: Input = { matchId, opponent: bob };
+const input: CreateGameInput = { matchId, opponent: bob };
 
 const initialState: Match = {
   id: matchId,
@@ -46,7 +46,7 @@ const finalState: Match = {
   },
 };
 
-const scenarios: WorkflowScenario<Input>[] = [
+const scenarios: WorkflowScenario<CreateGameInput>[] = [
   {
     name: "too many active matches",
     runWorkflow: createGame(mockDependencies({ activeMatches: 1, maxActiveMatches: 1 })),

@@ -1,11 +1,12 @@
 import { failure, Result, success } from "@grancalavera/ttt-etc";
-import { GameSettings, Match, Player } from "../domain/model";
 import {
   CountActiveMatches,
   FindMatch,
+  GameSettings,
   GetUniqueId,
   UpsertMatch,
-} from "../workflow/dependencies";
+} from "../dependencies";
+import { Match, Player } from "../domain/model";
 import { RunWorkflow } from "../workflow/support";
 import {
   MatchNotFoundError,
