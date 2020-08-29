@@ -1,4 +1,3 @@
-```mermaid
 sequenceDiagram
   participant c as ttt-client
   participant s as ttt-server
@@ -8,7 +7,7 @@ sequenceDiagram
 
   c->>+s: join(Player)
 
-    s->>+d: resolveFirstChallenge
+    s->>+d: findFirstChallenge()
     d-->>-s: Result = Option<Match>
 
     alt Result = None
@@ -74,4 +73,3 @@ sequenceDiagram
   s-->>-c: Match | WorflowError
   c->>c: redirect to /match/:Match.id
   deactivate c
-```

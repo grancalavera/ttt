@@ -13,6 +13,7 @@ import {
   IllegalMatchChallengerError,
   IllegalMatchStateError,
   MatchNotFoundError,
+  TooManyActiveMatchesError,
   WorkflowError,
 } from "../workflow-error";
 import { createChallenge, Input } from "./create-challenge";
@@ -35,6 +36,14 @@ const finalState: Match = {
 };
 
 const scenarios: WorkflowScenario<Input>[] = [
+  {
+    name: "too many active matches",
+    runWorkflow: createChallenge(
+      mockDependencies({ activeMatches: 1, maxActiveMatches: 1 })
+    ),
+    input,
+    expected: failure([new TooManyActiveMatchesError(input.move[0], 1)]),
+  },
   {
     name: "match not found",
     runWorkflow: createChallenge(
@@ -117,12 +126,16 @@ describe.each(scenarios)("create challenge workflow", (scenario) => {
     it("workflow", () => expect(actual).toEqual(expected));
 
     it("side effects", () => {
-      expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
-
       if (isSuccess(expected)) {
-        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expected.value);
+        expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
+        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, finalState);
       } else {
         const hasKind = hasErrorKind(expected.error);
+
+        if (hasKind("TooManyActiveMatchesError")) {
+          expect(spyOnFind).not.toHaveBeenCalled();
+          expect(spyOnUpsert).not.toHaveBeenCalled();
+        }
 
         if (
           hasKind(

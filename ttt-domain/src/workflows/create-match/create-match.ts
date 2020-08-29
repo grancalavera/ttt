@@ -1,5 +1,5 @@
 import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
-import { GameSettings, Match, Player } from "../../domain/model";
+import { GameSettings, Match, New, Player } from "../../domain/model";
 import { CountActiveMatches, CreateWorkflow, GetUniqueId, UpsertMatch } from "../support";
 import { TooManyActiveMatchesError } from "../workflow-error";
 
@@ -15,7 +15,14 @@ export const createMatch: Workflow = (dependencies) => async (player) => {
     return failure([new TooManyActiveMatchesError(player, maxActiveMatches)]);
   }
 
-  const match: Match = { id: getUniqueId(), owner: player, state: { kind: "New" } };
+  const match: Match = {
+    id: getUniqueId(),
+    owner: player,
+    state: applyStateTransition(),
+  };
+
   const result = await upsertMatch(match);
   return isSuccess(result) ? success(match) : failure([result.error]);
 };
+
+const applyStateTransition = (): New => ({ kind: "New" });
