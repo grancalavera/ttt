@@ -2,11 +2,8 @@ import { failure, isSuccess, Result, success } from "@grancalavera/ttt-etc";
 import { Match } from "../../domain/model";
 import {
   alice,
-  bob,
   matchId,
-  maxActiveMatches,
   mockDependencies,
-  upsertError,
   upsertFailure,
   WorkflowScenario,
 } from "../../test/support";
@@ -16,24 +13,33 @@ import { createMatch, Input } from "./create-match";
 
 const spyOnUpsert = jest.fn();
 
+const input = alice;
+
+const finalState: Match = {
+  id: matchId,
+  owner: input,
+  state: { kind: "New" },
+};
+
 const scenarios: WorkflowScenario<Input>[] = [
   {
     name: "too many active matches",
     runWorkflow: createMatch(
       mockDependencies({
         activeMatches: 1,
+        maxActiveMatches: 1,
       })
     ),
-    input: bob,
-    expected: failure([new TooManyActiveMatchesError(bob, maxActiveMatches)]),
+    input,
+    expected: failure([new TooManyActiveMatchesError(input, 1)]),
   },
   {
     name: "upsert failed",
     runWorkflow: createMatch(
-      mockDependencies({ upsertResult: upsertFailure, spyOnUpsert: spyOnUpsert })
+      mockDependencies({ matchToUpsertFail: finalState, spyOnUpsert })
     ),
-    input: alice,
-    expected: failure([upsertError]),
+    input,
+    expected: upsertFailure(finalState),
   },
   {
     name: "create match",
@@ -42,12 +48,8 @@ const scenarios: WorkflowScenario<Input>[] = [
         spyOnUpsert,
       })
     ),
-    input: alice,
-    expected: success({
-      id: matchId,
-      owner: alice,
-      state: { kind: "New" },
-    }),
+    input,
+    expected: success(finalState),
   },
 ];
 

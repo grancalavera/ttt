@@ -4,9 +4,7 @@ import {
   alice,
   bob,
   matchId,
-  maxActiveMatches,
   mockDependencies,
-  upsertError,
   upsertFailure,
   WorkflowScenario,
 } from "../../test/support";
@@ -23,27 +21,37 @@ import { createGame, Input } from "./create-game";
 const spyOnFind = jest.fn();
 const spyOnUpsert = jest.fn();
 
-const matchOnNewState: Match = {
-  id: matchId,
-  owner: alice,
-  state: { kind: "New" },
-};
+const input: Input = { matchId, opponent: bob };
 
-const matchOnChallengeState: Match = {
+const initialState: Match = {
   id: matchId,
   owner: alice,
   state: { kind: "Challenge", move: [alice, 0] },
 };
 
-const alicesInvalidInput: Input = { matchId, opponent: alice };
-const bobsValidInput: Input = { matchId, opponent: bob };
+const illegalState: Match = {
+  id: matchId,
+  owner: alice,
+  state: { kind: "New" },
+};
+
+const finalState: Match = {
+  id: matchId,
+  owner: alice,
+  state: {
+    kind: "Game",
+    moves: [[alice, 0]],
+    next: input.opponent,
+    players: [alice, input.opponent],
+  },
+};
 
 const scenarios: WorkflowScenario<Input>[] = [
   {
     name: "too many active matches",
-    runWorkflow: createGame(mockDependencies({ activeMatches: 1 })),
-    input: bobsValidInput,
-    expected: failure([new TooManyActiveMatchesError(bob, maxActiveMatches)]),
+    runWorkflow: createGame(mockDependencies({ activeMatches: 1, maxActiveMatches: 1 })),
+    input,
+    expected: failure([new TooManyActiveMatchesError(input.opponent, 1)]),
   },
   {
     name: "match not found",
@@ -53,68 +61,59 @@ const scenarios: WorkflowScenario<Input>[] = [
         spyOnUpsert,
       })
     ),
-    input: bobsValidInput,
+    input,
     expected: failure([new MatchNotFoundError(matchId)]),
   },
   {
     name: "illegal match state",
     runWorkflow: createGame(
       mockDependencies({
-        matchToFind: matchOnNewState,
+        matchToFind: illegalState,
         spyOnFind,
         spyOnUpsert,
       })
     ),
-    input: alicesInvalidInput,
+    input,
     expected: failure([
-      new IllegalMatchStateError(matchId, "Challenge", matchOnNewState.state.kind),
+      new IllegalMatchStateError(matchId, "Challenge", illegalState.state.kind),
     ]),
   },
   {
     name: "illegal challenge opponent",
     runWorkflow: createGame(
       mockDependencies({
-        matchToFind: matchOnChallengeState,
+        matchToFind: initialState,
         spyOnFind,
         spyOnUpsert,
       })
     ),
-    input: alicesInvalidInput,
+    input: { matchId, opponent: alice },
     expected: failure([new IllegalGameOpponentError(matchId, alice)]),
   },
   {
     name: "upsert failed",
     runWorkflow: createGame(
       mockDependencies({
-        matchToFind: matchOnChallengeState,
+        matchToFind: initialState,
         spyOnFind,
-        upsertResult: upsertFailure,
+        matchToUpsertFail: finalState,
         spyOnUpsert: spyOnUpsert,
       })
     ),
-    input: bobsValidInput,
-    expected: failure([upsertError]),
+    input,
+    expected: upsertFailure(finalState),
   },
   {
     name: "create game",
     runWorkflow: createGame(
       mockDependencies({
-        matchToFind: matchOnChallengeState,
+        matchToFind: initialState,
         spyOnFind,
         spyOnUpsert,
       })
     ),
-    input: bobsValidInput,
-    expected: success({
-      id: matchId,
-      owner: alice,
-      state: {
-        kind: "Game",
-        moves: [[alice, 0]],
-        next: bob,
-        players: [alice, bob],
-      },
-    }),
+    input,
+    expected: success(finalState),
   },
 ];
 

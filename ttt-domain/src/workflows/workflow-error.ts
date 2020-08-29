@@ -6,7 +6,7 @@ export type WorkflowError =
   | UpsertFailedError
   | IllegalMatchStateError
   | IllegalGameOpponentError
-  | IllegalMatchOwnerError
+  | IllegalMatchChallengerError
   | IllegalMoveError;
 
 export class TooManyActiveMatchesError {
@@ -50,10 +50,10 @@ export class IllegalMoveError {
   constructor(readonly matchId: MatchId, readonly position: Position) {}
 }
 
-export class IllegalMatchOwnerError {
-  readonly kind = "IllegalMatchOwnerError";
+export class IllegalMatchChallengerError {
+  readonly kind = "IllegalMatchChallengerError";
   get message(): string {
-    return `illegal owner ${this.player.id} for match ${this.matchId}`;
+    return `illegal challenger ${this.player.id} for match ${this.matchId}: a challenger must own the game`;
   }
   constructor(readonly matchId: MatchId, readonly player: Player) {}
 }
