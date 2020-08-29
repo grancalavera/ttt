@@ -4,9 +4,9 @@ import {
   CountActiveMatches,
   FindMatch,
   GetUniqueId,
-  RunWorkflow,
   UpsertMatch,
-} from "../workflow/support";
+} from "../workflow/dependencies";
+import { RunWorkflow } from "../workflow/support";
 import {
   MatchNotFoundError,
   UpsertFailedError,
@@ -22,20 +22,17 @@ export interface WorkflowScenario<Input> {
 
 export const alice: Player = { id: "alice" };
 export const bob: Player = { id: "bob" };
-export const illegalPlayer: Player = { id: "illegalPlayer" };
-export const matchId = "default-match-id";
-export const getUniqueId = () => matchId;
+export const illegalPlayer: Player = { id: "illegal-player" };
+export const matchId = "match-id";
 
-export const upsertError = (m: Match) => new UpsertFailedError(m, "mock upsert failure");
+const upsertError = (m: Match) => new UpsertFailedError(m, "mock upsert failure");
 export const upsertFailure = (m: Match) => failure([upsertError(m)]);
-
-const gameSize = 3 * 3;
 
 // prettier-ignore
 type Dependencies =
   // Domain
   & GameSettings
-  // workflow support
+  // Workflow
   & CountActiveMatches
   & FindMatch
   & GetUniqueId
@@ -51,7 +48,7 @@ interface Mocks {
 }
 
 export const mockDependencies = (mocks: Mocks = {}): Dependencies => ({
-  gameSize,
+  gameSize: 3 * 3,
   maxActiveMatches: mocks.maxActiveMatches ?? Number.POSITIVE_INFINITY,
   findMatch: async (ref) => {
     const { matchToFind } = mocks;
@@ -66,5 +63,5 @@ export const mockDependencies = (mocks: Mocks = {}): Dependencies => ({
       : success(undefined);
   },
   countActiveMatches: async () => mocks.activeMatches ?? 0,
-  getUniqueId,
+  getUniqueId: () => matchId,
 });
