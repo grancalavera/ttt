@@ -1,4 +1,3 @@
-import { Player, MatchId } from "../../domain/model";
 import { FindMatch, MoveInput, UpsertMatch, WorkflowResult } from "../support";
 
 export type CreateChallengeWorkflow = (
