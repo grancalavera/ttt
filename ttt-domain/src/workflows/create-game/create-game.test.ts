@@ -156,7 +156,7 @@ describe.each(scenarios)("create game workflow", (scenario) => {
 
         if (hasKind("UpsertFailedError")) {
           expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
-          expect(spyOnUpsert).toHaveBeenCalledTimes(1);
+          expect(spyOnUpsert).toHaveBeenNthCalledWith(1, finalState);
         }
       }
     });

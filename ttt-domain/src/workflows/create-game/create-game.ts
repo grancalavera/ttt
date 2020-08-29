@@ -1,5 +1,12 @@
 import { failure, isFailure, isSuccess, success } from "@grancalavera/ttt-etc";
-import { GameSettings, Match, MatchId, Player } from "../../domain/model";
+import {
+  GameSettings,
+  Match,
+  MatchId,
+  Player,
+  Game,
+  Challenge,
+} from "../../domain/model";
 import {
   arePlayersTheSame,
   CountActiveMatches,
@@ -43,15 +50,17 @@ export const createGame: Workflow = (dependencies) => async (input) => {
 
   const gameMatch: Match = {
     ...match,
-    state: {
-      kind: "Game",
-      players: [match.owner, opponent],
-      moves: [match.state.move],
-      next: opponent,
-    },
+    state: applyStateTransition(match.state, opponent),
   };
 
   const upsertResult = await upsertMatch(gameMatch);
 
   return isSuccess(upsertResult) ? success(gameMatch) : workflowFailure(upsertResult);
 };
+
+const applyStateTransition = (challenge: Challenge, opponent: Player): Game => ({
+  kind: "Game",
+  players: [challenge.move[0], opponent],
+  moves: [challenge.move],
+  next: opponent,
+});

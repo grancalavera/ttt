@@ -67,7 +67,7 @@ describe.each(scenarios)("create match workflow", (scenario) => {
 
     it("side effects", () => {
       if (isSuccess(expected)) {
-        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expected.value);
+        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, finalState);
       } else {
         const hasKind = hasErrorKind(expected.error);
 
@@ -76,7 +76,7 @@ describe.each(scenarios)("create match workflow", (scenario) => {
         }
 
         if (hasKind("UpsertFailedError")) {
-          expect(spyOnUpsert).toHaveBeenCalledTimes(1);
+          expect(spyOnUpsert).toHaveBeenNthCalledWith(1, finalState);
         }
       }
     });
