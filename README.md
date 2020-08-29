@@ -7,8 +7,8 @@
 ## Workflows
 
 - [Create match](./ttt-domain/src/workflows/create-match/create-match.ts)
-- [Create game](./ttt-domain/src/workflows/create-game/create-game.ts.ts)
-- [Create challenge](./ttt-domain/src/workflows/create-challenge/create-challenge.ts.ts)
+- [Create game](./ttt-domain/src/workflows/create-game/create-game.ts)
+- [Create challenge](./ttt-domain/src/workflows/create-challenge/create-challenge.ts)
 - [Workflow support](./ttt-domain/src/workflows/support.ts)
 
 ![ttt sequence diagram](./ttt-docs/images/sequence.png)

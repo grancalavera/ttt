@@ -1,13 +1,7 @@
 import { failure, isFailure, isSuccess, success } from "@grancalavera/ttt-etc";
-import { GameSettings, Match, MatchId, Player, Game, Challenge } from "../domain/model";
-import {
-  arePlayersTheSame,
-  CountActiveMatches,
-  CreateWorkflow,
-  FindMatch,
-  UpsertMatch,
-  workflowFailure,
-} from "./support";
+import { CountActiveMatches, FindMatch, UpsertMatch } from "..";
+import { Challenge, Game, GameSettings, Match, MatchId, Player } from "../domain/model";
+import { arePlayersTheSame, CreateWorkflow, workflowFailure } from "./support";
 import {
   IllegalGameOpponentError,
   IllegalMatchStateError,

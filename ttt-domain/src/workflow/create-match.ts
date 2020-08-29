@@ -1,6 +1,7 @@
 import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
+import { CountActiveMatches, GetUniqueId, UpsertMatch } from "..";
 import { GameSettings, Match, New, Player } from "../domain/model";
-import { CountActiveMatches, CreateWorkflow, GetUniqueId, UpsertMatch } from "./support";
+import { CreateWorkflow } from "./support";
 import { TooManyActiveMatchesError } from "./workflow-error";
 
 export type Dependencies = GameSettings & CountActiveMatches & GetUniqueId & UpsertMatch;
