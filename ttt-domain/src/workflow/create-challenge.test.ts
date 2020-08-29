@@ -8,7 +8,8 @@ import {
   upsertFailure,
   WorkflowScenario,
 } from "../test/support";
-import { hasErrorKind } from "./support";
+import { createChallenge } from "./create-challenge";
+import { CreateChallengeInput, hasErrorKind } from "./support";
 import {
   IllegalMatchChallengerError,
   IllegalMatchStateError,
@@ -16,12 +17,11 @@ import {
   TooManyActiveMatchesError,
   WorkflowError,
 } from "./workflow-error";
-import { createChallenge, Input } from "./create-challenge";
 
 const spyOnFind = jest.fn();
 const spyOnUpsert = jest.fn();
 
-const input: Input = { matchId, move: [alice, 0] };
+const input: CreateChallengeInput = { matchId, move: [alice, 0] };
 
 const initialState: Match = {
   id: matchId,
@@ -35,7 +35,7 @@ const finalState: Match = {
   state: { kind: "Challenge", move: input.move },
 };
 
-const scenarios: WorkflowScenario<Input>[] = [
+const scenarios: WorkflowScenario<CreateChallengeInput>[] = [
   {
     name: "too many active matches",
     runWorkflow: createChallenge(

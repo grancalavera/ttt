@@ -41,21 +41,11 @@ export interface Victory extends GameBaseState {
   readonly winner: Winner;
 }
 
-interface GameBaseState {
-  readonly players: Players;
-  readonly moves: Moves;
-}
-
 // ----------------------------------------------------------------------------
 //
-// support
+// domain objects
 //
 // ----------------------------------------------------------------------------
-
-export interface GameSettings {
-  readonly gameSize: number;
-  readonly maxActiveMatches: number;
-}
 
 export type Players = [Player, Player];
 export type Move = [Player, Position];
@@ -70,6 +60,11 @@ export type PlayerId = Id;
 export type MatchId = Id;
 export type Position = number;
 type Id = string;
+
+interface GameBaseState {
+  readonly players: Players;
+  readonly moves: Moves;
+}
 
 // ----------------------------------------------------------------------------
 //

@@ -7,9 +7,9 @@ import {
   upsertFailure,
   WorkflowScenario,
 } from "../test/support";
-import { hasErrorKind } from "./support";
+import { createMatch } from "./create-match";
+import { CreateMatchInput, hasErrorKind } from "./support";
 import { TooManyActiveMatchesError, WorkflowError } from "./workflow-error";
-import { createMatch, Input } from "./create-match";
 
 const spyOnUpsert = jest.fn();
 
@@ -21,7 +21,7 @@ const finalState: Match = {
   state: { kind: "New" },
 };
 
-const scenarios: WorkflowScenario<Input>[] = [
+const scenarios: WorkflowScenario<CreateMatchInput>[] = [
   {
     name: "too many active matches",
     runWorkflow: createMatch(
