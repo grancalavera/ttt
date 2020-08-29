@@ -11,13 +11,14 @@ import {
   upsertFailure,
 } from "../../test/support";
 import {
+  IllegalGameOpponentError,
   IllegalMatchStateError,
   MatchNotFoundError,
   TooManyActiveMatchesError,
-} from "../support";
-import { WorkflowError } from "../workflow-error";
+  WorkflowError,
+} from "../workflow-error";
 import { createGameWorkflow } from "./create-game";
-import { CreateGame, CreateGameInput, IllegalGameOpponentError } from "./workflow";
+import { CreateGame, CreateGameInput } from "./workflow";
 
 interface Scenario {
   name: string;

@@ -10,8 +10,7 @@ import {
   upsertError,
   upsertFailure,
 } from "../../test/support";
-import { WorkflowError } from "../workflow-error";
-import { TooManyActiveMatchesError } from "../support";
+import { TooManyActiveMatchesError, WorkflowError } from "../workflow-error";
 import { createMatchWorkflow } from "./create-match";
 import { CreateMatch } from "./workflow";
 

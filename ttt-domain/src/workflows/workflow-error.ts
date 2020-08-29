@@ -1,3 +1,67 @@
-// https://stackoverflow.com/questions/56513652/extend-union-type
-export interface WorkflowErrorMap {}
-export type WorkflowError = WorkflowErrorMap[keyof WorkflowErrorMap];
+import { Match, MatchId, MatchStateName, Player } from "../domain/model";
+
+export type WorkflowError =
+  | TooManyActiveMatchesError
+  | MatchNotFoundError
+  | UpsertFailedError
+  | IllegalMatchStateError
+  | IllegalGameOpponentError
+  | IllegalMatchOwnerError
+  | IllegalMoveError;
+
+export class TooManyActiveMatchesError {
+  readonly kind = "TooManyActiveMatchesError";
+  get message(): string {
+    return `player ${this.player.id} already reached the max count of ${this.maxActiveMatches} active matches`;
+  }
+  constructor(readonly player: Player, readonly maxActiveMatches: number) {}
+}
+
+export class MatchNotFoundError {
+  readonly kind = "MatchNotFoundError";
+  get message(): string {
+    return `match ${this.matchId} not found`;
+  }
+  constructor(readonly matchId: MatchId) {}
+}
+
+export class UpsertFailedError {
+  readonly kind = "UpsertFailedError";
+  constructor(readonly match: Match, readonly message: string) {}
+}
+
+export class IllegalMatchStateError {
+  readonly kind = "IllegalMatchStateError";
+  get message(): string {
+    return `match ${this.matchId} is on an illegal state: wanted state ${this.wantedState}, actual state ${this.actualState}`;
+  }
+  constructor(
+    readonly matchId: MatchId,
+    readonly wantedState: MatchStateName,
+    readonly actualState: MatchStateName
+  ) {}
+}
+
+export class IllegalMoveError {
+  readonly kind = "IllegalMoveError";
+  get message(): string {
+    return `position ${this.position} already played on match ${this.matchId}`;
+  }
+  constructor(readonly matchId: MatchId, readonly position: Position) {}
+}
+
+export class IllegalMatchOwnerError {
+  readonly kind = "IllegalMatchOwnerError";
+  get message(): string {
+    return `illegal owner ${this.player.id} for match ${this.matchId}`;
+  }
+  constructor(readonly matchId: MatchId, readonly player: Player) {}
+}
+
+export class IllegalGameOpponentError {
+  readonly kind = "IllegalGameOpponentError";
+  get message(): string {
+    return `${this.opponent.id} cannot be both the owner and opponent on match ${this.matchId}`;
+  }
+  constructor(readonly matchId: MatchId, readonly opponent: Player) {}
+}

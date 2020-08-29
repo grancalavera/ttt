@@ -1,6 +1,6 @@
-import { failure, isSuccess, success, sequence } from "@grancalavera/ttt-etc";
+import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
 import { Match } from "../../domain/model";
-import { TooManyActiveMatchesError } from "../support";
+import { TooManyActiveMatchesError } from "../workflow-error";
 import { CreateMatchWorkflow } from "./workflow";
 
 export const createMatchWorkflow: CreateMatchWorkflow = (dependencies) => async (

@@ -9,10 +9,15 @@ import {
   upsertError,
   upsertFailure,
 } from "../../test/support";
-import { IllegalMatchStateError, MatchNotFoundError, MoveInput } from "../support";
-import { WorkflowError } from "../workflow-error";
+import { MoveInput } from "../support";
+import {
+  IllegalMatchOwnerError,
+  IllegalMatchStateError,
+  MatchNotFoundError,
+  WorkflowError,
+} from "../workflow-error";
 import { createChallengeWorkflow } from "./create-challenge";
-import { CreateChallenge, IllegalMatchOwnerError } from "./workflow";
+import { CreateChallenge } from "./workflow";
 
 interface Scenario {
   name: string;
