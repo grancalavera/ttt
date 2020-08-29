@@ -6,9 +6,9 @@ import {
   matchId,
   maxActiveMatches,
   mockDependencies,
-  WorkflowScenario,
   upsertError,
   upsertFailure,
+  WorkflowScenario,
 } from "../../test/support";
 import { hasErrorKind } from "../support";
 import {
@@ -37,7 +37,6 @@ const matchOnChallengeState: Match = {
 
 const alicesInvalidInput: Input = { matchId, opponent: alice };
 const bobsValidInput: Input = { matchId, opponent: bob };
-const findSuccess = success(matchOnChallengeState);
 
 const scenarios: WorkflowScenario<Input>[] = [
   {
@@ -50,7 +49,6 @@ const scenarios: WorkflowScenario<Input>[] = [
     name: "match not found",
     runWorkflow: createGame(
       mockDependencies({
-        findResult: failure(new MatchNotFoundError(matchId)),
         spyOnFind,
         spyOnUpsert,
       })
@@ -62,7 +60,7 @@ const scenarios: WorkflowScenario<Input>[] = [
     name: "illegal match state",
     runWorkflow: createGame(
       mockDependencies({
-        findResult: success(matchOnNewState),
+        matchToFind: matchOnNewState,
         spyOnFind,
         spyOnUpsert,
       })
@@ -76,7 +74,7 @@ const scenarios: WorkflowScenario<Input>[] = [
     name: "illegal challenge opponent",
     runWorkflow: createGame(
       mockDependencies({
-        findResult: findSuccess,
+        matchToFind: matchOnChallengeState,
         spyOnFind,
         spyOnUpsert,
       })
@@ -88,7 +86,7 @@ const scenarios: WorkflowScenario<Input>[] = [
     name: "upsert failed",
     runWorkflow: createGame(
       mockDependencies({
-        findResult: findSuccess,
+        matchToFind: matchOnChallengeState,
         spyOnFind,
         upsertResult: upsertFailure,
         spyOnUpsert: spyOnUpsert,
@@ -101,7 +99,7 @@ const scenarios: WorkflowScenario<Input>[] = [
     name: "create game",
     runWorkflow: createGame(
       mockDependencies({
-        findResult: findSuccess,
+        matchToFind: matchOnChallengeState,
         spyOnFind,
         spyOnUpsert,
       })

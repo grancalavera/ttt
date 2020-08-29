@@ -49,7 +49,7 @@ type Dependencies =
 interface Mocks {
   upsertResult?: Result<void, WorkflowError>;
   spyOnUpsert?: jest.Mock;
-  findResult?: Result<Match, WorkflowError>;
+  matchToFind?: Match;
   spyOnFind?: jest.Mock;
   activeMatches?: number;
 }
@@ -59,7 +59,9 @@ export const mockDependencies = (mocks: Mocks = {}): Dependencies => ({
   maxActiveMatches,
   findMatch: async (ref) => {
     mocks.spyOnFind && mocks.spyOnFind(ref);
-    return mocks.findResult ?? failure(new MatchNotFoundError(matchId));
+    return mocks.matchToFind
+      ? success(mocks.matchToFind)
+      : failure(new MatchNotFoundError(matchId));
   },
   upsertMatch: async (match) => {
     mocks.spyOnUpsert && mocks.spyOnUpsert(match);
