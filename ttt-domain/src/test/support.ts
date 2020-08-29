@@ -4,6 +4,7 @@ import {
   CountActiveMatches,
   FindMatch,
   GetUniqueId,
+  RunWorkflow,
   UpsertMatch,
 } from "../workflows/support";
 import {
@@ -11,6 +12,13 @@ import {
   UpsertFailedError,
   WorkflowError,
 } from "../workflows/workflow-error";
+
+export interface WorkflowScenario<Input> {
+  name: string;
+  runWorkflow: RunWorkflow<Input>;
+  input: Input;
+  expected: Result<Match, WorkflowError[]>;
+}
 
 export const alice: Player = { id: "alice" };
 export const bob: Player = { id: "bob" };

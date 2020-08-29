@@ -1,28 +1,22 @@
 import { failure, isSuccess, Result, success } from "@grancalavera/ttt-etc";
-import { Match, Player } from "../../domain/model";
+import { Match } from "../../domain/model";
 import {
   alice,
   bob,
   matchId,
   maxActiveMatches,
   mockDependencies,
+  WorkflowScenario,
   upsertError,
   upsertFailure,
 } from "../../test/support";
-import { hasErrorKind, RunWorkflow } from "../support";
+import { hasErrorKind } from "../support";
 import { TooManyActiveMatchesError, WorkflowError } from "../workflow-error";
 import { createMatch, Input } from "./create-match";
 
-interface Scenario {
-  name: string;
-  runWorkflow: RunWorkflow<Input>;
-  input: Player;
-  expected: Result<Match, WorkflowError[]>;
-}
-
 const spyOnUpsert = jest.fn();
 
-const scenarios: Scenario[] = [
+const scenarios: WorkflowScenario<Input>[] = [
   {
     name: "too many active matches",
     runWorkflow: createMatch(
