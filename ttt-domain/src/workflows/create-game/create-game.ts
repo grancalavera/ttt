@@ -1,12 +1,12 @@
 import { failure, isFailure, isSuccess, success } from "@grancalavera/ttt-etc";
 import { Match } from "../../domain/model";
+import { arePlayersTheSame, workflowFailure } from "../support";
 import {
-  arePlayersTheSame,
+  IllegalGameOpponentError,
   IllegalMatchStateError,
   TooManyActiveMatchesError,
-  workflowFailure,
-} from "../support";
-import { CreateGameWorkflow, IllegalGameOpponentError } from "./workflow";
+} from "../workflow-error";
+import { CreateGameWorkflow } from "./workflow";
 
 export const createGameWorkflow: CreateGameWorkflow = (dependencies) => async (input) => {
   const { countActiveMatches, maxActiveMatches, findMatch, upsertMatch } = dependencies;

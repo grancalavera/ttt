@@ -1,7 +1,8 @@
 import { failure, isFailure, isSuccess, success } from "@grancalavera/ttt-etc";
 import { Match } from "../../domain/model";
-import { arePlayersTheSame, IllegalMatchStateError, workflowFailure } from "../support";
-import { CreateChallengeWorkflow, IllegalMatchOwnerError } from "./workflow";
+import { arePlayersTheSame, workflowFailure } from "../support";
+import { IllegalMatchOwnerError, IllegalMatchStateError } from "../workflow-error";
+import { CreateChallengeWorkflow } from "./workflow";
 
 export const createChallengeWorkflow: CreateChallengeWorkflow = (dependencies) => async (
   input

@@ -13,5 +13,11 @@
     "declarationMap": true,
     "skipLibCheck": true
   },
-  "include": ["src/workflows/create-match", "src/domain", "src/test"]
+  "include": [
+    "src/workflows/create-match",
+    "src/workflows/create-challenge",
+    "src/workflows/create-game",
+    "src/domain",
+    "src/test"
+  ]
 }
