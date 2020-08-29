@@ -3,20 +3,19 @@ import { Match, Player } from "../../domain/model";
 import {
   alice,
   bob,
-  hasErrorKind,
   matchId,
   maxActiveMatches,
   mockDependencies,
   upsertError,
   upsertFailure,
 } from "../../test/support";
+import { hasErrorKind, RunWorkflow } from "../support";
 import { TooManyActiveMatchesError, WorkflowError } from "../workflow-error";
-import { createMatchWorkflow } from "./create-match";
-import { CreateMatch } from "./workflow";
+import { createMatch, Input } from "./create-match";
 
 interface Scenario {
   name: string;
-  runWorkflow: CreateMatch;
+  runWorkflow: RunWorkflow<Input>;
   input: Player;
   expected: Result<Match, WorkflowError[]>;
 }
@@ -26,7 +25,7 @@ const spyOnUpsert = jest.fn();
 const scenarios: Scenario[] = [
   {
     name: "too many active matches",
-    runWorkflow: createMatchWorkflow(
+    runWorkflow: createMatch(
       mockDependencies({
         activeMatches: 1,
       })
@@ -36,7 +35,7 @@ const scenarios: Scenario[] = [
   },
   {
     name: "upsert failed",
-    runWorkflow: createMatchWorkflow(
+    runWorkflow: createMatch(
       mockDependencies({ upsertResult: upsertFailure, spyOnUpsert: spyOnUpsert })
     ),
     input: alice,
@@ -44,7 +43,7 @@ const scenarios: Scenario[] = [
   },
   {
     name: "create match",
-    runWorkflow: createMatchWorkflow(
+    runWorkflow: createMatch(
       mockDependencies({
         spyOnUpsert,
       })

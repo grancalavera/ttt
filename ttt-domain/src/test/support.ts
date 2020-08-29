@@ -30,10 +30,12 @@ const gameSize = 3 * 3;
 
 // prettier-ignore
 type Dependencies =
+  // Domain
   & GameSettings
+  // workflow support
   & CountActiveMatches
-  & GetUniqueId
   & FindMatch
+  & GetUniqueId
   & UpsertMatch;
 
 interface Mocks {
@@ -58,7 +60,3 @@ export const mockDependencies = (mocks: Mocks = {}): Dependencies => ({
   countActiveMatches: async () => mocks.activeMatches ?? 0,
   getUniqueId,
 });
-
-export const hasErrorKind = (errors: WorkflowError[]) => (
-  ...kinds: NonEmptyArray<WorkflowError["kind"]>
-) => errors.some((e) => kinds.includes(e.kind));
