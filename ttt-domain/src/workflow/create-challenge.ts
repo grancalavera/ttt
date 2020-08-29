@@ -1,5 +1,5 @@
 import { failure, isFailure, isSuccess, success } from "@grancalavera/ttt-etc";
-import { Challenge, GameSettings, Match, MatchId, Move } from "../../domain/model";
+import { Challenge, GameSettings, Match, MatchId, Move } from "../domain/model";
 import {
   arePlayersTheSame,
   CountActiveMatches,
@@ -7,12 +7,12 @@ import {
   FindMatch,
   UpsertMatch,
   workflowFailure,
-} from "../support";
+} from "./support";
 import {
   IllegalMatchChallengerError,
   IllegalMatchStateError,
   TooManyActiveMatchesError,
-} from "../workflow-error";
+} from "./workflow-error";
 
 export type Dependencies = FindMatch & UpsertMatch & CountActiveMatches & GameSettings;
 export type Input = { matchId: MatchId; move: Move };

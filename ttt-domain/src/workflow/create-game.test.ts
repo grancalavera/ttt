@@ -1,5 +1,5 @@
 import { failure, isSuccess, Result, success } from "@grancalavera/ttt-etc";
-import { Match } from "../../domain/model";
+import { Match } from "../domain/model";
 import {
   alice,
   bob,
@@ -7,23 +7,29 @@ import {
   mockDependencies,
   upsertFailure,
   WorkflowScenario,
-} from "../../test/support";
-import { hasErrorKind } from "../support";
+} from "../test/support";
+import { hasErrorKind } from "./support";
 import {
-  IllegalMatchChallengerError,
+  IllegalGameOpponentError,
   IllegalMatchStateError,
   MatchNotFoundError,
   TooManyActiveMatchesError,
   WorkflowError,
-} from "../workflow-error";
-import { createChallenge, Input } from "./create-challenge";
+} from "./workflow-error";
+import { createGame, Input } from "./create-game";
 
 const spyOnFind = jest.fn();
 const spyOnUpsert = jest.fn();
 
-const input: Input = { matchId, move: [alice, 0] };
+const input: Input = { matchId, opponent: bob };
 
 const initialState: Match = {
+  id: matchId,
+  owner: alice,
+  state: { kind: "Challenge", move: [alice, 0] },
+};
+
+const illegalState: Match = {
   id: matchId,
   owner: alice,
   state: { kind: "New" },
@@ -32,21 +38,24 @@ const initialState: Match = {
 const finalState: Match = {
   id: matchId,
   owner: alice,
-  state: { kind: "Challenge", move: input.move },
+  state: {
+    kind: "Game",
+    moves: [[alice, 0]],
+    next: input.opponent,
+    players: [alice, input.opponent],
+  },
 };
 
 const scenarios: WorkflowScenario<Input>[] = [
   {
     name: "too many active matches",
-    runWorkflow: createChallenge(
-      mockDependencies({ activeMatches: 1, maxActiveMatches: 1 })
-    ),
+    runWorkflow: createGame(mockDependencies({ activeMatches: 1, maxActiveMatches: 1 })),
     input,
-    expected: failure([new TooManyActiveMatchesError(input.move[0], 1)]),
+    expected: failure([new TooManyActiveMatchesError(input.opponent, 1)]),
   },
   {
     name: "match not found",
-    runWorkflow: createChallenge(
+    runWorkflow: createGame(
       mockDependencies({
         spyOnFind,
         spyOnUpsert,
@@ -57,50 +66,46 @@ const scenarios: WorkflowScenario<Input>[] = [
   },
   {
     name: "illegal match state",
-    runWorkflow: createChallenge(
+    runWorkflow: createGame(
       mockDependencies({
-        matchToFind: finalState,
+        matchToFind: illegalState,
         spyOnFind,
         spyOnUpsert,
       })
     ),
     input,
     expected: failure([
-      new IllegalMatchStateError(matchId, "New", finalState.state.kind),
+      new IllegalMatchStateError(matchId, "Challenge", illegalState.state.kind),
     ]),
   },
   {
-    name: "illegal match owner",
-    runWorkflow: createChallenge(
+    name: "illegal challenge opponent",
+    runWorkflow: createGame(
       mockDependencies({
-        matchToFind: {
-          id: matchId,
-          owner: bob,
-          state: { kind: "New" },
-        },
+        matchToFind: initialState,
         spyOnFind,
         spyOnUpsert,
       })
     ),
-    input,
-    expected: failure([new IllegalMatchChallengerError(matchId, alice)]),
+    input: { matchId, opponent: alice },
+    expected: failure([new IllegalGameOpponentError(matchId, alice)]),
   },
   {
     name: "upsert failed",
-    runWorkflow: createChallenge(
+    runWorkflow: createGame(
       mockDependencies({
         matchToFind: initialState,
         spyOnFind,
         matchToUpsertFail: finalState,
-        spyOnUpsert,
+        spyOnUpsert: spyOnUpsert,
       })
     ),
     input,
     expected: upsertFailure(finalState),
   },
   {
-    name: "create challenge",
-    runWorkflow: createChallenge(
+    name: "create game",
+    runWorkflow: createGame(
       mockDependencies({
         matchToFind: initialState,
         spyOnFind,
@@ -112,8 +117,8 @@ const scenarios: WorkflowScenario<Input>[] = [
   },
 ];
 
-describe.each(scenarios)("create challenge workflow", (scenario) => {
-  const { name, runWorkflow: runWorkflow, input, expected } = scenario;
+describe.each(scenarios)("create game workflow", (scenario) => {
+  const { name, runWorkflow, input, expected } = scenario;
   let actual: Result<Match, WorkflowError[]>;
 
   beforeEach(async () => {
@@ -128,7 +133,7 @@ describe.each(scenarios)("create challenge workflow", (scenario) => {
     it("side effects", () => {
       if (isSuccess(expected)) {
         expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
-        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, finalState);
+        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expected.value);
       } else {
         const hasKind = hasErrorKind(expected.error);
 
@@ -140,15 +145,18 @@ describe.each(scenarios)("create challenge workflow", (scenario) => {
         if (
           hasKind(
             "MatchNotFoundError",
-            "IllegalMatchChallengerError",
-            "IllegalMatchStateError"
+            "IllegalMatchStateError",
+            "IllegalGameOpponentError",
+            "IllegalMoveError"
           )
         ) {
+          expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
           expect(spyOnUpsert).not.toHaveBeenCalled();
         }
 
         if (hasKind("UpsertFailedError")) {
-          expect(spyOnUpsert).toHaveBeenCalledTimes(1);
+          expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
+          expect(spyOnUpsert).toHaveBeenNthCalledWith(1, finalState);
         }
       }
     });
