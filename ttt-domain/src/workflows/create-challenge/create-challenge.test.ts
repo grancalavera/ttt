@@ -3,33 +3,31 @@ import { Match } from "../../domain/model";
 import {
   alice,
   bob,
-  hasErrorKind,
   matchId,
   mockDependencies,
   upsertError,
   upsertFailure,
 } from "../../test/support";
-import { MoveInput } from "../support";
+import { RunWorkflow, hasErrorKind } from "../support";
 import {
   IllegalMatchOwnerError,
   IllegalMatchStateError,
   MatchNotFoundError,
   WorkflowError,
 } from "../workflow-error";
-import { createChallengeWorkflow } from "./create-challenge";
-import { CreateChallenge } from "./workflow";
+import { createChallenge, Input } from "./create-challenge";
 
 interface Scenario {
   name: string;
-  ruWorkflow: CreateChallenge;
-  input: MoveInput;
+  ruWorkflow: RunWorkflow<Input>;
+  input: Input;
   expected: Result<Match, WorkflowError[]>;
 }
 
 const spyOnFind = jest.fn();
 const spyOnUpsert = jest.fn();
 
-const alicesInput: MoveInput = { matchId, move: [alice, 0] };
+const alicesInput: Input = { matchId, move: [alice, 0] };
 
 const matchOnNewState: Match = {
   id: matchId,
@@ -46,7 +44,7 @@ const matchOnChallengeState: Match = {
 const scenarios: Scenario[] = [
   {
     name: "match not found",
-    ruWorkflow: createChallengeWorkflow(
+    ruWorkflow: createChallenge(
       mockDependencies({
         findResult: failure(new MatchNotFoundError(matchId)),
         spyOnFind,
@@ -59,7 +57,7 @@ const scenarios: Scenario[] = [
   },
   {
     name: "illegal match state",
-    ruWorkflow: createChallengeWorkflow(
+    ruWorkflow: createChallenge(
       mockDependencies({
         findResult: success(matchOnChallengeState),
         spyOnFind,
@@ -74,7 +72,7 @@ const scenarios: Scenario[] = [
   },
   {
     name: "illegal match owner",
-    ruWorkflow: createChallengeWorkflow(
+    ruWorkflow: createChallenge(
       mockDependencies({
         findResult: success({
           id: matchId,
@@ -91,7 +89,7 @@ const scenarios: Scenario[] = [
   },
   {
     name: "upsert failed",
-    ruWorkflow: createChallengeWorkflow(
+    ruWorkflow: createChallenge(
       mockDependencies({
         findResult: success(matchOnNewState),
         spyOnFind,
@@ -104,7 +102,7 @@ const scenarios: Scenario[] = [
   },
   {
     name: "create challenge",
-    ruWorkflow: createChallengeWorkflow(
+    ruWorkflow: createChallenge(
       mockDependencies({
         findResult: success(matchOnNewState),
         spyOnFind,
