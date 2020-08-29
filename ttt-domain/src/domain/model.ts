@@ -4,6 +4,8 @@
 //
 // ----------------------------------------------------------------------------
 
+import { NonEmptyArray } from "@grancalavera/ttt-etc";
+
 export interface Match {
   readonly id: MatchId;
   readonly owner: Player;
@@ -49,8 +51,8 @@ export interface Victory extends GameBaseState {
 
 export type Players = [Player, Player];
 export type Move = [Player, Position];
-export type Moves = Move[];
-export type Winner = [Player, Position[]];
+export type Moves = NonEmptyArray<Move>;
+export type Winner = [Player, NonEmptyArray<Position>];
 
 export interface Player {
   readonly id: PlayerId;
