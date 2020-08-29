@@ -1,5 +1,5 @@
 import { alice, bob, illegalPlayer } from "../../test/support";
-import { allow, InvalidInput, Validation } from "../../../../ttt-etc/dist";
+import { allow, InvalidInput, Validation } from "@grancalavera/ttt-etc";
 import { CreateMoveInput } from "./workflow";
 import { aliceWinsGame, defaultGame, drawGame } from "./fixtures";
 import { failWithInvalidTurn, validateIsPlayersTurn } from "./validate-is-players-turn";

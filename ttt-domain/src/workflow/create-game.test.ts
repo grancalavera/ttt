@@ -13,15 +13,11 @@ import { CreateGameInput, hasErrorKind } from "./support";
 import {
   IllegalGameOpponentError,
   IllegalMatchStateError,
-  MatchNotFoundError,
   TooManyActiveMatchesError,
   WorkflowError,
 } from "./workflow-error";
 
-const spyOnFind = jest.fn();
 const spyOnUpsert = jest.fn();
-
-const input: CreateGameInput = { matchId, opponent: bob };
 
 const initialState: Match = {
   id: matchId,
@@ -41,8 +37,8 @@ const finalState: Match = {
   state: {
     kind: "Game",
     moves: [[alice, 0]],
-    next: input.opponent,
-    players: [alice, input.opponent],
+    next: bob,
+    players: [alice, bob],
   },
 };
 
@@ -50,69 +46,40 @@ const scenarios: WorkflowScenario<CreateGameInput>[] = [
   {
     name: "too many active matches",
     runWorkflow: createGame(mockDependencies({ activeMatches: 1, maxActiveMatches: 1 })),
-    input,
-    expected: failure([new TooManyActiveMatchesError(input.opponent, 1)]),
-  },
-  {
-    name: "match not found",
-    runWorkflow: createGame(
-      mockDependencies({
-        spyOnFind,
-        spyOnUpsert,
-      })
-    ),
-    input,
-    expected: failure([new MatchNotFoundError(matchId)]),
+    input: { match: initialState, opponent: bob },
+    expected: failure([new TooManyActiveMatchesError(bob, 1)]),
   },
   {
     name: "illegal match state",
-    runWorkflow: createGame(
-      mockDependencies({
-        matchToFind: illegalState,
-        spyOnFind,
-        spyOnUpsert,
-      })
-    ),
-    input,
-    expected: failure([
-      new IllegalMatchStateError(matchId, "Challenge", illegalState.state.kind),
-    ]),
+    runWorkflow: createGame(mockDependencies({ spyOnUpsert })),
+    input: { match: illegalState, opponent: bob },
+    expected: failure([new IllegalMatchStateError(illegalState, "Challenge")]),
   },
   {
     name: "illegal challenge opponent",
     runWorkflow: createGame(
       mockDependencies({
-        matchToFind: initialState,
-        spyOnFind,
         spyOnUpsert,
       })
     ),
-    input: { matchId, opponent: alice },
+    input: { match: initialState, opponent: alice },
     expected: failure([new IllegalGameOpponentError(matchId, alice)]),
   },
   {
     name: "upsert failed",
     runWorkflow: createGame(
       mockDependencies({
-        matchToFind: initialState,
-        spyOnFind,
         matchToUpsertFail: finalState,
         spyOnUpsert: spyOnUpsert,
       })
     ),
-    input,
+    input: { match: initialState, opponent: bob },
     expected: upsertFailure(finalState),
   },
   {
     name: "create game",
-    runWorkflow: createGame(
-      mockDependencies({
-        matchToFind: initialState,
-        spyOnFind,
-        spyOnUpsert,
-      })
-    ),
-    input,
+    runWorkflow: createGame(mockDependencies({ spyOnUpsert })),
+    input: { match: initialState, opponent: bob },
     expected: success(finalState),
   },
 ];
@@ -122,7 +89,6 @@ describe.each(scenarios)("create game workflow", (scenario) => {
   let actual: Result<Match, WorkflowError[]>;
 
   beforeEach(async () => {
-    spyOnFind.mockClear();
     spyOnUpsert.mockClear();
     actual = await runWorkflow(input);
   });
@@ -132,13 +98,11 @@ describe.each(scenarios)("create game workflow", (scenario) => {
 
     it("side effects", () => {
       if (isSuccess(expected)) {
-        expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
         expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expected.value);
       } else {
         const hasKind = hasErrorKind(expected.error);
 
         if (hasKind("TooManyActiveMatchesError")) {
-          expect(spyOnFind).not.toHaveBeenCalled();
           expect(spyOnUpsert).not.toHaveBeenCalled();
         }
 
@@ -150,12 +114,10 @@ describe.each(scenarios)("create game workflow", (scenario) => {
             "IllegalMoveError"
           )
         ) {
-          expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
           expect(spyOnUpsert).not.toHaveBeenCalled();
         }
 
         if (hasKind("UpsertFailedError")) {
-          expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
           expect(spyOnUpsert).toHaveBeenNthCalledWith(1, finalState);
         }
       }

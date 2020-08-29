@@ -65,17 +65,17 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "api:jest:all",
-      "program": "${workspaceFolder}/ttt-api/node_modules/.bin/jest",
-      "cwd": "${workspaceFolder}/ttt-api",
+      "name": "domain:jest:all",
+      "program": "${workspaceFolder}/ttt-domain/node_modules/.bin/jest",
+      "cwd": "${workspaceFolder}/ttt-domain",
       "args": ["--runInBand", "--config", "jest.config.js"]
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "api:jest:current",
-      "program": "${workspaceFolder}/ttt-api/node_modules/.bin/jest",
-      "cwd": "${workspaceFolder}/ttt-api",
+      "name": "domain:jest:current",
+      "program": "${workspaceFolder}/ttt-domain/node_modules/.bin/jest",
+      "cwd": "${workspaceFolder}/ttt-domain",
       "args": ["${fileBasenameNoExtension}", "--config", "jest.config.js"]
     }
   ]
