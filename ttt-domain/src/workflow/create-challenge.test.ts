@@ -13,15 +13,11 @@ import { CreateChallengeInput, hasErrorKind } from "./support";
 import {
   IllegalMatchChallengerError,
   IllegalMatchStateError,
-  MatchNotFoundError,
   TooManyActiveMatchesError,
   WorkflowError,
 } from "./workflow-error";
 
-const spyOnFind = jest.fn();
 const spyOnUpsert = jest.fn();
-
-const input: CreateChallengeInput = { matchId, move: [alice, 0] };
 
 const initialState: Match = {
   id: matchId,
@@ -29,10 +25,22 @@ const initialState: Match = {
   state: { kind: "New" },
 };
 
+const illegalState: Match = {
+  id: matchId,
+  owner: alice,
+  state: { kind: "Challenge", move: [alice, 0] },
+};
+
+const illegalOwner: Match = {
+  id: matchId,
+  owner: bob,
+  state: { kind: "Challenge", move: [bob, 0] },
+};
+
 const finalState: Match = {
   id: matchId,
   owner: alice,
-  state: { kind: "Challenge", move: input.move },
+  state: { kind: "Challenge", move: [alice, 0] },
 };
 
 const scenarios: WorkflowScenario<CreateChallengeInput>[] = [
@@ -41,33 +49,14 @@ const scenarios: WorkflowScenario<CreateChallengeInput>[] = [
     runWorkflow: createChallenge(
       mockDependencies({ activeMatches: 1, maxActiveMatches: 1 })
     ),
-    input,
-    expected: failure([new TooManyActiveMatchesError(input.move[0], 1)]),
-  },
-  {
-    name: "match not found",
-    runWorkflow: createChallenge(
-      mockDependencies({
-        spyOnFind,
-        spyOnUpsert,
-      })
-    ),
-    input,
-    expected: failure([new MatchNotFoundError(matchId)]),
+    input: { match: initialState, move: [alice, 0] },
+    expected: failure([new TooManyActiveMatchesError(alice, 1)]),
   },
   {
     name: "illegal match state",
-    runWorkflow: createChallenge(
-      mockDependencies({
-        matchToFind: finalState,
-        spyOnFind,
-        spyOnUpsert,
-      })
-    ),
-    input,
-    expected: failure([
-      new IllegalMatchStateError(matchId, "New", finalState.state.kind),
-    ]),
+    runWorkflow: createChallenge(mockDependencies({ spyOnUpsert })),
+    input: { match: illegalState, move: [alice, 0] },
+    expected: failure([new IllegalMatchStateError(finalState, "New")]),
   },
   {
     name: "illegal match owner",
@@ -78,36 +67,27 @@ const scenarios: WorkflowScenario<CreateChallengeInput>[] = [
           owner: bob,
           state: { kind: "New" },
         },
-        spyOnFind,
         spyOnUpsert,
       })
     ),
-    input,
-    expected: failure([new IllegalMatchChallengerError(matchId, alice)]),
+    input: { match: illegalOwner, move: [alice, 0] },
+    expected: failure([new IllegalMatchChallengerError(illegalOwner, alice)]),
   },
   {
     name: "upsert failed",
     runWorkflow: createChallenge(
       mockDependencies({
-        matchToFind: initialState,
-        spyOnFind,
         matchToUpsertFail: finalState,
         spyOnUpsert,
       })
     ),
-    input,
+    input: { match: initialState, move: [alice, 0] },
     expected: upsertFailure(finalState),
   },
   {
     name: "create challenge",
-    runWorkflow: createChallenge(
-      mockDependencies({
-        matchToFind: initialState,
-        spyOnFind,
-        spyOnUpsert,
-      })
-    ),
-    input,
+    runWorkflow: createChallenge(mockDependencies({ spyOnUpsert })),
+    input: { match: initialState, move: [alice, 0] },
     expected: success(finalState),
   },
 ];
@@ -117,7 +97,6 @@ describe.each(scenarios)("create challenge workflow", (scenario) => {
   let actual: Result<Match, WorkflowError[]>;
 
   beforeEach(async () => {
-    spyOnFind.mockClear();
     spyOnUpsert.mockClear();
     actual = await runWorkflow(input);
   });
@@ -127,13 +106,11 @@ describe.each(scenarios)("create challenge workflow", (scenario) => {
 
     it("side effects", () => {
       if (isSuccess(expected)) {
-        expect(spyOnFind).toHaveBeenNthCalledWith(1, input.matchId);
         expect(spyOnUpsert).toHaveBeenNthCalledWith(1, finalState);
       } else {
         const hasKind = hasErrorKind(expected.error);
 
         if (hasKind("TooManyActiveMatchesError")) {
-          expect(spyOnFind).not.toHaveBeenCalled();
           expect(spyOnUpsert).not.toHaveBeenCalled();
         }
 

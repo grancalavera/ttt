@@ -1,4 +1,4 @@
-import { failure, isFailure, isSuccess, success } from "@grancalavera/ttt-etc";
+import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
 import { Challenge, Match, Move } from "../domain/model";
 import { arePlayersTheSame, CreateChallengeWorkflow, workflowFailure } from "./support";
 import {
@@ -10,8 +10,8 @@ import {
 export const createChallenge: CreateChallengeWorkflow = (dependencies) => async (
   input
 ) => {
-  const { findMatch, upsertMatch, countActiveMatches, maxActiveMatches } = dependencies;
-  const { move, matchId } = input;
+  const { upsertMatch, countActiveMatches, maxActiveMatches } = dependencies;
+  const { match, move } = input;
   const [challenger] = move;
 
   const activeMatches = await countActiveMatches(challenger);
@@ -19,20 +19,12 @@ export const createChallenge: CreateChallengeWorkflow = (dependencies) => async 
     return failure([new TooManyActiveMatchesError(challenger, maxActiveMatches)]);
   }
 
-  const findResult = await findMatch(matchId);
-
-  if (isFailure(findResult)) {
-    return workflowFailure(findResult);
-  }
-
-  const match = findResult.value;
-
   if (!arePlayersTheSame(match.owner, challenger)) {
-    return failure([new IllegalMatchChallengerError(match.id, challenger)]);
+    return failure([new IllegalMatchChallengerError(match, challenger)]);
   }
 
   if (match.state.kind !== "New") {
-    return failure([new IllegalMatchStateError(matchId, "New", match.state.kind)]);
+    return failure([new IllegalMatchStateError(match, "New")]);
   }
 
   const challengeMatch: Match = { ...match, state: applyStateTransition(move) };

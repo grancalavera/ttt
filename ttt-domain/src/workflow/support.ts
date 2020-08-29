@@ -7,12 +7,11 @@ import {
 } from "@grancalavera/ttt-etc";
 import {
   CountActiveMatches,
-  FindMatch,
   GameSettings,
   GetUniqueId,
   UpsertMatch,
 } from "../dependencies";
-import { Match, MatchId, Move, Player } from "../domain/model";
+import { Match, Move, Player } from "../domain/model";
 import { WorkflowError } from "./workflow-error";
 
 // ----------------------------------------------------------------------------
@@ -21,10 +20,12 @@ import { WorkflowError } from "./workflow-error";
 //
 // ----------------------------------------------------------------------------
 
-export type CreateMatchDependencies = GameSettings &
-  CountActiveMatches &
-  GetUniqueId &
-  UpsertMatch;
+// prettier-ignore
+export type CreateMatchDependencies =
+  & GameSettings
+  & CountActiveMatches
+  & GetUniqueId
+  & UpsertMatch;
 
 export type CreateMatchInput = Player;
 
@@ -39,12 +40,16 @@ export type CreateMatchWorkflow = CreateWorkflow<
 //
 // ----------------------------------------------------------------------------
 
-export type CreateChallengeDeps = FindMatch &
-  UpsertMatch &
-  CountActiveMatches &
-  GameSettings;
+// prettier-ignore
+export type CreateChallengeDeps =
+  & GameSettings
+  & CountActiveMatches
+  & UpsertMatch;
 
-export type CreateChallengeInput = { matchId: MatchId; move: Move };
+export interface CreateChallengeInput {
+  readonly match: Match;
+  readonly move: Move;
+}
 
 export type CreateChallengeWorkflow = CreateWorkflow<
   CreateChallengeDeps,
@@ -57,12 +62,16 @@ export type CreateChallengeWorkflow = CreateWorkflow<
 //
 // ----------------------------------------------------------------------------
 
-export type CreateGameDependencies = GameSettings &
-  FindMatch &
-  UpsertMatch &
-  CountActiveMatches;
+// prettier-ignore
+export type CreateGameDependencies =
+  & GameSettings
+  & CountActiveMatches
+  & UpsertMatch;
 
-export type CreateGameInput = { matchId: MatchId; opponent: Player };
+export interface CreateGameInput {
+  readonly match: Match;
+  readonly opponent: Player;
+}
 
 export type CreateGameWorkflow = CreateWorkflow<CreateGameDependencies, CreateGameInput>;
 

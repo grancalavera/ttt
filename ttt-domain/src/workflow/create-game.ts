@@ -1,4 +1,4 @@
-import { failure, isFailure, isSuccess, success } from "@grancalavera/ttt-etc";
+import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
 import { Challenge, Game, Match, Player } from "../domain/model";
 import { arePlayersTheSame, CreateGameWorkflow, workflowFailure } from "./support";
 import {
@@ -8,22 +8,16 @@ import {
 } from "./workflow-error";
 
 export const createGame: CreateGameWorkflow = (dependencies) => async (input) => {
-  const { countActiveMatches, maxActiveMatches, findMatch, upsertMatch } = dependencies;
-  const { matchId, opponent } = input;
+  const { countActiveMatches, maxActiveMatches, upsertMatch } = dependencies;
+  const { match, opponent } = input;
 
   const activeMatches = await countActiveMatches(opponent);
   if (maxActiveMatches <= activeMatches) {
     return failure([new TooManyActiveMatchesError(opponent, maxActiveMatches)]);
   }
 
-  const findResult = await findMatch(input.matchId);
-  if (isFailure(findResult)) {
-    return workflowFailure(findResult);
-  }
-
-  const match = findResult.value;
   if (match.state.kind !== "Challenge") {
-    return failure([new IllegalMatchStateError(matchId, "Challenge", match.state.kind)]);
+    return failure([new IllegalMatchStateError(match, "Challenge")]);
   }
 
   if (arePlayersTheSame(match.owner, opponent)) {

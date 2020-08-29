@@ -33,13 +33,9 @@ export class UpsertFailedError {
 export class IllegalMatchStateError {
   readonly kind = "IllegalMatchStateError";
   get message(): string {
-    return `match ${this.matchId} is on an illegal state: wanted state ${this.wantedState}, actual state ${this.actualState}`;
+    return `match ${this.match.id} is on an illegal state: wanted state ${this.wantedState}, actual state ${this.match.state.kind}`;
   }
-  constructor(
-    readonly matchId: MatchId,
-    readonly wantedState: MatchStateName,
-    readonly actualState: MatchStateName
-  ) {}
+  constructor(readonly match: Match, readonly wantedState: MatchStateName) {}
 }
 
 export class IllegalMoveError {
@@ -53,9 +49,9 @@ export class IllegalMoveError {
 export class IllegalMatchChallengerError {
   readonly kind = "IllegalMatchChallengerError";
   get message(): string {
-    return `illegal challenger ${this.player.id} for match ${this.matchId}: a challenger must own the game`;
+    return `illegal challenger ${this.player.id} for match ${this.match.id} owned by player ${this.match.owner.id}: a challenger must own the game`;
   }
-  constructor(readonly matchId: MatchId, readonly player: Player) {}
+  constructor(readonly match: Match, readonly player: Player) {}
 }
 
 export class IllegalGameOpponentError {
