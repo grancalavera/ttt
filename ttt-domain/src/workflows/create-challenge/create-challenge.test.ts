@@ -5,10 +5,11 @@ import {
   bob,
   matchId,
   mockDependencies,
+  WorkflowScenario,
   upsertError,
   upsertFailure,
 } from "../../test/support";
-import { RunWorkflow, hasErrorKind } from "../support";
+import { hasErrorKind } from "../support";
 import {
   IllegalMatchOwnerError,
   IllegalMatchStateError,
@@ -16,13 +17,6 @@ import {
   WorkflowError,
 } from "../workflow-error";
 import { createChallenge, Input } from "./create-challenge";
-
-interface Scenario {
-  name: string;
-  ruWorkflow: RunWorkflow<Input>;
-  input: Input;
-  expected: Result<Match, WorkflowError[]>;
-}
 
 const spyOnFind = jest.fn();
 const spyOnUpsert = jest.fn();
@@ -41,10 +35,10 @@ const matchOnChallengeState: Match = {
   state: { kind: "Challenge", move: alicesInput.move },
 };
 
-const scenarios: Scenario[] = [
+const scenarios: WorkflowScenario<Input>[] = [
   {
     name: "match not found",
-    ruWorkflow: createChallenge(
+    runWorkflow: createChallenge(
       mockDependencies({
         findResult: failure(new MatchNotFoundError(matchId)),
         spyOnFind,
@@ -57,7 +51,7 @@ const scenarios: Scenario[] = [
   },
   {
     name: "illegal match state",
-    ruWorkflow: createChallenge(
+    runWorkflow: createChallenge(
       mockDependencies({
         findResult: success(matchOnChallengeState),
         spyOnFind,
@@ -72,7 +66,7 @@ const scenarios: Scenario[] = [
   },
   {
     name: "illegal match owner",
-    ruWorkflow: createChallenge(
+    runWorkflow: createChallenge(
       mockDependencies({
         findResult: success({
           id: matchId,
@@ -89,7 +83,7 @@ const scenarios: Scenario[] = [
   },
   {
     name: "upsert failed",
-    ruWorkflow: createChallenge(
+    runWorkflow: createChallenge(
       mockDependencies({
         findResult: success(matchOnNewState),
         spyOnFind,
@@ -102,7 +96,7 @@ const scenarios: Scenario[] = [
   },
   {
     name: "create challenge",
-    ruWorkflow: createChallenge(
+    runWorkflow: createChallenge(
       mockDependencies({
         findResult: success(matchOnNewState),
         spyOnFind,
@@ -116,7 +110,7 @@ const scenarios: Scenario[] = [
 ];
 
 describe.each(scenarios)("create challenge workflow", (scenario) => {
-  const { name, ruWorkflow: runWorkflow, input, expected } = scenario;
+  const { name, runWorkflow: runWorkflow, input, expected } = scenario;
   let actual: Result<Match, WorkflowError[]>;
 
   beforeEach(async () => {

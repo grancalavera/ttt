@@ -6,10 +6,11 @@ import {
   matchId,
   maxActiveMatches,
   mockDependencies,
+  WorkflowScenario,
   upsertError,
   upsertFailure,
 } from "../../test/support";
-import { RunWorkflow, hasErrorKind } from "../support";
+import { hasErrorKind } from "../support";
 import {
   IllegalGameOpponentError,
   IllegalMatchStateError,
@@ -18,13 +19,6 @@ import {
   WorkflowError,
 } from "../workflow-error";
 import { createGame, Input } from "./create-game";
-
-interface Scenario {
-  name: string;
-  runWorkflow: RunWorkflow<Input>;
-  input: Input;
-  expected: Result<Match, WorkflowError[]>;
-}
 
 const spyOnFind = jest.fn();
 const spyOnUpsert = jest.fn();
@@ -45,7 +39,7 @@ const alicesInvalidInput: Input = { matchId, opponent: alice };
 const bobsValidInput: Input = { matchId, opponent: bob };
 const findSuccess = success(matchOnChallengeState);
 
-const scenarios: Scenario[] = [
+const scenarios: WorkflowScenario<Input>[] = [
   {
     name: "too many active matches",
     runWorkflow: createGame(mockDependencies({ activeMatches: 1 })),
