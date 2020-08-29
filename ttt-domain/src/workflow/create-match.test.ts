@@ -1,14 +1,14 @@
 import { failure, isSuccess, Result, success } from "@grancalavera/ttt-etc";
-import { Match } from "../../domain/model";
+import { Match } from "../domain/model";
 import {
   alice,
   matchId,
   mockDependencies,
   upsertFailure,
   WorkflowScenario,
-} from "../../test/support";
-import { hasErrorKind } from "../support";
-import { TooManyActiveMatchesError, WorkflowError } from "../workflow-error";
+} from "../test/support";
+import { hasErrorKind } from "./support";
+import { TooManyActiveMatchesError, WorkflowError } from "./workflow-error";
 import { createMatch, Input } from "./create-match";
 
 const spyOnUpsert = jest.fn();

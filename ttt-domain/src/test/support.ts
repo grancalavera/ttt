@@ -6,12 +6,12 @@ import {
   GetUniqueId,
   RunWorkflow,
   UpsertMatch,
-} from "../workflows/support";
+} from "../workflow/support";
 import {
   MatchNotFoundError,
   UpsertFailedError,
   WorkflowError,
-} from "../workflows/workflow-error";
+} from "../workflow/workflow-error";
 
 export interface WorkflowScenario<Input> {
   name: string;
