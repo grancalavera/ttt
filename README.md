@@ -6,12 +6,10 @@
 
 ## Workflows
 
-- [Create match](./ttt-domain/src/workflows/create-match/workflow.ts)
-- [Create game](./ttt-domain/src/workflows/create-game/workflow.ts)
-- [Create challenge](./ttt-domain/src/workflows/create-challenge/workflow.ts)
-- [Play move](./ttt-domain/src/workflows/play-move/workflow.ts)
+- [Create match](./ttt-domain/src/workflows/create-match/create-match.ts)
+- [Create game](./ttt-domain/src/workflows/create-game/create-game.ts.ts)
+- [Create challenge](./ttt-domain/src/workflows/create-challenge/create-challenge.ts.ts)
 - [Workflow support](./ttt-domain/src/workflows/support.ts)
-- [Sequence diagram](./sequence-diagram.md)
 
 ![ttt sequence diagram](./ttt-docs/images/sequence.png)
 
