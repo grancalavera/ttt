@@ -6,9 +6,9 @@ import {
   matchId,
   maxActiveMatches,
   mockDependencies,
-  WorkflowScenario,
   upsertError,
   upsertFailure,
+  WorkflowScenario,
 } from "../../test/support";
 import { hasErrorKind } from "../support";
 import { TooManyActiveMatchesError, WorkflowError } from "../workflow-error";

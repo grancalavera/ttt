@@ -40,7 +40,6 @@ const scenarios: WorkflowScenario<Input>[] = [
     name: "match not found",
     runWorkflow: createChallenge(
       mockDependencies({
-        findResult: failure(new MatchNotFoundError(matchId)),
         spyOnFind,
         upsertResult: success(undefined),
         spyOnUpsert,
@@ -53,7 +52,7 @@ const scenarios: WorkflowScenario<Input>[] = [
     name: "illegal match state",
     runWorkflow: createChallenge(
       mockDependencies({
-        findResult: success(matchOnChallengeState),
+        matchToFind: matchOnChallengeState,
         spyOnFind,
         upsertResult: success(undefined),
         spyOnUpsert,
@@ -68,11 +67,11 @@ const scenarios: WorkflowScenario<Input>[] = [
     name: "illegal match owner",
     runWorkflow: createChallenge(
       mockDependencies({
-        findResult: success({
+        matchToFind: {
           id: matchId,
           owner: bob,
           state: { kind: "New" },
-        }),
+        },
         spyOnFind,
         upsertResult: success(undefined),
         spyOnUpsert,
@@ -85,7 +84,7 @@ const scenarios: WorkflowScenario<Input>[] = [
     name: "upsert failed",
     runWorkflow: createChallenge(
       mockDependencies({
-        findResult: success(matchOnNewState),
+        matchToFind: matchOnNewState,
         spyOnFind,
         upsertResult: upsertFailure,
         spyOnUpsert,
@@ -98,7 +97,7 @@ const scenarios: WorkflowScenario<Input>[] = [
     name: "create challenge",
     runWorkflow: createChallenge(
       mockDependencies({
-        findResult: success(matchOnNewState),
+        matchToFind: matchOnNewState,
         spyOnFind,
         upsertResult: success(undefined),
         spyOnUpsert,
