@@ -1,4 +1,4 @@
-import { failure, NonEmptyArray, Result, success } from "@grancalavera/ttt-etc";
+import { failure, Result, success } from "@grancalavera/ttt-etc";
 import { GameSettings, Match, Player } from "../domain/model";
 import {
   CountActiveMatches,
