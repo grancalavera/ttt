@@ -18,9 +18,11 @@ import { CreateMatchInput } from "./support";
 const spyOnUpsert = jest.fn();
 
 const expectedMatch: Match = {
-  id: matchId,
-  owner: alice,
-  state: { kind: "New" },
+  matchDescription: {
+    id: matchId,
+    owner: alice,
+  },
+  matchState: { kind: "New" },
 };
 
 const scenarios: WorkflowScenario<CreateMatchInput>[] = [

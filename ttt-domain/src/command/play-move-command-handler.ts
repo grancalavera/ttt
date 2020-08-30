@@ -1,6 +1,5 @@
 import { failure, isFailure, success } from "@grancalavera/ttt-etc";
 import { IllegalMatchStateError } from "../domain/error";
-import { getMatchDescription } from "../domain/model";
 import { domainFailure } from "../domain/result";
 import { PlayMoveCommandHandler } from "./support";
 
@@ -15,20 +14,19 @@ export const playMoveCommandHandler: PlayMoveCommandHandler = (dependencies) => 
 
   const move = command.input.move;
   const match = findResult.value;
-  const matchDescription = getMatchDescription(match);
-  const { state } = match;
+  const { matchDescription, matchState } = match;
 
-  if (state.kind === "Challenge") {
+  if (matchState.kind === "Challenge") {
     return success({
       kind: "CreateChallenge",
       input: { matchDescription, move },
     });
   }
 
-  if (state.kind === "Game") {
+  if (matchState.kind === "Game") {
     return success({
       kind: "PlayMove",
-      input: { matchDescription, move, game: state },
+      input: { matchDescription, move, game: matchState },
     });
   }
 

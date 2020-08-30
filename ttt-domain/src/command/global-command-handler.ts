@@ -1,14 +1,6 @@
-import { assertNever } from "@grancalavera/ttt-etc";
 import { GlobalCommandHandler } from "./support";
 
-export const globalCommandHandler: GlobalCommandHandler = (dependencies) => (command) => {
-  const { joinGame, playMove } = dependencies;
-  switch (command.kind) {
-    case "JoinGameCommand":
-      return joinGame(command.input);
-    case "PlayMoveCommand":
-      return playMove(command.input);
-    default:
-      assertNever(command);
-  }
-};
+export const globalCommandHandler: GlobalCommandHandler = (d) => (command) =>
+  command.kind === "JoinGameCommand"
+    ? d.joinGame(command.input)
+    : d.playMove(command.input);

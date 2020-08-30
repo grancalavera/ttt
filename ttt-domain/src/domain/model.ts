@@ -6,17 +6,15 @@
 
 import { NonEmptyArray } from "@grancalavera/ttt-etc";
 
-export interface Match extends MatchDescription {
-  readonly state: New | Challenge | Game | GameOver;
+export interface Match {
+  readonly matchDescription: MatchDescription;
+  readonly matchState: New | Challenge | Game | GameOver;
 }
 
 export interface MatchDescription {
   readonly id: MatchId;
   readonly owner: Player;
 }
-
-export const getMatchDescription = ({ state, ...description }: Match): MatchDescription =>
-  description;
 
 // ----------------------------------------------------------------------------
 //
@@ -80,6 +78,6 @@ interface GameBaseState {
 //
 // ----------------------------------------------------------------------------
 
-export type MatchStateName = Match["state"]["kind"];
+export type MatchStateName = Match["matchState"]["kind"];
 export type ActiveMatch = New | Challenge | Game;
 export type MoveType = "CreateChallenge" | "PlayMove";

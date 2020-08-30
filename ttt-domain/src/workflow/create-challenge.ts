@@ -8,7 +8,7 @@ export const createChallenge: CreateChallengeWorkflow = (dependencies) => async 
   input
 ) => {
   const { upsertMatch, countActiveMatches, maxActiveMatches } = dependencies;
-  const { matchDescription, move } = input;
+  const { matchDescription: description, move } = input;
   const [challenger] = move;
 
   const activeMatches = await countActiveMatches(challenger);
@@ -16,16 +16,15 @@ export const createChallenge: CreateChallengeWorkflow = (dependencies) => async 
     return failure([new TooManyActiveMatchesError(challenger, maxActiveMatches)]);
   }
 
-  if (!arePlayersTheSame(matchDescription.owner, challenger)) {
-    return failure([new IllegalChallengerError(matchDescription, challenger)]);
+  if (!arePlayersTheSame(description.owner, challenger)) {
+    return failure([new IllegalChallengerError(description, challenger)]);
   }
 
-  const challengeMatch: Match = {
-    ...matchDescription,
-    state: { kind: "Challenge", move },
+  const match: Match = {
+    matchDescription: description,
+    matchState: { kind: "Challenge", move },
   };
+  const upsertResult = await upsertMatch(match);
 
-  const upsertResult = await upsertMatch(challengeMatch);
-
-  return isSuccess(upsertResult) ? success(challengeMatch) : domainFailure(upsertResult);
+  return isSuccess(upsertResult) ? success(match) : domainFailure(upsertResult);
 };

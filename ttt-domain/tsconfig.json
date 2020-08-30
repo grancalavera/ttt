@@ -14,16 +14,17 @@
     "skipLibCheck": true
   },
   "include": [
-    "src/workflow/create-match",
-    "src/workflow/create-challenge",
-    "src/workflow/create-game",
+    "src/command",
     "src/domain",
     "src/test",
+    "src/workflow/create-challenge.test.ts",
+    "src/workflow/create-challenge.ts",
+    "src/workflow/create-challenge",
     "src/workflow/create-game.test.ts",
     "src/workflow/create-game.ts",
+    "src/workflow/create-game",
     "src/workflow/create-match.test.ts",
     "src/workflow/create-match.ts",
-    "src/workflow/create-challenge.test.ts",
-    "src/workflow/create-challenge.ts"
+    "src/workflow/create-match"
   ]
 }

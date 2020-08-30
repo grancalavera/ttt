@@ -1,5 +1,12 @@
 import { NonEmptyArray } from "@grancalavera/ttt-etc";
-import { Match, MatchDescription, MatchId, MatchStateName, Player } from "./model";
+import {
+  Match,
+  MatchDescription,
+  MatchId,
+  MatchStateName,
+  Player,
+  Position,
+} from "./model";
 
 export type DomainError =
   | NoChallengesFoundError
@@ -44,10 +51,10 @@ export class IllegalMatchStateError {
   readonly kind = "IllegalMatchStateError";
   get message(): string {
     return `match ${
-      this.match.id
+      this.match.matchDescription.id
     } is on an illegal state: wanted any state of ${this.wantedStates.join(
       ", "
-    )}, actual state ${this.match.state.kind}`;
+    )}, actual state ${this.match.matchState.kind}`;
   }
   constructor(readonly match: Match, readonly wantedStates: MatchStateName[]) {}
 }
