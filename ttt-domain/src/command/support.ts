@@ -1,17 +1,43 @@
-import { FindFirstChallenge, FindMatch } from "../dependencies";
-import { MatchId, Move, Player } from "../domain/model";
-import { WorkflowResult } from "../workflow/support";
+import { AsyncResult } from "@grancalavera/ttt-etc";
+import { DomainError } from "../domain/error";
+import {
+  Match,
+  MatchId,
+  Move,
+  Player,
+  MatchDescription,
+  Challenge,
+} from "../domain/model";
+import { AsyncDomainResult } from "../domain/result";
+import { WorkflowInput } from "../workflow/support";
 
-export type Command = JoinGameCommand | PlayMoveCommand;
+// ----------------------------------------------------------------------------
+//
+// global command handler
+//
+// ----------------------------------------------------------------------------
 
-class JoinGameCommand {
-  readonly kind = "JoinGameCommand";
-  constructor(readonly input: Player) {}
+export type GlobalCommandHandler = CommandHandler<JoinGame & PlayMove, Command>;
+
+interface JoinGame {
+  readonly joinGame: (input: JoinGameInput) => CommandResult;
 }
 
-class PlayMoveCommand {
-  readonly kind = "PlayMoveCommand";
-  constructor(readonly input: PlayMoveInput) {}
+interface PlayMove {
+  readonly playMove: (input: PlayMoveInput) => CommandResult;
+}
+
+// ----------------------------------------------------------------------------
+//
+// join game command handler
+//
+// ----------------------------------------------------------------------------
+
+export type JoinGameCommandHandler = CommandHandler<FindFirstChallenge, JoinGameCommand>;
+
+export class JoinGameCommand {
+  readonly kind = "JoinGameCommand";
+  constructor(readonly input: JoinGameInput) {}
 }
 
 interface PlayMoveInput {
@@ -19,10 +45,44 @@ interface PlayMoveInput {
   readonly move: Move;
 }
 
-type CommandHandler<TDeps, TCommand> = (
-  dependencies: TDeps
-) => (command: TCommand) => WorkflowResult;
+interface FindFirstChallenge {
+  readonly findFirstChallenge: () => AsyncResult<
+    [MatchDescription, Challenge],
+    DomainError
+  >;
+}
 
-type GlobalCommandHandler = CommandHandler<{}, Command>;
-type JoinGameCommandHandler = CommandHandler<FindFirstChallenge, JoinGameCommand>;
-type PlayMoveCommandHandler = CommandHandler<FindMatch, PlayMoveCommand>;
+// ----------------------------------------------------------------------------
+//
+// play move command handler
+//
+// ----------------------------------------------------------------------------
+
+export type PlayMoveCommandHandler = CommandHandler<FindMatch, PlayMoveCommand>;
+
+export class PlayMoveCommand {
+  readonly kind = "PlayMoveCommand";
+  constructor(readonly input: PlayMoveInput) {}
+}
+
+interface JoinGameInput {
+  readonly player: Player;
+}
+
+interface FindMatch {
+  readonly findMatch: (matchId: MatchId) => AsyncResult<Match, DomainError>;
+}
+
+// ----------------------------------------------------------------------------
+//
+// support
+//
+// ----------------------------------------------------------------------------
+
+export type Command = JoinGameCommand | PlayMoveCommand;
+
+type CommandHandler<TDeps, TCommand extends Command> = (
+  dependencies: TDeps
+) => (command: TCommand) => CommandResult;
+
+type CommandResult = AsyncDomainResult<WorkflowInput>;

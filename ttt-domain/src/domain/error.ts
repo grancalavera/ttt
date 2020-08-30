@@ -1,13 +1,19 @@
-import { Match, MatchId, MatchStateName, Player } from "../domain/model";
+import { NonEmptyArray } from "@grancalavera/ttt-etc";
+import { Match, MatchDescription, MatchId, MatchStateName, Player } from "./model";
 
-export type WorkflowError =
+export type DomainError =
+  | NoChallengesFoundError
   | TooManyActiveMatchesError
   | MatchNotFoundError
   | UpsertFailedError
   | IllegalMatchStateError
   | IllegalGameOpponentError
-  | IllegalMatchChallengerError
+  | IllegalChallengerError
   | IllegalMoveError;
+
+export const includesErrorOfKind = (errors: DomainError[]) => (
+  ...kinds: NonEmptyArray<DomainError["kind"]>
+) => errors.some((e) => kinds.includes(e.kind));
 
 export class TooManyActiveMatchesError {
   readonly kind = "TooManyActiveMatchesError";
@@ -15,6 +21,10 @@ export class TooManyActiveMatchesError {
     return `player ${this.player.id} already reached the max count of ${this.maxActiveMatches} active matches`;
   }
   constructor(readonly player: Player, readonly maxActiveMatches: number) {}
+}
+
+export class NoChallengesFoundError {
+  readonly kind = "NoChallengesFoundError";
 }
 
 export class MatchNotFoundError {
@@ -33,9 +43,13 @@ export class UpsertFailedError {
 export class IllegalMatchStateError {
   readonly kind = "IllegalMatchStateError";
   get message(): string {
-    return `match ${this.match.id} is on an illegal state: wanted state ${this.wantedState}, actual state ${this.match.state.kind}`;
+    return `match ${
+      this.match.id
+    } is on an illegal state: wanted any state of ${this.wantedStates.join(
+      ", "
+    )}, actual state ${this.match.state.kind}`;
   }
-  constructor(readonly match: Match, readonly wantedState: MatchStateName) {}
+  constructor(readonly match: Match, readonly wantedStates: MatchStateName[]) {}
 }
 
 export class IllegalMoveError {
@@ -46,12 +60,12 @@ export class IllegalMoveError {
   constructor(readonly matchId: MatchId, readonly position: Position) {}
 }
 
-export class IllegalMatchChallengerError {
-  readonly kind = "IllegalMatchChallengerError";
+export class IllegalChallengerError {
+  readonly kind = "IllegalChallengerError";
   get message(): string {
-    return `illegal challenger ${this.player.id} for match ${this.match.id} owned by player ${this.match.owner.id}: a challenger must own the game`;
+    return `illegal challenger ${this.challenger.id} for match ${this.matchDescription.id} owned by player ${this.matchDescription.owner.id}: a challenger must own the game`;
   }
-  constructor(readonly match: Match, readonly player: Player) {}
+  constructor(readonly matchDescription: MatchDescription, readonly challenger: Player) {}
 }
 
 export class IllegalGameOpponentError {

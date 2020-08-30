@@ -1,23 +1,25 @@
 import { failure, isSuccess, Result, success } from "@grancalavera/ttt-etc";
+import {
+  DomainError,
+  includesErrorOfKind,
+  TooManyActiveMatchesError,
+} from "../domain/error";
 import { Match } from "../domain/model";
 import {
   alice,
   matchId,
-  mockDependencies,
+  mockWorkflowDependencies,
   upsertFailure,
   WorkflowScenario,
 } from "../test/support";
 import { createMatch } from "./create-match";
-import { CreateMatchInput, hasErrorKind } from "./support";
-import { TooManyActiveMatchesError, WorkflowError } from "./workflow-error";
+import { CreateMatchInput } from "./support";
 
 const spyOnUpsert = jest.fn();
 
-const input = alice;
-
-const finalState: Match = {
+const expectedMatch: Match = {
   id: matchId,
-  owner: input,
+  owner: alice,
   state: { kind: "New" },
 };
 
@@ -25,37 +27,37 @@ const scenarios: WorkflowScenario<CreateMatchInput>[] = [
   {
     name: "too many active matches",
     runWorkflow: createMatch(
-      mockDependencies({
+      mockWorkflowDependencies({
         activeMatches: 1,
         maxActiveMatches: 1,
       })
     ),
-    input,
-    expected: failure([new TooManyActiveMatchesError(input, 1)]),
+    input: { owner: alice },
+    expected: failure([new TooManyActiveMatchesError(alice, 1)]),
   },
   {
     name: "upsert failed",
     runWorkflow: createMatch(
-      mockDependencies({ matchToUpsertFail: finalState, spyOnUpsert })
+      mockWorkflowDependencies({ matchToUpsertFail: expectedMatch, spyOnUpsert })
     ),
-    input,
-    expected: upsertFailure(finalState),
+    input: { owner: alice },
+    expected: upsertFailure(expectedMatch),
   },
   {
     name: "create match",
     runWorkflow: createMatch(
-      mockDependencies({
+      mockWorkflowDependencies({
         spyOnUpsert,
       })
     ),
-    input,
-    expected: success(finalState),
+    input: { owner: alice },
+    expected: success(expectedMatch),
   },
 ];
 
 describe.each(scenarios)("create match workflow", (scenario) => {
   const { name, runWorkflow, input, expected } = scenario;
-  let actual: Result<Match, WorkflowError[]>;
+  let actual: Result<Match, DomainError[]>;
 
   beforeEach(async () => {
     spyOnUpsert.mockClear();
@@ -67,16 +69,16 @@ describe.each(scenarios)("create match workflow", (scenario) => {
 
     it("side effects", () => {
       if (isSuccess(expected)) {
-        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, finalState);
+        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expectedMatch);
       } else {
-        const hasKind = hasErrorKind(expected.error);
+        const includesErrorKind = includesErrorOfKind(expected.error);
 
-        if (hasKind("TooManyActiveMatchesError")) {
+        if (includesErrorKind("TooManyActiveMatchesError")) {
           expect(spyOnUpsert).not.toHaveBeenCalled();
         }
 
-        if (hasKind("UpsertFailedError")) {
-          expect(spyOnUpsert).toHaveBeenNthCalledWith(1, finalState);
+        if (includesErrorKind("UpsertFailedError")) {
+          expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expectedMatch);
         }
       }
     });

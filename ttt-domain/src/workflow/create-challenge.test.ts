@@ -1,45 +1,31 @@
 import { failure, isSuccess, Result, success } from "@grancalavera/ttt-etc";
-import { Match } from "../domain/model";
+import {
+  DomainError,
+  IllegalChallengerError,
+  includesErrorOfKind,
+  TooManyActiveMatchesError,
+} from "../domain/error";
+import { Match, MatchDescription } from "../domain/model";
 import {
   alice,
   bob,
   matchId,
-  mockDependencies,
+  mockWorkflowDependencies,
   upsertFailure,
   WorkflowScenario,
 } from "../test/support";
 import { createChallenge } from "./create-challenge";
-import { CreateChallengeInput, hasErrorKind } from "./support";
-import {
-  IllegalMatchChallengerError,
-  IllegalMatchStateError,
-  TooManyActiveMatchesError,
-  WorkflowError,
-} from "./workflow-error";
+import { CreateChallengeInput } from "./support";
 
 const spyOnUpsert = jest.fn();
 
-const initialState: Match = {
+const matchDescription: MatchDescription = {
   id: matchId,
   owner: alice,
-  state: { kind: "New" },
 };
 
-const illegalState: Match = {
-  id: matchId,
-  owner: alice,
-  state: { kind: "Challenge", move: [alice, 0] },
-};
-
-const illegalOwner: Match = {
-  id: matchId,
-  owner: bob,
-  state: { kind: "Challenge", move: [bob, 0] },
-};
-
-const finalState: Match = {
-  id: matchId,
-  owner: alice,
+const expectedMatch: Match = {
+  ...matchDescription,
   state: { kind: "Challenge", move: [alice, 0] },
 };
 
@@ -47,54 +33,39 @@ const scenarios: WorkflowScenario<CreateChallengeInput>[] = [
   {
     name: "too many active matches",
     runWorkflow: createChallenge(
-      mockDependencies({ activeMatches: 1, maxActiveMatches: 1 })
+      mockWorkflowDependencies({ activeMatches: 1, maxActiveMatches: 1 })
     ),
-    input: { match: initialState, move: [alice, 0] },
+    input: { matchDescription, move: [alice, 0] },
     expected: failure([new TooManyActiveMatchesError(alice, 1)]),
   },
   {
-    name: "illegal match state",
-    runWorkflow: createChallenge(mockDependencies({ spyOnUpsert })),
-    input: { match: illegalState, move: [alice, 0] },
-    expected: failure([new IllegalMatchStateError(finalState, "New")]),
-  },
-  {
-    name: "illegal match owner",
-    runWorkflow: createChallenge(
-      mockDependencies({
-        matchToFind: {
-          id: matchId,
-          owner: bob,
-          state: { kind: "New" },
-        },
-        spyOnUpsert,
-      })
-    ),
-    input: { match: illegalOwner, move: [alice, 0] },
-    expected: failure([new IllegalMatchChallengerError(illegalOwner, alice)]),
+    name: "illegal challenger",
+    runWorkflow: createChallenge(mockWorkflowDependencies({ spyOnUpsert })),
+    input: { matchDescription, move: [bob, 0] },
+    expected: failure([new IllegalChallengerError(matchDescription, bob)]),
   },
   {
     name: "upsert failed",
     runWorkflow: createChallenge(
-      mockDependencies({
-        matchToUpsertFail: finalState,
+      mockWorkflowDependencies({
+        matchToUpsertFail: expectedMatch,
         spyOnUpsert,
       })
     ),
-    input: { match: initialState, move: [alice, 0] },
-    expected: upsertFailure(finalState),
+    input: { matchDescription, move: [alice, 0] },
+    expected: upsertFailure(expectedMatch),
   },
   {
     name: "create challenge",
-    runWorkflow: createChallenge(mockDependencies({ spyOnUpsert })),
-    input: { match: initialState, move: [alice, 0] },
-    expected: success(finalState),
+    runWorkflow: createChallenge(mockWorkflowDependencies({ spyOnUpsert })),
+    input: { matchDescription, move: [alice, 0] },
+    expected: success(expectedMatch),
   },
 ];
 
 describe.each(scenarios)("create challenge workflow", (scenario) => {
   const { name, runWorkflow: runWorkflow, input, expected } = scenario;
-  let actual: Result<Match, WorkflowError[]>;
+  let actual: Result<Match, DomainError[]>;
 
   beforeEach(async () => {
     spyOnUpsert.mockClear();
@@ -106,25 +77,15 @@ describe.each(scenarios)("create challenge workflow", (scenario) => {
 
     it("side effects", () => {
       if (isSuccess(expected)) {
-        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, finalState);
+        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expectedMatch);
       } else {
-        const hasKind = hasErrorKind(expected.error);
+        const includesErrorKind = includesErrorOfKind(expected.error);
 
-        if (hasKind("TooManyActiveMatchesError")) {
+        if (includesErrorKind("TooManyActiveMatchesError", "IllegalChallengerError")) {
           expect(spyOnUpsert).not.toHaveBeenCalled();
         }
 
-        if (
-          hasKind(
-            "MatchNotFoundError",
-            "IllegalMatchChallengerError",
-            "IllegalMatchStateError"
-          )
-        ) {
-          expect(spyOnUpsert).not.toHaveBeenCalled();
-        }
-
-        if (hasKind("UpsertFailedError")) {
+        if (includesErrorKind("UpsertFailedError")) {
           expect(spyOnUpsert).toHaveBeenCalledTimes(1);
         }
       }
