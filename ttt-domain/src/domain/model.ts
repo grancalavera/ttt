@@ -6,11 +6,17 @@
 
 import { NonEmptyArray } from "@grancalavera/ttt-etc";
 
-export interface Match {
-  readonly id: MatchId;
-  readonly owner: Player;
+export interface Match extends MatchDescription {
   readonly state: New | Challenge | Game | GameOver;
 }
+
+export interface MatchDescription {
+  readonly id: MatchId;
+  readonly owner: Player;
+}
+
+export const getMatchDescription = ({ state, ...description }: Match): MatchDescription =>
+  description;
 
 // ----------------------------------------------------------------------------
 //

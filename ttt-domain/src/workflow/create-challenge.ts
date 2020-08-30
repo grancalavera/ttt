@@ -1,17 +1,14 @@
 import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
-import { Challenge, Match, Move } from "../domain/model";
-import { arePlayersTheSame, CreateChallengeWorkflow, workflowFailure } from "./support";
-import {
-  IllegalMatchChallengerError,
-  IllegalMatchStateError,
-  TooManyActiveMatchesError,
-} from "./workflow-error";
+import { IllegalChallengerError, TooManyActiveMatchesError } from "../domain/error";
+import { Match } from "../domain/model";
+import { domainFailure } from "../domain/result";
+import { arePlayersTheSame, CreateChallengeWorkflow } from "./support";
 
 export const createChallenge: CreateChallengeWorkflow = (dependencies) => async (
   input
 ) => {
   const { upsertMatch, countActiveMatches, maxActiveMatches } = dependencies;
-  const { match, move } = input;
+  const { matchDescription, move } = input;
   const [challenger] = move;
 
   const activeMatches = await countActiveMatches(challenger);
@@ -19,21 +16,16 @@ export const createChallenge: CreateChallengeWorkflow = (dependencies) => async 
     return failure([new TooManyActiveMatchesError(challenger, maxActiveMatches)]);
   }
 
-  if (!arePlayersTheSame(match.owner, challenger)) {
-    return failure([new IllegalMatchChallengerError(match, challenger)]);
+  if (!arePlayersTheSame(matchDescription.owner, challenger)) {
+    return failure([new IllegalChallengerError(matchDescription, challenger)]);
   }
 
-  if (match.state.kind !== "New") {
-    return failure([new IllegalMatchStateError(match, "New")]);
-  }
-
-  const challengeMatch: Match = { ...match, state: applyStateTransition(move) };
+  const challengeMatch: Match = {
+    ...matchDescription,
+    state: { kind: "Challenge", move },
+  };
 
   const upsertResult = await upsertMatch(challengeMatch);
 
-  return isSuccess(upsertResult)
-    ? success(challengeMatch)
-    : workflowFailure(upsertResult);
+  return isSuccess(upsertResult) ? success(challengeMatch) : domainFailure(upsertResult);
 };
-
-const applyStateTransition = (move: Move): Challenge => ({ kind: "Challenge", move });

@@ -1,18 +1,32 @@
-import {
-  AsyncResult,
-  Failure,
-  failure,
-  NonEmptyArray,
-  Result,
-} from "@grancalavera/ttt-etc";
+import { AsyncResult } from "@grancalavera/ttt-etc";
 import {
   CountActiveMatches,
   GameSettings,
   GetUniqueId,
   UpsertMatch,
 } from "../dependencies";
-import { Match, Move, Player } from "../domain/model";
-import { WorkflowError } from "./workflow-error";
+import { DomainError } from "../domain/error";
+import {
+  Match,
+  Move,
+  Player,
+  MatchDescription,
+  New,
+  Challenge,
+  Game,
+} from "../domain/model";
+
+// ----------------------------------------------------------------------------
+//
+// inputs
+//
+// ----------------------------------------------------------------------------
+
+export type WorkflowInput =
+  | { kind: "CreateMatch"; input: CreateMatchInput }
+  | { kind: "CreateChallenge"; input: CreateChallengeInput }
+  | { kind: "CreateGame"; input: CreateGameInput }
+  | { kind: "PlayMove"; input: PlayMoveInput };
 
 // ----------------------------------------------------------------------------
 //
@@ -27,7 +41,9 @@ export type CreateMatchDependencies =
   & GetUniqueId
   & UpsertMatch;
 
-export type CreateMatchInput = Player;
+export interface CreateMatchInput {
+  owner: Player;
+}
 
 export type CreateMatchWorkflow = CreateWorkflow<
   CreateMatchDependencies,
@@ -47,7 +63,7 @@ export type CreateChallengeDeps =
   & UpsertMatch;
 
 export interface CreateChallengeInput {
-  readonly match: Match;
+  readonly matchDescription: MatchDescription;
   readonly move: Move;
 }
 
@@ -69,11 +85,32 @@ export type CreateGameDependencies =
   & UpsertMatch;
 
 export interface CreateGameInput {
-  readonly match: Match;
+  readonly matchDescription: MatchDescription;
+  readonly challenge: Challenge;
   readonly opponent: Player;
 }
 
 export type CreateGameWorkflow = CreateWorkflow<CreateGameDependencies, CreateGameInput>;
+
+// ----------------------------------------------------------------------------
+//
+// play move
+//
+// ----------------------------------------------------------------------------
+
+// prettier-ignore
+export type PlayMoveDependencies =
+  & GameSettings
+  & CountActiveMatches
+  & UpsertMatch;
+
+export interface PlayMoveInput {
+  readonly matchDescription: MatchDescription;
+  readonly game: Game;
+  readonly move: Move;
+}
+
+export type PlayMoveWorkflow = CreateWorkflow<PlayMoveDependencies, PlayMoveInput>;
 
 // ----------------------------------------------------------------------------
 //
@@ -83,14 +120,6 @@ export type CreateGameWorkflow = CreateWorkflow<CreateGameDependencies, CreateGa
 
 export type CreateWorkflow<TDeps, TInput> = (dependencies: TDeps) => RunWorkflow<TInput>;
 export type RunWorkflow<T> = (input: T) => WorkflowResult;
-export type WorkflowResult = AsyncResult<Match, WorkflowError[]>;
+export type WorkflowResult = AsyncResult<Match, DomainError[]>;
 
 export const arePlayersTheSame = (l: Player, r: Player) => l.id === r.id;
-
-export const workflowFailure = (
-  ...failures: NonEmptyArray<Failure<WorkflowError>>
-): Result<Match, WorkflowError[]> => failure(failures.map(({ error }) => error));
-
-export const hasErrorKind = (errors: WorkflowError[]) => (
-  ...kinds: NonEmptyArray<WorkflowError["kind"]>
-) => errors.some((e) => kinds.includes(e.kind));
