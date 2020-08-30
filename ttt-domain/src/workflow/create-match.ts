@@ -13,9 +13,11 @@ export const createMatch: CreateMatchWorkflow = (dependencies) => async (input) 
   }
 
   const match: Match = {
-    id: getUniqueId(),
-    owner,
-    state: applyStateTransition(),
+    matchDescription: {
+      id: getUniqueId(),
+      owner,
+    },
+    matchState: applyStateTransition(),
   };
 
   const result = await upsertMatch(match);

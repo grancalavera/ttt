@@ -30,8 +30,8 @@ const initialState: Challenge = {
 };
 
 const expectedMatch: Match = {
-  ...matchDescription,
-  state: {
+  matchDescription,
+  matchState: {
     kind: "Game",
     players: [alice, bob],
     moves: [[alice, 0]],
@@ -55,7 +55,11 @@ const scenarios: WorkflowScenario<CreateGameInput>[] = [
         spyOnUpsert,
       })
     ),
-    input: { matchDescription, challenge: initialState, opponent: alice },
+    input: {
+      matchDescription,
+      challenge: initialState,
+      opponent: alice,
+    },
     expected: failure([new IllegalGameOpponentError(matchId, alice)]),
   },
   {

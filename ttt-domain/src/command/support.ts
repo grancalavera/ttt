@@ -19,11 +19,11 @@ import { WorkflowInput } from "../workflow/support";
 
 export type GlobalCommandHandler = CommandHandler<JoinGame & PlayMove, Command>;
 
-interface JoinGame {
+export interface JoinGame {
   readonly joinGame: (input: JoinGameInput) => CommandResult;
 }
 
-interface PlayMove {
+export interface PlayMove {
   readonly playMove: (input: PlayMoveInput) => CommandResult;
 }
 
@@ -85,4 +85,4 @@ type CommandHandler<TDeps, TCommand extends Command> = (
   dependencies: TDeps
 ) => (command: TCommand) => CommandResult;
 
-type CommandResult = AsyncDomainResult<WorkflowInput>;
+export type CommandResult = AsyncDomainResult<WorkflowInput>;

@@ -25,8 +25,8 @@ const matchDescription: MatchDescription = {
 };
 
 const expectedMatch: Match = {
-  ...matchDescription,
-  state: { kind: "Challenge", move: [alice, 0] },
+  matchDescription,
+  matchState: { kind: "Challenge", move: [alice, 0] },
 };
 
 const scenarios: WorkflowScenario<CreateChallengeInput>[] = [

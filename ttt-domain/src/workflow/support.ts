@@ -6,15 +6,7 @@ import {
   UpsertMatch,
 } from "../dependencies";
 import { DomainError } from "../domain/error";
-import {
-  Match,
-  Move,
-  Player,
-  MatchDescription,
-  New,
-  Challenge,
-  Game,
-} from "../domain/model";
+import { Challenge, Game, Match, MatchDescription, Move, Player } from "../domain/model";
 
 // ----------------------------------------------------------------------------
 //
