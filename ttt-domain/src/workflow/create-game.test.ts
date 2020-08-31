@@ -52,7 +52,6 @@ const scenarios: WorkflowScenario<CreateGameInput>[] = [
       opponent: alice,
     },
     expectedResult: failure([new IllegalGameOpponentError(matchId, alice)]),
-    expectedMatch: gameMatch,
   },
   {
     name: "upsert failed",

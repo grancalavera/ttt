@@ -34,7 +34,6 @@ const scenarios: WorkflowScenario<CreateChallengeInput>[] = [
     runWorkflow: createChallenge(mockWorkflowDependencies({ spyOnUpsert })),
     input: { matchDescription, move: [bob, 0] },
     expectedResult: failure([new IllegalChallengerError(matchDescription, bob)]),
-    expectedMatch: challengeMatch,
   },
   {
     name: "upsert failed",

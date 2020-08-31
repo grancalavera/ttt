@@ -118,5 +118,3 @@ export type RunWorkflow<T> = (input: T) => WorkflowResult;
 export type WorkflowResult = AsyncResult<Match, DomainError[]>;
 
 export const arePlayersTheSame = (l: Player, r: Player) => l.id === r.id;
-export const nextPlayer = (current: Player, [p1, p2]: Players) =>
-  arePlayersTheSame(current, p1) ? p2 : p1;
