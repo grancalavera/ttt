@@ -84,10 +84,6 @@ const ownerPlaysDrawExpectedMatch: Match = {
   },
 };
 
-// x o _
-// x o _
-// x _ _
-
 const ownerPlaysVictoryInitialState: Game = {
   kind: "Game",
   players: [alice, bob],
