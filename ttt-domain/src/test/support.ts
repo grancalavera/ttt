@@ -9,7 +9,8 @@ export interface WorkflowScenario<Input> {
   name: string;
   runWorkflow: RunWorkflow<Input>;
   input: Input;
-  expected: Result<Match, DomainError[]>;
+  expectedMatch: Match;
+  expectedResult: Result<Match, DomainError[]>;
 }
 
 export const alice: Player = { id: "alice" };

@@ -23,7 +23,7 @@ const matchDescription: MatchDescription = {
   owner: alice,
 };
 
-const expectedMatch: Match = {
+const challengeMatch: Match = {
   matchDescription,
   matchState: { kind: "Challenge", move: [alice, 0] },
 };
@@ -33,29 +33,32 @@ const scenarios: WorkflowScenario<CreateChallengeInput>[] = [
     name: "illegal challenger",
     runWorkflow: createChallenge(mockWorkflowDependencies({ spyOnUpsert })),
     input: { matchDescription, move: [bob, 0] },
-    expected: failure([new IllegalChallengerError(matchDescription, bob)]),
+    expectedResult: failure([new IllegalChallengerError(matchDescription, bob)]),
+    expectedMatch: challengeMatch,
   },
   {
     name: "upsert failed",
     runWorkflow: createChallenge(
       mockWorkflowDependencies({
-        matchToUpsertFail: expectedMatch,
+        matchToUpsertFail: challengeMatch,
         spyOnUpsert,
       })
     ),
     input: { matchDescription, move: [alice, 0] },
-    expected: upsertFailure(expectedMatch),
+    expectedResult: upsertFailure(challengeMatch),
+    expectedMatch: challengeMatch,
   },
   {
     name: "create challenge",
     runWorkflow: createChallenge(mockWorkflowDependencies({ spyOnUpsert })),
     input: { matchDescription, move: [alice, 0] },
-    expected: success(expectedMatch),
+    expectedResult: success(challengeMatch),
+    expectedMatch: challengeMatch,
   },
 ];
 
 describe.each(scenarios)("create challenge workflow", (scenario) => {
-  const { name, runWorkflow: runWorkflow, input, expected } = scenario;
+  const { name, runWorkflow, input, expectedResult, expectedMatch } = scenario;
   let actual: Result<Match, DomainError[]>;
 
   beforeEach(async () => {
@@ -64,20 +67,20 @@ describe.each(scenarios)("create challenge workflow", (scenario) => {
   });
 
   describe(name, () => {
-    it("workflow", () => expect(actual).toEqual(expected));
+    it("workflow", () => expect(actual).toEqual(expectedResult));
 
     it("side effects", () => {
-      if (isSuccess(expected)) {
+      if (isSuccess(expectedResult)) {
         expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expectedMatch);
       } else {
-        const includesErrorKind = includesErrorOfKind(expected.error);
+        const includesErrorKind = includesErrorOfKind(expectedResult.error);
 
         if (includesErrorKind("IllegalChallengerError")) {
           expect(spyOnUpsert).not.toHaveBeenCalled();
         }
 
         if (includesErrorKind("UpsertFailedError")) {
-          expect(spyOnUpsert).toHaveBeenCalledTimes(1);
+          expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expectedMatch);
         }
       }
     });

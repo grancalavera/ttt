@@ -34,7 +34,7 @@ const expectedMatch: Match = {
 const scenarios: WorkflowScenario<PlayMoveInput>[] = [];
 
 xdescribe.each(scenarios)("play move workflow", (scenario) => {
-  const { name, runWorkflow, input, expected } = scenario;
+  const { name, runWorkflow, input, expectedResult: expected } = scenario;
   let actual: Result<Match, DomainError[]>;
 
   beforeEach(async () => {

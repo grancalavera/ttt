@@ -28,7 +28,7 @@ const initialState: Challenge = {
   move: [alice, 0],
 };
 
-const expectedMatch: Match = {
+const gameMatch: Match = {
   matchDescription,
   matchState: {
     kind: "Game",
@@ -51,29 +51,32 @@ const scenarios: WorkflowScenario<CreateGameInput>[] = [
       challenge: initialState,
       opponent: alice,
     },
-    expected: failure([new IllegalGameOpponentError(matchId, alice)]),
+    expectedResult: failure([new IllegalGameOpponentError(matchId, alice)]),
+    expectedMatch: gameMatch,
   },
   {
     name: "upsert failed",
     runWorkflow: createGame(
       mockWorkflowDependencies({
-        matchToUpsertFail: expectedMatch,
+        matchToUpsertFail: gameMatch,
         spyOnUpsert: spyOnUpsert,
       })
     ),
     input: { matchDescription, challenge: initialState, opponent: bob },
-    expected: upsertFailure(expectedMatch),
+    expectedResult: upsertFailure(gameMatch),
+    expectedMatch: gameMatch,
   },
   {
     name: "create game",
     runWorkflow: createGame(mockWorkflowDependencies({ spyOnUpsert })),
     input: { matchDescription, challenge: initialState, opponent: bob },
-    expected: success(expectedMatch),
+    expectedResult: success(gameMatch),
+    expectedMatch: gameMatch,
   },
 ];
 
 describe.each(scenarios)("create game workflow", (scenario) => {
-  const { name, runWorkflow, input, expected } = scenario;
+  const { name, runWorkflow, input, expectedResult, expectedMatch } = scenario;
   let actual: Result<Match, DomainError[]>;
 
   beforeEach(async () => {
@@ -82,13 +85,13 @@ describe.each(scenarios)("create game workflow", (scenario) => {
   });
 
   describe(name, () => {
-    it("workflow", () => expect(actual).toEqual(expected));
+    it("workflow", () => expect(actual).toEqual(expectedResult));
 
     it("side effects", () => {
-      if (isSuccess(expected)) {
-        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expected.value);
+      if (isSuccess(expectedResult)) {
+        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expectedMatch);
       } else {
-        const includesErrorKind = includesErrorOfKind(expected.error);
+        const includesErrorKind = includesErrorOfKind(expectedResult.error);
 
         if (includesErrorKind("IllegalGameOpponentError")) {
           expect(spyOnUpsert).not.toHaveBeenCalled();
