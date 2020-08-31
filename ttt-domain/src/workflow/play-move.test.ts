@@ -173,7 +173,7 @@ const scenarios: WorkflowScenario<PlayMoveInput>[] = [
     expectedResult: success(ownerPlaysVictoryExpectedMatch),
     expectedMatch: ownerPlaysVictoryExpectedMatch,
   },
-].slice(6, 7) as WorkflowScenario<PlayMoveInput>[];
+];
 
 describe.each(scenarios)("play move workflow", (scenario) => {
   const { name, runWorkflow, input, expectedResult, expectedMatch } = scenario;
@@ -193,7 +193,9 @@ describe.each(scenarios)("play move workflow", (scenario) => {
       } else {
         const includesErrorKind = includesErrorOfKind(expectedResult.error);
 
-        if (includesErrorKind("IllegalMoveError")) {
+        if (
+          includesErrorKind("IllegalMoveError", "UnknownPlayerError", "WrongTurnError")
+        ) {
           expect(spyOnUpsert).not.toHaveBeenCalled();
         }
 
