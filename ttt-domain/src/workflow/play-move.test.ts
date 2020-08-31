@@ -1,10 +1,10 @@
-import { isSuccess, Result, failure, success } from "@grancalavera/ttt-etc/dist/result";
+import { failure, isSuccess, Result, success } from "@grancalavera/ttt-etc/dist/result";
 import {
   DomainError,
+  IllegalMoveError,
   includesErrorOfKind,
   UnknownPlayerError,
   WrongTurnError,
-  IllegalMoveError,
 } from "../domain/error";
 import { Game, Match, MatchDescription } from "../domain/model";
 import {
@@ -12,14 +12,15 @@ import {
   bob,
   matchId,
   mockWorkflowDependencies,
+  unknownPlayer,
   upsertFailure,
   WorkflowScenario,
-  unknownPlayer,
 } from "../test/support";
 import { playMove } from "./play-move";
 import { PlayMoveInput } from "./support";
 
 const spyOnUpsert = jest.fn();
+const mock = mockWorkflowDependencies({ spyOnUpsert });
 
 const matchDescription: MatchDescription = {
   id: matchId,
@@ -49,34 +50,32 @@ const bobFirstPlayMatch: Match = {
 const scenarios: WorkflowScenario<PlayMoveInput>[] = [
   {
     name: "unknown player",
-    runWorkflow: playMove(mockWorkflowDependencies()),
+    runWorkflow: playMove(mock()),
     input: { matchDescription, game: initialState, move: [unknownPlayer, 2] },
     expectedResult: failure([new UnknownPlayerError(matchDescription, unknownPlayer)]),
   },
   {
     name: "wrong turn",
-    runWorkflow: playMove(mockWorkflowDependencies()),
+    runWorkflow: playMove(mock()),
     input: { matchDescription, game: initialState, move: [alice, 2] },
     expectedResult: failure([new WrongTurnError(matchDescription, alice)]),
   },
   {
     name: "illegal move (already played)",
-    runWorkflow: playMove(mockWorkflowDependencies()),
+    runWorkflow: playMove(mock()),
     input: { matchDescription, game: initialState, move: [bob, 0] },
     expectedResult: failure([new IllegalMoveError(matchDescription, 0)]),
   },
   {
     name: "upsert failed",
-    runWorkflow: playMove(
-      mockWorkflowDependencies({ matchToUpsertFail: bobFirstPlayMatch, spyOnUpsert })
-    ),
+    runWorkflow: playMove(mock({ matchToUpsertFail: bobFirstPlayMatch })),
     input: { matchDescription, game: initialState, move: [bob, 1] },
     expectedResult: upsertFailure(bobFirstPlayMatch),
     expectedMatch: bobFirstPlayMatch,
   },
   {
     name: "move played: Game -> Game",
-    runWorkflow: playMove(mockWorkflowDependencies({ spyOnUpsert })),
+    runWorkflow: playMove(mock()),
     input: { matchDescription, game: initialState, move: [bob, 1] },
     expectedResult: success(bobFirstPlayMatch),
     expectedMatch: bobFirstPlayMatch,

@@ -12,6 +12,7 @@ import { createMatch } from "./create-match";
 import { CreateMatchInput } from "./support";
 
 const spyOnUpsert = jest.fn();
+const mock = mockWorkflowDependencies({ spyOnUpsert });
 
 const newMatch: Match = {
   matchDescription: {
@@ -24,20 +25,14 @@ const newMatch: Match = {
 const scenarios: WorkflowScenario<CreateMatchInput>[] = [
   {
     name: "upsert failed",
-    runWorkflow: createMatch(
-      mockWorkflowDependencies({ matchToUpsertFail: newMatch, spyOnUpsert })
-    ),
+    runWorkflow: createMatch(mock({ matchToUpsertFail: newMatch })),
     input: { owner: alice },
     expectedResult: upsertFailure(newMatch),
     expectedMatch: newMatch,
   },
   {
     name: "create match",
-    runWorkflow: createMatch(
-      mockWorkflowDependencies({
-        spyOnUpsert,
-      })
-    ),
+    runWorkflow: createMatch(mock()),
     input: { owner: alice },
     expectedResult: success(newMatch),
     expectedMatch: newMatch,

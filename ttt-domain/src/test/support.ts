@@ -31,9 +31,12 @@ interface SystemMocks {
   readonly maxActiveMatches?: number;
 }
 
+interface WorkflowSpies {
+  readonly spyOnUpsert: jest.Mock;
+}
+
 interface WorkflowMocks {
   readonly matchToUpsertFail?: Match;
-  readonly spyOnUpsert?: jest.Mock;
 }
 
 interface CommandMocks {
@@ -45,13 +48,13 @@ const mockSystemDependencies = (mocks: SystemMocks = {}): SystemDependencies => 
   maxActiveMatches: mocks.maxActiveMatches ?? Number.POSITIVE_INFINITY,
 });
 
-export const mockWorkflowDependencies = (
+export const mockWorkflowDependencies = (spies: WorkflowSpies) => (
   mocks: SystemMocks & WorkflowMocks = {}
 ): SystemDependencies & WorkflowDependencies => ({
   ...mockSystemDependencies(mocks),
   upsertMatch: async (match) => {
     const { matchToUpsertFail } = mocks;
-    mocks.spyOnUpsert && mocks.spyOnUpsert(matchToUpsertFail ?? match);
+    spies.spyOnUpsert(matchToUpsertFail ?? match);
     return matchToUpsertFail
       ? failure(upsertError(matchToUpsertFail))
       : success(undefined);
