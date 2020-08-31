@@ -1,17 +1,12 @@
 import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
-import { IllegalGameOpponentError, TooManyActiveMatchesError } from "../domain/error";
+import { IllegalGameOpponentError } from "../domain/error";
 import { Match } from "../domain/model";
 import { domainFailure } from "../domain/result";
 import { arePlayersTheSame, CreateGameWorkflow } from "./support";
 
 export const createGame: CreateGameWorkflow = (dependencies) => async (input) => {
-  const { countActiveMatches, maxActiveMatches, upsertMatch } = dependencies;
+  const { upsertMatch } = dependencies;
   const { matchDescription: description, challenge, opponent } = input;
-
-  const activeMatches = await countActiveMatches(opponent);
-  if (maxActiveMatches <= activeMatches) {
-    return failure([new TooManyActiveMatchesError(opponent, maxActiveMatches)]);
-  }
 
   if (arePlayersTheSame(description.owner, opponent)) {
     return failure([new IllegalGameOpponentError(description.id, opponent)]);

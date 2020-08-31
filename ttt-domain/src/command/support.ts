@@ -33,7 +33,10 @@ export interface PlayMove {
 //
 // ----------------------------------------------------------------------------
 
-export type JoinGameCommandHandler = CommandHandler<FindFirstChallenge, JoinGameCommand>;
+export type JoinGameCommandHandler = CommandHandler<
+  CountActiveMatches & FindFirstChallenge,
+  JoinGameCommand
+>;
 
 export class JoinGameCommand {
   readonly kind = "JoinGameCommand";
@@ -45,7 +48,7 @@ interface PlayMoveInput {
   readonly move: Move;
 }
 
-interface FindFirstChallenge {
+export interface FindFirstChallenge {
   readonly findFirstChallenge: () => AsyncResult<
     [MatchDescription, Challenge],
     DomainError
@@ -69,9 +72,19 @@ interface JoinGameInput {
   readonly player: Player;
 }
 
-interface FindMatch {
+export interface FindMatch {
   readonly findMatch: (matchId: MatchId) => AsyncResult<Match, DomainError>;
 }
+
+// ----------------------------------------------------------------------------
+//
+// shared dependencies
+//
+// ----------------------------------------------------------------------------
+
+export type CountActiveMatches = {
+  countActiveMatches: (player: Player) => Promise<number>;
+};
 
 // ----------------------------------------------------------------------------
 //

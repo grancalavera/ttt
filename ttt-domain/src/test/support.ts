@@ -1,13 +1,9 @@
 import { failure, Result, success } from "@grancalavera/ttt-etc";
-import {
-  CountActiveMatches,
-  GameSettings,
-  GetUniqueId,
-  UpsertMatch,
-} from "../dependencies";
+import { CountActiveMatches } from "../command/support";
 import { DomainError, UpsertFailedError } from "../domain/error";
 import { Match, Player } from "../domain/model";
-import { RunWorkflow } from "../workflow/support";
+import { GameSettings } from "../system/support";
+import { GetUniqueId, RunWorkflow, UpsertMatch } from "../workflow/support";
 
 export interface WorkflowScenario<Input> {
   name: string;
@@ -24,23 +20,34 @@ export const matchId = "match-id";
 const upsertError = (m: Match) => new UpsertFailedError(m, "mock upsert failure");
 export const upsertFailure = (m: Match) => failure([upsertError(m)]);
 
-// prettier-ignore
-type Dependencies =
-  & CountActiveMatches
-  & GetUniqueId
-  & UpsertMatch
-  & GameSettings;
+type SystemDependencies = GameSettings;
+type WorkflowDependencies = GetUniqueId & UpsertMatch;
+type CommandDependencies = CountActiveMatches;
+// really should be:
+// type CommandDependencies = CountActiveMatches & FindFirstChallenge & FindMatch;
 
-interface Mocks {
-  matchToUpsertFail?: Match;
-  spyOnUpsert?: jest.Mock;
-  activeMatches?: number;
-  maxActiveMatches?: number;
+interface SystemMocks {
+  readonly maxActiveMatches?: number;
 }
 
-export const mockWorkflowDependencies = (mocks: Mocks = {}): Dependencies => ({
+interface WorkflowMocks {
+  readonly matchToUpsertFail?: Match;
+  readonly spyOnUpsert?: jest.Mock;
+}
+
+interface CommandMocks {
+  activeMatches?: number;
+}
+
+const mockSystemDependencies = (mocks: SystemMocks = {}): SystemDependencies => ({
   gameSize: 3 * 3,
   maxActiveMatches: mocks.maxActiveMatches ?? Number.POSITIVE_INFINITY,
+});
+
+export const mockWorkflowDependencies = (
+  mocks: SystemMocks & WorkflowMocks = {}
+): SystemDependencies & WorkflowDependencies => ({
+  ...mockSystemDependencies(mocks),
   upsertMatch: async (match) => {
     const { matchToUpsertFail } = mocks;
     mocks.spyOnUpsert && mocks.spyOnUpsert(matchToUpsertFail ?? match);
@@ -48,6 +55,12 @@ export const mockWorkflowDependencies = (mocks: Mocks = {}): Dependencies => ({
       ? failure(upsertError(matchToUpsertFail))
       : success(undefined);
   },
-  countActiveMatches: async () => mocks.activeMatches ?? 0,
   getUniqueId: () => matchId,
+});
+
+export const mockCommandDependencies = (
+  mocks: SystemMocks & CommandMocks = {}
+): SystemDependencies & CommandDependencies => ({
+  ...mockSystemDependencies(mocks),
+  countActiveMatches: async () => mocks.activeMatches ?? 0,
 });

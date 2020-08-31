@@ -3,7 +3,6 @@ import {
   DomainError,
   IllegalChallengerError,
   includesErrorOfKind,
-  TooManyActiveMatchesError,
 } from "../domain/error";
 import { Match, MatchDescription } from "../domain/model";
 import {
@@ -30,14 +29,6 @@ const expectedMatch: Match = {
 };
 
 const scenarios: WorkflowScenario<CreateChallengeInput>[] = [
-  {
-    name: "too many active matches",
-    runWorkflow: createChallenge(
-      mockWorkflowDependencies({ activeMatches: 1, maxActiveMatches: 1 })
-    ),
-    input: { matchDescription, move: [alice, 0] },
-    expected: failure([new TooManyActiveMatchesError(alice, 1)]),
-  },
   {
     name: "illegal challenger",
     runWorkflow: createChallenge(mockWorkflowDependencies({ spyOnUpsert })),
@@ -81,7 +72,7 @@ describe.each(scenarios)("create challenge workflow", (scenario) => {
       } else {
         const includesErrorKind = includesErrorOfKind(expected.error);
 
-        if (includesErrorKind("TooManyActiveMatchesError", "IllegalChallengerError")) {
+        if (includesErrorKind("IllegalChallengerError")) {
           expect(spyOnUpsert).not.toHaveBeenCalled();
         }
 
