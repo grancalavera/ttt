@@ -44,7 +44,10 @@ export class MatchNotFoundError {
 
 export class UpsertFailedError {
   readonly kind = "UpsertFailedError";
-  constructor(readonly match: Match, readonly message: string) {}
+  get message() {
+    return `failed to upsert match ${this.match.matchDescription.id}`;
+  }
+  constructor(readonly match: Match) {}
 }
 
 export class IllegalMatchStateError {
