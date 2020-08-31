@@ -9,14 +9,16 @@ import {
 } from "./model";
 
 export type DomainError =
+  | IllegalChallengerError
+  | IllegalGameOpponentError
+  | IllegalMatchStateError
+  | IllegalMoveError
+  | MatchNotFoundError
   | NoChallengesFoundError
   | TooManyActiveMatchesError
-  | MatchNotFoundError
+  | UnknownPlayerError
   | UpsertFailedError
-  | IllegalMatchStateError
-  | IllegalGameOpponentError
-  | IllegalChallengerError
-  | IllegalMoveError;
+  | WrongTurnError;
 
 export const includesErrorOfKind = (errors: DomainError[]) => (
   ...kinds: NonEmptyArray<DomainError["kind"]>
@@ -24,7 +26,7 @@ export const includesErrorOfKind = (errors: DomainError[]) => (
 
 export class TooManyActiveMatchesError {
   readonly kind = "TooManyActiveMatchesError";
-  get message(): string {
+  get message() {
     return `player ${this.player.id} already reached the max count of ${this.maxActiveMatches} active matches`;
   }
   constructor(readonly player: Player, readonly maxActiveMatches: number) {}
@@ -36,7 +38,7 @@ export class NoChallengesFoundError {
 
 export class MatchNotFoundError {
   readonly kind = "MatchNotFoundError";
-  get message(): string {
+  get message() {
     return `match ${this.matchId} not found`;
   }
   constructor(readonly matchId: MatchId) {}
@@ -52,7 +54,7 @@ export class UpsertFailedError {
 
 export class IllegalMatchStateError {
   readonly kind = "IllegalMatchStateError";
-  get message(): string {
+  get message() {
     return `match ${
       this.match.matchDescription.id
     } is on an illegal state: wanted any state of ${this.wantedStates.join(
@@ -64,15 +66,15 @@ export class IllegalMatchStateError {
 
 export class IllegalMoveError {
   readonly kind = "IllegalMoveError";
-  get message(): string {
-    return `position ${this.position} already played on match ${this.matchId}`;
+  get message() {
+    return `position ${this.position} already played on match ${this.matchDescription.id}`;
   }
-  constructor(readonly matchId: MatchId, readonly position: Position) {}
+  constructor(readonly matchDescription: MatchDescription, readonly position: Position) {}
 }
 
 export class IllegalChallengerError {
   readonly kind = "IllegalChallengerError";
-  get message(): string {
+  get message() {
     return `illegal challenger ${this.challenger.id} for match ${this.matchDescription.id} owned by player ${this.matchDescription.owner.id}: a challenger must own the game`;
   }
   constructor(readonly matchDescription: MatchDescription, readonly challenger: Player) {}
@@ -80,8 +82,30 @@ export class IllegalChallengerError {
 
 export class IllegalGameOpponentError {
   readonly kind = "IllegalGameOpponentError";
-  get message(): string {
+  get message() {
     return `${this.opponent.id} cannot be both the owner and opponent on match ${this.matchId}`;
   }
   constructor(readonly matchId: MatchId, readonly opponent: Player) {}
+}
+
+export class UnknownPlayerError {
+  readonly kind = "UnknownPlayerError";
+  get message() {
+    return `player ${this.unknownPlayer.id} does not belong to match ${this.matchDescription.id}`;
+  }
+  constructor(
+    readonly matchDescription: MatchDescription,
+    readonly unknownPlayer: Player
+  ) {}
+}
+
+export class WrongTurnError {
+  readonly kind = "WrongTurnError";
+  get message() {
+    return `is not ${this.wrongTurnPlayer.id} turn in match ${this.matchDescription.id}`;
+  }
+  constructor(
+    readonly matchDescription: MatchDescription,
+    readonly wrongTurnPlayer: Player
+  ) {}
 }

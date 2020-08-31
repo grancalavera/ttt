@@ -9,13 +9,13 @@ export interface WorkflowScenario<Input> {
   name: string;
   runWorkflow: RunWorkflow<Input>;
   input: Input;
-  expectedMatch: Match;
   expectedResult: Result<Match, DomainError[]>;
+  expectedMatch?: Match;
 }
 
 export const alice: Player = { id: "alice" };
 export const bob: Player = { id: "bob" };
-export const illegalPlayer: Player = { id: "illegal-player" };
+export const unknownPlayer: Player = { id: "unknown-player" };
 export const matchId = "match-id";
 
 const upsertError = (m: Match) => new UpsertFailedError(m);
