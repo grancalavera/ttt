@@ -27,14 +27,14 @@ const matchDescription: MatchDescription = {
   owner: alice,
 };
 
-const initialState: Game = {
+const opponentFirstMoveInitialState: Game = {
   kind: "Game",
   players: [alice, bob],
   moves: [[alice, 0]],
   next: bob,
 };
 
-const bobFirstPlayMatch: Match = {
+const opponentFirstMoveMatch: Match = {
   matchDescription,
   matchState: {
     kind: "Game",
@@ -47,7 +47,7 @@ const bobFirstPlayMatch: Match = {
   },
 };
 
-const alicePlaysDrawInitialState: Game = {
+const ownerPlaysDrawInitialState: Game = {
   kind: "Game",
   players: [alice, bob],
   moves: [
@@ -63,9 +63,9 @@ const alicePlaysDrawInitialState: Game = {
   next: alice,
 };
 
-const aliceDrawMove: Move = [alice, 8];
+const ownerDrawMove: Move = [alice, 8];
 
-const alicePlaysDrawExpectedMatch: Match = {
+const ownerPlaysDrawExpectedMatch: Match = {
   matchDescription,
   matchState: {
     kind: "Draw",
@@ -84,48 +84,96 @@ const alicePlaysDrawExpectedMatch: Match = {
   },
 };
 
+// x o _
+// x o _
+// x _ _
+
+const ownerPlaysVictoryInitialState: Game = {
+  kind: "Game",
+  players: [alice, bob],
+  moves: [
+    [alice, 0],
+    [bob, 1],
+    [alice, 3],
+    [bob, 4],
+  ],
+  next: alice,
+};
+
+const ownerVictoryMove: Move = [alice, 6];
+
+const ownerPlaysVictoryExpectedMatch: Match = {
+  matchDescription,
+  matchState: {
+    kind: "Victory",
+    players: [alice, bob],
+    moves: [
+      [alice, 0],
+      [bob, 1],
+      [alice, 3],
+      [bob, 4],
+      [alice, 6],
+    ],
+    winner: [alice, [0, 3, 6]],
+  },
+};
+
 const scenarios: WorkflowScenario<PlayMoveInput>[] = [
   {
     name: "unknown player",
     runWorkflow: playMove(mock()),
-    input: { matchDescription, game: initialState, move: [unknownPlayer, 2] },
+    input: {
+      matchDescription,
+      game: opponentFirstMoveInitialState,
+      move: [unknownPlayer, 2],
+    },
     expectedResult: failure([new UnknownPlayerError(matchDescription, unknownPlayer)]),
   },
   {
     name: "wrong turn",
     runWorkflow: playMove(mock()),
-    input: { matchDescription, game: initialState, move: [alice, 2] },
+    input: { matchDescription, game: opponentFirstMoveInitialState, move: [alice, 2] },
     expectedResult: failure([new WrongTurnError(matchDescription, alice)]),
   },
   {
     name: "illegal move (already played)",
     runWorkflow: playMove(mock()),
-    input: { matchDescription, game: initialState, move: [bob, 0] },
+    input: { matchDescription, game: opponentFirstMoveInitialState, move: [bob, 0] },
     expectedResult: failure([new IllegalMoveError(matchDescription, 0)]),
   },
   {
     name: "upsert failed",
-    runWorkflow: playMove(mock({ matchToUpsertFail: bobFirstPlayMatch })),
-    input: { matchDescription, game: initialState, move: [bob, 1] },
-    expectedResult: upsertFailure(bobFirstPlayMatch),
-    expectedMatch: bobFirstPlayMatch,
+    runWorkflow: playMove(mock({ matchToUpsertFail: opponentFirstMoveMatch })),
+    input: { matchDescription, game: opponentFirstMoveInitialState, move: [bob, 1] },
+    expectedResult: upsertFailure(opponentFirstMoveMatch),
+    expectedMatch: opponentFirstMoveMatch,
   },
   {
     name: "move played: Game -> Game",
     runWorkflow: playMove(mock()),
-    input: { matchDescription, game: initialState, move: [bob, 1] },
-    expectedResult: success(bobFirstPlayMatch),
-    expectedMatch: bobFirstPlayMatch,
+    input: { matchDescription, game: opponentFirstMoveInitialState, move: [bob, 1] },
+    expectedResult: success(opponentFirstMoveMatch),
+    expectedMatch: opponentFirstMoveMatch,
   },
   {
     name: "move played: Game -> Draw",
     runWorkflow: playMove(mock()),
-    input: { matchDescription, game: alicePlaysDrawInitialState, move: aliceDrawMove },
-    expectedResult: success(alicePlaysDrawExpectedMatch),
-    expectedMatch: alicePlaysDrawExpectedMatch,
+    input: { matchDescription, game: ownerPlaysDrawInitialState, move: ownerDrawMove },
+    expectedResult: success(ownerPlaysDrawExpectedMatch),
+    expectedMatch: ownerPlaysDrawExpectedMatch,
   },
-  { name: "move played: Game -> Victory" } as WorkflowScenario<PlayMoveInput>,
-].slice(0, 6) as WorkflowScenario<PlayMoveInput>[];
+  {
+    name: "move played: Game -> Victory",
+    runWorkflow: playMove(mock()),
+    input: {
+      matchDescription,
+      game: ownerPlaysVictoryInitialState,
+      move: ownerVictoryMove,
+    },
+    expectedResult: success(ownerPlaysVictoryExpectedMatch),
+    expectedMatch: ownerPlaysVictoryExpectedMatch,
+  },
+].slice(6, 7) as WorkflowScenario<PlayMoveInput>[];
 
 describe.each(scenarios)("play move workflow", (scenario) => {
   const { name, runWorkflow, input, expectedResult, expectedMatch } = scenario;

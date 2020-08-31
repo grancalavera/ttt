@@ -1,8 +1,9 @@
-import { failure, isFailure, success } from "@grancalavera/ttt-etc";
+import { failure, isFailure, success, isSome } from "@grancalavera/ttt-etc";
 import { IllegalMoveError, UnknownPlayerError, WrongTurnError } from "../domain/error";
 import { Match, MatchState, Moves } from "../domain/model";
 import { domainFailure } from "../domain/result";
 import { PlayMoveWorkflow } from "./support";
+import { findWinner } from "./find-winner";
 
 export const playMove: PlayMoveWorkflow = (dependencies) => async (input) => {
   const { upsertMatch, gameSize } = dependencies;
@@ -28,11 +29,13 @@ export const playMove: PlayMoveWorkflow = (dependencies) => async (input) => {
   const { players } = game;
   const [p1, p2] = game.players;
   const moves = [...game.moves, move] as Moves;
+  const winnerOption = findWinner(gameSize, moves);
 
-  const matchState: MatchState =
-    moves.length === gameSize
-      ? { players, moves, kind: "Draw" }
-      : { ...game, moves, next: player.id === p1.id ? p2 : p1 };
+  const matchState: MatchState = isSome(winnerOption)
+    ? { players, moves, kind: "Victory", winner: winnerOption.value }
+    : moves.length === gameSize * gameSize
+    ? { players, moves, kind: "Draw" }
+    : { ...game, moves, next: player.id === p1.id ? p2 : p1 };
 
   const match: Match = { matchDescription, matchState };
 
