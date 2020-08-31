@@ -1,14 +1,6 @@
 import { AsyncResult } from "@grancalavera/ttt-etc";
 import { DomainError } from "../domain/error";
-import {
-  Challenge,
-  Game,
-  Match,
-  MatchDescription,
-  Move,
-  Player,
-  Players,
-} from "../domain/model";
+import { Challenge, Game, Match, MatchDescription, Move, Player } from "../domain/model";
 import { GameSettings } from "../system/support";
 
 // ----------------------------------------------------------------------------
