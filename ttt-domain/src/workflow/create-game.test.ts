@@ -17,6 +17,7 @@ import { createGame } from "./create-game";
 import { CreateGameInput } from "./support";
 
 const spyOnUpsert = jest.fn();
+const mock = mockWorkflowDependencies({ spyOnUpsert });
 
 const matchDescription: MatchDescription = {
   id: matchId,
@@ -41,11 +42,7 @@ const gameMatch: Match = {
 const scenarios: WorkflowScenario<CreateGameInput>[] = [
   {
     name: "illegal challenge opponent",
-    runWorkflow: createGame(
-      mockWorkflowDependencies({
-        spyOnUpsert,
-      })
-    ),
+    runWorkflow: createGame(mock()),
     input: {
       matchDescription,
       challenge: initialState,
@@ -55,19 +52,14 @@ const scenarios: WorkflowScenario<CreateGameInput>[] = [
   },
   {
     name: "upsert failed",
-    runWorkflow: createGame(
-      mockWorkflowDependencies({
-        matchToUpsertFail: gameMatch,
-        spyOnUpsert: spyOnUpsert,
-      })
-    ),
+    runWorkflow: createGame(mock({ matchToUpsertFail: gameMatch })),
     input: { matchDescription, challenge: initialState, opponent: bob },
     expectedResult: upsertFailure(gameMatch),
     expectedMatch: gameMatch,
   },
   {
     name: "create game",
-    runWorkflow: createGame(mockWorkflowDependencies({ spyOnUpsert })),
+    runWorkflow: createGame(mock()),
     input: { matchDescription, challenge: initialState, opponent: bob },
     expectedResult: success(gameMatch),
     expectedMatch: gameMatch,

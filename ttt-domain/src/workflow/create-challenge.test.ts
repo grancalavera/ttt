@@ -17,6 +17,7 @@ import { createChallenge } from "./create-challenge";
 import { CreateChallengeInput } from "./support";
 
 const spyOnUpsert = jest.fn();
+const mock = mockWorkflowDependencies({ spyOnUpsert });
 
 const matchDescription: MatchDescription = {
   id: matchId,
@@ -31,25 +32,20 @@ const challengeMatch: Match = {
 const scenarios: WorkflowScenario<CreateChallengeInput>[] = [
   {
     name: "illegal challenger",
-    runWorkflow: createChallenge(mockWorkflowDependencies({ spyOnUpsert })),
+    runWorkflow: createChallenge(mock()),
     input: { matchDescription, move: [bob, 0] },
     expectedResult: failure([new IllegalChallengerError(matchDescription, bob)]),
   },
   {
     name: "upsert failed",
-    runWorkflow: createChallenge(
-      mockWorkflowDependencies({
-        matchToUpsertFail: challengeMatch,
-        spyOnUpsert,
-      })
-    ),
+    runWorkflow: createChallenge(mock({ matchToUpsertFail: challengeMatch })),
     input: { matchDescription, move: [alice, 0] },
     expectedResult: upsertFailure(challengeMatch),
     expectedMatch: challengeMatch,
   },
   {
     name: "create challenge",
-    runWorkflow: createChallenge(mockWorkflowDependencies({ spyOnUpsert })),
+    runWorkflow: createChallenge(mock()),
     input: { matchDescription, move: [alice, 0] },
     expectedResult: success(challengeMatch),
     expectedMatch: challengeMatch,
