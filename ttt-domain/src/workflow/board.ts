@@ -1,5 +1,4 @@
 export type Matrix = number[][];
-export type Diagonals = [number[], number[]];
 
 export const rows = (size: number): Matrix =>
   board(size)
@@ -15,15 +14,15 @@ export const rows = (size: number): Matrix =>
 
 export const columns = (size: number): Matrix => transpose(rows(size));
 
-export const diagonals = (size: number): Diagonals =>
+export const diagonals = (size: number): Matrix =>
   rows(size).reduce(
     (diagonals, row, i) => {
       return [
         [...diagonals[0], row[i]],
         [...diagonals[1], row[size - i - 1]],
-      ] as Diagonals;
+      ] as Matrix;
     },
-    [[], []] as Diagonals
+    [[], []] as Matrix
   );
 
 const transpose = (xs: Matrix): Matrix => {

@@ -59,7 +59,7 @@ export interface Victory extends GameBaseState {
 export type Players = [Player, Player];
 export type Move = [Player, Position];
 export type Moves = NonEmptyArray<Move>;
-export type Winner = [Player, NonEmptyArray<Position>];
+export type Winner = [Player, Position[]];
 
 export interface Player {
   readonly id: PlayerId;

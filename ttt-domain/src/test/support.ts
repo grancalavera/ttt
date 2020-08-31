@@ -44,7 +44,7 @@ interface CommandMocks {
 }
 
 const mockSystemDependencies = (mocks: SystemMocks = {}): SystemDependencies => ({
-  gameSize: 3 * 3,
+  gameSize: 3,
   maxActiveMatches: mocks.maxActiveMatches ?? Number.POSITIVE_INFINITY,
 });
 
