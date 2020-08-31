@@ -1,7 +1,15 @@
 import { isSuccess, Result } from "@grancalavera/ttt-etc/dist/result";
 import { DomainError, includesErrorOfKind } from "../domain/error";
-import { Match, MatchDescription, Game } from "../domain/model";
-import { alice, matchId, WorkflowScenario, bob } from "../test/support";
+import { Game, Match, MatchDescription } from "../domain/model";
+import {
+  alice,
+  bob,
+  matchId,
+  mockWorkflowDependencies,
+  upsertFailure,
+  WorkflowScenario,
+} from "../test/support";
+import { playMove } from "./play-move";
 import { PlayMoveInput } from "./support";
 
 const spyOnUpsert = jest.fn();
@@ -18,7 +26,7 @@ const initialState: Game = {
   next: bob,
 };
 
-const expectedMatch: Match = {
+const bobFirstPlayMatch: Match = {
   matchDescription,
   matchState: {
     kind: "Game",
@@ -31,10 +39,23 @@ const expectedMatch: Match = {
   },
 };
 
-const scenarios: WorkflowScenario<PlayMoveInput>[] = [];
+const scenarios: WorkflowScenario<PlayMoveInput>[] = [
+  {
+    name: "upsert failed",
+    runWorkflow: playMove(
+      mockWorkflowDependencies({
+        matchToUpsertFail: bobFirstPlayMatch,
+        spyOnUpsert: spyOnUpsert,
+      })
+    ),
+    input: { matchDescription, game: initialState, move: [bob, 1] },
+    expectedResult: upsertFailure(bobFirstPlayMatch),
+    expectedMatch: bobFirstPlayMatch,
+  },
+];
 
-xdescribe.each(scenarios)("play move workflow", (scenario) => {
-  const { name, runWorkflow, input, expectedResult: expected } = scenario;
+describe.each(scenarios)("play move workflow", (scenario) => {
+  const { name, runWorkflow, input, expectedResult, expectedMatch } = scenario;
   let actual: Result<Match, DomainError[]>;
 
   beforeEach(async () => {
@@ -43,13 +64,13 @@ xdescribe.each(scenarios)("play move workflow", (scenario) => {
   });
 
   describe(name, () => {
-    it("workflow", () => expect(actual).toEqual(expected));
+    it("workflow", () => expect(actual).toEqual(expectedResult));
 
     it("side effects", () => {
-      if (isSuccess(expected)) {
-        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expected.value);
+      if (isSuccess(expectedResult)) {
+        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expectedMatch);
       } else {
-        const includesErrorKind = includesErrorOfKind(expected.error);
+        const includesErrorKind = includesErrorOfKind(expectedResult.error);
 
         if (includesErrorKind("IllegalGameOpponentError", "IllegalMoveError")) {
           expect(spyOnUpsert).not.toHaveBeenCalled();

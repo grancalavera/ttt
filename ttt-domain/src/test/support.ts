@@ -18,7 +18,7 @@ export const bob: Player = { id: "bob" };
 export const illegalPlayer: Player = { id: "illegal-player" };
 export const matchId = "match-id";
 
-const upsertError = (m: Match) => new UpsertFailedError(m, "mock upsert failure");
+const upsertError = (m: Match) => new UpsertFailedError(m);
 export const upsertFailure = (m: Match) => failure([upsertError(m)]);
 
 type SystemDependencies = GameSettings;
