@@ -8,7 +8,7 @@ import { NonEmptyArray } from "@grancalavera/ttt-etc";
 
 export interface Match {
   readonly matchDescription: MatchDescription;
-  readonly matchState: New | Challenge | Game | GameOver;
+  readonly matchState: MatchState;
 }
 
 export interface MatchDescription {
@@ -16,7 +16,8 @@ export interface MatchDescription {
   readonly owner: Player;
 }
 
-export type MatchStateName = Match["matchState"]["kind"];
+export type MatchState = New | Challenge | Game | GameOver;
+export type MatchStateName = MatchState["kind"];
 
 // ----------------------------------------------------------------------------
 //

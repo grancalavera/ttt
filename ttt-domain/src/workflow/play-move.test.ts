@@ -6,7 +6,7 @@ import {
   UnknownPlayerError,
   WrongTurnError,
 } from "../domain/error";
-import { Game, Match, MatchDescription } from "../domain/model";
+import { Game, Match, MatchDescription, Move } from "../domain/model";
 import {
   alice,
   bob,
@@ -47,6 +47,43 @@ const bobFirstPlayMatch: Match = {
   },
 };
 
+const alicePlaysDrawInitialState: Game = {
+  kind: "Game",
+  players: [alice, bob],
+  moves: [
+    [alice, 0],
+    [bob, 3],
+    [alice, 6],
+    [bob, 4],
+    [alice, 1],
+    [bob, 2],
+    [alice, 5],
+    [bob, 7],
+  ],
+  next: alice,
+};
+
+const aliceDrawMove: Move = [alice, 8];
+
+const alicePlaysDrawExpectedMatch: Match = {
+  matchDescription,
+  matchState: {
+    kind: "Draw",
+    players: [alice, bob],
+    moves: [
+      [alice, 0],
+      [bob, 3],
+      [alice, 6],
+      [bob, 4],
+      [alice, 1],
+      [bob, 2],
+      [alice, 5],
+      [bob, 7],
+      [alice, 8],
+    ],
+  },
+};
+
 const scenarios: WorkflowScenario<PlayMoveInput>[] = [
   {
     name: "unknown player",
@@ -80,9 +117,15 @@ const scenarios: WorkflowScenario<PlayMoveInput>[] = [
     expectedResult: success(bobFirstPlayMatch),
     expectedMatch: bobFirstPlayMatch,
   },
-  { name: "move played: Game -> Draw" } as WorkflowScenario<PlayMoveInput>,
+  {
+    name: "move played: Game -> Draw",
+    runWorkflow: playMove(mock()),
+    input: { matchDescription, game: alicePlaysDrawInitialState, move: aliceDrawMove },
+    expectedResult: success(alicePlaysDrawExpectedMatch),
+    expectedMatch: alicePlaysDrawExpectedMatch,
+  },
   { name: "move played: Game -> Victory" } as WorkflowScenario<PlayMoveInput>,
-].slice(0, 5) as WorkflowScenario<PlayMoveInput>[];
+].slice(0, 6) as WorkflowScenario<PlayMoveInput>[];
 
 describe.each(scenarios)("play move workflow", (scenario) => {
   const { name, runWorkflow, input, expectedResult, expectedMatch } = scenario;
