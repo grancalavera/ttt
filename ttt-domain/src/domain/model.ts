@@ -1,10 +1,10 @@
+import { NonEmptyArray } from "@grancalavera/ttt-etc";
+
 // ----------------------------------------------------------------------------
 //
 // aggregate root
 //
 // ----------------------------------------------------------------------------
-
-import { NonEmptyArray } from "@grancalavera/ttt-etc";
 
 export interface Match {
   readonly matchDescription: MatchDescription;
@@ -15,6 +15,8 @@ export interface MatchDescription {
   readonly id: MatchId;
   readonly owner: Player;
 }
+
+export type MatchStateName = Match["matchState"]["kind"];
 
 // ----------------------------------------------------------------------------
 //
@@ -71,13 +73,3 @@ interface GameBaseState {
   readonly players: Players;
   readonly moves: Moves;
 }
-
-// ----------------------------------------------------------------------------
-//
-// not in use yet
-//
-// ----------------------------------------------------------------------------
-
-export type MatchStateName = Match["matchState"]["kind"];
-export type ActiveMatch = New | Challenge | Game;
-export type MoveType = "CreateChallenge" | "PlayMove";

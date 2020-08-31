@@ -27,17 +27,6 @@ const expectedMatch: Match = {
 
 const scenarios: WorkflowScenario<CreateMatchInput>[] = [
   {
-    name: "too many active matches",
-    runWorkflow: createMatch(
-      mockWorkflowDependencies({
-        activeMatches: 1,
-        maxActiveMatches: 1,
-      })
-    ),
-    input: { owner: alice },
-    expected: failure([new TooManyActiveMatchesError(alice, 1)]),
-  },
-  {
     name: "upsert failed",
     runWorkflow: createMatch(
       mockWorkflowDependencies({ matchToUpsertFail: expectedMatch, spyOnUpsert })
@@ -74,10 +63,6 @@ describe.each(scenarios)("create match workflow", (scenario) => {
         expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expectedMatch);
       } else {
         const includesErrorKind = includesErrorOfKind(expected.error);
-
-        if (includesErrorKind("TooManyActiveMatchesError")) {
-          expect(spyOnUpsert).not.toHaveBeenCalled();
-        }
 
         if (includesErrorKind("UpsertFailedError")) {
           expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expectedMatch);

@@ -12,7 +12,7 @@ export const playMoveCommandHandler: PlayMoveCommandHandler = (dependencies) => 
     return domainFailure(findResult);
   }
 
-  const move = command.input.move;
+  const { move } = command.input;
   const match = findResult.value;
   const { matchDescription, matchState } = match;
 

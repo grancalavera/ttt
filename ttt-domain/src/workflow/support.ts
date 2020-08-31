@@ -1,12 +1,7 @@
 import { AsyncResult } from "@grancalavera/ttt-etc";
-import {
-  CountActiveMatches,
-  GameSettings,
-  GetUniqueId,
-  UpsertMatch,
-} from "../dependencies";
 import { DomainError } from "../domain/error";
 import { Challenge, Game, Match, MatchDescription, Move, Player } from "../domain/model";
+import { GameSettings } from "../system/support";
 
 // ----------------------------------------------------------------------------
 //
@@ -26,12 +21,7 @@ export type WorkflowInput =
 //
 // ----------------------------------------------------------------------------
 
-// prettier-ignore
-export type CreateMatchDependencies =
-  & GameSettings
-  & CountActiveMatches
-  & GetUniqueId
-  & UpsertMatch;
+export type CreateMatchDependencies = GameSettings & GetUniqueId & UpsertMatch;
 
 export interface CreateMatchInput {
   owner: Player;
@@ -48,11 +38,7 @@ export type CreateMatchWorkflow = CreateWorkflow<
 //
 // ----------------------------------------------------------------------------
 
-// prettier-ignore
-export type CreateChallengeDeps =
-  & GameSettings
-  & CountActiveMatches
-  & UpsertMatch;
+export type CreateChallengeDeps = GameSettings & UpsertMatch;
 
 export interface CreateChallengeInput {
   readonly matchDescription: MatchDescription;
@@ -70,11 +56,7 @@ export type CreateChallengeWorkflow = CreateWorkflow<
 //
 // ----------------------------------------------------------------------------
 
-// prettier-ignore
-export type CreateGameDependencies =
-  & GameSettings
-  & CountActiveMatches
-  & UpsertMatch;
+export type CreateGameDependencies = GameSettings & UpsertMatch;
 
 export interface CreateGameInput {
   readonly matchDescription: MatchDescription;
@@ -93,7 +75,6 @@ export type CreateGameWorkflow = CreateWorkflow<CreateGameDependencies, CreateGa
 // prettier-ignore
 export type PlayMoveDependencies =
   & GameSettings
-  & CountActiveMatches
   & UpsertMatch;
 
 export interface PlayMoveInput {
@@ -103,6 +84,20 @@ export interface PlayMoveInput {
 }
 
 export type PlayMoveWorkflow = CreateWorkflow<PlayMoveDependencies, PlayMoveInput>;
+
+// ----------------------------------------------------------------------------
+//
+// dependencies
+//
+// ----------------------------------------------------------------------------
+
+export interface UpsertMatch {
+  readonly upsertMatch: (match: Match) => AsyncResult<void, DomainError>;
+}
+
+export interface GetUniqueId {
+  readonly getUniqueId: () => string;
+}
 
 // ----------------------------------------------------------------------------
 //
