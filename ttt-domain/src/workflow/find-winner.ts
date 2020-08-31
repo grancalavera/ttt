@@ -1,6 +1,6 @@
 import { isSome, none, Option, some } from "@grancalavera/ttt-etc";
 import { Moves, Player, Position, Winner } from "../domain/model";
-import { columns, diagonals, rows } from "./board";
+import { columns, diagonals, rows } from "../system/board";
 
 export const findWinner = (size: number, moves: Moves): Option<Winner> => {
   const winSequences = [...rows(size), ...columns(size), ...diagonals(size)];

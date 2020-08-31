@@ -3,6 +3,9 @@ module.exports = {
   testEnvironment: "node",
   modulePathIgnorePatterns: ["<rootDir>/dist/"],
   modulePaths: ["<rootDir>/src"],
-  collectCoverage: true,
-  collectCoverageFrom: ["src/command/**/*.ts", "src/workflow/**/*.ts"],
+  collectCoverageFrom: [
+    "src/command/**/*.ts",
+    "src/workflow/**/*.ts",
+    "src/system/**/*.ts",
+  ],
 };
