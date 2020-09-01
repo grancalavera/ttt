@@ -48,7 +48,6 @@ const mockSystemDependencies = (mocks: SystemMocks = {}): SystemDependencies => 
   gameSize: 3,
   maxActiveMatches: mocks.maxActiveMatches ?? Number.POSITIVE_INFINITY,
   maxMoves: 3 * 3,
-  winSequences: [...rows(3), ...columns(3), ...diagonals(3)],
 });
 
 export const mockWorkflowDependencies = (spies: WorkflowSpies) => (

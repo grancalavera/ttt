@@ -10,10 +10,11 @@ import {
 import { IllegalMoveError, UnknownPlayerError, WrongTurnError } from "../domain/error";
 import { Match, MatchState, Moves, Player, Position, Winner } from "../domain/model";
 import { domainFailure } from "../domain/result";
+import { winSequences } from "../system/board";
 import { PlayMoveWorkflow } from "./support";
 
 export const playMove: PlayMoveWorkflow = (dependencies) => async (input) => {
-  const { upsertMatch, gameSize, winSequences } = dependencies;
+  const { upsertMatch, gameSize, maxMoves } = dependencies;
   const { matchDescription, game, move } = input;
   const [player, position] = move;
 
@@ -35,13 +36,13 @@ export const playMove: PlayMoveWorkflow = (dependencies) => async (input) => {
   const { players } = game;
   const [p1, p2] = game.players;
   const moves = [...game.moves, move] as Moves;
-  const winnerOption = findWinner(winSequences, moves);
+  const winnerOption = findWinner(winSequences(gameSize), moves);
 
   let matchState: MatchState;
 
   if (isSome(winnerOption)) {
     matchState = { kind: "Victory", players, moves, winner: winnerOption.value };
-  } else if (moves.length === gameSize * gameSize) {
+  } else if (moves.length === maxMoves) {
     matchState = { kind: "Draw", players, moves };
   } else {
     matchState = { kind: "Game", players, moves, next: player.id === p1.id ? p2 : p1 };
