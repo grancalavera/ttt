@@ -1,7 +1,12 @@
 import { failure, Result, success } from "@grancalavera/ttt-etc";
-import { CountActiveMatches } from "../command/support";
-import { DomainError, UpsertFailedError } from "../domain/error";
-import { Match, Player } from "../domain/model";
+import { CountActiveMatches, FindMatch, FindFirstChallenge } from "../command/support";
+import {
+  DomainError,
+  UpsertFailedError,
+  NoChallengesFoundError,
+  MatchNotFoundError,
+} from "../domain/error";
+import { Match, Player, MatchDescription, Challenge } from "../domain/model";
 import { GameSettings } from "../system/support";
 import { GetUniqueId, RunWorkflow, UpsertMatch } from "../workflow/support";
 
@@ -23,9 +28,7 @@ export const upsertFailure = (m: Match) => failure([upsertError(m)]);
 
 type SystemDependencies = GameSettings;
 type WorkflowDependencies = GetUniqueId & UpsertMatch;
-type CommandDependencies = CountActiveMatches;
-// really should be:
-// type CommandDependencies = CountActiveMatches & FindFirstChallenge & FindMatch;
+type CommandDependencies = CountActiveMatches & FindFirstChallenge & FindMatch;
 
 interface SystemMocks {
   readonly maxActiveMatches?: number;
@@ -36,11 +39,18 @@ interface WorkflowSpies {
 }
 
 interface WorkflowMocks {
-  readonly matchToUpsertFail?: Match;
+  readonly upsertFails?: boolean;
+}
+
+interface CommandSpies {
+  readonly spyOnFindFirstChallenge: jest.Mock;
+  readonly spyOnFindMatch: jest.Mock;
 }
 
 interface CommandMocks {
   activeMatches?: number;
+  firstChallengeToFind?: [MatchDescription, Challenge];
+  matchToFind?: Match;
 }
 
 const mockSystemDependencies = (mocks: SystemMocks = {}): SystemDependencies => ({
@@ -53,19 +63,33 @@ export const mockWorkflowDependencies = (spies: WorkflowSpies) => (
   mocks: SystemMocks & WorkflowMocks = {}
 ): SystemDependencies & WorkflowDependencies => ({
   ...mockSystemDependencies(mocks),
-  upsertMatch: async (match) => {
-    const { matchToUpsertFail } = mocks;
-    spies.spyOnUpsert(matchToUpsertFail ?? match);
-    return matchToUpsertFail
-      ? failure(upsertError(matchToUpsertFail))
-      : success(undefined);
-  },
+
   getUniqueId: () => matchId,
+
+  upsertMatch: async (match) => {
+    spies.spyOnUpsert(match);
+    return mocks.upsertFails ? failure(upsertError(match)) : success(undefined);
+  },
 });
 
-export const mockCommandDependencies = (
+export const mockCommandDependencies = (spies: CommandSpies) => (
   mocks: SystemMocks & CommandMocks = {}
 ): SystemDependencies & CommandDependencies => ({
   ...mockSystemDependencies(mocks),
+
   countActiveMatches: async () => mocks.activeMatches ?? 0,
+
+  findFirstChallenge: async () => {
+    spies.spyOnFindFirstChallenge();
+    return mocks.firstChallengeToFind
+      ? success(mocks.firstChallengeToFind)
+      : failure(new NoChallengesFoundError());
+  },
+
+  findMatch: async (id) => {
+    spies.spyOnFindMatch(id);
+    return mocks.matchToFind
+      ? success(mocks.matchToFind)
+      : failure(new MatchNotFoundError(id));
+  },
 });

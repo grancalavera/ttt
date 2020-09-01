@@ -38,7 +38,7 @@ const scenarios: WorkflowScenario<CreateChallengeInput>[] = [
   },
   {
     name: "upsert failed",
-    runWorkflow: createChallenge(mock({ matchToUpsertFail: challengeMatch })),
+    runWorkflow: createChallenge(mock({ upsertFails: true })),
     input: { matchDescription, move: [alice, 0] },
     expectedResult: upsertFailure(challengeMatch),
     expectedMatch: challengeMatch,

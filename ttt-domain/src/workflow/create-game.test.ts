@@ -52,7 +52,7 @@ const scenarios: WorkflowScenario<CreateGameInput>[] = [
   },
   {
     name: "upsert failed",
-    runWorkflow: createGame(mock({ matchToUpsertFail: gameMatch })),
+    runWorkflow: createGame(mock({ upsertFails: true })),
     input: { matchDescription, challenge: initialState, opponent: bob },
     expectedResult: upsertFailure(gameMatch),
     expectedMatch: gameMatch,
