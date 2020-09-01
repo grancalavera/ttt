@@ -10,11 +10,10 @@ import {
 import { IllegalMoveError, UnknownPlayerError, WrongTurnError } from "../domain/error";
 import { Match, MatchState, Moves, Player, Position, Winner } from "../domain/model";
 import { domainFailure } from "../domain/result";
-import { columns, diagonals, rows } from "../system/board";
 import { PlayMoveWorkflow } from "./support";
 
 export const playMove: PlayMoveWorkflow = (dependencies) => async (input) => {
-  const { upsertMatch, gameSize } = dependencies;
+  const { upsertMatch, gameSize, winSequences } = dependencies;
   const { matchDescription, game, move } = input;
   const [player, position] = move;
 
@@ -36,7 +35,7 @@ export const playMove: PlayMoveWorkflow = (dependencies) => async (input) => {
   const { players } = game;
   const [p1, p2] = game.players;
   const moves = [...game.moves, move] as Moves;
-  const winnerOption = findWinner(gameSize, moves);
+  const winnerOption = findWinner(winSequences, moves);
 
   let matchState: MatchState;
 
@@ -53,11 +52,8 @@ export const playMove: PlayMoveWorkflow = (dependencies) => async (input) => {
   return isFailure(upsertResult) ? domainFailure(upsertResult) : success(match);
 };
 
-const findWinner = (size: number, moves: Moves): Option<Winner> => {
-  const winSequences = [...rows(size), ...columns(size), ...diagonals(size)];
+const findWinner = (winSequences: number[][], moves: Moves): Option<Winner> => {
   const findPlayer = playerFinder(moves);
-
-  let winnerOption: Option<Winner> = none;
 
   for (const winSequence of winSequences) {
     const players = winSequence.map(findPlayer);
@@ -69,12 +65,11 @@ const findWinner = (size: number, moves: Moves): Option<Winner> => {
       // every move in the sequence was played by the same player
       players.every((o) => isSome(o) && o.value.id === first.value.id)
     ) {
-      winnerOption = some([first.value, winSequence]);
-      break;
+      return some([first.value, winSequence]);
     }
   }
 
-  return winnerOption;
+  return none;
 };
 
 const playerFinder = (moves: Moves) => (position: Position): Option<Player> => {

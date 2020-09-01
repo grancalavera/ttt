@@ -2,6 +2,7 @@ import { failure, Result, success } from "@grancalavera/ttt-etc";
 import { CountActiveMatches } from "../command/support";
 import { DomainError, UpsertFailedError } from "../domain/error";
 import { Match, Player } from "../domain/model";
+import { rows, columns, diagonals } from "../system/board";
 import { GameSettings } from "../system/support";
 import { GetUniqueId, RunWorkflow, UpsertMatch } from "../workflow/support";
 
@@ -46,6 +47,8 @@ interface CommandMocks {
 const mockSystemDependencies = (mocks: SystemMocks = {}): SystemDependencies => ({
   gameSize: 3,
   maxActiveMatches: mocks.maxActiveMatches ?? Number.POSITIVE_INFINITY,
+  maxMoves: 3 * 3,
+  winSequences: [...rows(3), ...columns(3), ...diagonals(3)],
 });
 
 export const mockWorkflowDependencies = (spies: WorkflowSpies) => (

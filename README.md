@@ -4,12 +4,20 @@
 
 - [Domain model](./ttt-domain/src/domain/model.ts)
 
+## Commands
+
+- [Command support](ttt-domain/src/command/support.ts)
+- [Global command handler](ttt-domain/src/command/global-command-handler.ts)
+- [Join game command handler](ttt-domain/src/command/join-game-command-handler.ts)
+- [Play move command handler](ttt-domain/src/command/play-move-command-handler.ts)
+
 ## Workflows
 
-- [Create match](./ttt-domain/src/workflows/create-match/create-match.ts)
-- [Create game](./ttt-domain/src/workflows/create-game/create-game.ts)
-- [Create challenge](./ttt-domain/src/workflows/create-challenge/create-challenge.ts)
-- [Workflow support](./ttt-domain/src/workflows/support.ts)
+- [Workflow support](./ttt-domain/src/workflow/support.ts)
+- [Create match](./ttt-domain/src/workflow/create-match.ts)
+- [Create game](./ttt-domain/src/workflow/create-game.ts)
+- [Create challenge](./ttt-domain/src/workflow/create-challenge.ts)
+- [Play move](./ttt-domain/src/workflow/play-move.ts)
 
 ![ttt sequence diagram](./ttt-docs/images/sequence.png)
 
