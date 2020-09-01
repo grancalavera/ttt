@@ -37,3 +37,9 @@ const transpose = (xs: Matrix): Matrix => {
 };
 
 const board = (side: number) => Array.from({ length: side * side }, (_, i) => i);
+
+export const winSequences = (size: number) => [
+  ...rows(size),
+  ...columns(size),
+  ...diagonals(size),
+];
