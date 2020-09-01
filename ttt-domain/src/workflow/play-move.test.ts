@@ -139,7 +139,7 @@ const scenarios: WorkflowScenario<PlayMoveInput>[] = [
   },
   {
     name: "upsert failed",
-    runWorkflow: playMove(mock({ matchToUpsertFail: opponentFirstMoveMatch })),
+    runWorkflow: playMove(mock({ upsertFails: true })),
     input: { matchDescription, game: opponentFirstMoveInitialState, move: [bob, 1] },
     expectedResult: upsertFailure(opponentFirstMoveMatch),
     expectedMatch: opponentFirstMoveMatch,

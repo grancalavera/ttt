@@ -25,7 +25,7 @@ const newMatch: Match = {
 const scenarios: WorkflowScenario<CreateMatchInput>[] = [
   {
     name: "upsert failed",
-    runWorkflow: createMatch(mock({ matchToUpsertFail: newMatch })),
+    runWorkflow: createMatch(mock({ upsertFails: true })),
     input: { owner: alice },
     expectedResult: upsertFailure(newMatch),
     expectedMatch: newMatch,
