@@ -2,7 +2,6 @@ import { failure, Result, success } from "@grancalavera/ttt-etc";
 import { CountActiveMatches } from "../command/support";
 import { DomainError, UpsertFailedError } from "../domain/error";
 import { Match, Player } from "../domain/model";
-import { rows, columns, diagonals } from "../system/board";
 import { GameSettings } from "../system/support";
 import { GetUniqueId, RunWorkflow, UpsertMatch } from "../workflow/support";
 
