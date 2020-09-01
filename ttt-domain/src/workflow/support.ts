@@ -2,6 +2,7 @@ import { AsyncResult } from "@grancalavera/ttt-etc";
 import { DomainError } from "../domain/error";
 import { Challenge, Game, Match, MatchDescription, Move, Player } from "../domain/model";
 import { GameSettings } from "../system/support";
+import { DomainResult, AsyncDomainResult } from "../domain/result";
 
 // ----------------------------------------------------------------------------
 //
@@ -105,8 +106,8 @@ export interface GetUniqueId {
 //
 // ----------------------------------------------------------------------------
 
+export type WorkflowResult = AsyncDomainResult<Match>;
 export type CreateWorkflow<TDeps, TInput> = (dependencies: TDeps) => RunWorkflow<TInput>;
 export type RunWorkflow<T> = (input: T) => WorkflowResult;
-export type WorkflowResult = AsyncResult<Match, DomainError[]>;
 
 export const arePlayersTheSame = (l: Player, r: Player) => l.id === r.id;

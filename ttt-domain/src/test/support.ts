@@ -1,5 +1,11 @@
 import { failure, Result, success } from "@grancalavera/ttt-etc";
-import { CountActiveMatches, FindMatch, FindFirstChallenge } from "../command/support";
+import {
+  CountActiveMatches,
+  FindMatch,
+  FindFirstChallenge,
+  Command,
+  HandleCommand,
+} from "../command/support";
 import {
   DomainError,
   UpsertFailedError,
@@ -8,7 +14,13 @@ import {
 } from "../domain/error";
 import { Match, Player, MatchDescription, Challenge } from "../domain/model";
 import { GameSettings } from "../system/support";
-import { GetUniqueId, RunWorkflow, UpsertMatch } from "../workflow/support";
+import {
+  GetUniqueId,
+  RunWorkflow,
+  UpsertMatch,
+  WorkflowInput,
+} from "../workflow/support";
+import { DomainResult } from "../domain/result";
 
 export interface WorkflowScenario<Input> {
   name: string;
@@ -16,6 +28,13 @@ export interface WorkflowScenario<Input> {
   input: Input;
   expectedResult: Result<Match, DomainError[]>;
   expectedMatch?: Match;
+}
+
+export interface CommandScenario<TCommand extends Command> {
+  name: string;
+  handleCommand: HandleCommand<TCommand>;
+  command: TCommand;
+  expected: DomainResult<WorkflowInput>;
 }
 
 export const alice: Player = { id: "alice" };

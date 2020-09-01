@@ -8,7 +8,7 @@ import {
   MatchDescription,
   Challenge,
 } from "../domain/model";
-import { AsyncDomainResult } from "../domain/result";
+import { AsyncDomainResult, DomainResult } from "../domain/result";
 import { WorkflowInput } from "../workflow/support";
 
 // ----------------------------------------------------------------------------
@@ -93,9 +93,10 @@ export type CountActiveMatches = {
 // ----------------------------------------------------------------------------
 
 export type Command = JoinGameCommand | PlayMoveCommand;
+export type CommandResult = AsyncDomainResult<WorkflowInput>;
 
 type CommandHandler<TDeps, TCommand extends Command> = (
   dependencies: TDeps
 ) => (command: TCommand) => CommandResult;
 
-export type CommandResult = AsyncDomainResult<WorkflowInput>;
+export type HandleCommand<T> = (command: T) => CommandResult;
