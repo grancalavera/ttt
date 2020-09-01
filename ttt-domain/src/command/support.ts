@@ -43,9 +43,8 @@ export class JoinGameCommand {
   constructor(readonly input: JoinGameInput) {}
 }
 
-interface PlayMoveInput {
-  readonly matchId: MatchId;
-  readonly move: Move;
+export interface JoinGameInput {
+  readonly player: Player;
 }
 
 export interface FindFirstChallenge {
@@ -68,8 +67,9 @@ export class PlayMoveCommand {
   constructor(readonly input: PlayMoveInput) {}
 }
 
-interface JoinGameInput {
-  readonly player: Player;
+export interface PlayMoveInput {
+  readonly matchId: MatchId;
+  readonly move: Move;
 }
 
 export interface FindMatch {
