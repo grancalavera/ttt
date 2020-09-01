@@ -54,10 +54,10 @@ export const playMove: PlayMoveWorkflow = (dependencies) => async (input) => {
 };
 
 const findWinner = (winSequences: number[][], moves: Moves): Option<Winner> => {
-  const findPlayer = playerFinder(moves);
+  const toPlayerByMovePosition = playerFinderByMovePosition(moves);
 
   for (const winSequence of winSequences) {
-    const players = winSequence.map(findPlayer);
+    const players = winSequence.map(toPlayerByMovePosition);
     const first = players[0] ?? none;
 
     if (
@@ -73,7 +73,9 @@ const findWinner = (winSequences: number[][], moves: Moves): Option<Winner> => {
   return none;
 };
 
-const playerFinder = (moves: Moves) => (position: Position): Option<Player> => {
+const playerFinderByMovePosition = (moves: Moves) => (
+  position: Position
+): Option<Player> => {
   const move = moves.find(([, p]) => p === position);
   return move ? some(move[0]) : none;
 };
