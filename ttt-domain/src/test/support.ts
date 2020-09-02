@@ -62,8 +62,8 @@ interface WorkflowMocks {
 }
 
 interface CommandSpies {
-  readonly spyOnFindFirstChallenge: jest.Mock;
-  readonly spyOnFindMatch: jest.Mock;
+  readonly spyOnFindFirstChallenge?: jest.Mock;
+  readonly spyOnFindMatch?: jest.Mock;
 }
 
 interface CommandMocks {
@@ -93,22 +93,26 @@ export const mockWorkflowDependencies = (spies: WorkflowSpies) => (
 
 export const mockCommandDependencies = (spies: CommandSpies) => (
   mocks: SystemMocks & CommandMocks = {}
-): SystemDependencies & CommandDependencies => ({
-  ...mockSystemDependencies(mocks),
+): SystemDependencies & CommandDependencies => {
+  const { spyOnFindFirstChallenge, spyOnFindMatch } = spies;
 
-  countActiveMatches: async () => mocks.activeMatches ?? 0,
+  return {
+    ...mockSystemDependencies(mocks),
 
-  findFirstChallenge: async () => {
-    spies.spyOnFindFirstChallenge();
-    return mocks.firstChallengeToFind
-      ? success(mocks.firstChallengeToFind)
-      : failure(new NoChallengesFoundError());
-  },
+    countActiveMatches: async () => mocks.activeMatches ?? 0,
 
-  findMatch: async (id) => {
-    spies.spyOnFindMatch(id);
-    return mocks.matchToFind
-      ? success(mocks.matchToFind)
-      : failure(new MatchNotFoundError(id));
-  },
-});
+    findFirstChallenge: async () => {
+      spyOnFindFirstChallenge && spyOnFindFirstChallenge();
+      return mocks.firstChallengeToFind
+        ? success(mocks.firstChallengeToFind)
+        : failure(new NoChallengesFoundError());
+    },
+
+    findMatch: async (id) => {
+      spyOnFindMatch && spyOnFindMatch(id);
+      return mocks.matchToFind
+        ? success(mocks.matchToFind)
+        : failure(new MatchNotFoundError(id));
+    },
+  };
+};

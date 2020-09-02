@@ -16,6 +16,26 @@ export type WorkflowInput =
   | { kind: "CreateGame"; input: CreateGameInput }
   | { kind: "PlayMove"; input: PlayMoveInput };
 
+export class CreateMatch {
+  readonly kind = "CreateMatch";
+  constructor(readonly input: CreateMatchInput) {}
+}
+
+export class CreateChallenge {
+  readonly kind = "CreateChallenge";
+  constructor(readonly input: CreateChallengeInput) {}
+}
+
+export class CreateGame {
+  readonly kind = "CreateGame";
+  constructor(readonly input: CreateGameInput) {}
+}
+
+export class PlayMove {
+  readonly kind = "PlayMove";
+  constructor(readonly input: PlayMoveInput) {}
+}
+
 // ----------------------------------------------------------------------------
 //
 // create match
