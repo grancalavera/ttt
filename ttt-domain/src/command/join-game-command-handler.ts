@@ -1,6 +1,5 @@
 import { isSuccess, success } from "@grancalavera/ttt-etc";
-import { domainFailure } from "../domain/result";
-import { WorkflowInput } from "../workflow/support";
+import { CreateGame, CreateMatch, WorkflowInput } from "../workflow/support";
 import { JoinGameCommandHandler } from "./support";
 
 export const joinGameCommandHandler: JoinGameCommandHandler = (dependencies) => async (
@@ -11,18 +10,10 @@ export const joinGameCommandHandler: JoinGameCommandHandler = (dependencies) => 
   if (isSuccess(findResult)) {
     const [matchDescription, challenge] = findResult.value;
 
-    return success<WorkflowInput>({
-      kind: "CreateGame",
-      input: { matchDescription, challenge, opponent: command.input.player },
-    });
+    return success<WorkflowInput>(
+      new CreateGame({ matchDescription, challenge, opponent: command.input.player })
+    );
   }
 
-  if (findResult.error.kind === "NoChallengesFoundError") {
-    return success<WorkflowInput>({
-      kind: "CreateMatch",
-      input: { owner: command.input.player },
-    });
-  }
-
-  return domainFailure(findResult);
+  return success<WorkflowInput>(new CreateMatch({ owner: command.input.player }));
 };
