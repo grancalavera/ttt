@@ -2,6 +2,7 @@ import { failure, isFailure, success } from "@grancalavera/ttt-etc";
 import { IllegalMatchStateError } from "../domain/error";
 import { domainFailure } from "../domain/result";
 import { PlayMoveCommandHandler } from "./support";
+import { PlayMove } from "../workflow/support";
 
 export const playMoveCommandHandler: PlayMoveCommandHandler = (dependencies) => async (
   command
@@ -16,7 +17,7 @@ export const playMoveCommandHandler: PlayMoveCommandHandler = (dependencies) => 
   const match = findResult.value;
   const { matchDescription, matchState } = match;
 
-  if (matchState.kind === "Challenge") {
+  if (matchState.kind === "New") {
     return success({
       kind: "CreateChallenge",
       input: { matchDescription, move },
@@ -24,11 +25,8 @@ export const playMoveCommandHandler: PlayMoveCommandHandler = (dependencies) => 
   }
 
   if (matchState.kind === "Game") {
-    return success({
-      kind: "PlayMove",
-      input: { matchDescription, move, game: matchState },
-    });
+    return success(new PlayMove({ matchDescription, game: matchState, move }));
   }
 
-  return failure([new IllegalMatchStateError(match, ["Challenge", "Game"])]);
+  return failure([new IllegalMatchStateError(match, ["New", "Game"])]);
 };
