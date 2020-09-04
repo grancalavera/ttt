@@ -64,6 +64,7 @@ interface WorkflowMocks {
 interface CommandSpies {
   readonly spyOnFindFirstChallenge?: jest.Mock;
   readonly spyOnFindMatch?: jest.Mock;
+  readonly spyOnCountActiveMatches?: jest.Mock;
 }
 
 interface CommandMocks {
@@ -94,12 +95,15 @@ export const mockWorkflowDependencies = (spies: WorkflowSpies) => (
 export const mockCommandDependencies = (spies: CommandSpies) => (
   mocks: SystemMocks & CommandMocks = {}
 ): SystemDependencies & CommandDependencies => {
-  const { spyOnFindFirstChallenge, spyOnFindMatch } = spies;
+  const { spyOnFindFirstChallenge, spyOnFindMatch, spyOnCountActiveMatches } = spies;
 
   return {
     ...mockSystemDependencies(mocks),
 
-    countActiveMatches: async () => mocks.activeMatches ?? 0,
+    countActiveMatches: async () => {
+      spyOnCountActiveMatches && spyOnCountActiveMatches();
+      return mocks.activeMatches ?? 0;
+    },
 
     findFirstChallenge: async () => {
       spyOnFindFirstChallenge && spyOnFindFirstChallenge();

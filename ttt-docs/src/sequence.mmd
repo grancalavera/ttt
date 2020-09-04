@@ -30,27 +30,29 @@ sequenceDiagram
   c->>+s: subscribe(Match.id)
   activate c
 
-  c->>+s: playMove(Match.id, Move)
+  c->>+s: play(Match.id, Move)
   activate s
   s-->>-c: void
 
-  s->>+d: resolveMove(Match.id, Move)
-  d-->>-s: Result = MoveType | WorkflowError
-
+  s->>+d: findMatch(Match.id)
+  d-->>-s: Result = Match | WorkflowError
 
   alt Result = WorkflowError
     s->>s: publish(WorkflowError)
 
-  else Result = CreateChallenge
+  else Result.Match.MatchState.kind = New
     s->>+d: createChallenge(Match, Move)
     d-->>-s: Match | WorkflowError
     s->>s: publish(Match.state | WorkflowError)
 
-  else Result = PlayMove
+  else Result.Match.MatchState.kind = Game
     s->>+d: playMove(Match, Move)
     d-->>-s: Match | WorkflowError
     s->>s: publish(Match.state | WorkflowError)
 
+
+  else
+    s->>s: publish(WorkflowError)
   end
 
   note right of d: these state transitions <br /> DO create moves

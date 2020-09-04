@@ -1,14 +1,15 @@
 import { AsyncResult } from "@grancalavera/ttt-etc";
 import { DomainError } from "../domain/error";
 import {
+  Challenge,
   Match,
+  MatchDescription,
   MatchId,
   Move,
   Player,
-  MatchDescription,
-  Challenge,
 } from "../domain/model";
-import { AsyncDomainResult, DomainResult } from "../domain/result";
+import { AsyncDomainResult } from "../domain/result";
+import { GameSettings } from "../system/support";
 import { WorkflowInput } from "../workflow/support";
 
 // ----------------------------------------------------------------------------
@@ -34,7 +35,7 @@ export interface PlayMove {
 // ----------------------------------------------------------------------------
 
 export type JoinGameCommandHandler = CommandHandler<
-  CountActiveMatches & FindFirstChallenge,
+  CountActiveMatches & FindFirstChallenge & GameSettings,
   JoinGameCommand
 >;
 
@@ -46,6 +47,10 @@ export class JoinGameCommand {
 export interface JoinGameInput {
   readonly player: Player;
 }
+
+export type CountActiveMatches = {
+  countActiveMatches: (player: Player) => Promise<number>;
+};
 
 export interface FindFirstChallenge {
   readonly findFirstChallenge: () => AsyncResult<
@@ -75,16 +80,6 @@ export interface PlayMoveInput {
 export interface FindMatch {
   readonly findMatch: (matchId: MatchId) => AsyncResult<Match, DomainError>;
 }
-
-// ----------------------------------------------------------------------------
-//
-// shared dependencies
-//
-// ----------------------------------------------------------------------------
-
-export type CountActiveMatches = {
-  countActiveMatches: (player: Player) => Promise<number>;
-};
 
 // ----------------------------------------------------------------------------
 //
