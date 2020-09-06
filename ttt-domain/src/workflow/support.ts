@@ -10,7 +10,7 @@ export type WorkflowInput =
   | { kind: "CreateMatch"; input: CreateMatchInput }
   | { kind: "CreateChallenge"; input: CreateChallengeInput }
   | { kind: "CreateGame"; input: CreateGameInput }
-  | { kind: "PlayMove"; input: PlayMoveInput };
+  | { kind: "PlayMove"; input: CreateMoveInput };
 
 export class CreateMatch {
   readonly kind = "CreateMatch";
@@ -29,25 +29,21 @@ export class CreateGame {
 
 export class PlayMove {
   readonly kind = "PlayMove";
-  constructor(readonly input: PlayMoveInput) {}
+  constructor(readonly input: CreateMoveInput) {}
 }
 
 // create match
-
-export type CreateMatchDependencies = GameSettings & GetUniqueId & UpsertMatch;
 
 export interface CreateMatchInput {
   owner: Player;
 }
 
 export type CreateMatchWorkflow = CreateWorkflow<
-  CreateMatchDependencies,
+  GameSettings & GetUniqueId & UpsertMatch,
   CreateMatchInput
 >;
 
 // create challenge
-
-export type CreateChallengeDeps = GameSettings & UpsertMatch;
 
 export interface CreateChallengeInput {
   readonly matchDescription: MatchDescription;
@@ -55,13 +51,11 @@ export interface CreateChallengeInput {
 }
 
 export type CreateChallengeWorkflow = CreateWorkflow<
-  CreateChallengeDeps,
+  GameSettings & UpsertMatch,
   CreateChallengeInput
 >;
 
 // create game
-
-export type CreateGameDependencies = GameSettings & UpsertMatch;
 
 export interface CreateGameInput {
   readonly matchDescription: MatchDescription;
@@ -69,19 +63,23 @@ export interface CreateGameInput {
   readonly opponent: Player;
 }
 
-export type CreateGameWorkflow = CreateWorkflow<CreateGameDependencies, CreateGameInput>;
+export type CreateGameWorkflow = CreateWorkflow<
+  GameSettings & UpsertMatch,
+  CreateGameInput
+>;
 
-// play move
+// create move
 
-export type PlayMoveDependencies = GameSettings & UpsertMatch;
-
-export interface PlayMoveInput {
+export interface CreateMoveInput {
   readonly matchDescription: MatchDescription;
   readonly game: Game;
   readonly move: Move;
 }
 
-export type PlayMoveWorkflow = CreateWorkflow<PlayMoveDependencies, PlayMoveInput>;
+export type CreateMoveWorkflow = CreateWorkflow<
+  GameSettings & UpsertMatch,
+  CreateMoveInput
+>;
 
 // dependencies
 

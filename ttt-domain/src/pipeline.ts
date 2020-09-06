@@ -14,18 +14,10 @@ import { GameSettings } from "./system/support";
 import { createChallenge } from "./workflow/create-challenge";
 import { createGame } from "./workflow/create-game";
 import { createMatch } from "./workflow/create-match";
-import { playMove as playMoveWF } from "./workflow/play-move";
+import { createMove } from "./workflow/create-move";
 import { GetUniqueId, UpsertMatch, WorkflowInput } from "./workflow/support";
 
-export type BuildPipeline = (
-  dependencies: GameSettings &
-    GetUniqueId &
-    UpsertMatch &
-    CountActiveMatches &
-    FindFirstChallenge &
-    FindMatch
-) => RunPipeline;
-
+export type BuildPipeline = (dependencies: PipelineDependencies) => RunPipeline;
 export type RunPipeline = (command: Command) => AsyncDomainResult<Match>;
 
 export const buildPipeline: BuildPipeline = (dependencies) => async (command) => {
@@ -58,7 +50,7 @@ export const buildPipeline: BuildPipeline = (dependencies) => async (command) =>
   const runCreateMatch = createMatch(dependencies);
   const runCreateChallenge = createChallenge(dependencies);
   const runCreateGame = createGame(dependencies);
-  const runPlayMove = playMoveWF(dependencies);
+  const runCreateMove = createMove(dependencies);
 
   let workflowResult: Result<Match, DomainError[]> = failure([
     new UnknownKindError("WorkflowInput"),
@@ -76,7 +68,7 @@ export const buildPipeline: BuildPipeline = (dependencies) => async (command) =>
       workflowResult = await runCreateGame(workflowInput.input);
       break;
     case "PlayMove":
-      workflowResult = await runPlayMove(workflowInput.input);
+      workflowResult = await runCreateMove(workflowInput.input);
       break;
     default:
       softAssertNever(workflowInput, "unknown workflow kind");
@@ -84,3 +76,12 @@ export const buildPipeline: BuildPipeline = (dependencies) => async (command) =>
 
   return workflowResult;
 };
+
+// prettier-ignore
+type PipelineDependencies =
+  & GameSettings
+  & GetUniqueId
+  & UpsertMatch
+  & CountActiveMatches
+  & FindFirstChallenge
+  & FindMatch;
