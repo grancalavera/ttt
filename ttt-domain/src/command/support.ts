@@ -12,11 +12,7 @@ import { AsyncDomainResult } from "../domain/result";
 import { GameSettings } from "../system/support";
 import { WorkflowInput } from "../workflow/support";
 
-// ----------------------------------------------------------------------------
-//
 // join game command handler
-//
-// ----------------------------------------------------------------------------
 
 export type JoinGameCommandHandler = CommandHandler<
   CountActiveMatches & FindFirstChallenge & GameSettings,
@@ -32,9 +28,9 @@ export interface JoinGameInput {
   readonly player: Player;
 }
 
-export type CountActiveMatches = {
+export interface CountActiveMatches {
   countActiveMatches: (player: Player) => Promise<number>;
-};
+}
 
 export interface FindFirstChallenge {
   readonly findFirstChallenge: () => AsyncResult<
@@ -43,11 +39,7 @@ export interface FindFirstChallenge {
   >;
 }
 
-// ----------------------------------------------------------------------------
-//
 // play move command handler
-//
-// ----------------------------------------------------------------------------
 
 export type PlayMoveCommandHandler = CommandHandler<FindMatch, PlayMoveCommand>;
 
@@ -65,17 +57,12 @@ export interface FindMatch {
   readonly findMatch: (matchId: MatchId) => AsyncResult<Match, DomainError>;
 }
 
-// ----------------------------------------------------------------------------
-//
 // support
-//
-// ----------------------------------------------------------------------------
 
 export type Command = JoinGameCommand | PlayMoveCommand;
-export type CommandResult = AsyncDomainResult<WorkflowInput>;
+export type HandleCommand<T> = (command: T) => CommandResult;
 
+type CommandResult = AsyncDomainResult<WorkflowInput>;
 type CommandHandler<TDeps, TCommand extends Command> = (
   dependencies: TDeps
 ) => (command: TCommand) => CommandResult;
-
-export type HandleCommand<T> = (command: T) => CommandResult;

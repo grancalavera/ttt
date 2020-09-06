@@ -5,22 +5,17 @@ import {
   FindFirstChallenge,
   Command,
   HandleCommand,
-} from "../command/support";
+} from "./command/support";
 import {
   DomainError,
   UpsertFailedError,
   NoChallengesFoundError,
   MatchNotFoundError,
-} from "../domain/error";
-import { Match, Player, MatchDescription, Challenge } from "../domain/model";
-import { GameSettings } from "../system/support";
-import {
-  GetUniqueId,
-  RunWorkflow,
-  UpsertMatch,
-  WorkflowInput,
-} from "../workflow/support";
-import { DomainResult } from "../domain/result";
+} from "./domain/error";
+import { Match, Player, MatchDescription, Challenge } from "./domain/model";
+import { GameSettings } from "./system/support";
+import { GetUniqueId, RunWorkflow, UpsertMatch, WorkflowInput } from "./workflow/support";
+import { DomainResult } from "./domain/result";
 
 export interface WorkflowScenario<Input> {
   name: string;

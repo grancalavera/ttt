@@ -3,6 +3,7 @@ import { IllegalMatchStateError } from "../domain/error";
 import { domainFailure } from "../domain/result";
 import { PlayMoveCommandHandler } from "./support";
 import { PlayMove } from "../workflow/support";
+import { extractMatchDescription } from "../domain/model";
 
 export const playMoveCommandHandler: PlayMoveCommandHandler = (dependencies) => async (
   command
@@ -15,17 +16,17 @@ export const playMoveCommandHandler: PlayMoveCommandHandler = (dependencies) => 
 
   const { move } = command.input;
   const match = findResult.value;
-  const { matchDescription, matchState } = match;
+  const matchDescription = extractMatchDescription(match);
 
-  if (matchState.kind === "New") {
+  if (match.state.kind === "New") {
     return success({
       kind: "CreateChallenge",
       input: { matchDescription, move },
     });
   }
 
-  if (matchState.kind === "Game") {
-    return success(new PlayMove({ matchDescription, game: matchState, move }));
+  if (match.state.kind === "Game") {
+    return success(new PlayMove({ matchDescription, game: match.state, move }));
   }
 
   return failure([new IllegalMatchStateError(match, ["New", "Game"])]);

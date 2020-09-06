@@ -6,7 +6,7 @@ import {
   CommandScenario,
   matchId,
   mockCommandDependencies,
-} from "../test/support";
+} from "../test-support";
 import { CreateGame, CreateMatch, WorkflowInput } from "../workflow/support";
 import { joinGameCommandHandler } from "./join-game-command-handler";
 import { JoinGameCommand } from "./support";

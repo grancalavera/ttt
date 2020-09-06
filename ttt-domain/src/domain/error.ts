@@ -62,7 +62,7 @@ export class MatchNotFoundError {
 export class UpsertFailedError {
   readonly kind = "UpsertFailedError";
   get message() {
-    return `failed to upsert match ${this.match.matchDescription.id}`;
+    return `failed to upsert match ${this.match.id}`;
   }
   constructor(readonly match: Match) {}
 }
@@ -71,10 +71,10 @@ export class IllegalMatchStateError {
   readonly kind = "IllegalMatchStateError";
   get message() {
     return `match ${
-      this.match.matchDescription.id
+      this.match.id
     } is on an illegal state: wanted any state of ${this.wantedStates.join(
       ", "
-    )}, actual state ${this.match.matchState.kind}`;
+    )}, actual state ${this.match.state.kind}`;
   }
   constructor(readonly match: Match, readonly wantedStates: MatchStateName[]) {}
 }

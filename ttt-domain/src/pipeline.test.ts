@@ -8,8 +8,8 @@ import {
 } from "./domain/error";
 import { Challenge, Match, MatchDescription } from "./domain/model";
 import { AsyncDomainResult, DomainResult } from "./domain/result";
-import { alice, bob, matchId } from "./test/support";
 import { buildPipeline } from "./pipeline";
+import { alice, bob, matchId } from "./test-support";
 
 let activeMatches: number = 0;
 let initialState: InitialState = {};
@@ -80,8 +80,9 @@ const scenarios: Scenario[] = [
     commands: [new JoinGameCommand({ player: alice })],
     initialState: {},
     expected: success({
-      matchDescription: { id: matchId, owner: alice },
-      matchState: { kind: "New" },
+      id: matchId,
+      owner: alice,
+      state: { kind: "New" },
     }),
   },
   {
@@ -93,8 +94,9 @@ const scenarios: Scenario[] = [
       ],
     },
     expected: success({
-      matchDescription: { id: matchId, owner: alice },
-      matchState: {
+      id: matchId,
+      owner: alice,
+      state: {
         kind: "Game",
         players: [alice, bob],
         moves: [[alice, 0]],
