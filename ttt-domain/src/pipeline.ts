@@ -10,12 +10,12 @@ import {
 import { DomainError, UnknownKindError } from "./domain/error";
 import { Match } from "./domain/model";
 import { AsyncDomainResult } from "./domain/result";
+import { GameSettings } from "./system/support";
 import { createChallenge } from "./workflow/create-challenge";
 import { createGame } from "./workflow/create-game";
 import { createMatch } from "./workflow/create-match";
 import { playMove as playMoveWF } from "./workflow/play-move";
 import { GetUniqueId, UpsertMatch, WorkflowInput } from "./workflow/support";
-import { GameSettings } from "./system/support";
 
 export type BuildPipeline = (
   dependencies: GameSettings &
@@ -29,15 +29,10 @@ export type BuildPipeline = (
 export type RunPipeline = (command: Command) => AsyncDomainResult<Match>;
 
 export const buildPipeline: BuildPipeline = (dependencies) => async (command) => {
-  // commands
+  // handle command
+
   const handleJoinGame = joinGameCommandHandler(dependencies);
   const handlePlayMove = playMoveCommandHandler(dependencies);
-
-  // workflows
-  const runCreateMatch = createMatch(dependencies);
-  const runCreateChallenge = createChallenge(dependencies);
-  const runCreateGame = createGame(dependencies);
-  const runPlayMove = playMoveWF(dependencies);
 
   let commandResult: Result<WorkflowInput, DomainError[]> = failure([
     new UnknownKindError("Command"),
@@ -58,12 +53,18 @@ export const buildPipeline: BuildPipeline = (dependencies) => async (command) =>
     return commandResult;
   }
 
-  const workflowInput = commandResult.value;
+  // run workflow
+
+  const runCreateMatch = createMatch(dependencies);
+  const runCreateChallenge = createChallenge(dependencies);
+  const runCreateGame = createGame(dependencies);
+  const runPlayMove = playMoveWF(dependencies);
 
   let workflowResult: Result<Match, DomainError[]> = failure([
     new UnknownKindError("WorkflowInput"),
   ]);
 
+  const workflowInput = commandResult.value;
   switch (workflowInput.kind) {
     case "CreateMatch":
       workflowResult = await runCreateMatch(workflowInput.input);
