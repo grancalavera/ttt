@@ -7,5 +7,7 @@ module.exports = {
     "src/command/**/*.ts",
     "src/workflow/**/*.ts",
     "src/system/**/*.ts",
+    "src/domain/**/*.ts",
+    "src/pipeline.ts",
   ],
 };

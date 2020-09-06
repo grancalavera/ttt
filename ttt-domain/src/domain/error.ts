@@ -33,18 +33,18 @@ export class ZeroError {
 
 export class UnknownKindError {
   readonly kind = "UnknownKindError";
-  get message() {
-    return `unknown on type ${this.typename}`;
+  readonly message: string;
+  constructor(readonly typename: string) {
+    this.message = `unknown on type ${this.typename}`;
   }
-  constructor(readonly typename: string) {}
 }
 
 export class TooManyActiveMatchesError {
   readonly kind = "TooManyActiveMatchesError";
-  get message() {
-    return `player ${this.player.id} already reached the max count of ${this.maxActiveMatches} active matches`;
+  readonly message: string;
+  constructor(readonly player: Player, readonly maxActiveMatches: number) {
+    this.message = `player ${this.player.id} already reached the max count of ${this.maxActiveMatches} active matches`;
   }
-  constructor(readonly player: Player, readonly maxActiveMatches: number) {}
 }
 
 export class NoChallengesFoundError {
@@ -53,74 +53,75 @@ export class NoChallengesFoundError {
 
 export class MatchNotFoundError {
   readonly kind = "MatchNotFoundError";
-  get message() {
-    return `match ${this.matchId} not found`;
+  readonly message: string;
+  constructor(readonly matchId: MatchId) {
+    this.message = `match ${this.matchId} not found`;
   }
-  constructor(readonly matchId: MatchId) {}
 }
 
 export class UpsertFailedError {
   readonly kind = "UpsertFailedError";
-  get message() {
-    return `failed to upsert match ${this.match.id}`;
+  readonly message: string;
+  constructor(readonly match: Match) {
+    this.message = `failed to upsert match ${this.match.id}`;
   }
-  constructor(readonly match: Match) {}
 }
 
 export class IllegalMatchStateError {
   readonly kind = "IllegalMatchStateError";
-  get message() {
-    return `match ${
+  readonly message: string;
+  constructor(readonly match: Match, readonly wantedStates: MatchStateName[]) {
+    this.message = `match ${
       this.match.id
     } is on an illegal state: wanted any state of ${this.wantedStates.join(
       ", "
     )}, actual state ${this.match.state.kind}`;
   }
-  constructor(readonly match: Match, readonly wantedStates: MatchStateName[]) {}
 }
 
 export class IllegalMoveError {
   readonly kind = "IllegalMoveError";
-  get message() {
-    return `position ${this.position} already played on match ${this.matchDescription.id}`;
+  readonly message: string;
+
+  constructor(readonly matchDescription: MatchDescription, readonly position: Position) {
+    this.message = `position ${this.position} already played on match ${this.matchDescription.id}`;
   }
-  constructor(readonly matchDescription: MatchDescription, readonly position: Position) {}
 }
 
 export class IllegalChallengerError {
   readonly kind = "IllegalChallengerError";
-  get message() {
-    return `illegal challenger ${this.challenger.id} for match ${this.matchDescription.id} owned by player ${this.matchDescription.owner.id}: a challenger must own the game`;
+  readonly message: string;
+  constructor(readonly matchDescription: MatchDescription, readonly challenger: Player) {
+    this.message = `illegal challenger ${this.challenger.id} for match ${this.matchDescription.id} owned by player ${this.matchDescription.owner.id}: a challenger must own the game`;
   }
-  constructor(readonly matchDescription: MatchDescription, readonly challenger: Player) {}
 }
 
 export class IllegalGameOpponentError {
   readonly kind = "IllegalGameOpponentError";
-  get message() {
-    return `${this.opponent.id} cannot be both the owner and opponent on match ${this.matchId}`;
+  readonly message: string;
+  constructor(readonly matchId: MatchId, readonly opponent: Player) {
+    this.message = `${this.opponent.id} cannot be both the owner and opponent on match ${this.matchId}`;
   }
-  constructor(readonly matchId: MatchId, readonly opponent: Player) {}
 }
 
 export class UnknownPlayerError {
   readonly kind = "UnknownPlayerError";
-  get message() {
-    return `player ${this.unknownPlayer.id} does not belong to match ${this.matchDescription.id}`;
-  }
+  readonly message: string;
   constructor(
     readonly matchDescription: MatchDescription,
     readonly unknownPlayer: Player
-  ) {}
+  ) {
+    this.message = `player ${this.unknownPlayer.id} does not belong to match ${this.matchDescription.id}`;
+  }
 }
 
 export class WrongTurnError {
   readonly kind = "WrongTurnError";
-  get message() {
-    return `is not ${this.wrongTurnPlayer.id} turn in match ${this.matchDescription.id}`;
-  }
+  readonly message: string;
   constructor(
     readonly matchDescription: MatchDescription,
     readonly wrongTurnPlayer: Player
-  ) {}
+  ) {
+    this.message = `is not ${this.wrongTurnPlayer.id} turn in match ${this.matchDescription.id}`;
+  }
 }
