@@ -15,7 +15,7 @@ import {
   unknownPlayer,
   upsertFailure,
   WorkflowScenario,
-} from "../test/support";
+} from "../test-support";
 import { playMove } from "./play-move";
 import { PlayMoveInput } from "./support";
 
@@ -35,8 +35,8 @@ const opponentFirstMoveInitialState: Game = {
 };
 
 const opponentFirstMoveMatch: Match = {
-  matchDescription,
-  matchState: {
+  ...matchDescription,
+  state: {
     kind: "Game",
     players: [alice, bob],
     moves: [
@@ -66,8 +66,8 @@ const ownerPlaysDrawInitialState: Game = {
 const ownerDrawMove: Move = [alice, 8];
 
 const ownerPlaysDrawExpectedMatch: Match = {
-  matchDescription,
-  matchState: {
+  ...matchDescription,
+  state: {
     kind: "Draw",
     players: [alice, bob],
     moves: [
@@ -99,8 +99,8 @@ const ownerPlaysVictoryInitialState: Game = {
 const ownerVictoryMove: Move = [alice, 6];
 
 const ownerPlaysVictoryExpectedMatch: Match = {
-  matchDescription,
-  matchState: {
+  ...matchDescription,
+  state: {
     kind: "Victory",
     players: [alice, bob],
     moves: [

@@ -4,11 +4,7 @@ import { Challenge, Game, Match, MatchDescription, Move, Player } from "../domai
 import { AsyncDomainResult } from "../domain/result";
 import { GameSettings } from "../system/support";
 
-// ----------------------------------------------------------------------------
-//
 // inputs
-//
-// ----------------------------------------------------------------------------
 
 export type WorkflowInput =
   | { kind: "CreateMatch"; input: CreateMatchInput }
@@ -36,11 +32,7 @@ export class PlayMove {
   constructor(readonly input: PlayMoveInput) {}
 }
 
-// ----------------------------------------------------------------------------
-//
 // create match
-//
-// ----------------------------------------------------------------------------
 
 export type CreateMatchDependencies = GameSettings & GetUniqueId & UpsertMatch;
 
@@ -53,11 +45,7 @@ export type CreateMatchWorkflow = CreateWorkflow<
   CreateMatchInput
 >;
 
-// ----------------------------------------------------------------------------
-//
 // create challenge
-//
-// ----------------------------------------------------------------------------
 
 export type CreateChallengeDeps = GameSettings & UpsertMatch;
 
@@ -71,11 +59,7 @@ export type CreateChallengeWorkflow = CreateWorkflow<
   CreateChallengeInput
 >;
 
-// ----------------------------------------------------------------------------
-//
 // create game
-//
-// ----------------------------------------------------------------------------
 
 export type CreateGameDependencies = GameSettings & UpsertMatch;
 
@@ -87,16 +71,9 @@ export interface CreateGameInput {
 
 export type CreateGameWorkflow = CreateWorkflow<CreateGameDependencies, CreateGameInput>;
 
-// ----------------------------------------------------------------------------
-//
 // play move
-//
-// ----------------------------------------------------------------------------
 
-// prettier-ignore
-export type PlayMoveDependencies =
-  & GameSettings
-  & UpsertMatch;
+export type PlayMoveDependencies = GameSettings & UpsertMatch;
 
 export interface PlayMoveInput {
   readonly matchDescription: MatchDescription;
@@ -106,11 +83,7 @@ export interface PlayMoveInput {
 
 export type PlayMoveWorkflow = CreateWorkflow<PlayMoveDependencies, PlayMoveInput>;
 
-// ----------------------------------------------------------------------------
-//
 // dependencies
-//
-// ----------------------------------------------------------------------------
 
 export interface UpsertMatch {
   readonly upsertMatch: (match: Match) => AsyncResult<void, DomainError>;
@@ -120,14 +93,9 @@ export interface GetUniqueId {
   readonly getUniqueId: () => string;
 }
 
-// ----------------------------------------------------------------------------
-//
 // support
-//
-// ----------------------------------------------------------------------------
 
-export type WorkflowResult = AsyncDomainResult<Match>;
-export type CreateWorkflow<TDeps, TInput> = (dependencies: TDeps) => RunWorkflow<TInput>;
 export type RunWorkflow<T> = (input: T) => WorkflowResult;
 
-export const arePlayersTheSame = (l: Player, r: Player) => l.id === r.id;
+type WorkflowResult = AsyncDomainResult<Match>;
+type CreateWorkflow<TDeps, TInput> = (dependencies: TDeps) => RunWorkflow<TInput>;

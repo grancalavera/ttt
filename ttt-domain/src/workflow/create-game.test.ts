@@ -12,7 +12,7 @@ import {
   mockWorkflowDependencies,
   upsertFailure,
   WorkflowScenario,
-} from "../test/support";
+} from "../test-support";
 import { createGame } from "./create-game";
 import { CreateGameInput } from "./support";
 
@@ -30,8 +30,8 @@ const initialState: Challenge = {
 };
 
 const gameMatch: Match = {
-  matchDescription,
-  matchState: {
+  ...matchDescription,
+  state: {
     kind: "Game",
     players: [alice, bob],
     moves: [[alice, 0]],

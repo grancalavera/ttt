@@ -12,7 +12,7 @@ import {
   mockWorkflowDependencies,
   upsertFailure,
   WorkflowScenario,
-} from "../test/support";
+} from "../test-support";
 import { createChallenge } from "./create-challenge";
 import { CreateChallengeInput } from "./support";
 
@@ -25,8 +25,8 @@ const matchDescription: MatchDescription = {
 };
 
 const challengeMatch: Match = {
-  matchDescription,
-  matchState: { kind: "Challenge", move: [alice, 0] },
+  ...matchDescription,
+  state: { kind: "Challenge", move: [alice, 0] },
 };
 
 const scenarios: WorkflowScenario<CreateChallengeInput>[] = [

@@ -2,19 +2,19 @@ import { failure, isSuccess, success } from "@grancalavera/ttt-etc";
 import { IllegalGameOpponentError } from "../domain/error";
 import { Match } from "../domain/model";
 import { domainFailure } from "../domain/result";
-import { arePlayersTheSame, CreateGameWorkflow } from "./support";
+import { CreateGameWorkflow } from "./support";
 
 export const createGame: CreateGameWorkflow = (dependencies) => async (input) => {
   const { upsertMatch } = dependencies;
-  const { matchDescription: description, challenge, opponent } = input;
+  const { matchDescription, challenge, opponent } = input;
 
-  if (arePlayersTheSame(description.owner, opponent)) {
-    return failure([new IllegalGameOpponentError(description.id, opponent)]);
+  if (matchDescription.owner.id === opponent.id) {
+    return failure([new IllegalGameOpponentError(matchDescription.id, opponent)]);
   }
 
   const match: Match = {
-    matchDescription: description,
-    matchState: {
+    ...matchDescription,
+    state: {
       kind: "Game",
       players: [challenge.move[0], opponent],
       moves: [challenge.move],

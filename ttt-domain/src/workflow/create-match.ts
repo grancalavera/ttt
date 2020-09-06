@@ -7,11 +7,9 @@ export const createMatch: CreateMatchWorkflow = (dependencies) => async (input) 
   const { owner } = input;
 
   const match: Match = {
-    matchDescription: {
-      id: getUniqueId(),
-      owner,
-    },
-    matchState: applyStateTransition(),
+    id: getUniqueId(),
+    owner,
+    state: applyStateTransition(),
   };
 
   const result = await upsertMatch(match);

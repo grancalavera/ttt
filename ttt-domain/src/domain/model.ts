@@ -1,14 +1,9 @@
 import { NonEmptyArray } from "@grancalavera/ttt-etc";
 
-// ----------------------------------------------------------------------------
-//
 // aggregate root
-//
-// ----------------------------------------------------------------------------
 
-export interface Match {
-  readonly matchDescription: MatchDescription;
-  readonly matchState: MatchState;
+export interface Match extends MatchDescription {
+  readonly state: MatchState;
 }
 
 export interface MatchDescription {
@@ -19,11 +14,7 @@ export interface MatchDescription {
 export type MatchState = New | Challenge | Game | GameOver;
 export type MatchStateName = MatchState["kind"];
 
-// ----------------------------------------------------------------------------
-//
 // states
-//
-// ----------------------------------------------------------------------------
 
 export interface New {
   readonly kind: "New";
@@ -50,11 +41,7 @@ export interface Victory extends GameBaseState {
   readonly winner: Winner;
 }
 
-// ----------------------------------------------------------------------------
-//
 // domain objects
-//
-// ----------------------------------------------------------------------------
 
 export type Players = [Player, Player];
 export type Move = [Player, Position];
@@ -74,3 +61,10 @@ interface GameBaseState {
   readonly players: Players;
   readonly moves: Moves;
 }
+
+// support
+
+export const extractMatchDescription = ({ id, owner }: Match): MatchDescription => ({
+  id,
+  owner,
+});

@@ -7,7 +7,7 @@ import {
   CommandScenario,
   matchId,
   mockCommandDependencies,
-} from "../test/support";
+} from "../test-support";
 import { CreateChallenge, PlayMove, WorkflowInput } from "../workflow/support";
 import { playMoveCommandHandler } from "./play-move-command-handler";
 import { PlayMoveCommand } from "./support";
@@ -17,8 +17,8 @@ const mock = mockCommandDependencies({ spyOnFindMatch });
 const matchDescription: MatchDescription = { owner: alice, id: matchId };
 
 const newMatch: Match = {
-  matchDescription,
-  matchState: { kind: "New" },
+  ...matchDescription,
+  state: { kind: "New" },
 };
 
 const gameMatchState: Game = {
@@ -29,23 +29,23 @@ const gameMatchState: Game = {
 };
 
 const gameMatch: Match = {
-  matchDescription,
-  matchState: gameMatchState,
+  ...matchDescription,
+  state: gameMatchState,
 };
 
 const challengeMatch: Match = {
-  matchDescription,
-  matchState: { kind: "Challenge", move: [alice, 0] },
+  ...matchDescription,
+  state: { kind: "Challenge", move: [alice, 0] },
 };
 
 const drawMatch: Match = {
-  matchDescription,
-  matchState: { kind: "Draw", players: [alice, bob], moves: [[alice, 0]] },
+  ...matchDescription,
+  state: { kind: "Draw", players: [alice, bob], moves: [[alice, 0]] },
 };
 
 const victoryMatch: Match = {
-  matchDescription,
-  matchState: {
+  ...matchDescription,
+  state: {
     kind: "Victory",
     players: [alice, bob],
     moves: [[alice, 0]],

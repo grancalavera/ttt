@@ -7,7 +7,7 @@ import {
   mockWorkflowDependencies,
   upsertFailure,
   WorkflowScenario,
-} from "../test/support";
+} from "../test-support";
 import { createMatch } from "./create-match";
 import { CreateMatchInput } from "./support";
 
@@ -15,11 +15,9 @@ const spyOnUpsert = jest.fn();
 const mock = mockWorkflowDependencies({ spyOnUpsert });
 
 const newMatch: Match = {
-  matchDescription: {
-    id: matchId,
-    owner: alice,
-  },
-  matchState: { kind: "New" },
+  id: matchId,
+  owner: alice,
+  state: { kind: "New" },
 };
 
 const scenarios: WorkflowScenario<CreateMatchInput>[] = [

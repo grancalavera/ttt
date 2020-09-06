@@ -38,17 +38,17 @@ export const playMove: PlayMoveWorkflow = (dependencies) => async (input) => {
   const moves = [...game.moves, move] as Moves;
   const winnerOption = findWinner(winSequences(gameSize), moves);
 
-  let matchState: MatchState;
+  let state: MatchState;
 
   if (isSome(winnerOption)) {
-    matchState = { kind: "Victory", players, moves, winner: winnerOption.value };
+    state = { kind: "Victory", players, moves, winner: winnerOption.value };
   } else if (moves.length === maxMoves) {
-    matchState = { kind: "Draw", players, moves };
+    state = { kind: "Draw", players, moves };
   } else {
-    matchState = { kind: "Game", players, moves, next: player.id === p1.id ? p2 : p1 };
+    state = { kind: "Game", players, moves, next: player.id === p1.id ? p2 : p1 };
   }
 
-  const match: Match = { matchDescription, matchState };
+  const match: Match = { ...matchDescription, state };
   const upsertResult = await upsertMatch(match);
   return isFailure(upsertResult) ? domainFailure(upsertResult) : success(match);
 };
