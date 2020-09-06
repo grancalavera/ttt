@@ -16,13 +16,28 @@ export type DomainError =
   | MatchNotFoundError
   | NoChallengesFoundError
   | TooManyActiveMatchesError
+  | UnknownKindError
   | UnknownPlayerError
   | UpsertFailedError
-  | WrongTurnError;
+  | WrongTurnError
+  | ZeroError;
 
 export const includesErrorOfKind = (errors: DomainError[]) => (
   ...kinds: NonEmptyArray<DomainError["kind"]>
 ) => errors.some((e) => kinds.includes(e.kind));
+
+export class ZeroError {
+  readonly kind = "ZeroError";
+  readonly message = "zero: an iteration or recursion didn't happen as expected";
+}
+
+export class UnknownKindError {
+  readonly kind = "UnknownKindError";
+  get message() {
+    return `unknown on type ${this.typename}`;
+  }
+  constructor(readonly typename: string) {}
+}
 
 export class TooManyActiveMatchesError {
   readonly kind = "TooManyActiveMatchesError";
