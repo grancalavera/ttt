@@ -11,9 +11,9 @@ import { IllegalMoveError, UnknownPlayerError, WrongTurnError } from "../domain/
 import { Match, MatchState, Moves, Player, Position, Winner } from "../domain/model";
 import { domainFailure } from "../domain/result";
 import { winSequences } from "../system/board";
-import { PlayMoveWorkflow } from "./support";
+import { CreateMoveWorkflow } from "./support";
 
-export const playMove: PlayMoveWorkflow = (dependencies) => async (input) => {
+export const createMove: CreateMoveWorkflow = (dependencies) => async (input) => {
   const { upsertMatch, gameSize, maxMoves } = dependencies;
   const { matchDescription, game, move } = input;
   const [player, position] = move;

@@ -16,8 +16,8 @@ import {
   upsertFailure,
   WorkflowScenario,
 } from "../test-support";
-import { playMove } from "./play-move";
-import { PlayMoveInput } from "./support";
+import { createMove } from "./create-move";
+import { CreateMoveInput } from "./support";
 
 const spyOnUpsert = jest.fn();
 const mock = mockWorkflowDependencies({ spyOnUpsert });
@@ -114,10 +114,10 @@ const ownerPlaysVictoryExpectedMatch: Match = {
   },
 };
 
-const scenarios: WorkflowScenario<PlayMoveInput>[] = [
+const scenarios: WorkflowScenario<CreateMoveInput>[] = [
   {
     name: "unknown player",
-    runWorkflow: playMove(mock()),
+    runWorkflow: createMove(mock()),
     input: {
       matchDescription,
       game: opponentFirstMoveInitialState,
@@ -127,40 +127,40 @@ const scenarios: WorkflowScenario<PlayMoveInput>[] = [
   },
   {
     name: "wrong turn",
-    runWorkflow: playMove(mock()),
+    runWorkflow: createMove(mock()),
     input: { matchDescription, game: opponentFirstMoveInitialState, move: [alice, 2] },
     expectedResult: failure([new WrongTurnError(matchDescription, alice)]),
   },
   {
     name: "illegal move (already played)",
-    runWorkflow: playMove(mock()),
+    runWorkflow: createMove(mock()),
     input: { matchDescription, game: opponentFirstMoveInitialState, move: [bob, 0] },
     expectedResult: failure([new IllegalMoveError(matchDescription, 0)]),
   },
   {
     name: "upsert failed",
-    runWorkflow: playMove(mock({ upsertFails: true })),
+    runWorkflow: createMove(mock({ upsertFails: true })),
     input: { matchDescription, game: opponentFirstMoveInitialState, move: [bob, 1] },
     expectedResult: upsertFailure(opponentFirstMoveMatch),
     expectedMatch: opponentFirstMoveMatch,
   },
   {
     name: "move played: Game -> Game",
-    runWorkflow: playMove(mock()),
+    runWorkflow: createMove(mock()),
     input: { matchDescription, game: opponentFirstMoveInitialState, move: [bob, 1] },
     expectedResult: success(opponentFirstMoveMatch),
     expectedMatch: opponentFirstMoveMatch,
   },
   {
     name: "move played: Game -> Draw",
-    runWorkflow: playMove(mock()),
+    runWorkflow: createMove(mock()),
     input: { matchDescription, game: ownerPlaysDrawInitialState, move: ownerDrawMove },
     expectedResult: success(ownerPlaysDrawExpectedMatch),
     expectedMatch: ownerPlaysDrawExpectedMatch,
   },
   {
     name: "move played: Game -> Victory",
-    runWorkflow: playMove(mock()),
+    runWorkflow: createMove(mock()),
     input: {
       matchDescription,
       game: ownerPlaysVictoryInitialState,
