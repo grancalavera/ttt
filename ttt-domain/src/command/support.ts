@@ -14,22 +14,6 @@ import { WorkflowInput } from "../workflow/support";
 
 // ----------------------------------------------------------------------------
 //
-// global command handler
-//
-// ----------------------------------------------------------------------------
-
-export type GlobalCommandHandler = CommandHandler<JoinGame & PlayMove, Command>;
-
-export interface JoinGame {
-  readonly joinGame: (input: JoinGameInput) => CommandResult;
-}
-
-export interface PlayMove {
-  readonly playMove: (input: PlayMoveInput) => CommandResult;
-}
-
-// ----------------------------------------------------------------------------
-//
 // join game command handler
 //
 // ----------------------------------------------------------------------------
