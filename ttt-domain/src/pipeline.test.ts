@@ -75,37 +75,6 @@ const setupScenario = (initial: InitialState) => {
 
 const scenarios: Scenario[] = [
   {
-    name: "join game: New",
-    commands: [new JoinGameCommand({ player: alice })],
-    initialState: {},
-    expected: success({
-      id: matchId,
-      owner: alice,
-      state: { kind: "New" },
-    }),
-  },
-  {
-    name: "join game: Game",
-    initialState: {
-      match: {
-        owner: alice,
-        id: matchId,
-        state: { kind: "Challenge", move: [alice, 0] },
-      },
-    },
-    expected: success({
-      id: matchId,
-      owner: alice,
-      state: {
-        kind: "Game",
-        players: [alice, bob],
-        moves: [[alice, 0]],
-        next: bob,
-      },
-    }),
-    commands: [new JoinGameCommand({ player: bob })],
-  },
-  {
     name: "alice creates a match and wins",
     initialState: {},
     commands: [
@@ -117,7 +86,7 @@ const scenarios: Scenario[] = [
       new PlayMoveCommand({ matchId, move: [bob, 4] }),
       new PlayMoveCommand({ matchId, move: [alice, 6] }),
     ],
-    expected: success<Match>({
+    expected: success({
       id: matchId,
       owner: alice,
       state: {
@@ -150,7 +119,7 @@ const scenarios: Scenario[] = [
       new PlayMoveCommand({ matchId, move: [bob, 7] }),
       new PlayMoveCommand({ matchId, move: [alice, 8] }),
     ],
-    expected: success<Match>({
+    expected: success({
       id: matchId,
       owner: alice,
       state: {
