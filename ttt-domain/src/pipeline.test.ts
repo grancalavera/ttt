@@ -1,12 +1,12 @@
 import { failure, Result, success } from "@grancalavera/ttt-etc";
-import { Command, JoinGameCommand } from "./command/support";
+import { Command, JoinGameCommand, PlayMoveCommand } from "./command/support";
 import {
   DomainError,
   MatchNotFoundError,
   NoChallengesFoundError,
   ZeroError,
 } from "./domain/error";
-import { Challenge, Match, MatchDescription } from "./domain/model";
+import { extractMatchDescription, Match } from "./domain/model";
 import { AsyncDomainResult, DomainResult } from "./domain/result";
 import { buildPipeline } from "./pipeline";
 import { alice, bob, matchId } from "./test-support";
@@ -22,7 +22,6 @@ const spyOnUpsertMatch = jest.fn();
 
 interface InitialState {
   match?: Match;
-  firstChallenge?: [MatchDescription, Challenge];
 }
 
 interface Scenario {
@@ -38,16 +37,16 @@ const runPipeline = buildPipeline({
   maxMoves: 3 * 3,
 
   findMatch: async (id) => {
-    spyOnFindMatch(id);
     const { match } = initialState;
+    spyOnFindMatch(id);
     return match === undefined ? failure(new MatchNotFoundError(id)) : success(match);
   },
   findFirstChallenge: async () => {
+    const { match } = initialState;
     spyOnFindFirstChallenge();
-    const { firstChallenge } = initialState;
-    return firstChallenge === undefined
-      ? failure(new NoChallengesFoundError())
-      : success(firstChallenge);
+    return match?.state.kind === "Challenge"
+      ? success([extractMatchDescription(match), match.state])
+      : failure(new NoChallengesFoundError());
   },
   countActiveMatches: async (player) => {
     spyOnCountActiveMatches(player);
@@ -88,10 +87,11 @@ const scenarios: Scenario[] = [
   {
     name: "join game: Game",
     initialState: {
-      firstChallenge: [
-        { owner: alice, id: matchId },
-        { kind: "Challenge", move: [alice, 0] },
-      ],
+      match: {
+        owner: alice,
+        id: matchId,
+        state: { kind: "Challenge", move: [alice, 0] },
+      },
     },
     expected: success({
       id: matchId,
@@ -104,6 +104,71 @@ const scenarios: Scenario[] = [
       },
     }),
     commands: [new JoinGameCommand({ player: bob })],
+  },
+  {
+    name: "alice creates a match and wins",
+    initialState: {},
+    commands: [
+      new JoinGameCommand({ player: alice }),
+      new PlayMoveCommand({ matchId, move: [alice, 0] }),
+      new JoinGameCommand({ player: bob }),
+      new PlayMoveCommand({ matchId, move: [bob, 1] }),
+      new PlayMoveCommand({ matchId, move: [alice, 3] }),
+      new PlayMoveCommand({ matchId, move: [bob, 4] }),
+      new PlayMoveCommand({ matchId, move: [alice, 6] }),
+    ],
+    expected: success<Match>({
+      id: matchId,
+      owner: alice,
+      state: {
+        kind: "Victory",
+        winner: [alice, [0, 3, 6]],
+        moves: [
+          [alice, 0],
+          [bob, 1],
+          [alice, 3],
+          [bob, 4],
+          [alice, 6],
+        ],
+        players: [alice, bob],
+      },
+    }),
+  },
+  {
+    name: "alice creates a match and draws",
+    initialState: {},
+    commands: [
+      new JoinGameCommand({ player: alice }),
+      new PlayMoveCommand({ matchId, move: [alice, 0] }),
+      new JoinGameCommand({ player: bob }),
+      new PlayMoveCommand({ matchId, move: [bob, 3] }),
+      new PlayMoveCommand({ matchId, move: [alice, 6] }),
+      new PlayMoveCommand({ matchId, move: [bob, 4] }),
+      new PlayMoveCommand({ matchId, move: [alice, 1] }),
+      new PlayMoveCommand({ matchId, move: [bob, 2] }),
+      new PlayMoveCommand({ matchId, move: [alice, 5] }),
+      new PlayMoveCommand({ matchId, move: [bob, 7] }),
+      new PlayMoveCommand({ matchId, move: [alice, 8] }),
+    ],
+    expected: success<Match>({
+      id: matchId,
+      owner: alice,
+      state: {
+        kind: "Draw",
+        moves: [
+          [alice, 0],
+          [bob, 3],
+          [alice, 6],
+          [bob, 4],
+          [alice, 1],
+          [bob, 2],
+          [alice, 5],
+          [bob, 7],
+          [alice, 8],
+        ],
+        players: [alice, bob],
+      },
+    }),
   },
 ];
 
