@@ -11,14 +11,7 @@ import { AsyncDomainResult, DomainResult } from "./domain/result";
 import { buildPipeline } from "./pipeline";
 import { alice, bob, matchId } from "./test-support";
 
-let activeMatches: number = 0;
 let initialState: InitialState = {};
-
-const spyOnFindMatch = jest.fn();
-const spyOnFindFirstChallenge = jest.fn();
-const spyOnCountActiveMatches = jest.fn();
-const spyOnGetUniqueId = jest.fn();
-const spyOnUpsertMatch = jest.fn();
 
 interface InitialState {
   match?: Match;
@@ -38,26 +31,17 @@ const runPipeline = buildPipeline({
 
   findMatch: async (id) => {
     const { match } = initialState;
-    spyOnFindMatch(id);
     return match === undefined ? failure(new MatchNotFoundError(id)) : success(match);
   },
   findFirstChallenge: async () => {
     const { match } = initialState;
-    spyOnFindFirstChallenge();
     return match?.state.kind === "Challenge"
       ? success([extractMatchDescription(match), match.state])
       : failure(new NoChallengesFoundError());
   },
-  countActiveMatches: async (player) => {
-    spyOnCountActiveMatches(player);
-    return activeMatches;
-  },
-  getUniqueId: () => {
-    spyOnGetUniqueId();
-    return matchId;
-  },
+  countActiveMatches: async () => 0,
+  getUniqueId: () => matchId,
   upsertMatch: async (match) => {
-    spyOnUpsertMatch(match);
     initialState.match = match;
     return success(undefined);
   },
@@ -65,12 +49,6 @@ const runPipeline = buildPipeline({
 
 const setupScenario = (initial: InitialState) => {
   initialState = initial;
-  activeMatches = 0;
-  spyOnFindMatch.mockClear();
-  spyOnFindFirstChallenge.mockClear();
-  spyOnCountActiveMatches.mockClear();
-  spyOnGetUniqueId.mockClear();
-  spyOnUpsertMatch.mockClear();
 };
 
 const scenarios: Scenario[] = [
