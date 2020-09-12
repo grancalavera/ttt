@@ -1,4 +1,4 @@
-import { failure, Result, success } from "@grancalavera/ttt-etc";
+import { AsyncResult, failure, Result, success } from "@grancalavera/ttt-etc";
 import { Command, JoinGameCommand, PlayMoveCommand } from "./command/support";
 import {
   DomainError,
@@ -7,7 +7,6 @@ import {
   ZeroError,
 } from "./domain/error";
 import { extractMatchDescription, Match } from "./domain/model";
-import { AsyncDomainResult, DomainResult } from "./domain/result";
 import { buildPipeline } from "./pipeline";
 import { alice, bob, matchId } from "./test-support";
 
@@ -122,7 +121,7 @@ const scenarios: Scenario[] = [
 const executeCommands = async (
   commands: Command[],
   lastResult: Result<Match, DomainError[]> = failure([new ZeroError()])
-): AsyncDomainResult<Match> => {
+): AsyncResult<Match, DomainError[]> => {
   const [command, ...otherCommands] = commands;
   if (command === undefined) {
     return lastResult;
@@ -134,7 +133,7 @@ const executeCommands = async (
 describe.each(scenarios)("run pipeline", (scenario) => {
   const { name, commands, initialState, expected } = scenario;
 
-  let actual: DomainResult<Match>;
+  let actual: Result<Match, DomainError[]>;
 
   beforeEach(async () => {
     setupScenario(initialState);

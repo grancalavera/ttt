@@ -1,4 +1,10 @@
-import { failure, isFailure, Result, softAssertNever } from "@grancalavera/ttt-etc";
+import {
+  AsyncResult,
+  failure,
+  isFailure,
+  Result,
+  softAssertNever,
+} from "@grancalavera/ttt-etc";
 import { joinGameCommandHandler } from "./command/join-game-command-handler";
 import { playMoveCommandHandler } from "./command/play-move-command-handler";
 import {
@@ -9,7 +15,6 @@ import {
 } from "./command/support";
 import { DomainError, UnknownKindError } from "./domain/error";
 import { Match } from "./domain/model";
-import { AsyncDomainResult } from "./domain/result";
 import { GameSettings } from "./system/support";
 import { createChallenge } from "./workflow/create-challenge";
 import { createGame } from "./workflow/create-game";
@@ -18,7 +23,7 @@ import { createMove } from "./workflow/create-move";
 import { GetUniqueId, UpsertMatch, WorkflowInput } from "./workflow/support";
 
 export type BuildPipeline = (dependencies: PipelineDependencies) => RunPipeline;
-export type RunPipeline = (command: Command) => AsyncDomainResult<Match>;
+export type RunPipeline = (command: Command) => AsyncResult<Match, DomainError[]>;
 
 export const buildPipeline: BuildPipeline = (dependencies) => async (command) => {
   // handle command

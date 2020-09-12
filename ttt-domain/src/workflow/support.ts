@@ -1,7 +1,6 @@
 import { AsyncResult } from "@grancalavera/ttt-etc";
 import { DomainError } from "../domain/error";
 import { Challenge, Game, Match, MatchDescription, Move, Player } from "../domain/model";
-import { AsyncDomainResult } from "../domain/result";
 import { GameSettings } from "../system/support";
 
 // inputs
@@ -95,5 +94,5 @@ export interface GetUniqueId {
 
 export type RunWorkflow<T> = (input: T) => WorkflowResult;
 
-type WorkflowResult = AsyncDomainResult<Match>;
+type WorkflowResult = AsyncResult<Match, DomainError[]>;
 type CreateWorkflow<TDeps, TInput> = (dependencies: TDeps) => RunWorkflow<TInput>;
