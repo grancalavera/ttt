@@ -1,14 +1,5 @@
-import {
-  Result,
-  AsyncResult,
-  NonEmptyArray,
-  Failure,
-  failure,
-} from "@grancalavera/ttt-etc";
+import { Failure, failure, NonEmptyArray, Result } from "@grancalavera/ttt-etc";
 import { DomainError } from "./error";
-
-export type DomainResult<T> = Result<T, DomainError[]>;
-export type AsyncDomainResult<T> = AsyncResult<T, DomainError[]>;
 
 export const domainFailure = <T>(
   ...failures: NonEmptyArray<Failure<DomainError>>

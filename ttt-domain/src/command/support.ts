@@ -8,7 +8,6 @@ import {
   Move,
   Player,
 } from "../domain/model";
-import { AsyncDomainResult } from "../domain/result";
 import { GameSettings } from "../system/support";
 import { WorkflowInput } from "../workflow/support";
 
@@ -62,7 +61,7 @@ export interface FindMatch {
 export type Command = JoinGameCommand | PlayMoveCommand;
 export type HandleCommand<T> = (command: T) => CommandResult;
 
-type CommandResult = AsyncDomainResult<WorkflowInput>;
+type CommandResult = AsyncResult<WorkflowInput, DomainError[]>;
 type CommandHandler<TDeps, TCommand extends Command> = (
   dependencies: TDeps
 ) => (command: TCommand) => CommandResult;
