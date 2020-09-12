@@ -1,12 +1,12 @@
-import { columns, diagonals, Matrix, rows } from "./board";
+import { columns, diagonals, Matrix, rows } from "./board"
 
 interface Scenario {
-  side: number;
+  side: number
   expected: {
-    rows: Matrix;
-    columns: Matrix;
-    diagonals: Matrix;
-  };
+    rows: Matrix
+    columns: Matrix
+    diagonals: Matrix
+  }
 }
 
 const scenarios: Scenario[] = [
@@ -83,23 +83,23 @@ const scenarios: Scenario[] = [
       ],
     },
   },
-];
+]
 
 describe.each(scenarios)("board structure", (scenario) => {
-  const { side, expected } = scenario;
+  const { side, expected } = scenario
 
   it(`should calculate rows for a ${side} x ${side} board`, () => {
-    const actual = rows(side);
-    expect(actual).toEqual(expected.rows);
-  });
+    const actual = rows(side)
+    expect(actual).toEqual(expected.rows)
+  })
 
   it(`should calculate columns for a ${side} x ${side} board`, () => {
-    const actual = columns(side);
-    expect(actual).toEqual(expected.columns);
-  });
+    const actual = columns(side)
+    expect(actual).toEqual(expected.columns)
+  })
 
   it(`should calculate diagonals for a ${side} x ${side} board`, () => {
-    const actual = diagonals(side);
-    expect(actual).toEqual(expected.diagonals);
-  });
-});
+    const actual = diagonals(side)
+    expect(actual).toEqual(expected.diagonals)
+  })
+})

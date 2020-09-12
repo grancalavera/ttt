@@ -1,5 +1,5 @@
 export interface GameSettings {
-  readonly gameSize: number;
-  readonly maxActiveMatches: number;
-  readonly maxMoves: number;
+  readonly gameSize: number
+  readonly maxActiveMatches: number
+  readonly maxMoves: number
 }

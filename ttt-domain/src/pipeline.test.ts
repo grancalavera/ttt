@@ -1,26 +1,26 @@
-import { AsyncResult, failure, Result, success } from "@grancalavera/ttt-etc";
-import { Command, JoinGameCommand, PlayMoveCommand } from "./command/support";
+import { AsyncResult, failure, Result, success } from "@grancalavera/ttt-etc"
+import { Command, JoinGameCommand, PlayMoveCommand } from "./command/support"
 import {
   DomainError,
   MatchNotFoundError,
   NoChallengesFoundError,
   ZeroError,
-} from "./domain/error";
-import { extractMatchDescription, Match } from "./domain/model";
-import { buildPipeline } from "./pipeline";
-import { alice, bob, matchId } from "./test-support";
+} from "./domain/error"
+import { extractMatchDescription, Match } from "./domain/model"
+import { buildPipeline } from "./pipeline"
+import { alice, bob, matchId } from "./test-support"
 
-let initialState: InitialState = {};
+let initialState: InitialState = {}
 
 interface InitialState {
-  match?: Match;
+  match?: Match
 }
 
 interface Scenario {
-  name: string;
-  initialState: InitialState;
-  expected: Result<Match, DomainError[]>;
-  commands: Command[];
+  name: string
+  initialState: InitialState
+  expected: Result<Match, DomainError[]>
+  commands: Command[]
 }
 
 const runPipeline = buildPipeline({
@@ -29,26 +29,28 @@ const runPipeline = buildPipeline({
   maxMoves: 3 * 3,
 
   findMatch: async (id) => {
-    const { match } = initialState;
-    return match === undefined ? failure(new MatchNotFoundError(id)) : success(match);
+    const { match } = initialState
+    return match === undefined
+      ? failure(new MatchNotFoundError(id))
+      : success(match)
   },
   findFirstChallenge: async () => {
-    const { match } = initialState;
+    const { match } = initialState
     return match?.state.kind === "Challenge"
       ? success([extractMatchDescription(match), match.state])
-      : failure(new NoChallengesFoundError());
+      : failure(new NoChallengesFoundError())
   },
   countActiveMatches: async () => 0,
   getUniqueId: () => matchId,
   upsertMatch: async (match) => {
-    initialState.match = match;
-    return success(undefined);
+    initialState.match = match
+    return success(undefined)
   },
-});
+})
 
 const setupScenario = (initial: InitialState) => {
-  initialState = initial;
-};
+  initialState = initial
+}
 
 const scenarios: Scenario[] = [
   {
@@ -116,31 +118,31 @@ const scenarios: Scenario[] = [
       },
     }),
   },
-];
+]
 
 const executeCommands = async (
   commands: Command[],
-  lastResult: Result<Match, DomainError[]> = failure([new ZeroError()])
+  lastResult: Result<Match, DomainError[]> = failure([new ZeroError()]),
 ): AsyncResult<Match, DomainError[]> => {
-  const [command, ...otherCommands] = commands;
+  const [command, ...otherCommands] = commands
   if (command === undefined) {
-    return lastResult;
+    return lastResult
   }
-  const result = await runPipeline(command);
-  return executeCommands(otherCommands, result);
-};
+  const result = await runPipeline(command)
+  return executeCommands(otherCommands, result)
+}
 
 describe.each(scenarios)("run pipeline", (scenario) => {
-  const { name, commands, initialState, expected } = scenario;
+  const { name, commands, initialState, expected } = scenario
 
-  let actual: Result<Match, DomainError[]>;
+  let actual: Result<Match, DomainError[]>
 
   beforeEach(async () => {
-    setupScenario(initialState);
-    actual = await executeCommands(commands);
-  });
+    setupScenario(initialState)
+    actual = await executeCommands(commands)
+  })
 
   it(name, () => {
-    expect(actual).toEqual(expected);
-  });
-});
+    expect(actual).toEqual(expected)
+  })
+})
