@@ -1,116 +1,128 @@
-import { failure, Result, success } from "@grancalavera/ttt-etc";
+import { failure, Result, success } from "@grancalavera/ttt-etc"
 import {
   Command,
   CountActiveMatches,
   FindFirstChallenge,
   FindMatch,
   HandleCommand,
-} from "./command/support";
+} from "./command/support"
 import {
   DomainError,
   MatchNotFoundError,
   NoChallengesFoundError,
   UpsertFailedError,
-} from "./domain/error";
-import { Challenge, Match, MatchDescription, Player } from "./domain/model";
-import { GameSettings } from "./system/support";
-import { GetUniqueId, RunWorkflow, UpsertMatch, WorkflowInput } from "./workflow/support";
+} from "./domain/error"
+import { Challenge, Match, MatchDescription, Player } from "./domain/model"
+import { GameSettings } from "./system/support"
+import {
+  GetUniqueId,
+  RunWorkflow,
+  UpsertMatch,
+  WorkflowInput,
+} from "./workflow/support"
 
 export interface WorkflowScenario<Input> {
-  name: string;
-  runWorkflow: RunWorkflow<Input>;
-  input: Input;
-  expectedResult: Result<Match, DomainError[]>;
-  expectedMatch?: Match;
+  name: string
+  runWorkflow: RunWorkflow<Input>
+  input: Input
+  expectedResult: Result<Match, DomainError[]>
+  expectedMatch?: Match
 }
 
 export interface CommandScenario<TCommand extends Command> {
-  name: string;
-  handleCommand: HandleCommand<TCommand>;
-  command: TCommand;
-  expected: Result<WorkflowInput, DomainError[]>;
+  name: string
+  handleCommand: HandleCommand<TCommand>
+  command: TCommand
+  expected: Result<WorkflowInput, DomainError[]>
 }
 
-export const alice: Player = { id: "alice" };
-export const bob: Player = { id: "bob" };
-export const unknownPlayer: Player = { id: "unknown-player" };
-export const matchId = "match-id";
+export const alice: Player = { id: "alice" }
+export const bob: Player = { id: "bob" }
+export const unknownPlayer: Player = { id: "unknown-player" }
+export const matchId = "match-id"
 
-const upsertError = (m: Match) => new UpsertFailedError(m);
-export const upsertFailure = (m: Match) => failure([upsertError(m)]);
+const upsertError = (m: Match) => new UpsertFailedError(m)
+export const upsertFailure = (m: Match): Result<never, UpsertFailedError[]> =>
+  failure([upsertError(m)])
 
-type SystemDependencies = GameSettings;
-type WorkflowDependencies = GetUniqueId & UpsertMatch;
-type CommandDependencies = CountActiveMatches & FindFirstChallenge & FindMatch;
+type SystemDependencies = GameSettings
+type WorkflowDependencies = GetUniqueId & UpsertMatch
+type CommandDependencies = CountActiveMatches & FindFirstChallenge & FindMatch
 
 interface SystemMocks {
-  readonly maxActiveMatches?: number;
+  readonly maxActiveMatches?: number
 }
 
 interface WorkflowSpies {
-  readonly spyOnUpsert: jest.Mock;
+  readonly spyOnUpsert: jest.Mock
 }
 
 interface WorkflowMocks {
-  readonly upsertFails?: boolean;
+  readonly upsertFails?: boolean
 }
 
 interface CommandSpies {
-  readonly spyOnFindFirstChallenge?: jest.Mock;
-  readonly spyOnFindMatch?: jest.Mock;
-  readonly spyOnCountActiveMatches?: jest.Mock;
+  readonly spyOnFindFirstChallenge?: jest.Mock
+  readonly spyOnFindMatch?: jest.Mock
+  readonly spyOnCountActiveMatches?: jest.Mock
 }
 
 interface CommandMocks {
-  activeMatches?: number;
-  firstChallengeToFind?: [MatchDescription, Challenge];
-  matchToFind?: Match;
+  activeMatches?: number
+  firstChallengeToFind?: [MatchDescription, Challenge]
+  matchToFind?: Match
 }
 
-const mockSystemDependencies = (mocks: SystemMocks = {}): SystemDependencies => ({
+const mockSystemDependencies = (
+  mocks: SystemMocks = {},
+): SystemDependencies => ({
   gameSize: 3,
   maxActiveMatches: mocks.maxActiveMatches ?? Number.POSITIVE_INFINITY,
   maxMoves: 3 * 3,
-});
+})
 
 export const mockWorkflowDependencies = (spies: WorkflowSpies) => (
-  mocks: SystemMocks & WorkflowMocks = {}
+  mocks: SystemMocks & WorkflowMocks = {},
 ): SystemDependencies & WorkflowDependencies => ({
   ...mockSystemDependencies(mocks),
 
   getUniqueId: () => matchId,
 
   upsertMatch: async (match) => {
-    spies.spyOnUpsert(match);
-    return mocks.upsertFails ? failure(upsertError(match)) : success(undefined);
+    spies.spyOnUpsert(match)
+    return mocks.upsertFails ? failure(upsertError(match)) : success(undefined)
   },
-});
+})
 
 export const mockCommandDependencies = (spies: CommandSpies) => (
-  mocks: SystemMocks & CommandMocks = {}
+  mocks: SystemMocks & CommandMocks = {},
 ): SystemDependencies & CommandDependencies => {
-  const { spyOnFindFirstChallenge, spyOnFindMatch, spyOnCountActiveMatches } = spies;
+  const {
+    spyOnFindFirstChallenge,
+    spyOnFindMatch,
+    spyOnCountActiveMatches,
+  } = spies
 
   return {
     ...mockSystemDependencies(mocks),
 
     countActiveMatches: async () => {
-      spyOnCountActiveMatches && spyOnCountActiveMatches();
-      return mocks.activeMatches ?? 0;
+      spyOnCountActiveMatches && spyOnCountActiveMatches()
+      return mocks.activeMatches ?? 0
     },
 
     findFirstChallenge: async () => {
-      spyOnFindFirstChallenge && spyOnFindFirstChallenge();
+      spyOnFindFirstChallenge && spyOnFindFirstChallenge()
       return mocks.firstChallengeToFind
         ? success(mocks.firstChallengeToFind)
-        : failure(new NoChallengesFoundError());
+        : failure(new NoChallengesFoundError())
     },
 
     findMatch: async (id) => {
-      spyOnFindMatch && spyOnFindMatch(id);
+      spyOnFindMatch && spyOnFindMatch(id)
       return mocks.matchToFind
         ? success(mocks.matchToFind)
-        : failure(new MatchNotFoundError(id));
+        : failure(new MatchNotFoundError(id))
     },
-  };
-};
+  }
+}

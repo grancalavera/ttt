@@ -1,2 +1,2 @@
-export * from "./domain/model";
-export { BuildPipeline, buildPipeline, RunPipeline } from "./pipeline";
+export * from "./domain/model"
+export { BuildPipeline, buildPipeline, RunPipeline } from "./pipeline"

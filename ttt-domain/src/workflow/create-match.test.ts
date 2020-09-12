@@ -1,24 +1,24 @@
-import { isSuccess, Result, success } from "@grancalavera/ttt-etc";
-import { DomainError, includesErrorOfKind } from "../domain/error";
-import { Match } from "../domain/model";
+import { isSuccess, Result, success } from "@grancalavera/ttt-etc"
+import { DomainError, includesErrorOfKind } from "../domain/error"
+import { Match } from "../domain/model"
 import {
   alice,
   matchId,
   mockWorkflowDependencies,
   upsertFailure,
   WorkflowScenario,
-} from "../test-support";
-import { createMatch } from "./create-match";
-import { CreateMatchInput } from "./support";
+} from "../test-support"
+import { createMatch } from "./create-match"
+import { CreateMatchInput } from "./support"
 
-const spyOnUpsert = jest.fn();
-const mock = mockWorkflowDependencies({ spyOnUpsert });
+const spyOnUpsert = jest.fn()
+const mock = mockWorkflowDependencies({ spyOnUpsert })
 
 const newMatch: Match = {
   id: matchId,
   owner: alice,
   state: { kind: "New" },
-};
+}
 
 const scenarios: WorkflowScenario<CreateMatchInput>[] = [
   {
@@ -35,30 +35,30 @@ const scenarios: WorkflowScenario<CreateMatchInput>[] = [
     expectedResult: success(newMatch),
     expectedMatch: newMatch,
   },
-];
+]
 
 describe.each(scenarios)("create match workflow", (scenario) => {
-  const { name, runWorkflow, input, expectedResult, expectedMatch } = scenario;
-  let actual: Result<Match, DomainError[]>;
+  const { name, runWorkflow, input, expectedResult, expectedMatch } = scenario
+  let actual: Result<Match, DomainError[]>
 
   beforeEach(async () => {
-    spyOnUpsert.mockClear();
-    actual = await runWorkflow(input);
-  });
+    spyOnUpsert.mockClear()
+    actual = await runWorkflow(input)
+  })
 
   describe(name, () => {
-    it("workflow", () => expect(actual).toEqual(expectedResult));
+    it("workflow", () => expect(actual).toEqual(expectedResult))
 
     it("side effects", () => {
       if (isSuccess(expectedResult)) {
-        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expectedMatch);
+        expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expectedMatch)
       } else {
-        const includesErrorKind = includesErrorOfKind(expectedResult.error);
+        const includesErrorKind = includesErrorOfKind(expectedResult.error)
 
         if (includesErrorKind("UpsertFailedError")) {
-          expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expectedMatch);
+          expect(spyOnUpsert).toHaveBeenNthCalledWith(1, expectedMatch)
         }
       }
-    });
-  });
-});
+    })
+  })
+})
