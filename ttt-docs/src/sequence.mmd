@@ -1,77 +1,71 @@
 sequenceDiagram
-  participant c as ttt-client
-  participant s as ttt-server
-  participant d as ttt-domain
+  participant c as client
+  participant q as query
+  participant b as event bus
+  participant s as command
+  participant d as ttt domain
 
-  note over c,d: joining matches <br />(workflows: create match, accept challenge)
+  q->>+b: Subscribe:<br>- MatchCreated<br>- ChallengeCreated<br>- GameCreated<br> - MoveCreated
+  note left of q: listen to changes on the domain
+  b--x-q: Match
 
-  c->>+s: join(Player)
 
-    s->>+d: findFirstChallenge()
-    d-->>-s: Result = Option<Match>
 
-    alt Result = None
-      s->>+d: createMatch(Player)
-      d-->>-s: Match | WorkflowError
 
-    else Result = Some<Match>
-      s->>+d: createGame(Match, Player)
+  note over c,d: joining a match<br />(workflows: CreateMatch, CreateGame)
 
-      d-->>-s: Match | WorkflowError
+  c->>+s: Mutation(JoinMatch, Player)
+    s->>d: JoinGameCommand(Player)
+
+      activate d
+
+      d->>d: Handle Command
+        alt Workflow = CreateMatch
+          d->>d: Run workflow: CreateMatch
+        else Workflow = CreateGame
+          d ->>d: Run workflow: CreateGame
+        else Otherwise
+          d ->>d: List of errors
+        end
+        note right of d: these state transitions <br /> DON'T create new moves
+      d-->>s: Result = Match or List of errors
+
+      deactivate d
+
+    alt Result=Match
+      s->>b: Publish(MatchCreated | GameCreated)
     end
-      note right of d: these state transitions <br /> DON'T create moves
 
-  s-->>-c: Match | WorkflowError
-
-  c->>c: redirect to /match/:Match.id
-
-  note over c,d: playing moves <br />(workflows: create challenge, create game, play move)
-
-  c->>+s: subscribe(Match.id)
-  activate c
-
-  c->>+s: play(Match.id, Move)
-  activate s
-  s-->>-c: void
-
-  s->>+d: findMatch(Match.id)
-  d-->>-s: Result = Match | WorkflowError
-
-  alt Result = WorkflowError
-    s->>s: publish(WorkflowError)
-
-  else Result.Match.MatchState.kind = New
-    s->>+d: createChallenge(Match, Move)
-    d-->>-s: Match | WorkflowError
-    s->>s: publish(Match.state | WorkflowError)
-
-  else Result.Match.MatchState.kind = Game
-    s->>+d: playMove(Match, Move)
-    d-->>-s: Match | WorkflowError
-    s->>s: publish(Match.state | WorkflowError)
+  s-->>-c: Result = Match or List of errors
 
 
-  else
-    s->>s: publish(WorkflowError)
-  end
 
-  note right of d: these state transitions <br /> DO create moves
 
-  deactivate s
+  note over c,d: playing moves <br />(workflows: CreateChallenge, PlayMove)
+  c->>+q: Subscribe:<br>- MatchChanged with Match.id
+  q--x-c: Match
 
-  s--xc: MatchState | WorkflowError
-  c->>s: unsubscribe(Match)
-  s-->>-c: void
-  deactivate c
+  c->>+s: Mutation(PlayMove, MatchId, Move)
+    s->>d: PlayMoveCommand(MatchId, Move)
 
-  note over c,d: resuming matches
 
-  c->>+s: findActiveMatches(Player)
-  s-->>-c: Match[]
+      activate d
 
-  c->>c: select(Match)
-  activate c
-  c->>+s: query(Match.id)
-  s-->>-c: Match | WorflowError
-  c->>c: redirect to /match/:Match.id
-  deactivate c
+      d->>d: Handle Command
+        alt Workflow = CreateChallenge
+          d->>d: Run workflow: CreateChallenge
+        else Workflow = CreateMove
+          d ->>d: Run workflow: CreateMove
+        else Otherwise
+          d ->>d: List of errors
+        end
+        note right of d: these state transitions <br /> DO create new moves
+      d-->>s: Result = Match or List of errors
+
+      deactivate d
+
+    alt Result=Match
+      s->>b: Publish(ChallengeCreated | MoveCreated)
+    end
+
+  s-->>-c: Result = Match or List of errors

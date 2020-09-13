@@ -17,7 +17,7 @@
 - [Create match](./ttt-domain/src/workflow/create-match.ts)
 - [Create game](./ttt-domain/src/workflow/create-game.ts)
 - [Create challenge](./ttt-domain/src/workflow/create-challenge.ts)
-- [Play move](./ttt-domain/src/workflow/play-move.ts)
+- [Create move](./ttt-domain/src/workflow/create-move.ts)
 
 ![ttt sequence diagram](./ttt-docs/images/sequence.png)
 

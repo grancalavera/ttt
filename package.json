@@ -6,11 +6,7 @@
   "author": "Leon Coto <leoncoto@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "bootstrap": "lerna bootstrap",
-    "build": "lerna run build --stream",
-    "start:clean": "lerna run start:clean",
-    "start": "lerna run start",
-    "test": "lerna run test",
+    "build": "yarn workspaces run build",
     "gen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
