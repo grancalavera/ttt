@@ -22,10 +22,10 @@
     "@graphql-codegen/typescript-resolvers": "1.17.8",
     "@types/graphql": "14.5.0",
     "graphql": "15.3.0",
-    "graphql-tag": "2.11.0",
-    "lerna": "3.22.1"
+    "graphql-tag": "2.11.0"
   },
   "workspaces": [
+    "ttt-etc",
     "ttt-*"
   ],
   "private": true
