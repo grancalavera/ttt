@@ -19,7 +19,7 @@
 - [Create challenge](./ttt-domain/src/workflow/create-challenge.ts)
 - [Create move](./ttt-domain/src/workflow/create-move.ts)
 
-![ttt sequence diagram](./ttt-docs/images/sequence.png)
+![ttt sequence diagram](./ttt-docs/images/sequence.svg)
 
 ## References
 
