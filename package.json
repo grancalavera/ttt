@@ -10,12 +10,12 @@
     "gen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
-    "@graphql-codegen/cli": "1.17.8",
-    "@graphql-codegen/fragment-matcher": "1.17.8",
-    "@graphql-codegen/typescript": "1.17.8",
-    "@graphql-codegen/typescript-operations": "1.17.8",
-    "@graphql-codegen/typescript-react-apollo": "2.0.6",
-    "@graphql-codegen/typescript-resolvers": "1.17.8",
+    "@graphql-codegen/cli": "1.19.4",
+    "@graphql-codegen/fragment-matcher": "2.0.1",
+    "@graphql-codegen/typescript": "1.19.0",
+    "@graphql-codegen/typescript-operations": "1.17.12",
+    "@graphql-codegen/typescript-react-apollo": "2.2.1",
+    "@graphql-codegen/typescript-resolvers": "1.18.0",
     "@types/graphql": "14.5.0",
     "graphql": "15.3.0",
     "graphql-tag": "2.11.0"
