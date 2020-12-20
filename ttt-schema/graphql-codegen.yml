@@ -3,24 +3,23 @@ overwrite: true
 # It also supports graphql-import syntax, so you can point
 # to a single schema.graphql file that imports other files.
 # https://github.com/ardatan/graphql-import
-schema: "ttt-server/src/graphql/schema.graphql"
-documents: "ttt-client/src/graphql/*.graphql"
+schema: "src/schema/schema.graphql"
+documents: "src/client/*.graphql"
 
 generates:
-  ttt-server/src/generated/graphql.ts:
+  src/generated/graphql-model.ts:
+    - typescript
+
+  src/generated/graphql-server.ts:
     - typescript
     - typescript-resolvers
 
-  ttt-client/src/generated/graphql.tsx:
+  src/generated/graphql-client.ts:
     - typescript
     - typescript-operations
     - typescript-react-apollo
 
-  ttt-client/src/generated/introspection-result.ts:
-    # https://graphql-code-generator.com/docs/plugins/fragment-matcher
-    - fragment-matcher
-
-  ttt-server/src/generated/introspection-result.ts:
+  src/generated/graphql-introspection.ts:
     # https://graphql-code-generator.com/docs/plugins/fragment-matcher
     - fragment-matcher
 
@@ -33,7 +32,7 @@ config:
   useIndexSignature: true
   # see: https://graphql-code-generator.com/docs/generated-config/typescript-resolvers#noschemastitching-boolean-default-value-false
   noSchemaStitching: true
-  contextType: ../context#Context
+  # contextType: ../context#Context/
 
   withHOC: false
   withComponent: false

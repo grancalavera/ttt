@@ -1,7 +1,7 @@
 import { Button, Intent } from "@blueprintjs/core";
 import React from "react";
 import { CellState } from "./cell-types";
-import { GameState, Move } from "../generated/graphql";
+import { GameState ,Move} from "@grancalavera/ttt-schema"
 import { Cell, Screen } from "../layout/layout";
 import { updateBoard } from "./update-board";
 import { WithTypename } from "./with-typename";

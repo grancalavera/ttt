@@ -1,9 +1,9 @@
 import React from "react";
-import { useWhoamiQuery } from "../generated/graphql";
+import { client } from "@grancalavera/ttt-schema"
 import { Screen } from "../layout/layout";
 
 export const WhoAmI: React.FC = () => {
-  const result = useWhoamiQuery({
+  const result = client.useWhoamiQuery({
     fetchPolicy: "network-only",
   });
 

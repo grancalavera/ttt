@@ -1,0 +1,16 @@
+{
+  "name": "@grancalavera/ttt-schema",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "start": "yarn build -w",
+    "build:codegen": "graphql-codegen --config graphql-codegen.yml",
+    "build:ts": "tsc",
+    "build": "yarn build:codegen && yarn build:ts"
+  },
+  "dependencies": {
+    "typescript": "4.1.3"
+  }
+}

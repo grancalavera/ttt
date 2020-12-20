@@ -1,5 +1,11 @@
 import { CellState, DisabledCell, FreeCell, PlayedCell } from "./cell-types";
-import { GamePlayingState, GameState, Move, Position, Token } from "../generated/graphql";
+import {
+  GamePlayingState,
+  GameState,
+  Move,
+  Position,
+  Token,
+} from "@grancalavera/ttt-schema";
 import { WithTypename } from "./with-typename";
 
 export const updateBoard = (gameState: WithTypename<GameState>): CellState[] => {

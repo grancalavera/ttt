@@ -1,20 +1,20 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"typescript.tsdk": "node_modules/typescript/lib",
-		"files.exclude": {
-			"**/build": true,
-			"**/coverage": true,
-			"**/dist": true,
-			"**/node_modules": true
-		},
-		"cSpell.words": [
-			"alices",
-			"pipeable"
-		]
-	}
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "ttt-schema/dist"
+    }
+  ],
+  "settings": {
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "files.exclude": {
+      "**/build": true,
+      "**/coverage": true,
+      "**/dist": true,
+      "**/node_modules": true
+    },
+    "cSpell.words": ["alices", "pipeable"]
+  }
 }

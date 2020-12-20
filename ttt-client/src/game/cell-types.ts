@@ -1,4 +1,4 @@
-import { Move } from "../generated/graphql";
+import { Move } from "@grancalavera/ttt-schema";
 
 export type CellState = FreeCell | PlayedCell | DisabledCell;
 
