@@ -3,8 +3,8 @@ overwrite: true
 # It also supports graphql-import syntax, so you can point
 # to a single schema.graphql file that imports other files.
 # https://github.com/ardatan/graphql-import
-schema: "src/schema/schema.graphql"
-documents: "src/client/*.graphql"
+schema: "graphql/schema/schema.graphql"
+documents: "graphql/client/*.graphql"
 
 generates:
   src/generated/graphql-model.ts:
