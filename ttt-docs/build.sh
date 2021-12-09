@@ -3,10 +3,10 @@
 rm -rf ./images/*
 mkdir -p images
 
-for source in ./src/*; do
-  if [ ! -d "$source" ]; then
-    pathname="${source##*/}"
+for src in ./src/*; do
+  if [ ! -d "$src" ]; then
+    pathname="${src##*/}"
     destination="./images/${pathname%.*}.svg"
-    yarn mmdc -i ${source} -o ${destination}
+    cat ${src} | sed 's/```.*//g' | yarn mmdc -o ${destination}
   fi
 done
